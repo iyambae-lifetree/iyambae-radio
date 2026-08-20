@@ -35,9 +35,14 @@
         <button class="schalter" id="knopf432" title="432-Hz-Stimmung ein- und ausschalten">
             <span class="schalter__punkt"></span><span>432 Hz an</span>
         </button>
-        <button class="schalter" id="knopfMyRetuner" title="Wenn MyRetuner läuft, darf die Seite nicht zusätzlich verstimmen">
-            <span class="schalter__punkt"></span><span>MyRetuner aus</span>
+        <button class="schalter" id="knopfMyRetuner" hidden title="Fragt einmal nach, ob MyRetuner auf diesem Rechner läuft. Die App fragt dich dann um Erlaubnis.">
+            <span class="schalter__punkt"></span><span>Ich habe MyRetuner</span>
         </button>
+        <a class="schalter schalter--werbung" id="knopfMyRetunerHolen" hidden
+           href="https://myretuner.app" target="_blank" rel="noopener"
+           title="Diese Seite rät. MyRetuner misst.">
+            <span>Dauerhaft in 432 Hz — MyRetuner</span>
+        </a>
         <span class="messung" id="myRetunerMessung" hidden></span>
     </div>
 </header>

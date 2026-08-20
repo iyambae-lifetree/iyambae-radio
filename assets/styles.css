@@ -120,6 +120,21 @@ a { color: var(--pink-hell); }
 .schalter.ist-an { color: var(--text); border-color: rgba(242, 183, 5, 0.5); }
 .schalter.ist-an .schalter__punkt { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
 
+/* Hinweis auf die App — die Voreinstellung für alle, die MyRetuner nicht
+   haben, und das sind die allermeisten Besucher. Deshalb sichtbar, aber
+   nicht laut: dieselbe Pillenform wie die Schalter daneben, nur mit einem
+   Anflug Gold. Wer die App hat, sieht sie nach dem ersten Mal nie wieder. */
+.schalter--werbung {
+    text-decoration: none;
+    color: var(--text);
+    border-color: rgba(242, 183, 5, 0.35);
+    background: linear-gradient(180deg, rgba(242, 183, 5, 0.10), rgba(242, 183, 5, 0.03));
+}
+.schalter--werbung:hover {
+    border-color: rgba(242, 183, 5, 0.6);
+    background: linear-gradient(180deg, rgba(242, 183, 5, 0.16), rgba(242, 183, 5, 0.06));
+}
+
 /* ── Plattenspieler ──────────────────────────────────────────────── */
 .hero {
     display: grid; gap: clamp(1.2rem, 4vw, 2.5rem); align-items: center;

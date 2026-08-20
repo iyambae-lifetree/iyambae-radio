@@ -19,7 +19,12 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-IMPORT = re.compile(r"""^\s*import\s.*?from\s+['"](\./[^'"]+)['"]""", re.M)
+# Bewusst nur auf `from '…'` gemustert, nicht auf die ganze import-Anweisung:
+# Ein Import darf ueber mehrere Zeilen gehen, und ein zeilengebundener
+# Ausdruck haette ihn dann still uebersehen — die Pruefung haette
+# weitergemeldet, es sei alles in Ordnung. Genau das ist hier einmal
+# passiert.
+IMPORT = re.compile(r"""\bfrom\s+['"](\./[^'"]+)['"]""")
 SHELL = re.compile(r"const\s+SHELL_FILES\s*=\s*\[(.*?)\]", re.S)
 EINTRAG = re.compile(r"""['"]([^'"]+)['"]""")
 
@@ -50,7 +55,7 @@ def main():
     symbole = set(MANIFEST_ICON.findall(manifest.read_text(encoding="utf-8")))
 
     problem = False
-    for was, erwartet in (("importierte Module", importiert),
+    for was, erwartet in (("importierten Module", importiert),
                           ("Symbole aus dem Manifest", symbole)):
         fehlend = sorted(erwartet - gelistet)
         if fehlend:

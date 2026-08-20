@@ -8,7 +8,8 @@
 
 import { waehleUeberraschung } from './lib/gewichtung.mjs';
 import { findeVerwandten } from './lib/verwandt.mjs';
-import { frageMyRetuner, anzeigeStimmung, anzeigeQuelle } from './lib/myretuner.mjs';
+import { frageMyRetuner, wartAufEinwilligung, anzeigeStimmung, anzeigeQuelle, ZUSTAND }
+  from './lib/myretuner.mjs';
 import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
 import { senderbild, hatEigenesLogo, regalton, MARKE } from './lib/senderbild.mjs';
 
@@ -28,6 +29,9 @@ const SCHLUESSEL = {
   lautstaerke:'hz_lautstaerke',
   pitch432:   'hz_pitch432',
   myretuner:  'hz_myretuner',
+  // Welcher der drei Zustaende aus ZUSTAND zuletzt galt. Mehr wird nicht
+  // gemerkt — die Einwilligung selbst liegt in der App, nicht hier.
+  mrZustand:  'hz_mr_zustand',
 };
 
 const speicher = {
@@ -793,12 +797,13 @@ class App {
         this.myRetunerAktiv ? 'MyRetuner übernimmt' : (this.engine.ist432An ? '432 Hz an' : '432 Hz aus');
       knopf432.classList.toggle('ist-an', this.engine.ist432An && !this.myRetunerAktiv);
     }
-    const knopfMR = document.getElementById('knopfMyRetuner');
-    if (knopfMR) {
-      knopfMR.classList.toggle('ist-an', this.myRetunerAktiv);
-      knopfMR.querySelector('span:last-child').textContent =
-        this.myRetunerAktiv ? (quelle === 'erkannt' ? 'MyRetuner erkannt' : 'MyRetuner an') : 'MyRetuner aus';
-    }
+    /*
+     Frueher stand hier die Beschriftung des zweiten Knopfes. Der ist kein
+     Umschalter mehr, sondern heisst „Ich habe MyRetuner" und ist nur im
+     Zustand `unbekannt` ueberhaupt sichtbar — siehe `_zeigeZugang`. Wuerde
+     hier weiterhin geschrieben, ueberschriebe der Aufruf beim Start die
+     neue Beschriftung mit „MyRetuner aus".
+    */
   }
 
   // ── MyRetuner Stufe 2: Erkennung ─────────────────────────────────
@@ -806,12 +811,70 @@ class App {
   // Schlaegt die Abfrage fehl, faellt alles still auf den Handschalter
   // zurueck — der Besucher merkt nichts.
   starteMyRetunerErkennung() {
+    const zustand = speicher.lies(SCHLUESSEL.mrZustand, ZUSTAND.unbekannt);
+    this._zeigeZugang(zustand);
+
+    if (zustand !== ZUSTAND.erlaubt) return;
+
+    /*
+     Der einzige Fall, in dem ungefragt abgefragt wird — und er ist
+     unbedenklich: Browser-Berechtigung und Einwilligung der App liegen beide
+     vor, es erscheint kein Dialog. Nachgeprueft wird trotzdem bei jedem
+     Besuch, denn die App koennte deinstalliert oder die Einwilligung dort
+     widerrufen worden sein.
+    */
     const abfragen = async () => {
       const daten = await frageMyRetuner();
       this._zeigeMyRetuner(daten);
     };
     abfragen();
     setInterval(() => { if (this.engine.laeuft || this.myRetunerErkannt) abfragen(); }, 5000);
+  }
+
+  /*
+   Auf Klick: Der Browser fragt den Nutzer um Erlaubnis fuer den lokalen
+   Zugriff, danach fragt die App ihn um Einwilligung fuer diese Herkunft.
+   Beides dauert, also wird gewartet statt einmal zu probieren.
+  */
+  async frageMyRetunerAn() {
+    const knopf = document.getElementById('knopfMyRetuner');
+    const feld  = document.getElementById('myRetunerMessung');
+    if (knopf) knopf.disabled = true;
+    if (feld) {
+      feld.textContent = 'Warte auf Bestätigung in MyRetuner …';
+      feld.hidden = false;
+    }
+
+    const daten = await wartAufEinwilligung();
+    if (knopf) knopf.disabled = false;
+
+    if (daten) {
+      speicher.schreib(SCHLUESSEL.mrZustand, ZUSTAND.erlaubt);
+      this._zeigeZugang(ZUSTAND.erlaubt);
+      this._zeigeMyRetuner(daten);
+      this.starteMyRetunerErkennung();
+      return;
+    }
+
+    // Abgelehnt, weggeklickt, nicht installiert, Berechtigung verweigert —
+    // alles dasselbe. Kein Fehler des Nutzers, also auch keine Fehlermeldung.
+    speicher.schreib(SCHLUESSEL.mrZustand, ZUSTAND.abgelehnt);
+    if (feld) feld.hidden = true;
+    this._zeigeZugang(ZUSTAND.abgelehnt);
+  }
+
+  /*
+   Welche der beiden Schaltflaechen sichtbar ist, haengt allein am Zustand:
+
+     unbekannt   Knopf ja,   Hinweis ja    erster Besuch
+     erlaubt     Knopf nein, Hinweis nein  die Messung spricht fuer sich
+     abgelehnt   Knopf nein, Hinweis ja    nicht noch einmal fragen
+  */
+  _zeigeZugang(zustand) {
+    const knopf   = document.getElementById('knopfMyRetuner');
+    const werbung = document.getElementById('knopfMyRetunerHolen');
+    if (knopf)   knopf.hidden   = (zustand !== ZUSTAND.unbekannt);
+    if (werbung) werbung.hidden = (zustand === ZUSTAND.erlaubt);
   }
 
   _zeigeMyRetuner(daten) {
@@ -830,12 +893,25 @@ class App {
         : `MyRetuner erkannt · ${ziel} Hz`;
       const feld = document.getElementById('myRetunerMessung');
       if (feld) { feld.textContent = text; feld.hidden = false; }
+      // Sie antwortet wieder — der Hinweis hat sich erledigt.
+      const werbung = document.getElementById('knopfMyRetunerHolen');
+      if (werbung) werbung.hidden = true;
     } else {
       const feld = document.getElementById('myRetunerMessung');
       if (feld) feld.hidden = true;
       // Nur zuruecksetzen, wenn die Erkennung ihn vorher gesetzt hatte —
       // ein von Hand gesetzter Schalter bleibt, wie der Nutzer ihn ließ.
       if (lief) this.setzeMyRetuner(speicher.lies(SCHLUESSEL.myretuner, false), 'nutzer');
+
+      /*
+       Eingewilligt, aber niemand antwortet: Die App kann deinstalliert oder
+       die Einwilligung dort widerrufen worden sein. Dann faellt die Seite
+       still auf den Hinweis zurueck — aber ohne erneut zu fragen, denn die
+       Einwilligung wurde ja einmal gegeben. Der gespeicherte Zustand bleibt
+       deshalb unangetastet.
+      */
+      const werbung = document.getElementById('knopfMyRetunerHolen');
+      if (werbung) werbung.hidden = false;
     }
   }
 
@@ -856,7 +932,7 @@ class App {
     anKlick('heroPlay',          () => this.wechselSpiel());
     anKlick('barPlay',           () => this.wechselSpiel());
     anKlick('knopf432',          () => this.wechsle432());
-    anKlick('knopfMyRetuner',    () => this.setzeMyRetuner(!this.myRetunerAktiv, 'nutzer'));
+    anKlick('knopfMyRetuner',    () => this.frageMyRetunerAn());
     anKlick('auslageNeu',        () => this.zeichneAuslage());
     anKlick('heroFavorit',       () => { if (this.ui.aktuelleId) this.ui.toggleFavorit(this.ui.aktuelleId); });
 
