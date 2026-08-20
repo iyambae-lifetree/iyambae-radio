@@ -31,6 +31,12 @@ EINTRAG = re.compile(r"""['"]([^'"]+)['"]""")
 
 MANIFEST_ICON = re.compile(r'"src"\s*:\s*"([^"]+)"')
 
+# Dieselbe Fehlerklasse, dritter Auesserungsort: Der AudioWorklet wird per
+# addModule geladen und die .wasm per fetch — kein import weit und breit. Ohne
+# diese beiden Muster faellt genau der Teil aus der Pruefung, der die
+# Umstimmung traegt.
+GELADEN = re.compile(r"""(?:addModule|fetch)\s*\(\s*['"](\./[^'"]+)['"]""")
+
 
 def main():
     app = ROOT / "assets" / "app.js"
@@ -45,10 +51,14 @@ def main():
 
     # './lib/x.mjs' in app.js entspricht './assets/lib/x.mjs' im Worker,
     # weil der Worker im Wurzelverzeichnis liegt.
+    quelltext = app.read_text(encoding="utf-8")
     importiert = {
         "./assets/" + treffer.removeprefix("./")
-        for treffer in IMPORT.findall(app.read_text(encoding="utf-8"))
+        for treffer in IMPORT.findall(quelltext)
     }
+    # addModule und fetch stehen in app.js mit Pfaden relativ zur Seite,
+    # nicht relativ zu assets/ — deshalb ohne Praefix.
+    importiert |= set(GELADEN.findall(quelltext))
 
     # Dieselbe Fehlerklasse, anderer Auesserungsort: Ein Symbol, das das
     # Manifest verlangt, aber die Huelle nicht kennt, fehlt offline.

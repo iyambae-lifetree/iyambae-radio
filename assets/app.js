@@ -116,6 +116,12 @@ class AudioEngine {
     this._frequenzDaten = null;
     this.analyseEcht = false;
 
+    // MyRetuners Signalkern als WebAssembly. Steht erst zur Verfügung, wenn
+    // der Graph aufgebaut ist und das Modul geladen wurde — bis dahin und
+    // bei jedem Fehlschlag bleibt es beim Weg über playbackRate.
+    this._retuner = null;
+    this.retunerBereit = false;
+
     this.setzeLautstaerke(this.lautstaerke, false);
   }
 
@@ -147,9 +153,65 @@ class AudioEngine {
       this._quelle.connect(this._analyse);
       this._analyse.connect(this._audioCtx.destination);
       this._frequenzDaten = new Uint8Array(this._analyse.frequencyBinCount);
+
+      // Nebenläufig, ohne den Start zu verzögern: Schlägt es fehl, bleibt
+      // es beim bisherigen Weg über playbackRate.
+      this._richteRetunerEin();
       return true;
     } catch {
       this._analyse = null;
+      return false;
+    }
+  }
+
+  /*
+   MyRetuners Signalkern als WebAssembly in den Graphen hängen.
+
+   Der Unterschied zum bisherigen Weg ist nicht kosmetisch: `playbackRate`
+   ändert Tonhöhe *und* Tempo — ein Stück läuft dabei 1,8 % langsamer. Der
+   Signalkern ändert nur die Tonhöhe, so wie MyRetuner auf dem Rechner.
+
+   Gilt nur für Sender mit CORS-Freigabe: Ohne sie kommt der Strom gar nicht
+   erst in den Graphen (siehe Kommentar im Konstruktor), und es bleibt beim
+   Raten über playbackRate.
+  */
+  async _richteRetunerEin() {
+    if (this._retuner || !this._audioCtx?.audioWorklet) return false;
+    try {
+      const [, antwort] = await Promise.all([
+        this._audioCtx.audioWorklet.addModule('./assets/lib/retuner-worklet.js'),
+        fetch('./assets/wasm/retuner.wasm'),
+      ]);
+      if (!antwort.ok) throw new Error('wasm ' + antwort.status);
+      const bytes = await antwort.arrayBuffer();
+
+      const knoten = new AudioWorkletNode(this._audioCtx, 'retuner', {
+        numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2],
+      });
+
+      await new Promise((fertig, fehler) => {
+        const zeit = setTimeout(() => fehler(new Error('Zeitüberschreitung')), 5000);
+        knoten.port.onmessage = (e) => {
+          clearTimeout(zeit);
+          if (e.data?.art === 'bereit') fertig(e.data);
+          else fehler(new Error(e.data?.text || 'unbekannt'));
+        };
+        knoten.port.postMessage({ art: 'wasm', bytes, frames: 2048 }, [bytes]);
+      });
+
+      // Zwischen Quelle und Analyse einhängen — so zeigt der Visualizer,
+      // was auch zu hören ist.
+      this._quelle.disconnect(this._analyse);
+      this._quelle.connect(knoten);
+      knoten.connect(this._analyse);
+
+      this._retuner = knoten;
+      this.retunerBereit = true;
+      this.wendePitchAn();
+      return true;
+    } catch {
+      this._retuner = null;
+      this.retunerBereit = false;
       return false;
     }
   }
@@ -196,11 +258,33 @@ class AudioEngine {
 
   // Beide Elemente gleich einstellen, damit ein Wechsel nichts verstellt.
   wendePitchAn() {
+    /*
+     Zwei Wege, je nachdem welches Element gerade spielt:
+
+     Sender MIT CORS laufen durch den Graphen — dort macht MyRetuners
+     Signalkern die Arbeit, exakt und ohne Tempoänderung. `playbackRate`
+     bleibt auf 1.
+
+     Sender OHNE CORS erreichen den Graphen nicht (siehe Konstruktor). Für sie
+     bleibt es beim bisherigen Weg: `playbackRate` zieht Tonhöhe und Tempo
+     gemeinsam herunter, das Stück läuft also 1,8 % langsamer. Hörbar
+     schlechter, aber besser als nichts.
+    */
     for (const el of [this.audioDirekt, this.audioAnalyse]) {
-      el.playbackRate = this.ist432An ? this.pitchFaktor : 1.0;
+      const uebernimmtKern = (el === this.audioAnalyse) && this.retunerBereit;
+      el.playbackRate = (this.ist432An && !uebernimmtKern) ? this.pitchFaktor : 1.0;
       el.preservesPitch = false;
       el.webkitPreservesPitch = false;
     }
+    if (this._retuner) {
+      this._retuner.parameters.get('faktor').value =
+        this.ist432An ? this.pitchFaktor : 1.0;
+    }
+  }
+
+  /// Stimmt der Signalkern gerade um — oder raet die Seite noch?
+  kernUebernimmt() {
+    return !!(this.retunerBereit && this.audio === this.audioAnalyse && this.ist432An);
   }
 
   setze432(an) {
@@ -209,7 +293,10 @@ class AudioEngine {
     speicher.schreib(SCHLUESSEL.pitch432, this.ist432An);
   }
 
-  statusText() { return this.ist432An ? 'Live — 432Hz' : 'Live — 440Hz'; }
+  statusText() {
+    if (!this.ist432An) return 'Live — 440Hz';
+    return this.kernUebernimmt() ? 'Live — 432Hz gemessen' : 'Live — 432Hz';
+  }
 
   setzeLautstaerke(wert, merken = true) {
     this.lautstaerke = Math.max(0, Math.min(1, wert));
