@@ -4,7 +4,10 @@
 // metadata/stream endpoints, falls back to cache when offline.
 // ============================================================
 
-const SW_VERSION = 'iyambae-v6';
+// Hochgezaehlt, weil SHELL_FILES drei fehlende Module bekommen hat. Ohne
+// neue Fassung behielten bestehende Besucher den alten, unvollstaendigen
+// Zwischenspeicher — und damit den Offline-Fehler.
+const SW_VERSION = 'iyambae-v7';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -14,10 +17,22 @@ const SHELL_FILES = [
     './manifest.webmanifest',
     './icon.svg',
     './icon-192.png',
+    // Vom Manifest verlangt, fehlte bisher.
+    './icon-512.png',
+    './assets/logo/icon-maskable-512.png',
+    // Ladeschirm und Logo im Kopf. Ohne dieses Bild oeffnet der Laden
+    // offline mit einer leeren Flaeche.
+    './assets/logo/iyambae-marke.svg',
     './assets/styles.css',
     './assets/app.js',
+    // Jedes Modul, das app.js importiert, muss hier stehen. Fehlt eines,
+    // bricht offline der ganze Start ab — ein fehlendes ES-Modul reisst das
+    // Skript mit. Scripts/pruefe-shell-dateien.py wacht darueber.
     './assets/lib/gewichtung.mjs',
     './assets/lib/verwandt.mjs',
+    './assets/lib/myretuner.mjs',
+    './assets/lib/wochentipp.mjs',
+    './assets/lib/senderbild.mjs',
     './data/sender.json',
 ];
 
@@ -102,7 +117,13 @@ self.addEventListener('fetch', (event) => {
                 .catch(() =>
                     // Kein Netz: aus dem Zwischenspeicher, sonst die Hülle
                     caches.match(req).then((gespeichert) =>
-                        gespeichert || (req.mode === 'navigate' ? caches.match('./index.html') : undefined))
+                        gespeichert
+                        || (req.mode === 'navigate'
+                            ? caches.match('./index.html')
+                            // Ein mit undefined aufgeloestes respondWith wird
+                            // zum Netzwerkfehler ohne Erklaerung. Eine echte
+                            // Antwort sagt wenigstens, was los ist.
+                            : new Response('', { status: 504, statusText: 'offline' })))
                 )
         );
         return;
