@@ -663,6 +663,29 @@ class App {
     this.setzeMyRetuner(speicher.lies(SCHLUESSEL.myretuner, false), 'nutzer');
     this.starteMyRetunerErkennung();
     document.getElementById('ladeschirm')?.classList.add('weg');
+
+    this.folgeAdressZiel();
+  }
+
+  /*
+   Ein Ziel aus der Adresse ausführen: ?los=nadel oder ?los=meine.
+
+   Dafür gedacht sind die Sprungziele der installierten App — Rechtsklick
+   aufs Symbol in der Taskleiste. Sie stehen als `shortcuts` im Manifest und
+   brauchen eine Adresse, die etwas tut.
+
+   Danach wird der Parameter aus der Adresszeile entfernt: Sonst zeigt ein
+   Neuladen wieder dasselbe, und ein geteilter Link trägt eine Absicht mit
+   sich, die dem Empfänger nichts sagt.
+  */
+  folgeAdressZiel() {
+    const ziel = new URLSearchParams(location.search).get('los');
+    if (!ziel) return;
+
+    history.replaceState(null, '', location.pathname);
+
+    if (ziel === 'nadel') this.nadelFallenLassen();
+    else if (ziel === 'meine') this.zeigeMeinePlatten();
   }
 
   // ── Wiedergabe ───────────────────────────────────────────────────

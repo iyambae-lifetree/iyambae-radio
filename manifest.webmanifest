@@ -1,4 +1,5 @@
 {
+    "id": "/",
     "name": "IYAMBAE Radio",
     "short_name": "IYAMBAE",
     "description": "Ein handverlesener Plattenladen zum Zuhören: 117 Sender aus 29 Ländern, von Grenzgängern bis Fundstücken.",
@@ -10,11 +11,69 @@
     "theme_color": "#F2B705",
     "lang": "de",
     "dir": "ltr",
-    "categories": ["music", "entertainment"],
+    "categories": [
+        "music",
+        "entertainment"
+    ],
     "icons": [
-        { "src": "./icon.svg",     "type": "image/svg+xml", "sizes": "any",     "purpose": "any" },
-        { "src": "./icon-192.png", "type": "image/png",     "sizes": "192x192", "purpose": "any" },
-        { "src": "./icon-512.png", "type": "image/png",     "sizes": "512x512", "purpose": "any" },
-        { "src": "./assets/logo/icon-maskable-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+        {
+            "src": "./icon.svg",
+            "type": "image/svg+xml",
+            "sizes": "any",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-192.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "any"
+        },
+        {
+            "src": "./assets/logo/icon-maskable-512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "maskable"
+        }
+    ],
+    "launch_handler": {
+        "client_mode": "navigate-existing"
+    },
+    "display_override": [
+        "window-controls-overlay",
+        "standalone"
+    ],
+    "shortcuts": [
+        {
+            "name": "Nadel fallen lassen",
+            "short_name": "Zufall",
+            "description": "Ein zufälliger Sender aus allen acht Regalen",
+            "url": "./index.html?los=nadel",
+            "icons": [
+                {
+                    "src": "./icon-192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        },
+        {
+            "name": "Meine Platten",
+            "short_name": "Meine",
+            "description": "Die gemerkten Sender",
+            "url": "./index.html?los=meine",
+            "icons": [
+                {
+                    "src": "./icon-192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        }
     ]
 }
