@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>MyRetuner-Anbindung prüfen</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 44rem;
+         margin: 2rem auto; padding: 0 1.2rem; line-height: 1.6; color: #1a1a1a; }
+  h1 { font-size: 1.4rem; }
+  .kasten { padding: 1rem 1.2rem; border-radius: 10px; margin: 1rem 0; }
+  .gut     { background: #e8f7ee; border: 1px solid #35a06a; }
+  .schlecht{ background: #fdecec; border: 1px solid #d04545; }
+  .warten  { background: #f4f4f6; border: 1px solid #ccc; }
+  .titel { font-weight: 600; font-size: 1.05rem; }
+  pre { background: #f6f6f8; padding: .8rem; border-radius: 8px; overflow-x: auto; font-size: .82rem; }
+  .klein { color: #666; font-size: .88rem; }
+  button { padding: .55rem 1.1rem; font-size: 1rem; border-radius: 8px;
+           border: 1px solid #888; background: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Kommt die MyRetuner-Erkennung durch?</h1>
+<p class="klein">Diese Seite fragt einmal <code>http://127.0.0.1:47432/status</code> ab und
+sagt, was dabei herauskommt. MyRetuner muss laufen.</p>
+
+<div class="kasten warten" id="ergebnis">
+  <div class="titel">Wird geprüft …</div>
+</div>
+
+<p><button onclick="pruefe()">Nochmal prüfen</button></p>
+
+<div id="details"></div>
+
+<script>
+async function pruefe() {
+  const kasten = document.getElementById('ergebnis');
+  const details = document.getElementById('details');
+  kasten.className = 'kasten warten';
+  kasten.innerHTML = '<div class="titel">Wird geprüft …</div>';
+  details.innerHTML = '';
+
+  const begonnen = performance.now();
+  try {
+    const antwort = await fetch('http://127.0.0.1:47432/status', {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(3000),
+    });
+    const daten = await antwort.json();
+    const dauer = Math.round(performance.now() - begonnen);
+
+    if (daten.app !== 'myretuner') {
+      kasten.className = 'kasten schlecht';
+      kasten.innerHTML = '<div class="titel">Da antwortet etwas anderes</div>' +
+        '<p>Der Anschluss ist belegt, aber nicht von MyRetuner.</p>';
+      return;
+    }
+
+    kasten.className = 'kasten gut';
+    kasten.innerHTML = '<div class="titel">✓ Die Erkennung funktioniert in diesem Browser</div>' +
+      '<p>MyRetuner hat nach ' + dauer + ' ms geantwortet. Damit greift die automatische ' +
+      'Erkennung auf der Radioseite — der Schalter springt von allein um.</p>';
+    details.innerHTML = '<p class="klein">Das hat die App geliefert:</p><pre>' +
+      JSON.stringify(daten, null, 2) + '</pre>' +
+      '<p class="klein">Wichtig ist <code>vertrauen</code>: ab 0,5 zeigt die Radioseite die ' +
+      'gemessene Quellstimmung genau an, zwischen 0,15 und 0,5 gerundet mit „etwa", ' +
+      'darunter gar nicht.</p>';
+  } catch (fehler) {
+    kasten.className = 'kasten schlecht';
+    kasten.innerHTML = '<div class="titel">✗ Die Anfrage kam nicht durch</div>' +
+      '<p><code>' + fehler.name + ': ' + fehler.message + '</code></p>' +
+      '<p>Drei mögliche Gründe, in dieser Reihenfolge zu prüfen:</p>' +
+      '<ol>' +
+      '<li><b>MyRetuner läuft nicht.</b> Starten und nochmal prüfen.</li>' +
+      '<li><b>Diese Seite ist nicht freigegeben.</b> Die App erlaubt bisher nur ' +
+      '<code>https://iyambae-lifetree.github.io</code>. Öffnest du diese Datei über ' +
+      '<code>file://</code> oder <code>localhost</code>, fehlt die Freigabe. ' +
+      'Aktuelle Herkunft: <code>' + location.origin + '</code></li>' +
+      '<li><b>Der Browser sperrt lokale Zugriffe.</b> Dann steht in der Konsole ' +
+      '(Rechtsklick → Untersuchen → Console) etwas über „private network" oder ' +
+      '„local network access". Das wäre die Sperre, die ich vermutet habe.</li>' +
+      '</ol>';
+  }
+}
+pruefe();
+</script>
+</body>
+</html>

@@ -1,0 +1,602 @@
+/* ═══════════════════════════════════════════════════════════════════
+   432Hz Radio — Aussehen
+   Dunkler Grund, Pink als Akzent, Orbitron fürs Logo.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    --grund:        #05020a;
+    --grund-hoch:   #0d0616;
+    --karte:        #120a1e;
+    --karte-hoch:   #1a0f2b;
+    --rand:         rgba(255, 255, 255, 0.08);
+    --rand-hell:    rgba(255, 255, 255, 0.16);
+    --text:         #f2edf7;
+    --text-leise:   #a294b8;
+    --pink:         #F2B705;   /* Logo-Gelb, trägt jetzt die Marke */
+    --pink-hell:    #FFD34D;
+    --gold:         #F2B705;
+    --blau:         #2A7CC7;   /* Logo-Blau */
+    --blau-hell:    #3E92D6;
+    --gruen:        #35e08a;
+    --rot:          #ff5c5c;
+    --schrift:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono:         'JetBrains Mono', ui-monospace, monospace;
+    --anzeige:      'Orbitron', var(--schrift);
+    --rund:         14px;
+    --schatten:     0 8px 28px rgba(0, 0, 0, 0.45);
+    --glut:         0 0 0 1px rgba(242, 183, 5, 0.55), 0 0 22px rgba(242, 183, 5, 0.30);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: var(--grund);
+    color: var(--text);
+    font-family: var(--schrift);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 7rem;
+    overflow-x: hidden;
+}
+
+/* Sanfter Farbschimmer im Hintergrund */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(60rem 40rem at 15% -10%, rgba(242, 183, 5, 0.10), transparent 60%),
+        radial-gradient(50rem 35rem at 95% 5%, rgba(42, 124, 199, 0.12), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+
+a { color: var(--pink-hell); }
+
+/* ── Ladeschirm ──────────────────────────────────────────────────── */
+.ladeschirm {
+    position: fixed; inset: 0; z-index: 200;
+    display: grid; place-content: center; justify-items: center; gap: 0.6rem;
+    background: var(--grund);
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+.ladeschirm.weg { opacity: 0; visibility: hidden; }
+.ladeschirm__marke { width: 150px; height: auto; animation: dreht 6s linear infinite; }
+.ladeschirm__unter { font-family: var(--mono); font-size: 0.78rem; color: var(--text-leise); }
+
+/* ── Kopf ────────────────────────────────────────────────────────── */
+.kopf {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+    background: rgba(5, 2, 10, 0.82);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--rand);
+}
+.logo { display: flex; align-items: center; gap: 0.55rem; text-decoration: none; }
+.logo img { display: block; }
+.logo__wort {
+    display: flex; flex-direction: column; line-height: 1.05;
+    font-family: var(--anzeige); font-weight: 900; font-size: 0.95rem;
+    letter-spacing: 0.14em; color: var(--gold);
+}
+.logo__wort span { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.3em; color: var(--blau-hell); }
+
+.kopf__suche {
+    flex: 1 1 14rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.45rem 0.85rem;
+    background: var(--karte); border: 1px solid var(--rand); border-radius: 999px;
+}
+.kopf__suche input {
+    flex: 1; min-width: 0;
+    background: none; border: 0; outline: none;
+    color: var(--text); font-family: inherit; font-size: 0.9rem;
+}
+.kopf__suche input::placeholder { color: var(--text-leise); }
+
+.kopf__schalter { display: flex; align-items: center; gap: 0.5rem; }
+.messung {
+    padding: 0.35rem 0.7rem;
+    background: rgba(42, 124, 199, 0.16);
+    border: 1px solid rgba(62, 146, 214, 0.4);
+    border-radius: 999px;
+    font-family: var(--mono); font-size: 0.7rem; color: var(--blau-hell);
+    white-space: nowrap;
+}
+.messung[hidden] { display: none; }
+.schalter {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.45rem 0.8rem;
+    background: var(--karte); color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: 999px;
+    font-family: var(--mono); font-size: 0.72rem; cursor: pointer;
+    transition: all 0.2s ease; white-space: nowrap;
+}
+.schalter:hover:not(:disabled) { border-color: var(--rand-hell); color: var(--text); }
+.schalter:disabled { opacity: 0.5; cursor: not-allowed; }
+.schalter__punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--text-leise); transition: all 0.2s ease; }
+.schalter.ist-an { color: var(--text); border-color: rgba(242, 183, 5, 0.5); }
+.schalter.ist-an .schalter__punkt { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
+
+/* ── Plattenspieler ──────────────────────────────────────────────── */
+.hero {
+    display: grid; gap: clamp(1.2rem, 4vw, 2.5rem); align-items: center;
+    padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+}
+@media (min-width: 800px) { .hero { grid-template-columns: auto 1fr; } }
+
+/* ── Plattenspieler ──────────────────────────────────────────────
+   Der Teller trägt die Platte, die Platte trägt das Label. Gedreht wird
+   nur die Platte — Tonarm und Balkenkranz bleiben ruhig stehen. */
+.plattenspieler {
+    position: relative;
+    justify-self: center;
+    width: clamp(210px, 42vw, 320px);
+    aspect-ratio: 1;
+}
+
+.teller {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 50% 50%, #1c1226 0%, #120b1c 62%, #0a0612 100%);
+    box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    display: grid; place-items: center;
+}
+.teller canvas { position: absolute; width: 100%; height: 100%; pointer-events: none; }
+
+.platte {
+    position: absolute; inset: 6%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, #14101c 0%, #0b0810 70%, #070509 100%);
+    display: grid; place-items: center;
+    will-change: transform;
+}
+
+/* Die Rillen: viele feine Ringe, nach außen enger werdend */
+.platte__rillen {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: repeating-radial-gradient(circle at 50% 50%,
+        rgba(255, 255, 255, 0.055) 0px,
+        rgba(255, 255, 255, 0.055) 1px,
+        transparent 1px,
+        transparent 4px);
+    mask: radial-gradient(circle at 50% 50%, transparent 27%, #000 29%, #000 99%, transparent 100%);
+    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 27%, #000 29%, #000 99%, transparent 100%);
+}
+
+/* Der Lichtreflex, der über die Platte wandert */
+.platte__glanz {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 210deg at 50% 50%,
+        transparent 0deg,
+        rgba(255, 255, 255, 0.07) 22deg,
+        rgba(255, 255, 255, 0.02) 48deg,
+        transparent 78deg,
+        transparent 180deg,
+        rgba(255, 255, 255, 0.05) 205deg,
+        transparent 250deg);
+}
+
+/* Das Label — hier sitzt das Logo des Senders, sonst die IYAMBAE-Marke */
+.label {
+    position: relative;
+    width: 40%; aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #fffdf6 0%, #f6efdd 58%, #e9dec4 100%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.10);
+    display: grid; place-items: center;
+    overflow: hidden;
+}
+.label__bild {
+    width: 84%; height: 84%;
+    object-fit: contain;
+    /* Sender-Logos kommen in allen Formaten; das hält sie ruhig */
+    filter: saturate(1.05);
+}
+.label__loch {
+    position: absolute;
+    width: 7%; aspect-ratio: 1;
+    border-radius: 50%;
+    background: #0a0610;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+/* Tonarm: liegt in Ruhe neben der Platte, setzt beim Abspielen auf.
+   Der Schwenk ist bewusst träge — ein Tonarm fällt nicht, er senkt sich. */
+.tonarm {
+    position: absolute;
+    inset: -4% -6% auto auto;
+    width: 62%; height: 62%;
+    overflow: visible;
+    pointer-events: none;
+}
+.tonarm__schwenk {
+    transform-origin: 88px 16px;
+    transform: rotate(-30deg);
+    transition: transform 1.4s cubic-bezier(0.33, 1.0, 0.4, 1);
+}
+/* Der Winkel wird aus app.js gesetzt, nicht über eine Klasse: ein
+   klassenbasierter Wechsel auf einem SVG-<g> kommt im Renderer nicht an,
+   ein direkt gesetzter Wert schon. */
+
+.tonarm__rohr    { stroke: #6b6379; stroke-width: 2.6; stroke-linecap: round; }
+.tonarm__gewicht { fill: #3a3446; stroke: #55506a; stroke-width: 0.8; }
+.tonarm__kopf rect { fill: #59526b; stroke: #7d7592; stroke-width: 0.6; }
+.tonarm__nadel   { stroke: var(--gold); stroke-width: 1.4; stroke-linecap: round; opacity: 0.75; }
+.tonarm__lager   { fill: #2a2534; stroke: #4a4358; stroke-width: 1.2; }
+.tonarm__lagerkern { fill: #6b6379; }
+
+/* Wenn die Nadel liegt, glimmt sie leicht — der einzige Moment, in dem
+   der Arm etwas tut. */
+body.spielt .tonarm__nadel { opacity: 1; filter: drop-shadow(0 0 2px var(--gold)); }
+
+/* Gedreht wird nur, wenn Ton läuft. 33⅓ Umdrehungen pro Minute
+   sind 1,8 Sekunden je Umdrehung — hier bewusst langsamer, sonst
+   flimmert das Label. */
+body.spielt .platte { animation: dreht 3.6s linear infinite; }
+.platte { animation: dreht 3.6s linear infinite; animation-play-state: paused; }
+body.spielt .platte { animation-play-state: running; }
+@keyframes dreht { to { transform: rotate(360deg); } }
+
+.hero__guete { font-family: var(--mono); font-size: 0.72rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; }
+.hero__name { font-family: var(--anzeige); font-size: clamp(1.6rem, 5vw, 2.6rem); font-weight: 900; line-height: 1.15; margin: 0.3rem 0; }
+.hero__ort { font-size: 0.9rem; color: var(--text-leise); }
+.hero__kaertchen { margin-top: 0.8rem; max-width: 46rem; color: #d8cfe6; }
+.hero__knoepfe { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
+
+/* ── Knöpfe ──────────────────────────────────────────────────────── */
+.knopf {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.6rem 1.1rem;
+    background: var(--karte-hoch); color: var(--text);
+    border: 1px solid var(--rand); border-radius: 999px;
+    font-family: inherit; font-size: 0.88rem; font-weight: 500;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s ease;
+}
+.knopf:hover { border-color: var(--rand-hell); transform: translateY(-1px); }
+.knopf--gross { background: var(--pink); border-color: var(--pink); font-weight: 600; padding: 0.7rem 1.5rem; }
+.knopf--gross:hover { background: var(--pink-hell); box-shadow: var(--glut); }
+.knopf--leise { background: none; color: var(--text-leise); font-size: 0.8rem; }
+
+.knopf-rund {
+    display: grid; place-items: center;
+    width: 2.6rem; height: 2.6rem;
+    background: var(--pink); color: #fff;
+    border: 0; border-radius: 50%;
+    font-size: 1rem; cursor: pointer;
+    transition: all 0.2s ease;
+}
+.knopf-rund:hover { background: var(--pink-hell); box-shadow: var(--glut); }
+
+/* ── Die zwei Griffe ─────────────────────────────────────────────── */
+.griffe {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+    max-width: 60rem;
+}
+.griff {
+    display: grid; gap: 0.15rem; justify-items: start;
+    padding: 1rem 1.2rem;
+    background: var(--karte); color: var(--text);
+    border: 1px solid var(--rand); border-radius: var(--rund);
+    font-family: inherit; text-align: left; cursor: pointer;
+    transition: all 0.2s ease;
+}
+.griff:hover { transform: translateY(-2px); border-color: var(--rand-hell); box-shadow: var(--schatten); }
+.griff--vertraut:hover { border-color: rgba(255, 200, 87, 0.5); }
+.griff--zufall:hover  { border-color: rgba(242, 183, 5, 0.55); box-shadow: var(--glut); }
+.griff__icon  { font-size: 1.5rem; }
+.griff__titel { font-weight: 600; font-size: 1rem; }
+.griff__unter { font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise); }
+
+/* ── Sender der Woche ────────────────────────────────────────────
+   Die redaktionelle Empfehlung: liegt für alle Besucher einer Woche fest,
+   im Gegensatz zur Auslage, die bei jedem Besuch wechselt. */
+.tipp {
+    margin: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0;
+    padding: clamp(1.1rem, 3vw, 1.8rem);
+    border: 1px solid rgba(242, 183, 5, 0.28);
+    border-radius: var(--rund);
+    background:
+        linear-gradient(135deg, rgba(242, 183, 5, 0.07), rgba(42, 124, 199, 0.05)),
+        var(--karte);
+}
+.tipp[hidden] { display: none; }
+.tipp__marke {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--mono); font-size: 0.68rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);
+}
+.tipp__stern { font-size: 0.8rem; }
+.tipp__inhalt { display: grid; gap: 1.2rem; margin-top: 0.7rem; }
+@media (min-width: 860px) { .tipp__inhalt { grid-template-columns: 1fr 15rem; } }
+.tipp__name { font-family: var(--anzeige); font-size: clamp(1.3rem, 3.5vw, 1.9rem); font-weight: 600; }
+.tipp__ort { font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise); margin-top: 0.2rem; }
+.tipp__kaertchen { margin-top: 0.7rem; max-width: 44rem; color: #d3c9e2; }
+.tipp__knoepfe { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1rem; }
+.tipp__dazuTitel { font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise); text-transform: uppercase; letter-spacing: 0.1em; }
+.tipp__dazuListe { display: grid; gap: 0.4rem; margin-top: 0.5rem; }
+.tipp__dazuKnopf {
+    display: grid; justify-items: start; gap: 0.05rem;
+    padding: 0.5rem 0.7rem;
+    background: rgba(255, 255, 255, 0.04); color: var(--text);
+    border: 1px solid var(--rand); border-radius: 0.6rem;
+    font-family: inherit; font-size: 0.82rem; text-align: left; cursor: pointer;
+    transition: all 0.15s ease;
+}
+.tipp__dazuKnopf:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--rand-hell); }
+.tipp__dazuKnopf span { font-family: var(--mono); font-size: 0.62rem; color: var(--text-leise); }
+
+/* ── Auslage ─────────────────────────────────────────────────────── */
+.auslage { padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0; }
+.auslage__kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+.auslage__titel { font-family: var(--anzeige); font-size: 1.15rem; font-weight: 600; }
+.auslage__raster, .regal__raster {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem;
+}
+@media (min-width: 720px)  { .auslage__raster, .regal__raster { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1100px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(4, 1fr); } }
+
+/* ── Etiketten ───────────────────────────────────────────────────── */
+.filter {
+    display: grid; gap: 0.6rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0;
+}
+.filter__guete { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.filter__titel {
+    font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise);
+    text-transform: uppercase; letter-spacing: 0.12em; margin-right: 0.2rem;
+}
+.guete-knopf {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    background: rgba(62, 146, 214, 0.12); color: var(--blau-hell);
+    border: 1px solid rgba(62, 146, 214, 0.32); border-radius: 999px;
+    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+    transition: all 0.15s ease;
+}
+.guete-knopf span { opacity: 0.6; font-size: 0.65rem; }
+.guete-knopf:hover { background: rgba(62, 146, 214, 0.22); }
+.guete-knopf.ist-aktiv { background: var(--blau); border-color: var(--blau); color: #fff; }
+.guete-knopf.ist-aktiv span { opacity: 0.85; }
+
+.etiketten { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.etikett {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--karte); color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: 999px;
+    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+    transition: all 0.15s ease;
+}
+.etikett span { opacity: 0.55; font-size: 0.65rem; }
+.etikett:hover { color: var(--text); border-color: var(--rand-hell); }
+.etikett.ist-aktiv { background: var(--pink); border-color: var(--pink); color: #fff; }
+.etikett.ist-aktiv span { opacity: 0.8; }
+
+/* ── Regale ──────────────────────────────────────────────────────── */
+.regale { padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 4vw, 2.5rem); display: grid; gap: 2.5rem; }
+.regal__kopf { display: flex; align-items: baseline; gap: 0.7rem; }
+.regal__titel { font-family: var(--anzeige); font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 600; }
+.regal__icon { margin-right: 0.2rem; }
+.regal__zahl { font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
+.regal__beschreibung { font-size: 0.85rem; color: var(--text-leise); margin: 0.1rem 0 0.9rem; }
+
+/* ── Karte ───────────────────────────────────────────────────────── */
+.karte {
+    position: relative;
+    display: flex; flex-direction: column; gap: 0.5rem;
+    padding: 0.9rem;
+    background: var(--karte);
+    border: 1px solid var(--rand); border-radius: var(--rund);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.karte:hover { background: var(--karte-hoch); border-color: var(--rand-hell); transform: translateY(-2px); }
+.karte.ist-aktiv { border-color: var(--pink); box-shadow: var(--glut); }
+.karte.ist-stumm { opacity: 0.5; }
+.karte.ans-regalende { order: 99; }
+
+.karte__favorit {
+    position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
+    width: 1.8rem; height: 1.8rem;
+    display: grid; place-items: center;
+    background: rgba(0, 0, 0, 0.35); color: var(--text-leise);
+    border: 0; border-radius: 50%;
+    font-size: 0.9rem; cursor: pointer; transition: all 0.15s ease;
+}
+.karte__favorit:hover { color: var(--pink-hell); background: rgba(0, 0, 0, 0.6); }
+.karte__favorit.ist-favorit { color: var(--pink); }
+
+/* Das Senderbild: der Eyecatcher, der aus einem Textkasten eine Hülle macht */
+.karte__bild {
+    position: relative;
+    aspect-ratio: 1;
+    margin: -0.9rem -0.9rem 0;
+    border-radius: var(--rund) var(--rund) 0 0;
+    overflow: hidden;
+    background: #100c1a;
+}
+.karte__bild img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+}
+.karte:hover .karte__bild img { transform: scale(1.04); }
+
+/* Sender ohne eigenes Logo tragen die Hausmarke. Damit 33 davon
+   nebeneinander nicht wie eine Kachelwand wirken, bekommt jede den
+   Farbton ihres Regals hinterlegt. */
+.karte__bild.ist-hausmarke {
+    background:
+        radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--regalton) 26%, transparent), transparent 68%),
+        #100c1a;
+}
+.karte__bild.ist-hausmarke img {
+    object-fit: contain;
+    padding: 16%;
+    opacity: 0.92;
+}
+
+.karte__name { font-size: 0.95rem; font-weight: 600; line-height: 1.25; padding-right: 2rem; }
+.karte__ort  { font-family: var(--mono); font-size: 0.68rem; color: var(--text-leise); margin-top: 0.15rem; }
+.karte__kaertchen {
+    font-size: 0.78rem; line-height: 1.45; color: #b9aecb;
+    flex: 1;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.karte__fuss { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+.marke {
+    padding: 0.12rem 0.45rem;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 0.35rem;
+    font-family: var(--mono); font-size: 0.62rem; color: var(--text-leise);
+}
+.marke--gut { background: rgba(53, 224, 138, 0.14); color: var(--gruen); }
+.marke--etikett { background: rgba(255, 255, 255, 0.04); }
+
+.karte__stumm {
+    position: absolute; left: 0.6rem; bottom: 0.6rem;
+    padding: 0.12rem 0.45rem;
+    background: rgba(0, 0, 0, 0.6); border-radius: 0.35rem;
+    font-family: var(--mono); font-size: 0.62rem; color: var(--rot);
+}
+
+.karte__laeuft { display: none; gap: 2px; height: 10px; align-items: flex-end; }
+.karte.ist-aktiv .karte__laeuft { display: flex; }
+.karte__laeuft span { width: 2px; background: var(--pink); animation: huepft 0.9s ease-in-out infinite; }
+.karte__laeuft span:nth-child(2) { animation-delay: 0.2s; }
+.karte__laeuft span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes huepft { 0%, 100% { height: 3px; } 50% { height: 10px; } }
+
+/* ── Ausfall-Vorschlag ───────────────────────────────────────────── */
+.ausfall {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem;
+    margin-top: 1rem; padding: 0.65rem 0.9rem;
+    border: 1px solid rgba(255, 92, 92, 0.35); border-radius: var(--rund);
+    background: rgba(255, 92, 92, 0.06);
+    font-size: 0.85rem; color: var(--text-leise);
+}
+.ausfall button {
+    padding: 0.32rem 0.75rem;
+    background: var(--pink); color: #fff; border: 0; border-radius: 0.4rem;
+    font-family: inherit; font-size: 0.8rem; cursor: pointer;
+}
+
+/* ── Leerzustand ─────────────────────────────────────────────────── */
+.leer { padding: 3rem 1rem; text-align: center; }
+.leer__titel { font-size: 1.1rem; font-weight: 600; }
+.leer__hinweis { color: var(--text-leise); font-size: 0.88rem; margin-top: 0.3rem; }
+
+/* ── Fuß ─────────────────────────────────────────────────────────── */
+.fuss {
+    padding: 2.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
+    border-top: 1px solid var(--rand);
+    margin-top: 2rem;
+}
+.fuss__hinweis { max-width: 42rem; font-size: 0.85rem; color: var(--text-leise); }
+.fuss__hinweis strong { color: var(--text); }
+.fuss__powered { margin-top: 0.9rem; font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
+.fuss__test {
+    margin-left: 0.5rem; padding: 0.1rem 0.45rem;
+    background: rgba(255, 200, 87, 0.14); color: var(--gold);
+    border-radius: 0.35rem; font-size: 0.65rem;
+}
+
+/* ── Spielerleiste ───────────────────────────────────────────────── */
+.spieler {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 55;
+    display: none; align-items: center; gap: 1rem;
+    padding: 0.6rem clamp(1rem, 4vw, 2rem);
+    background: rgba(10, 5, 18, 0.94);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--rand);
+}
+.spieler.ist-sichtbar { display: flex; }
+.spieler__info { flex: 1 1 8rem; min-width: 0; }
+.spieler__name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spieler__regal { font-family: var(--mono); font-size: 0.67rem; color: var(--text-leise); }
+.spieler__mitte { display: flex; align-items: center; gap: 0.8rem; }
+.spieler__status { display: flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.68rem; color: var(--text-leise); }
+.status-punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--text-leise); }
+.status-punkt--live   { background: var(--gruen); box-shadow: 0 0 8px var(--gruen); }
+.status-punkt--laden  { background: var(--gold); animation: pulst 1s ease-in-out infinite; }
+.status-punkt--fehler { background: var(--rot); }
+@keyframes pulst { 50% { opacity: 0.3; } }
+.spieler__rechts { display: flex; align-items: center; gap: 0.8rem; }
+.spieler__rechts canvas { width: 110px; height: 34px; }
+#lautstaerke { width: 5.5rem; accent-color: var(--pink); }
+
+/* ── Meldungen ───────────────────────────────────────────────────── */
+.meldungen { position: fixed; right: 1rem; bottom: 5.5rem; z-index: 90; display: grid; gap: 0.5rem; }
+.meldung {
+    padding: 0.6rem 1rem;
+    background: var(--karte-hoch); border: 1px solid var(--rand-hell); border-radius: var(--rund);
+    font-size: 0.84rem; box-shadow: var(--schatten);
+    animation: kommt 0.25s ease;
+}
+.meldung.geht { opacity: 0; transform: translateX(1rem); transition: all 0.3s ease; }
+.meldung--fehler { border-color: rgba(255, 92, 92, 0.5); }
+@keyframes kommt { from { opacity: 0; transform: translateX(1rem); } }
+
+/* ── Handy ───────────────────────────────────────────────────────── */
+.handy-leiste { display: none; }
+
+@media (max-width: 719px) {
+    .kopf { gap: 0.6rem; padding: 0.6rem 1rem; }
+
+    /* Solange nichts läuft, soll der Teller nicht den halben Bildschirm
+       belegen — auf dem Handy zählt jeder Zentimeter bis zu den Regalen. */
+    .plattenspieler { width: 52vw; max-width: 230px; }
+    body.spielt .plattenspieler { width: 64vw; max-width: 270px; }
+    .hero { gap: 1rem; padding-bottom: 1rem; }
+    .hero__name { font-size: 1.75rem; }
+    .hero__knoepfe { gap: 0.5rem; }
+    .hero__knoepfe .knopf { padding: 0.5rem 0.9rem; font-size: 0.82rem; }
+    .kopf__suche { order: 3; flex-basis: 100%; }
+    .kopf__schalter { flex: 1; justify-content: flex-end; }
+    .schalter { font-size: 0.66rem; padding: 0.35rem 0.6rem; }
+
+    .hero { padding-top: 1rem; }
+    .griffe { grid-template-columns: 1fr 1fr; }
+    .griff { padding: 0.85rem; }
+    .griff__titel { font-size: 0.88rem; }
+
+    .spieler { bottom: 3.9rem; padding: 0.5rem 0.9rem; }
+    .spieler__rechts canvas { display: none; }
+    #lautstaerke { width: 4rem; }
+    .meldungen { right: 0.7rem; left: 0.7rem; bottom: 9rem; }
+
+    .handy-leiste {
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+        background: rgba(10, 4, 18, 0.96);
+        backdrop-filter: blur(14px);
+        border-top: 1px solid var(--rand);
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .handy-leiste button {
+        display: flex; flex-direction: column; align-items: center; gap: 0.12rem;
+        padding: 0.5rem 0 0.45rem;
+        background: none; border: 0; color: var(--text-leise);
+        font-family: inherit; font-size: 0.65rem; cursor: pointer;
+    }
+    .handy-leiste button span { font-size: 1.1rem; }
+    .handy-leiste button:active { color: var(--pink); }
+
+    body { padding-bottom: 8.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
