@@ -1,0 +1,28 @@
+# Was nicht ins Image gehört. Alles hier Gelistete landet nicht einmal im
+# Build-Kontext — das hält das Image klein und verhindert, dass interne
+# Unterlagen versehentlich ausgeliefert werden.
+
+.git
+.github
+.gitignore
+.gitattributes
+.dockerignore
+Dockerfile
+
+# Unterlagen und Werkzeuge, nicht Teil der Seite.
+docs
+Scripts
+README.md
+STATIONS_AUDIT.md
+
+# infra/ ist die Bicep-Vorlage — sie beschreibt den Container, gehört aber
+# nicht hinein.
+infra
+
+# `deploy/` bleibt bewusst im Kontext: Das Dockerfile kopiert daraus die
+# nginx-Konfiguration. Aus dem ausgelieferten Wurzelverzeichnis wird der
+# Ordner erst danach entfernt, siehe Dockerfile.
+
+# Rohdownloads der Senderlogos: teils Windows-Icons, teils Targa, in zwei
+# Fällen HTML-Fehlerseiten. Nichts davon wird ausgeliefert.
+**/*.roh
