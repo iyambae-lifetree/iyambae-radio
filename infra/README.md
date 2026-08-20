@@ -151,15 +151,42 @@ verlangt. Sobald sie erteilt ist, gehört es unter die Organisation — sonst
 hängt die Auslieferung an einem einzelnen Konto.
 
 ```bash
-docker build -t ghcr.io/michaelfricke-sudo/iyambae-radio:latest .
-docker push ghcr.io/michaelfricke-sudo/iyambae-radio:latest
+SHA=$(git rev-parse --short HEAD)
+docker build -t ghcr.io/michaelfricke-sudo/iyambae-radio:$SHA .
+docker push ghcr.io/michaelfricke-sudo/iyambae-radio:$SHA
 az containerapp update -n ca-iyambae-web -g iyambae \
-  --image ghcr.io/michaelfricke-sudo/iyambae-radio:latest
+  --image ghcr.io/michaelfricke-sudo/iyambae-radio:$SHA
 ```
 
-Der letzte Schritt ist nötig: Container Apps sucht **nicht** von selbst nach
-einem neuen Abbild unter derselben Marke. Ohne `update` bleibt die alte
-Fassung stehen.
+### Immer eine eigene Marke je Stand — niemals `:latest`
+
+Das ist kein Stilhinweis, sondern die Behebung eines Fehlers, der zweimal
+zugeschlagen hat und dabei **völlig lautlos** war.
+
+Container Apps legt eine neue Überarbeitung nur an, wenn sich die
+**Spezifikation** ändert. Wird immer nach `:latest` geschoben und dann
+`--image …:latest` gesetzt, ändert sich am Text nichts — kein neuer Stand,
+keine Fehlermeldung. `az` meldet `provisioningState: Succeeded`, und die
+Anwendung liefert weiter das alte Abbild aus.
+
+Aufgefallen ist es erst, als eine neu hinzugefügte Datei mit `200 text/html`
+antwortete statt mit ihrem Inhalt: Der Service-Worker-Rückfall lieferte die
+`index.html`, weil die Datei im laufenden Abbild gar nicht existierte. Eine
+zuvor ausgelieferte Manifest-Änderung hing zu dem Zeitpunkt schon eine Stunde
+unbemerkt fest.
+
+Mit der Commit-Kennung als Marke ändert sich der Text bei jedem Stand, die
+Überarbeitung entsteht zuverlässig — und man sieht im Portal, welcher Commit
+gerade läuft.
+
+**Nach jeder Auslieferung prüfen, nicht annehmen:**
+
+```bash
+curl -s -o /dev/null -w "%{http_code} %{content_type}\n" \
+  https://iyambae.fm/assets/wasm/retuner.wasm
+```
+
+`text/html` bedeutet: Die Datei fehlt, der SPA-Rückfall antwortet.
 
 Zum Hochschieben braucht das GitHub-Token das Recht `write:packages`:
 `gh auth refresh -h github.com -s write:packages`.
