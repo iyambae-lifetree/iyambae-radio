@@ -24,8 +24,22 @@ param name string = 'iyambae'
 @description('Region. Der übrige Bestand liegt in germanywestcentral.')
 param location string = resourceGroup().location
 
-@description('Vollständiger Bildname samt Marke.')
-param abbild string = 'ghcr.io/iyambae-lifetree/iyambae-radio:latest'
+/*
+  Vollständiger Bildname samt Marke.
+
+  Liegt im persönlichen Namensraum, nicht unter der Organisation: Das Anlegen
+  von Paketen unter `iyambae-lifetree` ist eine Org-Berechtigung, die Micha
+  nicht hat. Sobald sie erteilt ist, gehört das Abbild nach
+  `ghcr.io/iyambae-lifetree/iyambae-radio` — dann hängt die Auslieferung an
+  der Organisation statt an einem einzelnen Konto.
+
+  Das Paket ist öffentlich, das Repository bleibt privat. Zwei getrennte
+  Schalter: Im Abbild steckt nur die ausgelieferte Webseite, also genau das,
+  was jeder Browser ohnehin lädt — `.dockerignore` hält Quellen, `docs/`,
+  `Scripts/` und die Historie draußen. Öffentlich erspart ein Geheimnis in
+  Azure, das ablaufen und gestohlen werden kann.
+*/
+param abbild string = 'ghcr.io/michaelfricke-sudo/iyambae-radio:latest'
 
 @description('Wie viele Exemplare mindestens laufen. 0 = schläft ein, kein Dauerbetrieb, aber Kaltstart.')
 @minValue(0)

@@ -24,7 +24,7 @@ az deployment group create \
   --resource-group iyambae \
   --name iyambae-basis \
   --template-file infra/main.bicep \
-  --parameters abbild='ghcr.io/iyambae-lifetree/iyambae-radio:latest'
+  --parameters abbild='ghcr.io/michaelfricke-sudo/iyambae-radio:latest'
 ```
 
 Die Vorlage ist wiederholbar: Derselbe Aufruf mit geänderten Werten ändert nur,
@@ -33,9 +33,17 @@ was sich unterscheidet.
 ## Der eine Schalter, der Geld kostet
 
 `mindestExemplare` steht auf **0**. Der Container schläft bei Stille ein, und
-der erste Besucher danach wartet auf den Kaltstart — für ein kleines
-nginx-Abbild grob **5 bis 10 Sekunden**. Microsofts Doku nennt dazu keine Zahl,
-nur die Einflussgrößen; die Spanne stammt aus Messungen Dritter.
+der erste Besucher danach wartet auf den Kaltstart.
+
+**Am 20.08.2026 gemessen, nicht geschätzt:**
+
+| | Zeit |
+|---|---|
+| erste Anfrage nach Ruhe | **8,2 s** |
+| danach | 0,08 – 0,10 s |
+
+Faktor hundert. Microsofts Doku nennt dazu keine Zahl, nur die Einflussgrößen —
+diese hier stammt aus einer echten Messung gegen genau dieses Abbild.
 
 Das monatliche Freikontingent des Consumption-Plans beträgt 180.000
 vCPU-Sekunden, 360.000 GiB-Sekunden und 2 Millionen Anfragen je Abonnement.
@@ -84,7 +92,7 @@ Bei Cloudflare eintragen — alle Einträge **DNS only**, graue Wolke:
 | TXT | `asuid` | die Prüfkennung |
 | CNAME | `www` | die Adresse der Anwendung |
 | TXT | `asuid.www` | dieselbe Prüfkennung |
-| CNAME | `apps` | dieselbe Adresse wie `www` |
+| A **oder** CNAME | `apps` | die statische IP bzw. die Adresse der Anwendung |
 | TXT | `asuid.apps` | dieselbe Prüfkennung |
 
 Die Prüfkennung ist für alle Hostnamen dieselbe, sie hängt an der Anwendung.
@@ -101,7 +109,12 @@ az containerapp hostname bind --hostname www.iyambae.fm -g iyambae -n ca-iyambae
   --environment cae-iyambae --validation-method CNAME
 ```
 
-Der Apex wird mit `HTTP` geprüft, Unterdomains mit `CNAME`.
+**Die Prüfmethode richtet sich nach dem Record-Typ, nicht nach der Ebene.**
+Zeigt ein Name per CNAME auf die Anwendung, gilt `--validation-method CNAME`;
+zeigt er per A-Record auf die statische IP, gilt `HTTP` — auch bei einer
+Unterdomain. `apps.iyambae.fm` läuft hier über einen A-Record und wurde mit
+`HTTP` gebunden. Die Doku legt für Unterdomains CNAME nahe; nötig ist es
+nicht.
 
 ### Drei Fallstricke
 
@@ -125,11 +138,23 @@ Container Registry nötig ist (ACR Basic kostet rund 4,50 € im Monat für
 nichts). Öffentliche Abbilder zieht Container Apps ohne hinterlegte
 Zugangsdaten.
 
+**Paket öffentlich, Repository privat — das sind zwei getrennte Schalter.**
+Im Abbild steckt nur die ausgelieferte Webseite: genau das, was jeder Browser
+beim Öffnen von iyambae.fm ohnehin lädt. Quellen, `docs/`, `Scripts/` und die
+Git-Historie hält `.dockerignore` draußen. Die Alternative wäre ein privates
+Paket samt Lesetoken als Geheimnis in Azure — ein Geheimnis mehr, das ablaufen
+und gestohlen werden kann, für keinen Gewinn.
+
+**Der Namensraum ist vorläufig.** Das Abbild liegt unter `michaelfricke-sudo`,
+weil das Anlegen von Paketen unter `iyambae-lifetree` eine Org-Berechtigung
+verlangt. Sobald sie erteilt ist, gehört es unter die Organisation — sonst
+hängt die Auslieferung an einem einzelnen Konto.
+
 ```bash
-docker build -t ghcr.io/iyambae-lifetree/iyambae-radio:latest .
-docker push ghcr.io/iyambae-lifetree/iyambae-radio:latest
+docker build -t ghcr.io/michaelfricke-sudo/iyambae-radio:latest .
+docker push ghcr.io/michaelfricke-sudo/iyambae-radio:latest
 az containerapp update -n ca-iyambae-web -g iyambae \
-  --image ghcr.io/iyambae-lifetree/iyambae-radio:latest
+  --image ghcr.io/michaelfricke-sudo/iyambae-radio:latest
 ```
 
 Der letzte Schritt ist nötig: Container Apps sucht **nicht** von selbst nach
