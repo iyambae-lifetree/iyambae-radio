@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>IYAMBAE Tuner — der Kammerton deines Rechners</title>
-<meta name="description" content="Stimmt das gesamte Systemaudio in Echtzeit um. 432 Hz, Solfeggio oder ein frei gewählter Kammerton — ohne Tempoänderung, ohne Audiotreiber. Hör dir hier an, worum es geht.">
-<meta name="theme-color" content="#0A0A0D">
+<meta name="description" content="Stimmt das gesamte Systemaudio in Echtzeit um. 432 Hz, historische Kammertöne oder ein frei gewählter Wert — ohne Tempoänderung, ohne Audiotreiber. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<meta name="theme-color" content="#0A0908">
 <link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/schrift/schriften.css">
 
@@ -13,43 +13,54 @@
 /* ═══════════════════════════════════════════════════════════════════
    IYAMBAE Tuner — apps.iyambae.fm
 
-   BEWUSST NICHT DIE PALETTE DES RADIOS.
+   WAS AN DER VORIGEN FASSUNG FEHLTE: RHYTHMUS.
 
-   Das Radio ist ein Plattenladen: warm, Gold, Nacht. Der Tuner ist ein
-   Messgerät. Beides gehört zusammen, aber es sind nicht dieselben Möbel —
-   die Verwandtschaft trägt der Ton des Messings, nicht die Kopie.
+   Sie war durchgehend dunkel, durchgehend nüchtern, durchgehend gleich
+   dicht. Handwerklich in Ordnung und trotzdem ermüdend — eine Seite, die
+   von der ersten bis zur letzten Zeile denselben Ton hält, liest sich wie
+   ein Prüfbericht.
+
+   Jetzt wechselt sie die Welt. Der Aufmacher ist das Messgerät: schwarz
+   lackiertes Blech, Messing, ein Schirm. In der Mitte schlägt die Seite auf
+   Papier um — der Abschnitt über die Geschichte des Kammertons ist gesetzt
+   wie eine Seite aus einem Instrumentenkatalog, hell, breit, mit Raum.
+   Danach zurück ins Dunkle.
+
+   Der Wechsel selbst ist das Gestaltungsmittel. Er trennt, was verschieden
+   ist: hier misst ein Gerät, dort wird erzählt.
 
    Und keine Google Fonts. Ein <link> dorthin schickt beim Aufbau jeder
    Seite die volle IP jedes Besuchers in die USA, bevor er irgendetwas
-   anklicken kann (LG München I, 20.01.2022, Az. 3 O 17493/20). Die
-   Schriften liegen unter /assets/schrift/, geholt von
-   Scripts/hole-apps-schriften.py.
+   anklicken kann (LG München I, 20.01.2022, Az. 3 O 17493/20).
    ═══════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Ein Messgerät aus den Sechzigern: schwarz lackiertes Blech, Messing,
-     kalter Stahl. Die Neutraltöne haben eine Spur Blau — reines Grau
-     sieht neben Messing schmutzig aus. */
-  --nacht:        #0A0A0D;
-  --blech:        #101116;
-  --blech-hoch:   #16181F;
-  --gravur:       #1E212A;
-  --gravur-hell:  #2B2F3B;
+  /* Die dunkle Welt: schwarz lackiertes Blech mit einem Hauch Braun.
+     Reines Neutralgrau sieht neben Messing schmutzig aus. */
+  --nacht:        #0A0908;
+  --blech:        #13110F;
+  --blech-hoch:   #1B1815;
+  --gravur:       #262220;
+  --gravur-hell:  #383230;
 
-  --messing:      #C08A2E;
-  --messing-hell: #E8B45C;
-  --kalt:         #7B93AD;
+  /* Die helle Welt: Papier, wie es in einem Katalog von 1900 lag. */
+  --papier:       #EDE7DC;
+  --tinte:        #201C18;
+  --tinte-leise:  #6B6258;
+  --linie-hell:   #CFC5B2;
+  --tinte-messing: #8A6210;
 
-  --text:         #E9E6DF;
-  --leise:        #85838C;
-  --leiser:       #5B5A63;
+  --messing:      #B8862B;
+  --messing-hell: #E3B25C;
+  --kalt:         #7C8FA3;
+
+  --text:         #EDE9E1;
+  --leise:        #8B8378;
+  --leiser:       #5E574E;
 
   --anzeige: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
-  --text-schrift: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --grotesk: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --daten: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
-
-  /* Kante statt Rundung. Ein Messgerät hat gefräste Kanten. */
-  --kante: 2px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -61,106 +72,87 @@ body {
   margin: 0;
   background: var(--nacht);
   color: var(--text);
-  font-family: var(--text-schrift);
+  font-family: var(--grotesk);
   font-size: 17px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
-.rahmen {
-  max-width: 68rem;
-  margin: 0 auto;
-  padding-inline: clamp(1.1rem, 4vw, 2.5rem);
-}
-
-.eng { max-width: 44rem; }
+.rahmen { max-width: 70rem; margin: 0 auto; padding-inline: clamp(1.1rem, 4vw, 2.5rem); }
+.eng    { max-width: 42rem; }
 
 a { color: var(--messing-hell); text-underline-offset: .2em; }
 a:focus-visible, button:focus-visible, input:focus-visible {
-  outline: 2px solid var(--messing-hell);
-  outline-offset: 3px;
+  outline: 2px solid var(--messing-hell); outline-offset: 3px;
+}
+strong { font-weight: 600; }
+
+.eyebrow {
+  font-family: var(--daten); font-size: .68rem; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--messing); margin: 0 0 1.3rem;
 }
 
 /* ── Kopfleiste ──────────────────────────────────────────────────── */
 .kopfleiste {
-  position: sticky; top: 0; z-index: 20;
-  background: color-mix(in srgb, var(--nacht) 88%, transparent);
-  backdrop-filter: blur(14px);
+  position: sticky; top: 0; z-index: 30;
+  background: color-mix(in srgb, var(--nacht) 90%, transparent);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--gravur);
 }
 .kopfleiste__inhalt {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 1rem; padding-block: .85rem;
+  gap: 1rem; padding-block: .8rem;
 }
-.marke {
-  display: inline-flex; align-items: center; gap: .65rem;
-  text-decoration: none; color: inherit;
-}
-.marke img { width: 30px; height: 30px; }
+.marke { display: inline-flex; align-items: center; gap: .6rem; text-decoration: none; color: inherit; }
+.marke img { width: 28px; height: 28px; }
 .marke__wort {
-  font-family: var(--daten); font-size: .8rem; font-weight: 700;
+  font-family: var(--daten); font-size: .76rem; font-weight: 700;
   letter-spacing: .16em; text-transform: uppercase;
 }
 .marke__wort span { color: var(--leise); font-weight: 400; }
-.zurueck {
-  font-family: var(--daten); font-size: .72rem; letter-spacing: .08em;
+.kopf__wege { display: flex; gap: .5rem; align-items: center; }
+.kopfknopf {
+  font-family: var(--daten); font-size: .7rem; letter-spacing: .08em;
   color: var(--leise); text-decoration: none;
   border: 1px solid var(--gravur-hell); padding: .38rem .85rem;
-  transition: color .18s, border-color .18s;
+  transition: color .18s, border-color .18s; white-space: nowrap;
 }
-.zurueck:hover { color: var(--text); border-color: var(--messing); }
+.kopfknopf:hover { color: var(--text); border-color: var(--messing); }
+.kopfknopf--haupt {
+  background: var(--messing-hell); border-color: var(--messing-hell);
+  color: var(--nacht); font-weight: 700;
+}
+.kopfknopf--haupt:hover { background: var(--messing); border-color: var(--messing); color: var(--nacht); }
+@media (max-width: 30rem) { .kopfknopf:not(.kopfknopf--haupt) { display: none; } }
 
 /* ── Aufmacher ───────────────────────────────────────────────────── */
-.aufmacher { padding-block: clamp(3rem, 9vw, 6rem) clamp(2rem, 5vw, 3.5rem); }
-
-.eyebrow {
-  font-family: var(--daten); font-size: .7rem; letter-spacing: .2em;
-  text-transform: uppercase; color: var(--messing);
-  margin: 0 0 1.4rem;
-}
+.aufmacher { padding-block: clamp(3rem, 9vw, 5.5rem) clamp(2rem, 5vw, 3rem); }
 
 .aufmacher h1 {
-  font-family: var(--anzeige);
-  font-weight: 400;
-  font-size: clamp(2.6rem, 8vw, 5.2rem);
-  line-height: .98;
-  letter-spacing: -.015em;
-  margin: 0 0 1.5rem;
-  max-width: 16em;
-  text-wrap: balance;
+  font-family: var(--anzeige); font-weight: 400;
+  font-size: clamp(2.6rem, 8vw, 5.4rem);
+  line-height: .97; letter-spacing: -.015em;
+  margin: 0 0 1.4rem; max-width: 15em; text-wrap: balance;
 }
-.aufmacher h1 em {
-  font-style: italic;
-  color: var(--messing-hell);
-}
+.aufmacher h1 em { font-style: italic; color: var(--messing-hell); }
 
 .aufmacher__vorwort {
-  font-size: clamp(1.05rem, 2.2vw, 1.28rem);
-  color: var(--leise);
-  max-width: 38rem;
-  margin: 0;
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  color: var(--leise); max-width: 36rem; margin: 0;
 }
 .aufmacher__vorwort strong { color: var(--text); font-weight: 500; }
 
 /* ── Das Messgerät ───────────────────────────────────────────────── */
 .geraet {
-  margin-block: clamp(2.5rem, 6vw, 4rem) 0;
+  margin-top: clamp(2.5rem, 6vw, 3.5rem);
   border: 1px solid var(--gravur-hell);
-  background:
-    linear-gradient(180deg, var(--blech-hoch), var(--blech));
+  background: linear-gradient(180deg, var(--blech-hoch), var(--blech));
   position: relative;
 }
-
-/* Die Schraube in der Ecke. Ein einziges Zugeständnis an das Möbelstück —
-   mehr davon wäre Kostüm. */
 .geraet::before, .geraet::after {
-  content: "";
-  position: absolute; width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--gravur-hell);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
-  top: 10px;
+  content: ""; position: absolute; width: 5px; height: 5px; top: 10px;
+  border-radius: 50%; background: var(--gravur-hell);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
 }
 .geraet::before { left: 10px; }
 .geraet::after  { right: 10px; }
@@ -168,231 +160,341 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .geraet__kopf {
   display: flex; flex-wrap: wrap; align-items: baseline;
   justify-content: space-between; gap: .8rem;
-  padding: 1.5rem clamp(1rem, 3vw, 2rem) 0;
+  padding: 1.4rem clamp(1rem, 3vw, 2rem) 0;
 }
 .geraet__titel {
-  font-family: var(--daten); font-size: .7rem; letter-spacing: .18em;
+  font-family: var(--daten); font-size: .68rem; letter-spacing: .18em;
   text-transform: uppercase; color: var(--leise); margin: 0;
 }
-.geraet__hilfe { font-size: .85rem; color: var(--leiser); margin: 0; }
+.geraet__hilfe { font-size: .84rem; color: var(--leiser); margin: 0; }
 
-/* Sichtfenster */
-.sicht {
-  position: relative;
-  margin: 1.1rem clamp(1rem, 3vw, 2rem);
-  border: 1px solid var(--gravur);
-  background: #07070A;
-  overflow: hidden;
-}
-.sicht canvas { display: block; width: 100%; height: 190px; }
-
-@media (max-width: 40rem) { .sicht canvas { height: 150px; } }
-
-/* Die Ablesung.
-
-   Sie lag zuerst IM Sichtfenster, über der Welle — und war dort unlesbar,
-   weil die Welle genau dahinter am hellsten ist. Ein Messgerät legt die
-   Skala neben das Fenster, nicht hinein. */
 .ablesung {
   display: flex; gap: clamp(1.4rem, 5vw, 3.5rem); flex-wrap: wrap;
-  margin: 1.3rem clamp(1rem, 3vw, 2rem) 0;
-  padding-bottom: 1.1rem;
-  border-bottom: 1px solid var(--gravur);
+  margin: 1.2rem clamp(1rem, 3vw, 2rem) 0;
+  padding-bottom: 1rem; border-bottom: 1px solid var(--gravur);
   font-family: var(--daten); font-variant-numeric: tabular-nums;
 }
 .ablesung__feld { display: flex; flex-direction: column; gap: .25rem; }
 .ablesung__marke {
-  font-size: .58rem; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--leiser);
+  font-size: .56rem; letter-spacing: .18em; text-transform: uppercase; color: var(--leiser);
 }
 .ablesung__wert {
-  font-size: clamp(1.5rem, 4vw, 2.1rem); font-weight: 700; color: var(--text);
-  line-height: 1;
+  font-size: clamp(1.5rem, 4vw, 2.1rem); font-weight: 700; color: var(--text); line-height: 1;
 }
 .ablesung__wert small {
-  font-size: .42em; font-weight: 400; color: var(--leise);
-  margin-inline-start: .3em; letter-spacing: .04em;
+  font-size: .42em; font-weight: 400; color: var(--leise); margin-inline-start: .3em;
 }
 /* Der Zustand "stimmt" wird NICHT bunt gefeiert. Er wird still. */
 .ablesung__wert--ruhig { color: var(--kalt); }
 
-/* Bedienteil */
+.sicht {
+  position: relative; margin: 1rem clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--gravur); background: #060505; overflow: hidden;
+}
+.sicht canvas { display: block; width: 100%; height: 180px; }
+@media (max-width: 40rem) { .sicht canvas { height: 140px; } }
+
 .bedienteil {
-  padding: 0 clamp(1rem, 3vw, 2rem) 1.6rem;
-  display: grid; gap: 1.2rem;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
+  padding: 0 clamp(1rem, 3vw, 2rem) 1.4rem;
+  display: grid; gap: 1.2rem; grid-template-columns: minmax(0, 1fr) auto; align-items: end;
 }
-@media (max-width: 46rem) {
-  .bedienteil { grid-template-columns: minmax(0, 1fr); }
-}
+@media (max-width: 46rem) { .bedienteil { grid-template-columns: minmax(0, 1fr); } }
 
 .regler__marke {
-  display: block;
-  font-family: var(--daten); font-size: .62rem; letter-spacing: .16em;
-  text-transform: uppercase; color: var(--leiser); margin-bottom: .55rem;
+  display: block; font-family: var(--daten); font-size: .6rem;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--leiser); margin-bottom: .5rem;
 }
-
 input[type="range"] {
   -webkit-appearance: none; appearance: none;
   width: 100%; height: 26px; background: transparent; cursor: grab; margin: 0;
 }
 input[type="range"]:active { cursor: grabbing; }
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 2px; background: var(--gravur-hell);
-}
+input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--gravur-hell); }
 input[type="range"]::-moz-range-track { height: 2px; background: var(--gravur-hell); }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
-  width: 14px; height: 26px; margin-top: -12px;
+  width: 13px; height: 26px; margin-top: -12px; border: 0;
   background: linear-gradient(180deg, var(--messing-hell), var(--messing));
-  border: 0;
   box-shadow: 0 0 0 1px rgba(0,0,0,.6);
 }
 input[type="range"]::-moz-range-thumb {
-  width: 14px; height: 26px; border: 0; border-radius: 0;
+  width: 13px; height: 26px; border: 0; border-radius: 0;
   background: linear-gradient(180deg, var(--messing-hell), var(--messing));
 }
-
 .skala {
   display: flex; justify-content: space-between;
-  font-family: var(--daten); font-size: .6rem; color: var(--leiser);
-  margin-top: .3rem;
+  font-family: var(--daten); font-size: .58rem; color: var(--leiser); margin-top: .25rem;
 }
 
 .hoerknopf {
-  font-family: var(--daten); font-size: .74rem; letter-spacing: .1em;
+  font-family: var(--daten); font-size: .72rem; letter-spacing: .1em;
   text-transform: uppercase; font-weight: 700;
-  padding: .8rem 1.5rem; cursor: pointer; white-space: nowrap;
-  color: var(--nacht); background: var(--messing-hell);
-  border: 1px solid var(--messing-hell);
+  padding: .78rem 1.5rem; cursor: pointer; white-space: nowrap;
+  color: var(--nacht); background: var(--messing-hell); border: 1px solid var(--messing-hell);
   transition: background .18s, color .18s;
 }
-.hoerknopf[aria-pressed="true"] {
-  background: transparent; color: var(--messing-hell);
-}
+.hoerknopf[aria-pressed="true"] { background: transparent; color: var(--messing-hell); }
 .hoerknopf:hover { background: var(--messing); border-color: var(--messing); color: var(--nacht); }
 
-/* Voreinstellungen — echte historische Kammertöne */
-.stimmungen {
-  display: flex; flex-wrap: wrap; gap: .45rem;
-  padding: 0 clamp(1rem, 3vw, 2rem) 1.6rem;
-}
+.stimmungen { display: flex; flex-wrap: wrap; gap: .4rem; padding: 0 clamp(1rem, 3vw, 2rem) 1.4rem; }
 .stimmung {
-  font-family: var(--daten); font-size: .68rem;
-  padding: .42rem .8rem; cursor: pointer;
-  background: transparent; color: var(--leise);
-  border: 1px solid var(--gravur-hell);
+  font-family: var(--daten); font-size: .66rem; padding: .4rem .75rem; cursor: pointer;
+  background: transparent; color: var(--leise); border: 1px solid var(--gravur-hell);
   transition: color .16s, border-color .16s;
 }
 .stimmung:hover { color: var(--text); border-color: var(--kalt); }
-.stimmung[aria-pressed="true"] {
-  color: var(--messing-hell); border-color: var(--messing);
-}
+.stimmung[aria-pressed="true"] { color: var(--messing-hell); border-color: var(--messing); }
 .stimmung b { font-weight: 700; }
 .stimmung span { color: var(--leiser); margin-inline-start: .4em; }
 .stimmung[aria-pressed="true"] span { color: var(--messing); }
 
 .geraet__fuss {
-  border-top: 1px solid var(--gravur);
-  padding: .9rem clamp(1rem, 3vw, 2rem);
-  font-size: .82rem; color: var(--leiser);
-  margin: 0;
+  border-top: 1px solid var(--gravur); padding: .85rem clamp(1rem, 3vw, 2rem);
+  font-size: .8rem; color: var(--leiser); margin: 0;
 }
 
-/* ── Abschnitte ──────────────────────────────────────────────────── */
+/* ── Die dunklen Abschnitte ──────────────────────────────────────── */
 .teil { padding-block: clamp(3.5rem, 9vw, 6rem); }
 .teil--linie { border-top: 1px solid var(--gravur); }
 
 h2 {
   font-family: var(--anzeige); font-weight: 400;
-  font-size: clamp(1.9rem, 4.4vw, 3rem);
-  line-height: 1.08; letter-spacing: -.01em;
-  margin: 0 0 1.2rem; text-wrap: balance;
+  font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.05;
+  letter-spacing: -.012em; margin: 0 0 1.2rem; text-wrap: balance;
 }
 h2 em { font-style: italic; color: var(--messing-hell); }
-
 .teil p { color: var(--leise); margin: 0 0 1.1rem; }
 .teil p:last-child { margin-bottom: 0; }
 .teil strong { color: var(--text); font-weight: 500; }
 
-/* Die Gegenüberstellung: raten gegen messen */
+/* ═══ DIE HELLE WELT — Papier ════════════════════════════════════ */
+.papier {
+  background: var(--papier);
+  color: var(--tinte);
+  /* Ein Hauch Faserung. Kein Bild, nur zwei Verläufe — eine Textur wäre
+     hier Kostüm und kostete Kilobyte. */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(255,255,255,.55), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(184,134,43,.07), transparent 70%);
+  padding-block: clamp(3.5rem, 10vw, 7rem);
+}
+.papier h2 { color: var(--tinte); }
+.papier h2 em { color: var(--tinte-messing); font-style: italic; }
+.papier p { color: var(--tinte-leise); margin: 0 0 1.15rem; }
+.papier strong { color: var(--tinte); font-weight: 600; }
+.papier .eyebrow { color: var(--tinte-messing); }
+.papier a { color: var(--tinte-messing); }
+
+/* Die Skala historischer Kammertöne — das Herzstück des Abschnitts */
+.skalenblatt { margin-top: clamp(2.5rem, 6vw, 4rem); }
+
+.skalenblatt__kopf {
+  display: flex; flex-wrap: wrap; justify-content: space-between;
+  align-items: baseline; gap: .6rem;
+  font-family: var(--daten); font-size: .66rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--tinte-leise);
+  border-bottom: 1px solid var(--linie-hell); padding-bottom: .6rem; margin-bottom: 2.8rem;
+}
+
+.leiste { position: relative; height: 14rem; }
+
+.leiste__band {
+  position: absolute; inset-inline: 0; top: 6.4rem; height: 3px; background: var(--tinte);
+}
+/* Der schmale Bereich, den heute niemand mehr verlässt */
+.leiste__heute {
+  position: absolute; top: 5.3rem; height: 5.2rem;
+  background: rgba(184,134,43,.16);
+  border-inline: 1px solid rgba(138,98,16,.45);
+}
+.leiste__heute-marke {
+  position: absolute; top: -1.4rem; inset-inline-start: 0;
+  font-family: var(--daten); font-size: .56rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--tinte-messing); white-space: nowrap;
+}
+
+.punkt { position: absolute; top: 6.4rem; transform: translateX(-50%); }
+.punkt__strich { width: 1px; height: 2.1rem; background: var(--tinte); margin: 0 auto; }
+.punkt__kugel {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--papier); border: 2px solid var(--tinte); margin: 0 auto;
+}
+.punkt__text {
+  position: absolute; inset-inline-start: 50%; transform: translateX(-50%);
+  text-align: center; width: 8.6rem;
+}
+.punkt__hz {
+  font-family: var(--daten); font-size: .82rem; font-weight: 700;
+  color: var(--tinte); font-variant-numeric: tabular-nums; display: block;
+}
+.punkt__was { font-size: .71rem; line-height: 1.35; color: var(--tinte-leise); display: block; }
+
+.punkt--oben .punkt__strich { position: relative; top: -2.1rem; }
+.punkt--oben .punkt__kugel  { position: relative; top: -4.55rem; }
+.punkt--oben .punkt__text   { bottom: 3rem; }
+.punkt--unten .punkt__kugel { position: relative; top: -.25rem; }
+.punkt--unten .punkt__text  { top: 2.5rem; }
+
+.punkt--stark .punkt__kugel { background: var(--tinte-messing); border-color: var(--tinte-messing); }
+.punkt--stark .punkt__hz    { color: var(--tinte-messing); }
+
+.leiste__enden {
+  position: absolute; inset-inline: 0; top: 12rem;
+  display: flex; justify-content: space-between;
+  font-family: var(--daten); font-size: .66rem; color: var(--tinte-leise);
+}
+
+/* Der Ausschnitt.
+
+   Auf der grossen Skala stehen fuenf moderne Werte innerhalb von 13 Hz —
+   das sind bei 400 bis 480 Hz keine vier Prozent Breite, und ein Label
+   braucht dreizehn. Auch abwechselnd gesetzt gehen sie nicht auf.
+
+   Statt die Schrift zu schrumpfen, bis sie niemand mehr liest, wird die
+   Stelle vergroessert. Dass die modernen Stimmungen dicht beieinander
+   liegen, ist ja die Aussage — der Ausschnitt zeigt sie, statt sie zu
+   verstecken. */
+.ausschnitt {
+  margin-top: 1.2rem;
+  border: 1px solid var(--linie-hell);
+  background: rgba(255,255,255,.42);
+  padding: 1.4rem clamp(1.2rem, 4vw, 2.4rem) 1.1rem;
+}
+.ausschnitt__kopf {
+  font-family: var(--daten); font-size: .6rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--tinte-messing); margin: 0 0 1.6rem;
+  display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; justify-content: space-between;
+}
+.ausschnitt__kopf span:last-child { color: var(--tinte-leise); }
+.ausschnitt .leiste { height: 11.5rem; }
+.ausschnitt .leiste__band { top: 5.2rem; }
+.ausschnitt .punkt { top: 5.2rem; }
+.ausschnitt .punkt--oben .punkt__kugel { top: -4.55rem; }
+.ausschnitt .leiste__enden { top: 9.6rem; }
+
+/* Die beiden Linien, die den Ausschnitt mit der grossen Skala verbinden.
+   Ohne sie stuende hier eine zweite Skala ohne erkennbaren Bezug. */
+.ausschnitt__bruecke {
+  position: relative; height: 1.1rem; margin: 0 clamp(1.2rem, 4vw, 2.4rem);
+}
+.ausschnitt__bruecke::before,
+.ausschnitt__bruecke::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 1px;
+  background: repeating-linear-gradient(180deg,
+    var(--linie-hell) 0 3px, transparent 3px 6px);
+}
+.ausschnitt__bruecke::before { left: 0; }
+.ausschnitt__bruecke::after  { right: 0; }
+
+/* Auf schmalen Schirmen wird aus der Leiste eine Liste. Eine gestauchte
+   Leiste mit überlappenden Beschriftungen wäre unlesbar, und eine unlesbare
+   Grafik ist schlechter als eine Tabelle. */
+@media (max-width: 54rem) { .leiste { display: none; } }
+@media (min-width: 54.01rem) { .leiste-liste { display: none; } }
+
+.leiste-liste { margin: 0; padding: 0; list-style: none; }
+.leiste-liste li {
+  display: grid; grid-template-columns: 4.8rem minmax(0, 1fr);
+  gap: .9rem; padding: .6rem 0; border-bottom: 1px solid var(--linie-hell); font-size: .9rem;
+}
+.leiste-liste b {
+  font-family: var(--daten); font-weight: 700; color: var(--tinte);
+  font-variant-numeric: tabular-nums;
+}
+.leiste-liste span { color: var(--tinte-leise); }
+
+/* Der Brief */
+.brief {
+  margin: clamp(2.5rem, 6vw, 4rem) 0 0;
+  padding: clamp(1.6rem, 4vw, 2.6rem);
+  background: rgba(255,255,255,.5);
+  border: 1px solid var(--linie-hell);
+}
+.brief blockquote {
+  margin: 0 0 1.2rem; font-family: var(--anzeige); font-style: italic;
+  font-size: clamp(1.35rem, 3.2vw, 2rem); line-height: 1.3; color: var(--tinte);
+}
+.brief figcaption { font-size: .84rem; color: var(--tinte-leise); }
+.brief figcaption b { color: var(--tinte); font-weight: 600; }
+
+.spalten {
+  display: grid; gap: clamp(1.6rem, 4vw, 3rem);
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+.spalten h3 {
+  font-family: var(--anzeige); font-weight: 400; font-size: 1.5rem;
+  margin: 0 0 .5rem; color: var(--tinte); line-height: 1.15;
+}
+.spalten p { font-size: .95rem; margin: 0; }
+
+/* ── Was wir nicht behaupten ─────────────────────────────────────── */
+.klartext {
+  border: 1px solid var(--gravur-hell);
+  border-inline-start: 3px solid var(--messing);
+  background: var(--blech);
+  padding: clamp(1.5rem, 4vw, 2.4rem);
+  margin-top: 2.2rem;
+}
+.klartext p:last-child { margin-bottom: 0; }
+
+.belege {
+  margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid var(--gravur);
+  font-family: var(--daten); font-size: .71rem; line-height: 1.75; color: var(--leiser);
+}
+
+/* ── Gegenüberstellung ───────────────────────────────────────────── */
 .gegenueber {
   display: grid; gap: 1px; margin-top: 2.5rem;
   grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-  background: var(--gravur);
-  border: 1px solid var(--gravur);
+  background: var(--gravur); border: 1px solid var(--gravur);
 }
 .spalte { background: var(--blech); padding: 1.6rem; }
 .spalte--stark { background: var(--blech-hoch); }
 .spalte__marke {
-  font-family: var(--daten); font-size: .62rem; letter-spacing: .18em;
+  font-family: var(--daten); font-size: .6rem; letter-spacing: .18em;
   text-transform: uppercase; color: var(--leiser); margin: 0 0 .9rem;
 }
 .spalte--stark .spalte__marke { color: var(--messing); }
-.spalte h3 {
-  font-size: 1.12rem; font-weight: 600; margin: 0 0 .6rem; color: var(--text);
-}
-.spalte p { font-size: .93rem; margin: 0; }
+.spalte h3 { font-size: 1.1rem; font-weight: 600; margin: 0 0 .6rem; color: var(--text); }
+.spalte p { font-size: .92rem; margin: 0; }
 
-/* Statustafel der Plattformen */
-.tafel {
-  display: grid; gap: 1px; margin-top: 2.5rem;
-  background: var(--gravur); border: 1px solid var(--gravur);
-}
+/* ── Plattformtafel ──────────────────────────────────────────────── */
+.tafel { display: grid; gap: 1px; margin-top: 2.5rem; background: var(--gravur); border: 1px solid var(--gravur); }
 .zeile {
-  background: var(--blech);
-  display: grid; gap: .3rem 1.6rem;
-  grid-template-columns: 9rem minmax(0, 1fr) auto;
-  align-items: start;
-  padding: 1.4rem 1.6rem;
+  background: var(--blech); display: grid; gap: .3rem 1.6rem;
+  grid-template-columns: 8.5rem minmax(0, 1fr) auto; align-items: start; padding: 1.4rem 1.6rem;
 }
-@media (max-width: 44rem) {
-  .zeile { grid-template-columns: minmax(0, 1fr); }
-}
+@media (max-width: 44rem) { .zeile { grid-template-columns: minmax(0, 1fr); } }
 .zeile--bereit { background: var(--blech-hoch); }
-
-.zeile__system {
-  font-family: var(--anzeige); font-size: 1.5rem; line-height: 1.1;
-  color: var(--text);
-}
-.zeile__was { margin: 0; font-size: .93rem; color: var(--leise); }
+.zeile__system { font-family: var(--anzeige); font-size: 1.45rem; line-height: 1.1; color: var(--text); }
+.zeile__was { margin: 0; font-size: .92rem; color: var(--leise); }
 .zeile__was + .zeile__was { margin-top: .5rem; }
-
 .lampe {
-  font-family: var(--daten); font-size: .62rem; letter-spacing: .14em;
+  font-family: var(--daten); font-size: .6rem; letter-spacing: .14em;
   text-transform: uppercase; white-space: nowrap;
-  display: inline-flex; align-items: center; gap: .45rem;
-  color: var(--leiser);
+  display: inline-flex; align-items: center; gap: .45rem; color: var(--leiser);
 }
-.lampe::before {
-  content: ""; width: 6px; height: 6px; border-radius: 50%;
-  background: currentColor;
-}
+.lampe::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .lampe--bereit { color: var(--messing-hell); }
 .lampe--arbeit { color: var(--kalt); }
 .lampe--nie    { color: var(--leiser); }
-
-.zeile__tat { grid-column: 2; margin-top: .8rem; }
+.zeile__tat { grid-column: 2; margin-top: .9rem; }
 @media (max-width: 44rem) { .zeile__tat { grid-column: 1; } }
 
 .knopf {
   display: inline-block; text-decoration: none;
   font-family: var(--daten); font-size: .72rem; letter-spacing: .08em;
-  text-transform: uppercase; font-weight: 700;
-  padding: .6rem 1.2rem;
-  color: var(--nacht); background: var(--messing-hell);
-  border: 1px solid var(--messing-hell);
+  text-transform: uppercase; font-weight: 700; padding: .62rem 1.2rem;
+  color: var(--nacht); background: var(--messing-hell); border: 1px solid var(--messing-hell);
   transition: background .18s;
 }
 .knopf:hover { background: var(--messing); border-color: var(--messing); color: var(--nacht); }
-.knopf--leise {
-  background: transparent; color: var(--leise);
-  border-color: var(--gravur-hell); font-weight: 400;
+.knopf__zusatz {
+  display: block; font-size: .62rem; font-weight: 400;
+  letter-spacing: .04em; text-transform: none; opacity: .75;
 }
-.knopf--leise:hover { background: transparent; color: var(--text); border-color: var(--kalt); }
 
-/* Die Zahlen, die man nachrechnen kann */
 .zahlen {
   display: grid; gap: 1px; margin-top: 2.5rem;
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
@@ -400,35 +502,28 @@ h2 em { font-style: italic; color: var(--messing-hell); }
 }
 .zahl { background: var(--blech); padding: 1.3rem 1.4rem; }
 .zahl__wert {
-  font-family: var(--daten); font-size: 1.75rem; font-weight: 700;
-  color: var(--messing-hell); font-variant-numeric: tabular-nums;
-  line-height: 1.1;
+  font-family: var(--daten); font-size: 1.7rem; font-weight: 700;
+  color: var(--messing-hell); font-variant-numeric: tabular-nums; line-height: 1.1;
 }
 .zahl__wert small { font-size: .5em; color: var(--leise); font-weight: 400; }
-.zahl__was { font-size: .82rem; color: var(--leise); margin-top: .35rem; }
+.zahl__was { font-size: .8rem; color: var(--leise); margin-top: .35rem; }
 
-code {
-  font-family: var(--daten); font-size: .86em;
-  color: var(--text);
-  background: var(--gravur); border: 1px solid var(--gravur-hell);
-  padding: .05em .4em;
-}
-
-/* Zitat / Merksatz */
 .merksatz {
-  margin: 2.5rem 0 0;
-  padding-inline-start: 1.6rem;
+  margin: 2.5rem 0 0; padding-inline-start: 1.6rem;
   border-inline-start: 2px solid var(--messing);
   font-family: var(--anzeige); font-style: italic;
-  font-size: clamp(1.25rem, 3vw, 1.7rem);
-  line-height: 1.35; color: var(--text);
+  font-size: clamp(1.25rem, 3vw, 1.7rem); line-height: 1.35; color: var(--text);
+}
+
+code {
+  font-family: var(--daten); font-size: .86em; color: var(--text);
+  background: var(--gravur); border: 1px solid var(--gravur-hell); padding: .05em .4em;
 }
 
 /* ── Fuß ─────────────────────────────────────────────────────────── */
 .fuss {
-  border-top: 1px solid var(--gravur);
-  padding-block: 2.5rem 3.5rem;
-  font-size: .85rem; color: var(--leiser);
+  border-top: 1px solid var(--gravur); padding-block: 2.5rem 3.5rem;
+  font-size: .84rem; color: var(--leiser);
 }
 .fuss__reihe {
   display: flex; flex-wrap: wrap; gap: .6rem 1.6rem;
@@ -448,24 +543,27 @@ code {
 <header class="kopfleiste">
   <div class="rahmen kopfleiste__inhalt">
     <a class="marke" href="/">
-      <img src="assets/iyambae-marke.svg" alt="" width="30" height="30">
+      <img src="assets/iyambae-marke.svg" alt="" width="28" height="28">
       <span class="marke__wort">IYAMBAE <span>Tuner</span></span>
     </a>
-    <a class="zurueck" href="https://iyambae.fm">← zum Radio</a>
+    <nav class="kopf__wege">
+      <a class="kopfknopf" href="https://iyambae.fm">zum Radio</a>
+      <a class="kopfknopf kopfknopf--haupt" href="#holen">Holen</a>
+    </nav>
   </div>
 </header>
 
 <main>
 
-<!-- ══ Aufmacher: das Phänomen selbst ══════════════════════════ -->
+<!-- ══ 1 · Aufmacher: das Phänomen selbst ═══════════════════════ -->
 <section class="rahmen aufmacher">
-  <p class="eyebrow">Menüleisten-App · macOS · offener Test</p>
+  <p class="eyebrow">Menüleisten-App · macOS · Linux · Windows</p>
   <h1>Acht Hertz sind der Unterschied. <em>Hör ihn dir an.</em></h1>
   <p class="aufmacher__vorwort">
     Zwei Töne, die dicht beieinander liegen, löschen sich abwechselnd aus.
     Man hört ein Pulsieren — <strong>so stimmen Menschen seit Jahrhunderten
-    Instrumente</strong>, indem sie warten, bis es aufhört. Zieh den Regler von
-    440 auf 432 und du hörst genau das, was der IYAMBAE Tuner mit deinem
+    Instrumente</strong>, indem sie warten, bis es aufhört. Zieh den Regler
+    von 440 auf 432 und du hörst genau das, was der IYAMBAE Tuner mit deinem
     ganzen Systemton macht.
   </p>
 
@@ -491,59 +589,227 @@ code {
     </div>
 
     <div class="sicht">
-      <canvas id="schirm" width="1400" height="360" role="img"
-              aria-label="Sichtfenster: zeigt die Schwebung zwischen dem Referenzton und dem eingestellten Kammerton als pulsierende Wellenform."></canvas>
+      <canvas id="schirm" width="1400" height="340" role="img"
+              aria-label="Sichtfenster: zeigt die Schwebung zwischen Referenzton und eingestelltem Kammerton als pulsierende Wellenform."></canvas>
     </div>
 
     <div class="bedienteil">
       <div>
         <label class="regler__marke" for="regler">Kammerton A₄</label>
-        <input type="range" id="regler" min="415" max="448" step="0.1" value="432"
-               aria-describedby="anzeigeHz">
-        <div class="skala">
-          <span>415</span><span>432</span><span>440</span><span>448</span>
-        </div>
+        <input type="range" id="regler" min="415" max="448" step="0.1" value="432">
+        <div class="skala"><span>415</span><span>432</span><span>440</span><span>448</span></div>
       </div>
-      <button class="hoerknopf" id="hoerknopf" type="button" aria-pressed="false">
-        Ton einschalten
-      </button>
+      <button class="hoerknopf" id="hoerknopf" type="button" aria-pressed="false">Ton einschalten</button>
     </div>
 
     <div class="stimmungen" role="group" aria-label="Historische Kammertöne">
-      <button class="stimmung" type="button" data-hz="415">
-        <b>415</b><span>Barock</span></button>
-      <button class="stimmung" type="button" data-hz="432" aria-pressed="true">
-        <b>432</b><span>Verdi</span></button>
-      <button class="stimmung" type="button" data-hz="440">
-        <b>440</b><span>ISO 16</span></button>
-      <button class="stimmung" type="button" data-hz="442">
-        <b>442</b><span>Orchester</span></button>
-      <button class="stimmung" type="button" data-hz="443">
-        <b>443</b><span>Berliner Ph.</span></button>
+      <button class="stimmung" type="button" data-hz="415"><b>415</b><span>Barock</span></button>
+      <button class="stimmung" type="button" data-hz="432" aria-pressed="true"><b>432</b><span>Mailand 1880</span></button>
+      <button class="stimmung" type="button" data-hz="435"><b>435</b><span>Paris 1859</span></button>
+      <button class="stimmung" type="button" data-hz="440"><b>440</b><span>ISO 16</span></button>
+      <button class="stimmung" type="button" data-hz="443"><b>443</b><span>D · A heute</span></button>
+      <button class="stimmung" type="button" data-hz="445"><b>445</b><span>Karajan</span></button>
     </div>
 
     <p class="geraet__fuss">
-      Zwei Sinustöne im Browser, nichts weiter — der Tuner selbst arbeitet am
+      Zwei Sinustöne im Browser, nichts weiter. Der Tuner selbst arbeitet am
       fertigen Klang und verschiebt nicht die Tonhöhe eines einzelnen Tons,
-      sondern die des ganzen Signals, ohne das Tempo anzutasten.
+      sondern die des ganzen Signals — ohne das Tempo anzutasten.
     </p>
   </div>
 </section>
 
-<!-- ══ Raten gegen messen ══════════════════════════════════════ -->
+<!-- ══ 2 · PAPIER: die Geschichte ═══════════════════════════════ -->
+<section class="papier">
+  <div class="rahmen">
+    <div class="eng">
+      <p class="eyebrow">Woher die Zahl kommt</p>
+      <h2>Der Kammerton ist eine <em>Verabredung</em>, keine Naturkonstante.</h2>
+      <p>
+        Als Alexander J. Ellis 1885 fünfhundert Jahre europäischer
+        Stimmtonhöhen zusammentrug, reichte seine Tabelle von 370 bis 567 Hz
+        — <strong>mehr als eine Quinte Spannweite</strong>. Der Grund war
+        banal: Orgelpfeifen wurden nach dem örtlichen Längenmaß gebaut, und
+        der „Fuß“ war in Frankreich ein anderer als in Sachsen.
+      </p>
+      <p>
+        Zwischen der Pariser Stimmgabel von 1822 mit 432 Hz und der von 1855
+        mit 449 Hz liegen dreiunddreißig Jahre — und dieselbe Stadt.
+      </p>
+    </div>
+
+    <figure class="skalenblatt">
+      <div class="skalenblatt__kopf">
+        <span>Kammerton a′ im Wandel</span>
+        <span>nach Ellis 1885 · Haynes 2002</span>
+      </div>
+
+      <div class="leiste" role="img"
+           aria-label="Skala der Stimmtonhöhen von 400 bis 480 Hertz mit acht Marken: Barock 415, Mailand 1880 mit 432, Paris 1859 mit 435, Scheibler 1834 und London 1939 mit 440, Deutschland und Österreich heute 443, Karajan 445, Pariser Stimmgabel 1855 mit 449, Highland-Dudelsack 470 bis 480.">
+        <div class="leiste__band"></div>
+        <div class="leiste__heute" style="left:40%;width:16.25%">
+          <span class="leiste__heute-marke">wo heute gestimmt wird</span>
+        </div>
+
+        <div class="punkt punkt--unten" style="left:18.75%">
+          <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+          <div class="punkt__text"><span class="punkt__hz">415</span><span class="punkt__was">Historische Aufführungspraxis, ein Halbton tiefer</span></div>
+        </div>
+        <div class="punkt punkt--oben punkt--stark" style="left:50%">
+          <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+          <div class="punkt__text"><span class="punkt__hz">440</span><span class="punkt__was">Scheibler 1834 · London 1939 · ISO 16</span></div>
+        </div>
+        <div class="punkt punkt--unten" style="left:61.25%">
+          <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+          <div class="punkt__text"><span class="punkt__hz">449</span><span class="punkt__was">Pariser Stimmgabel 1855</span></div>
+        </div>
+        <div class="punkt punkt--oben" style="left:90%">
+          <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+          <div class="punkt__text"><span class="punkt__hz">470–480</span><span class="punkt__was">Highland-Dudelsack</span></div>
+        </div>
+
+        <div class="leiste__enden"><span>400 Hz</span><span>480 Hz</span></div>
+      </div>
+
+      <div class="ausschnitt__bruecke" aria-hidden="true"></div>
+
+      <div class="ausschnitt">
+        <p class="ausschnitt__kopf">
+          <span>Ausschnitt · 430 bis 450 Hz</span>
+          <span>hier spielt sich heute alles ab</span>
+        </p>
+        <div class="leiste" role="img"
+             aria-label="Vergrößerter Ausschnitt von 430 bis 450 Hertz: Mailand 1880 mit 432, Diapason normal Paris 1859 mit 435, die Norm 440, Deutschland und Österreich heute 443, Berliner Philharmoniker unter Karajan 445.">
+          <div class="leiste__band"></div>
+
+          <div class="punkt punkt--oben punkt--stark" style="left:10%">
+            <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+            <div class="punkt__text"><span class="punkt__hz">432</span><span class="punkt__was">Mailand 1880, Verdis Zahl</span></div>
+          </div>
+          <div class="punkt punkt--unten" style="left:25%">
+            <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+            <div class="punkt__text"><span class="punkt__hz">435</span><span class="punkt__was">Diapason normal, Paris 1859</span></div>
+          </div>
+          <div class="punkt punkt--oben punkt--stark" style="left:50%">
+            <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+            <div class="punkt__text"><span class="punkt__hz">440</span><span class="punkt__was">die Norm</span></div>
+          </div>
+          <div class="punkt punkt--unten" style="left:65%">
+            <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+            <div class="punkt__text"><span class="punkt__hz">443</span><span class="punkt__was">Deutschland und Österreich, heute</span></div>
+          </div>
+          <div class="punkt punkt--oben" style="left:75%">
+            <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+            <div class="punkt__text"><span class="punkt__hz">445</span><span class="punkt__was">Berliner Philharmoniker unter Karajan</span></div>
+          </div>
+
+          <div class="leiste__enden"><span>430 Hz</span><span>450 Hz</span></div>
+        </div>
+      </div>
+
+      <ul class="leiste-liste">
+        <li><b>415</b><span>Historische Aufführungspraxis — ein exakter Halbton tiefer</span></li>
+        <li><b>432</b><span>Mailand 1880, die Zahl, für die Verdi eintrat</span></li>
+        <li><b>435</b><span>Diapason normal, Paris 1859</span></li>
+        <li><b>440</b><span>Scheibler 1834 · London 1939 · ISO 16</span></li>
+        <li><b>443</b><span>Deutschland und Österreich, heute üblich</span></li>
+        <li><b>445</b><span>Berliner Philharmoniker unter Karajan</span></li>
+        <li><b>449</b><span>Pariser Stimmgabel 1855</span></li>
+        <li><b>470–480</b><span>Highland-Dudelsack</span></li>
+      </ul>
+    </figure>
+
+    <div class="spalten">
+      <div>
+        <h3>440 Hz stammt von 1834</h3>
+        <p>
+          Vorgeschlagen von Johann Heinrich Scheibler, einem Krefelder
+          Seidenfabrikanten; die Versammlung deutscher Naturforscher und
+          Ärzte übernahm es 1834 in Stuttgart. Sein Grund war denkbar
+          unspektakulär: <strong>440 war der Mittelwert, um den Wiener
+          Klaviere zwischen Wärme und Kälte schwankten.</strong>
+        </p>
+      </div>
+      <div>
+        <h3>Und 1939 schlug es 439</h3>
+        <p>
+          Die Konferenz im Mai 1939 tagte im Hauptquartier der BBC. 440 wurde
+          439 vorgezogen, weil <strong>439 eine Primzahl ist</strong> und sich
+          aus dem Quarzoszillator der BBC nicht durch Teilerketten erzeugen
+          ließ. Aus dieser Verlegenheit wurde eine Weltnorm.
+        </p>
+      </div>
+    </div>
+
+    <figure class="brief">
+      <blockquote>„Eine Kinderei, die sich fast der Lächerlichkeit preisgäbe.“</blockquote>
+      <figcaption>
+        <b>Giuseppe Verdi an Arrigo Boito, 8. November 1885.</b> Boito
+        vertrat Italien auf der Wiener Stimmtonkonferenz. Verdi hielt die
+        864 Schwingungen — also 432 Hz — für die richtigeren, aber darauf zu
+        beharren wäre ihm lächerlich vorgekommen. Hauptzweck sei die Einheit
+        des Stimmtons; nachgeben, wenn es nicht anders gehe. <em>Ihm war die
+        Einheitlichkeit wichtiger als die Zahl. Wir sehen das ähnlich — und
+        überlassen die Zahl deshalb dir.</em>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══ 3 · Was wir nicht behaupten ══════════════════════════════ -->
+<section class="rahmen teil">
+  <div class="eng">
+    <p class="eyebrow">In eigener Sache</p>
+    <h2>Zur Wirkung sagen wir <em>nichts</em>. Die Forschung gibt nichts her.</h2>
+
+    <div class="klartext">
+      <p>
+        Rund ein Dutzend Studien haben 432 Hz direkt gegen 440 Hz gestellt.
+        Die kleinsten fanden Effekte an der Signifikanzgrenze. Die größeren
+        und unabhängigen fanden <strong>keine</strong> — und zwei
+        doppelblinde Studien von 2025 fanden <strong>440 Hz im Vorteil</strong>.
+      </p>
+      <p>
+        Eine Metaanalyse existiert nicht. Eine unabhängige Replikation auch
+        nicht. Von allen Primärstudien ist genau eine vorab registriert.
+      </p>
+      <p>
+        Dass Musikhören entspannt, ist gut belegt. Dass es an der Stimmung
+        liegt, ist es nicht. <strong>Wir versprechen dir deshalb keine
+        Wirkung. Wir geben dir einen Regler.</strong>
+      </p>
+    </div>
+
+    <p class="belege">
+      Aravena u. a., J Appl Oral Sci 28, 2020 (n=42) · Erdal u. a., 2021
+      (n=51) · Mousavi u. a., 2025 (n=72) · Jebabli u. a., Sci Rep 15, 2025
+      · Fastl, Patsouras &amp; Rader, DAGA 2003 — Blindversuch am Flügel:
+      7× für 440, 3× für 432, 3× unentschieden.
+    </p>
+
+    <blockquote class="merksatz">
+      Wer 432 Hz sucht, hat die Werbeversprechen schon hundertmal gelesen.
+      Uns bleibt das Einzige, was noch nicht dabei war: nichts zu behaupten.
+    </blockquote>
+  </div>
+</section>
+
+<!-- ══ 4 · Raten gegen messen ═══════════════════════════════════ -->
 <section class="rahmen teil teil--linie">
   <div class="eng">
     <p class="eyebrow">Warum nicht einfach die Webseite</p>
     <h2>Die eine rät. Die andere <em>misst</em>.</h2>
     <p>
-      Das Webradio kann den Ton auch verschieben — aber es muss dabei etwas
-      annehmen, das oft nicht stimmt: dass jeder Sender auf 440 Hz liegt.
-      Dann zieht es pauschal um denselben Betrag herunter.
+      Der Unterschied zwischen 440 und 432 Hz beträgt genau
+      <strong>−31,77 Cent</strong>, knapp ein Drittel Halbton. Das liegt
+      deutlich über der Unterscheidungsschwelle von rund zehn Cent: Im
+      direkten Umschalten hörst du es klar.
     </p>
     <p>
-      Bei einer Aufnahme, die schon auf 442 liegt, landet man damit auf 434
-      statt auf 432. Bei einer historischen Einspielung auf 415 kann es
-      deutlich danebengreifen.
+      Ohne Vergleich daneben allerdings nicht — eine Untersuchung von 2023
+      zeigt, dass Hörer bei echter Musik auf Zufallsniveau raten, welche
+      Stimmung läuft. <strong>Deshalb gibt es hier keinen Vortrag, sondern
+      einen Schalter.</strong>
     </p>
   </div>
 
@@ -553,8 +819,8 @@ code {
       <h3>Annehmen und ziehen</h3>
       <p>
         Nimmt 440 Hz an, rechnet den festen Faktor 432 ⁄ 440 und wendet ihn
-        auf alles an. Bei einer Aufnahme, die woanders liegt, wandert der
-        Fehler einfach mit.
+        auf alles an. Bei einer Aufnahme, die auf 443 liegt — dem heute in
+        Deutschland üblichen Wert — landet man damit auf 435 statt auf 432.
       </p>
     </div>
     <div class="spalte spalte--stark">
@@ -562,7 +828,7 @@ code {
       <h3>Messen und treffen</h3>
       <p>
         Bestimmt die tatsächliche Stimmung des laufenden Klangs und rechnet
-        den Abstand zum Ziel daraus. Was auf 442 liegt, wird um 442 → 432
+        den Abstand zum Ziel daraus. Was auf 443 liegt, wird um 443 → 432
         verschoben, nicht um 440 → 432.
       </p>
     </div>
@@ -570,12 +836,12 @@ code {
 
   <div class="zahlen">
     <div class="zahl">
-      <div class="zahl__wert">0<small> Treiber</small></div>
-      <p class="zahl__was">Keine Installation im System, kein virtuelles Audiogerät auf dem Mac.</p>
+      <div class="zahl__wert">1,85<small> %</small></div>
+      <p class="zahl__was">So weit liegt der Zeitdehnungsfaktor von der Identität entfernt. Bei einer Oktave wären es 50 %.</p>
     </div>
     <div class="zahl">
       <div class="zahl__wert">±0<small> %</small></div>
-      <p class="zahl__was">Das Tempo bleibt. Die Tonhöhe wandert allein.</p>
+      <p class="zahl__was">Das Tempo bleibt. Beim bloßen Langsamerabspielen würden aus 120 BPM 117,8.</p>
     </div>
     <div class="zahl">
       <div class="zahl__wert">88<small> Tests</small></div>
@@ -588,11 +854,11 @@ code {
   </div>
 </section>
 
-<!-- ══ Statustafel ═════════════════════════════════════════════ -->
-<section class="rahmen teil teil--linie">
+<!-- ══ 5 · Holen ════════════════════════════════════════════════ -->
+<section class="rahmen teil teil--linie" id="holen">
   <div class="eng">
-    <p class="eyebrow">Woran es liegt, wenn es dein System noch nicht gibt</p>
-    <h2>Drei Systeme, drei <em>verschiedene</em> Hindernisse.</h2>
+    <p class="eyebrow">Drei Systeme, drei verschiedene Hindernisse</p>
+    <h2>Woran es liegt, wenn es dein System <em>noch nicht</em> gibt.</h2>
     <p>
       Der Signalkern ist überall derselbe und fertig. Was sich unterscheidet,
       ist die Frage, ob ein System einer App überhaupt erlaubt, den Ton
@@ -615,24 +881,10 @@ code {
       </div>
       <span class="lampe lampe--bereit">offener Test</span>
       <div class="zeile__tat">
-        <a class="knopf" href="mailto:hello@infosys-consult.com?subject=IYAMBAE%20Tuner%20—%20Zugang%20zum%20offenen%20Test">Zugang anfragen</a>
+        <a class="knopf" href="mailto:hello@infosys-consult.com?subject=IYAMBAE%20Tuner%20—%20Zugang%20zum%20offenen%20Test">
+          Zugang anfragen<span class="knopf__zusatz">Antwort am selben Tag</span>
+        </a>
       </div>
-    </div>
-
-    <div class="zeile">
-      <div class="zeile__system">Windows</div>
-      <div>
-        <p class="zeile__was">
-          Windows hat kein Gegenstück zum Verfahren auf dem Mac: Der Systemton
-          lässt sich mithören, aber nicht ersetzen. Die Fassung führt deshalb
-          über ein virtuelles Audiogerät.
-        </p>
-        <p class="zeile__was">
-          Der Kern läuft dort bereits — als Windows-DLL kreuzübersetzt und
-          ausgeführt. Neu entsteht nur die Anbindung an die Ausgabe.
-        </p>
-      </div>
-      <span class="lampe lampe--arbeit">in Arbeit</span>
     </div>
 
     <div class="zeile">
@@ -640,11 +892,25 @@ code {
       <div>
         <p class="zeile__was">
           PipeWire sieht das Einhängen eines Filterknotens ausdrücklich vor.
-          Das kommt dem Verfahren auf dem Mac am nächsten und ist von den drei
-          Systemen der geradlinigste Weg.
+          Das kommt dem Verfahren auf dem Mac am nächsten und ist von den
+          drei Systemen der geradlinigste Weg.
+        </p>
+        <p class="zeile__was">Geplant als <code>.deb</code> für Ubuntu und Zorin.</p>
+      </div>
+      <span class="lampe lampe--arbeit">in Arbeit</span>
+    </div>
+
+    <div class="zeile">
+      <div class="zeile__system">Windows</div>
+      <div>
+        <p class="zeile__was">
+          Windows hat kein Gegenstück zum Verfahren auf dem Mac: Der
+          Systemton lässt sich mithören, aber nicht ersetzen. Die Fassung
+          führt deshalb über ein virtuelles Audiogerät.
         </p>
         <p class="zeile__was">
-          Geplant als <code>.deb</code> für Ubuntu und Zorin.
+          Der Kern läuft dort bereits — als DLL kreuzübersetzt und
+          ausgeführt. Neu entsteht nur die Anbindung an die Ausgabe.
         </p>
       </div>
       <span class="lampe lampe--arbeit">in Arbeit</span>
@@ -656,9 +922,9 @@ code {
         <p class="zeile__was">
           Kommt nicht — und zwar nicht, weil es zu aufwendig wäre, sondern
           weil dort die Grenze der Sandbox verläuft. Auf iOS gibt es kein
-          Gegenstück in irgendeiner Form. Auf Android darf man fremden Ton nur
-          mitschneiden, wenn die abspielende App es gestattet, und Spotify,
-          Netflix und YouTube tun das nicht.
+          Gegenstück in irgendeiner Form. Auf Android darf man fremden Ton
+          nur mitschneiden, wenn die abspielende App es gestattet, und
+          Spotify, Netflix und YouTube tun das nicht.
         </p>
         <p class="zeile__was">
           Was möglich wäre, ist etwas anderes: ein eigener Abspieler, der die
@@ -670,7 +936,7 @@ code {
   </div>
 </section>
 
-<!-- ══ Zusammenspiel mit dem Radio ═════════════════════════════ -->
+<!-- ══ 6 · Zusammenspiel ════════════════════════════════════════ -->
 <section class="rahmen teil teil--linie">
   <div class="eng">
     <p class="eyebrow">Zusammenspiel</p>
@@ -682,8 +948,8 @@ code {
     </p>
     <p>
       Gefragt wird dabei zweimal: Die Seite fragt einmal nach, und der Tuner
-      fragt dich. <strong>Ohne deine Zustimmung erfährt keine Webseite, dass du
-      ihn benutzt</strong> — auch nicht, dass er installiert ist.
+      fragt dich. <strong>Ohne deine Zustimmung erfährt keine Webseite, dass
+      du ihn benutzt</strong> — auch nicht, dass er installiert ist.
     </p>
     <blockquote class="merksatz">
       Eine Liste erlaubter Webseiten im Programmtext wäre bequemer gewesen.
@@ -709,37 +975,26 @@ code {
 /* ═══════════════════════════════════════════════════════════════════
    Der Schwebungsmesser.
 
-   WARUM DAS HIER STEHT UND KEIN BILD
-
-   Der Tuner verschiebt Tonhöhe. Ein Standbild davon zeigt nichts; ein
-   erzeugtes Hero-Bild noch weniger. Was die Sache erklaert, ist das
-   Phaenomen selbst: Zwei Toene im Abstand von acht Hertz ergeben acht
-   Schwebungen je Sekunde — das hoert man, das sieht man, und man kann es
-   nachrechnen.
-
-   ZWEI TOENE, KEINE AUFNAHME
-
-   Ein OscillatorNode auf 440 (Referenz), einer auf dem eingestellten Wert.
-   Der Rest ist Addition. Die Huellkurve der Summe ist |cos(pi * df * t)| —
+   Zwei Oszillatoren, einer auf 440 als Referenz, einer auf dem
+   eingestellten Wert. Die Huellkurve der Summe ist |cos(pi * df * t)| —
    dieselbe Formel, die der Schirm zeichnet, und die Zahl darueber ist
-   schlicht df.
+   schlicht df. Alles nachrechenbar, nichts behauptet.
 
-   DER RUHEZUSTAND WIRD NICHT GEFEIERT
-
-   Bei 440 stimmt es. Dann blinkt nichts gruen — die Welle hoert einfach auf
-   zu pulsieren, und die Zahl wird still. So fuehlt sich Stimmen an: Der Lohn
-   ist, dass etwas aufhoert.
+   DER RUHEZUSTAND WIRD NICHT GEFEIERT: Bei 440 blinkt nichts gruen. Die
+   Welle hoert auf zu pulsieren, die Kurve wird kalt statt messing, und wo
+   eine Zahl stand, steht "keine". So fuehlt sich Stimmen an — der Lohn ist,
+   dass etwas aufhoert.
    ═══════════════════════════════════════════════════════════════════ */
 
 (() => {
   'use strict';
 
   const REFERENZ = 440;
-  const schirm   = document.getElementById('schirm');
-  const strich   = schirm.getContext('2d');
-  const regler   = document.getElementById('regler');
-  const knopf    = document.getElementById('hoerknopf');
-  const felder   = {
+  const schirm = document.getElementById('schirm');
+  const strich = schirm.getContext('2d');
+  const regler = document.getElementById('regler');
+  const knopf  = document.getElementById('hoerknopf');
+  const felder = {
     hz:     document.getElementById('anzeigeHz'),
     cent:   document.getElementById('anzeigeCent'),
     schweb: document.getElementById('anzeigeSchweb'),
@@ -750,26 +1005,20 @@ code {
   let hof = null, quelleA = null, quelleB = null, lautstaerke = null;
   let laeuft = false;
 
-  const zahl = (n, s = 1) =>
-    n.toFixed(s).replace('.', ',');
-
-  /* Cent ist das logarithmische Mass fuer Tonhoehenabstand: 1200 je Oktave.
-     Genau diese Zahl steht auch in der App. */
+  const zahl = (n, s = 1) => n.toFixed(s).replace('.', ',');
+  // Cent ist das logarithmische Mass fuer Tonhoehenabstand: 1200 je Oktave.
   const cent = (a, b) => 1200 * Math.log2(a / b);
 
   function zeigeWerte() {
     const df = Math.abs(hz - REFERENZ);
     const c  = cent(hz, REFERENZ);
     felder.hz.innerHTML = `${zahl(hz)}<small>Hz</small>`;
-    felder.cent.innerHTML =
-      `${c >= 0 ? '+' : '−'}${zahl(Math.abs(c))}<small>Cent</small>`;
-    felder.schweb.innerHTML = `${zahl(df)}<small>/s</small>`;
+    felder.cent.innerHTML = `${c >= 0 ? '+' : '−'}${zahl(Math.abs(c))}<small>Cent</small>`;
 
-    // Still statt bunt: Wer trifft, bekommt keine Farbe, sondern Ruhe.
     const ruhig = df < 0.05;
+    felder.schweb.innerHTML = ruhig ? 'keine' : `${zahl(df)}<small>/s</small>`;
     felder.schweb.classList.toggle('ablesung__wert--ruhig', ruhig);
     felder.cent.classList.toggle('ablesung__wert--ruhig', ruhig);
-    if (ruhig) felder.schweb.innerHTML = 'keine';
 
     for (const s of stimmungen) {
       s.setAttribute('aria-pressed',
@@ -777,12 +1026,10 @@ code {
     }
   }
 
-  // ── Ton ─────────────────────────────────────────────────────────
   async function tonAn() {
     const Hof = window.AudioContext || window.webkitAudioContext;
     if (!Hof) return false;
     hof = hof || new Hof();
-    // Nach einer Nutzergeste erlaubt; ohne sie bleibt der Hof angehalten.
     if (hof.state === 'suspended') await hof.resume();
 
     lautstaerke = hof.createGain();
@@ -794,10 +1041,8 @@ code {
     quelleA.type = quelleB.type = 'sine';
     quelleA.frequency.value = REFERENZ;
     quelleB.frequency.value = hz;
-    quelleA.connect(lautstaerke);
-    quelleB.connect(lautstaerke);
+    quelleA.connect(lautstaerke); quelleB.connect(lautstaerke);
     quelleA.start(); quelleB.start();
-
     // Sanft aufblenden. Ein harter Einsatz knackt, und das klingt nach Fehler.
     lautstaerke.gain.linearRampToValueAtTime(0.09, hof.currentTime + 0.25);
     return true;
@@ -821,14 +1066,11 @@ code {
     knopf.textContent = laeuft ? 'Ton ausschalten' : 'Ton einschalten';
   });
 
-  // ── Bedienung ───────────────────────────────────────────────────
   function setzeHz(neu) {
     hz = Math.min(448, Math.max(415, neu));
     regler.value = String(hz);
-    if (quelleB && hof) {
-      // Gleiten statt springen: ein Sprung der Frequenz knackt hoerbar.
-      quelleB.frequency.setTargetAtTime(hz, hof.currentTime, 0.02);
-    }
+    // Gleiten statt springen: ein Sprung der Frequenz knackt hoerbar.
+    if (quelleB && hof) quelleB.frequency.setTargetAtTime(hz, hof.currentTime, 0.02);
     zeigeWerte();
   }
 
@@ -837,26 +1079,20 @@ code {
     s.addEventListener('click', () => setzeHz(parseFloat(s.dataset.hz)));
   }
 
-  // ── Der Schirm ──────────────────────────────────────────────────
   /*
-    Gezeichnet wird die HUELLKURVE der Summe, nicht die Summe selbst.
+    Gezeichnet wird die HUELLKURVE der Summe, nicht die Summe selbst. Bei
+    440 Hz auf 1400 Pixeln laegen ueber dreihundert Schwingungen je Sekunde
+    im Bild — das ergaebe Moire und keine Aussage. Die Huellkurve ist genau
+    das, was das Ohr als Pulsieren wahrnimmt.
 
-    Bei 440 Hz auf 1400 Pixeln laegen ueber dreihundert Schwingungen je
-    Sekunde — das ergaebe Moire und keine Aussage. Die Huellkurve dagegen
-    ist genau das, was das Ohr als Pulsieren wahrnimmt, und sie ist ueber
-    eine Sekunde hinweg lesbar.
-
-    Die dichte Fuellung darunter deutet den Traeger an, ohne ihn abtasten zu
-    wollen. Ehrlicher als eine Welle, die es so nicht gibt.
+    0,9 Sekunden im Fenster: Bei 1,4 lagen elf Pulse nebeneinander, und elf
+    gleiche Boegen liest das Auge als Muster, nicht als Vorgang. Bei 0,9
+    sind es sieben — wenige genug, um sie zu zaehlen. Die Zahl ueber dem
+    Fenster und das, was man sieht, sollen dasselbe sein.
   */
-  let t0 = null;
-  /* 0.9 Sekunden im Bild.
-
-     Bei 1.4 lagen elf Pulse nebeneinander, und elf gleiche Boegen liest das
-     Auge als Muster, nicht als Vorgang. Bei 0.9 sind es sieben — wenige
-     genug, um sie zu zaehlen, und das ist der Punkt: Die Zahl ueber dem
-     Fenster und das, was man sieht, sollen dasselbe sein. */
+  let t0 = null, angefordert = null;
   const FENSTER = 0.9;
+  const ruhe = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   function male(zeit) {
     if (t0 === null) t0 = zeit;
@@ -865,71 +1101,53 @@ code {
     const df = Math.abs(hz - REFERENZ);
 
     strich.clearRect(0, 0, B, H);
-
-    // Mittellinie
-    strich.strokeStyle = '#1E212A';
+    strich.strokeStyle = '#262220';
     strich.lineWidth = 1;
     strich.beginPath(); strich.moveTo(0, M); strich.lineTo(B, M); strich.stroke();
 
-    // 0.36 statt 0.40: Bei voller Auslenkung schlug die Huellkurve oben und
-    // unten an den Rahmen an, und ein Ausschlag, der anschlaegt, sieht aus
-    // wie ein uebersteuertes Geraet.
+    // 0.36 statt 0.40: Bei voller Auslenkung schlug die Huellkurve sonst
+    // oben und unten an den Rahmen an, und was anschlaegt, sieht nach einem
+    // uebersteuerten Geraet aus.
     const hoehe = H * 0.36;
-    const huelle = (x) => {
-      const zeitpunkt = t + (x / B) * FENSTER;
-      return Math.abs(Math.cos(Math.PI * df * zeitpunkt));
-    };
+    const huelle = (x) => Math.abs(Math.cos(Math.PI * df * (t + (x / B) * FENSTER)));
 
-    // Der Traeger, angedeutet: senkrechte Striche in der Huellkurve.
-    // Nicht die echte Schwingung — bei 440 Hz laegen ueber dreihundert
-    // Perioden je Sekunde im Bild, das ergaebe Moire und keine Aussage.
-    strich.strokeStyle = 'rgba(192, 138, 46, 0.30)';
+    strich.strokeStyle = 'rgba(184, 134, 43, 0.30)';
     for (let x = 0; x < B; x += 2) {
       const a = huelle(x) * hoehe;
-      strich.beginPath();
-      strich.moveTo(x, M - a); strich.lineTo(x, M + a); strich.stroke();
+      strich.beginPath(); strich.moveTo(x, M - a); strich.lineTo(x, M + a); strich.stroke();
     }
 
-    // Die Huellkurve selbst, oben und unten.
     strich.lineWidth = 2;
-    strich.strokeStyle = df < 0.05 ? '#7B93AD' : '#E8B45C';
-    for (const vorzeichen of [-1, 1]) {
+    strich.strokeStyle = df < 0.05 ? '#7C8FA3' : '#E3B25C';
+    for (const vz of [-1, 1]) {
       strich.beginPath();
       for (let x = 0; x <= B; x += 2) {
-        const y = M + vorzeichen * huelle(x) * hoehe;
+        const y = M + vz * huelle(x) * hoehe;
         x === 0 ? strich.moveTo(x, y) : strich.lineTo(x, y);
       }
       strich.stroke();
     }
 
-    naechstesBild();
-  }
-
-  let angefordert = null;
-  const ruhig = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  function naechstesBild() {
     /* Wer Bewegung abbestellt hat, bekommt EIN Standbild — nicht nichts.
        Die Schwebung ist die Aussage der Seite; sie ganz wegzulassen hiesse,
        diesen Menschen die Erklaerung vorzuenthalten. */
-    if (ruhig.matches) return;
-    angefordert = requestAnimationFrame(male);
+    if (!ruhe.matches) angefordert = requestAnimationFrame(male);
   }
 
   zeigeWerte();
   requestAnimationFrame(male);
 
-  // Nicht im Hintergrund weiterrechnen.
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       if (angefordert) cancelAnimationFrame(angefordert);
       angefordert = null;
-      if (laeuft) { tonAus(); laeuft = false;
+      if (laeuft) {
+        tonAus(); laeuft = false;
         knopf.setAttribute('aria-pressed', 'false');
-        knopf.textContent = 'Ton einschalten'; }
+        knopf.textContent = 'Ton einschalten';
+      }
     } else if (!angefordert) {
-      t0 = null;
-      requestAnimationFrame(male);
+      t0 = null; requestAnimationFrame(male);
     }
   });
 })();
