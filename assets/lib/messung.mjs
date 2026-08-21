@@ -99,7 +99,18 @@ export function miss(was, felder = {}) {
   if (was === 'filter') {
     if (felder.achse) rumpf.achse = String(felder.achse);
     if (felder.wert) rumpf.wert = String(felder.wert);
-    if (Number.isFinite(felder.treffer)) rumpf.treffer = felder.treffer;
+    /*
+     Die Trefferzahl sagt, ob ein Filter taugt: Wer 0 liefert, ist ein
+     Gestaltungsfehler. Bei EINER Achse sagt sie etwas ganz anderes.
+
+     "gemerkte" findet per Wesensart genau das, was diese eine Person gemerkt
+     hat. Analytisch ist die Zahl damit wertlos — und ueber Wochen stabil.
+     Eine stabile Zahl zwischen 0 und 129 neben einer gekuerzten Adresse ist
+     ein besserer Wiedererkennungswert als die Adresse allein.
+    */
+    if (felder.achse !== 'gemerkte' && Number.isFinite(felder.treffer)) {
+      rumpf.treffer = felder.treffer;
+    }
   }
   if (was === 'sprache') rumpf.wert = sprache();
 

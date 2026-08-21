@@ -1885,3 +1885,17 @@ class App {
 const app = new App();
 window.app = app;        // Ohne diese Zeile finden die Zusatzteile die Instanz nicht.
 await app.init();
+
+/*
+ Wenn jemand den Laden auf den Startbildschirm legt.
+
+ 'installiert' stand von Anfang an in der Erlaubnisliste von messung.mjs und
+ wurde nie gemeldet — die Auswertung haette eine Linie gezeigt, die immer
+ null ist, und niemand haette gewusst, ob das die Wahrheit oder ein Fehler
+ ist. Also entweder melden oder die Art streichen; melden ist richtiger.
+
+ 'appinstalled' feuert erst, wenn der Einbau WIRKLICH durch ist —
+ 'beforeinstallprompt' feuert schon, wenn er nur moeglich waere, und das ist
+ eine ganz andere Zahl.
+*/
+addEventListener('appinstalled', () => miss('installiert'));
