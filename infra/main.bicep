@@ -677,6 +677,63 @@ var rolleTabellenLesen = '76199698-9eea-4c19-bc75-cec21354c6b6' // Storage Table
 */
 /*
   ════════════════════════════════════════════════════════════════════
+   Die Registry
+  ════════════════════════════════════════════════════════════════════
+
+  WARUM NICHT GHCR, WO DOCH DAS RADIO DORT LIEGT
+
+  Das Abbild des Radios ist öffentlich, und das ist richtig: Es enthält eine
+  Webseite, die ohnehin jeder abrufen kann. Beim Anmeldedienst liegt es
+  anders. Kein Geheimnis steckt darin — geprüft, die Werte kommen zur
+  Laufzeit aus dem Tresor — aber der ganze Quelltext: Drosselungsschwellen,
+  Sitzungsbindung, Argon2-Parameter, die Lebensdauer der Einmalcodes. Das ist
+  kein Loch, es macht Angriffe nur billiger. Für den Dienst, der Konten hält,
+  ist das der falsche Handel.
+
+  Die Alternative wäre ein GitHub-Token als Registry-Zugang gewesen. Der
+  läuft ab, will erneuert werden und ist ein weiteres Geheimnis, das jemand
+  pflegen muss. Die Registry hier zieht dieselbe Identität heran, mit der der
+  Dienst schon an Tabellen und Tresor geht — kein Token, nichts, was abläuft.
+
+  Basic reicht: 10 GiB, ein Abbild, kein Georeplikat. Rund 5 € im Monat.
+
+  adminUserEnabled bleibt aus. Der Administratorzugang ist ein Benutzername
+  mit Passwort, für alle gleich und nicht nachvollziehbar, wer ihn benutzt
+  hat. Genau das, was eine verwaltete Identität ersetzt.
+*/
+resource registry 'Microsoft.ContainerRegistry/registries@2023-11-01-preview' = {
+  name: 'cr${name}${take(uniqueString(resourceGroup().id, 'registry'), 10)}'
+  location: location
+  tags: marken
+  sku: { name: 'Basic' }
+  properties: {
+    adminUserEnabled: false
+    publicNetworkAccess: 'Enabled'
+    anonymousPullEnabled: false
+  }
+}
+
+/*
+  Holen darf der Dienst, mehr nicht.
+
+  AcrPull (7f951dda-…) darf Abbilder ZIEHEN. Nicht schieben, nicht löschen,
+  keine Marke überschreiben. Wer baut und hochlädt, ist ein Mensch mit
+  eigenen Rechten — das ist eine andere Rolle und eine andere Gelegenheit.
+*/
+resource dienstDarfHolen 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: registry
+  name: guid(registry.id, dienstIdentitaet.id, 'acrpull')
+  properties: {
+    principalId: dienstIdentitaet.properties.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      '7f951dda-4ed3-4680-a7ca-43fe172d538d')
+  }
+}
+
+/*
+  ════════════════════════════════════════════════════════════════════
    Der Tresor
   ════════════════════════════════════════════════════════════════════
 
@@ -1022,6 +1079,22 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
         geht. Ohne Versionsnummer im Pfad: Dann zieht ein Austausch im Tresor
         beim nächsten Neustart von selbst nach.
       */
+      /*
+        Woher das Abbild des Dienstes kommt.
+
+        Kein Geheimnis, kein Benutzername: `identity` verweist auf dieselbe
+        verwaltete Identität, die oben AcrPull bekommen hat. Container Apps
+        holt sich damit selbst ein Zugriffszeichen, wenn es zieht.
+
+        Nur wenn der Dienst überhaupt läuft — sonst zöge die Plattform ein
+        Abbild, das niemand braucht, und ein Fehler dabei risse das Radio mit.
+      */
+      registries: !mitAnmeldung ? [] : [
+        {
+          server: registry.properties.loginServer
+          identity: dienstIdentitaet.id
+        }
+      ]
       secrets: concat(!mitGoogle ? [] : [
         {
           name: 'google-geheimnis'
@@ -1159,3 +1232,9 @@ output tresorName string = tresor.name
 
 @description('Adresse des Tresors, für az keyvault secret set --vault-name.')
 output tresorAdresse string = tresor.properties.vaultUri
+
+@description('Die Registry. Dorthin gehoert das Abbild des Anmeldedienstes.')
+output registryName string = registry.name
+
+@description('Anmeldeadresse der Registry, fuer docker tag und docker push.')
+output registryAdresse string = registry.properties.loginServer
