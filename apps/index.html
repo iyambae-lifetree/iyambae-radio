@@ -459,6 +459,97 @@ h2 em { font-style: italic; color: var(--messing-hell); }
 .spalte h3 { font-size: 1.1rem; font-weight: 600; margin: 0 0 .6rem; color: var(--text); }
 .spalte p { font-size: .92rem; margin: 0; }
 
+/* ── Downloadkarten ──────────────────────────────────────────────── */
+.karten {
+  display: grid; gap: 1px; margin-top: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  background: var(--gravur); border: 1px solid var(--gravur);
+}
+.karte {
+  background: var(--blech); padding: clamp(1.5rem, 3vw, 2.1rem);
+  display: flex; flex-direction: column; gap: .9rem;
+}
+/* Die Karte, an der etwas dran ist, traegt mehr Licht. Ein Akzent, der auf
+   allen dreien laege, waere keiner. */
+.karte--bereit { background: var(--blech-hoch); }
+
+.karte__kopf { display: flex; align-items: baseline; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
+.karte__name {
+  font-family: var(--anzeige); font-weight: 400;
+  font-size: clamp(2rem, 4.5vw, 2.9rem); line-height: .95;
+  color: var(--text); letter-spacing: -.01em;
+}
+.karte--bereit .karte__name { color: var(--messing-hell); }
+.karte__wofuer {
+  font-family: var(--daten); font-size: .62rem; letter-spacing: .1em;
+  color: var(--leiser); white-space: nowrap;
+}
+.karte__was { margin: 0; font-size: .93rem; color: var(--leise); }
+.karte__was + .karte__was { margin-top: -.25rem; }
+.karte__fuellen { flex: 1 1 auto; }
+
+.karte__tat { display: flex; flex-direction: column; gap: .55rem; }
+
+.laden {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  text-decoration: none; padding: .85rem 1.15rem;
+  font-family: var(--daten); font-size: .78rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--nacht); background: var(--messing-hell);
+  border: 1px solid var(--messing-hell);
+  transition: background .18s, border-color .18s;
+}
+.laden:hover { background: var(--messing); border-color: var(--messing); color: var(--nacht); }
+.laden__groesse { font-weight: 400; opacity: .7; letter-spacing: .02em; text-transform: none; }
+.laden--leise {
+  background: transparent; color: var(--leise);
+  border-color: var(--gravur-hell); font-weight: 400; text-transform: none;
+  letter-spacing: .02em; font-size: .76rem;
+}
+.laden--leise:hover { background: transparent; color: var(--text); border-color: var(--kalt); }
+
+.karte__hinweis {
+  font-size: .78rem; line-height: 1.55; color: var(--leiser); margin: 0;
+  padding-top: .3rem;
+}
+.karte__hinweis b { color: var(--leise); font-weight: 600; }
+
+.karte__nichts {
+  font-family: var(--daten); font-size: .72rem; color: var(--leiser);
+  border: 1px dashed var(--gravur-hell); padding: .85rem 1.15rem; text-align: center;
+}
+
+/* Der Warnkasten ueber allen Karten. Er steht DAVOR, nicht darunter:
+   Wer erst laedt und dann liest, hat schon geklickt. */
+.warnung {
+  margin-top: 2.2rem; padding: 1.2rem 1.4rem;
+  border: 1px solid var(--gravur-hell);
+  border-inline-start: 3px solid var(--messing);
+  background: var(--blech);
+  font-size: .93rem; color: var(--leise);
+}
+.warnung p { margin: 0; }
+.warnung p + p { margin-top: .7rem; }
+.warnung strong { color: var(--text); }
+
+/* ── Engine-Wahl ─────────────────────────────────────────────────── */
+.engines {
+  display: grid; gap: 1px; margin-top: 2.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  background: var(--gravur); border: 1px solid var(--gravur);
+}
+.engine { background: var(--blech); padding: 1.4rem 1.5rem; }
+.engine__ms {
+  font-family: var(--daten); font-size: 2rem; font-weight: 700;
+  color: var(--messing-hell); line-height: 1; font-variant-numeric: tabular-nums;
+}
+.engine__ms small { font-size: .42em; color: var(--leise); font-weight: 400; margin-inline-start: .3em; }
+.engine__name {
+  font-family: var(--daten); font-size: .62rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--leiser); margin: .55rem 0 .35rem;
+}
+.engine p { margin: 0; font-size: .85rem; color: var(--leise); }
+
 /* ── Plattformtafel ──────────────────────────────────────────────── */
 .tafel { display: grid; gap: 1px; margin-top: 2.5rem; background: var(--gravur); border: 1px solid var(--gravur); }
 .zeile {
@@ -866,73 +957,123 @@ code {
     </p>
   </div>
 
-  <div class="tafel">
-    <div class="zeile zeile--bereit">
-      <div class="zeile__system">macOS</div>
-      <div>
-        <p class="zeile__was">
-          Menüleisten-App. Greift den Systemton ab und ersetzt ihn, ohne dass
-          du etwas umstellst. Erfordert macOS 14.4 oder neuer.
-        </p>
-        <p class="zeile__was">
-          Beim ersten Einschalten fragt macOS nach der Berechtigung
-          „Systemaudio aufnehmen“.
-        </p>
+  <div class="warnung">
+    <p>
+      <strong>Diese Ausgabe ist nicht signiert und nicht notarisiert.</strong>
+      Sie ist gebaut und getestet — 88 Tests, 436 Zusicherungen, null Fehler
+      auf macOS 26 — aber von einem Menschen noch nicht benutzt worden.
+    </p>
+    <p>
+      Auf dem Mac wird Gatekeeper sie abweisen, und der alte Rechtsklick-Weg
+      hilft nicht mehr: Apple hat ihn am 6. August 2024 abgeschafft. Der Weg
+      ist jetzt <b>einmal doppelklicken, abweisen lassen, dann
+      Systemeinstellungen → Datenschutz &amp; Sicherheit → „Dennoch
+      öffnen“</b>.
+    </p>
+  </div>
+
+  <div class="karten">
+
+    <div class="karte karte--bereit">
+      <div class="karte__kopf">
+        <span class="karte__name">macOS</span>
+        <span class="karte__wofuer">14.4 oder neuer</span>
       </div>
-      <span class="lampe lampe--bereit">offener Test</span>
-      <div class="zeile__tat">
-        <a class="knopf" href="mailto:hello@infosys-consult.com?subject=IYAMBAE%20Tuner%20—%20Zugang%20zum%20offenen%20Test">
-          Zugang anfragen<span class="knopf__zusatz">Antwort am selben Tag</span>
+      <p class="karte__was">
+        Die eigentliche App. Menüleiste, greift den Systemton ab und ersetzt
+        ihn, ohne dass du etwas umstellst.
+      </p>
+      <p class="karte__was">
+        Beim ersten Einschalten fragt macOS nach der Berechtigung
+        „Systemaudio aufnehmen“.
+      </p>
+      <div class="karte__fuellen"></div>
+      <div class="karte__tat">
+        <a class="laden" href="/herunterladen/iyambae-tuner-0.1.0-test.dmg">
+          <span>DMG laden</span><span class="laden__groesse">923 KB</span>
+        </a>
+        <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
+          <span>SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
         </a>
       </div>
     </div>
 
-    <div class="zeile">
-      <div class="zeile__system">Linux</div>
-      <div>
-        <p class="zeile__was">
-          PipeWire sieht das Einhängen eines Filterknotens ausdrücklich vor.
-          Das kommt dem Verfahren auf dem Mac am nächsten und ist von den
-          drei Systemen der geradlinigste Weg.
-        </p>
-        <p class="zeile__was">Geplant als <code>.deb</code> für Ubuntu und Zorin.</p>
+    <div class="karte">
+      <div class="karte__kopf">
+        <span class="karte__name">Linux</span>
+        <span class="karte__wofuer">PipeWire</span>
       </div>
-      <span class="lampe lampe--arbeit">in Arbeit</span>
+      <p class="karte__was">
+        Prototyp eines Filterknotens. PipeWire sieht das Einhängen
+        ausdrücklich vor — von den drei Systemen der geradlinigste Weg und
+        dem Verfahren auf dem Mac am nächsten.
+      </p>
+      <p class="karte__was">Noch kein fertiges Paket, sondern Quelltext zum Selbstbauen.</p>
+      <div class="karte__fuellen"></div>
+      <div class="karte__tat">
+        <a class="laden laden--leise" href="/herunterladen/iyambae-tuner-0.1.0-test-linux.tar.gz">
+          <span>Prototyp laden</span><span class="laden__groesse">11 KB</span>
+        </a>
+      </div>
     </div>
 
-    <div class="zeile">
-      <div class="zeile__system">Windows</div>
-      <div>
-        <p class="zeile__was">
-          Windows hat kein Gegenstück zum Verfahren auf dem Mac: Der
-          Systemton lässt sich mithören, aber nicht ersetzen. Die Fassung
-          führt deshalb über ein virtuelles Audiogerät.
-        </p>
-        <p class="zeile__was">
-          Der Kern läuft dort bereits — als DLL kreuzübersetzt und
-          ausgeführt. Neu entsteht nur die Anbindung an die Ausgabe.
-        </p>
+    <div class="karte">
+      <div class="karte__kopf">
+        <span class="karte__name">Windows</span>
+        <span class="karte__wofuer">der Kern, nicht die App</span>
       </div>
-      <span class="lampe lampe--arbeit">in Arbeit</span>
+      <p class="karte__was">
+        <strong>Stimmt keinen Systemton um.</strong> Windows lässt das nicht
+        zu: Der Ton lässt sich mithören, aber nicht ersetzen — dafür müsste
+        die Software selbst zum Ausgabegerät werden.
+      </p>
+      <p class="karte__was">
+        Was geht, ist der Signalpfad als DLL. Ein virtuelles Audiogerät ist
+        der nächste Schritt.
+      </p>
+      <div class="karte__fuellen"></div>
+      <div class="karte__tat">
+        <a class="laden laden--leise" href="/herunterladen/iyambae-tuner-0.1.0-test-windows.zip">
+          <span>DSP-Kern laden</span><span class="laden__groesse">40 KB</span>
+        </a>
+      </div>
     </div>
 
-    <div class="zeile">
-      <div class="zeile__system">iOS<br>Android</div>
-      <div>
-        <p class="zeile__was">
-          Kommt nicht — und zwar nicht, weil es zu aufwendig wäre, sondern
-          weil dort die Grenze der Sandbox verläuft. Auf iOS gibt es kein
-          Gegenstück in irgendeiner Form. Auf Android darf man fremden Ton
-          nur mitschneiden, wenn die abspielende App es gestattet, und
-          Spotify, Netflix und YouTube tun das nicht.
-        </p>
-        <p class="zeile__was">
-          Was möglich wäre, ist etwas anderes: ein eigener Abspieler, der die
-          Musik selbst in die Hand nimmt. Daran wird gedacht.
-        </p>
-      </div>
-      <span class="lampe lampe--nie">nicht möglich</span>
+  </div>
+
+  <div class="eng" style="margin-top:clamp(3rem,7vw,4.5rem)">
+    <p class="eyebrow">Verzögerung</p>
+    <h2>Zwei Engines. Du <em>wählst</em>.</h2>
+    <p>
+      Tonhöhe zu verschieben, ohne das Tempo anzutasten, kostet Zeit — und wie
+      viel, hängt vom Verfahren ab. Der Umschalter blendet über 25 ms über,
+      damit der Wechsel nicht knackt.
+    </p>
+  </div>
+
+  <div class="engines">
+    <div class="engine">
+      <div class="engine__ms">11<small>ms</small></div>
+      <p class="engine__name">Delay-Line</p>
+      <p>Schnell genug für Video und fürs Mitspielen. Der Ton bleibt an den Lippen.</p>
     </div>
+    <div class="engine">
+      <div class="engine__ms">240<small>ms</small></div>
+      <p class="engine__name">High Quality</p>
+      <p>Signalsmith. Klingt besser, aber bei Video unbrauchbar — eine Viertelsekunde Versatz sieht man.</p>
+    </div>
+  </div>
+
+  <div class="eng" style="margin-top:clamp(2.5rem,6vw,3.5rem)">
+    <p class="karte__hinweis">
+      <b>iOS und Android kommen nicht</b> — und zwar nicht, weil es zu
+      aufwendig wäre, sondern weil dort die Grenze der Sandbox verläuft. Auf
+      iOS gibt es kein Gegenstück in irgendeiner Form. Auf Android darf man
+      fremden Ton nur mitschneiden, wenn die abspielende App es gestattet,
+      und Spotify, Netflix und YouTube tun das nicht. Was möglich wäre, ist
+      etwas anderes: ein eigener Abspieler, der die Musik selbst in die Hand
+      nimmt. Daran wird gedacht.
+    </p>
   </div>
 </section>
 
