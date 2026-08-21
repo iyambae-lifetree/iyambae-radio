@@ -970,6 +970,10 @@ code {
       Systemeinstellungen → Datenschutz &amp; Sicherheit → „Dennoch
       öffnen“</b>.
     </p>
+    <p>
+      Das <b>Linux-Paket ist davon nicht betroffen</b> und in einem sauberen
+      Behälter installiert und geprüft worden.
+    </p>
   </div>
 
   <div class="karten">
@@ -998,21 +1002,24 @@ code {
       </div>
     </div>
 
-    <div class="karte">
+    <div class="karte karte--bereit">
       <div class="karte__kopf">
         <span class="karte__name">Linux</span>
-        <span class="karte__wofuer">PipeWire</span>
+        <span class="karte__wofuer">PipeWire ab 0.3.60</span>
       </div>
       <p class="karte__was">
-        Prototyp eines Filterknotens. PipeWire sieht das Einhängen
-        ausdrücklich vor — von den drei Systemen der geradlinigste Weg und
-        dem Verfahren auf dem Mac am nächsten.
+        <strong>Stimmt den Systemton wirklich um.</strong> Ein LADSPA-Plugin,
+        das PipeWires Filterkette einhängt — mit <code>apt install</code>
+        fertig, mit <code>iyambae-tuner start</code> an.
       </p>
-      <p class="karte__was">Noch kein fertiges Paket, sondern Quelltext zum Selbstbauen.</p>
+      <p class="karte__was">
+        Die Stimmung lässt sich im Betrieb ändern, ohne dass der Ton
+        abreißt. Debian 13; für Ubuntu und Zorin muss neu gebaut werden.
+      </p>
       <div class="karte__fuellen"></div>
       <div class="karte__tat">
-        <a class="laden laden--leise" href="/herunterladen/iyambae-tuner-0.1.0-test-linux.tar.gz">
-          <span>Prototyp laden</span><span class="laden__groesse">11 KB</span>
+        <a class="laden" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb">
+          <span>DEB laden</span><span class="laden__groesse">43 KB</span>
         </a>
       </div>
     </div>
