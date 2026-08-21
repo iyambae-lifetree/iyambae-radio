@@ -10,7 +10,7 @@
 */
 
 import http from 'node:http';
-import { baueDienst, erzeugeDrossel } from '../src/server.mjs';
+import { baueDienst, baueFremdanmeldung, erzeugeDrossel } from '../src/server.mjs';
 import { speicherImArbeitsspeicher } from '../src/speicher.mjs';
 import { bereiteVor } from '../src/passwort.mjs';
 import { lenkeAusgabe } from '../src/protokoll.mjs';
@@ -29,7 +29,7 @@ export function fangeProtokoll() {
  * Startet den Dienst auf einem freien Port.
  * @returns Werkzeug zum Rufen, plus `speicher`, `mails` und `schliesse`.
  */
-export async function starteTestdienst({ drossel } = {}) {
+export async function starteTestdienst({ drossel, fremd } = {}) {
     await bereiteVor();
     vergissAufraeumen();
 
@@ -40,8 +40,16 @@ export async function starteTestdienst({ drossel } = {}) {
         zustand: () => ({ wartend: 0, pausiert: false }),
     };
 
+    /*
+      Die Fremdanmeldung wird MITGESTARTET, auch wo kein Test sie braucht.
+      Sonst pruefte kein Test die Weiche so, wie sie im Betrieb steht — und
+      die Weiche ist genau die Stelle, an der ein Weg versehentlich vor oder
+      hinter der Herkunftspruefung landet.
+    */
     const server = http.createServer(baueDienst({
-        speicher, versender, drossel: drossel ?? erzeugeDrossel(),
+        speicher, versender,
+        drossel: drossel ?? erzeugeDrossel(),
+        fremd: fremd ?? await baueFremdanmeldung(speicher),
     }));
     await new Promise((f) => server.listen(0, '127.0.0.1', f));
     const basis = 'http://127.0.0.1:' + server.address().port;

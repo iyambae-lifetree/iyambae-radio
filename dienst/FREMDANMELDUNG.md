@@ -101,6 +101,13 @@ Was im Einzelnen abweicht:
 | `sitzung.pruefe(anfrage)` | `pruefeSitzung(speicher, plaetzchenWert)` → `{kontoId, abdruck}` | nimmt den **Wert**, nicht die Anfrage |
 | `protokoll.schreib(art, felder)` | `protokolliere({art, ...})` | ein Objekt, kein Paar |
 
+> **Inzwischen geschrieben.** Es steht in `src/server.mjs` als
+> `speicherSchnittstelle` und `baueFremdanmeldung`; die Weiche ruft
+> `fremd.behandle` vor der eigenen Wegwahl auf. Der Entwurf unten bleibt
+> stehen, weil er die Umrechnung erklärt — die Platzhalter `/* noch zu bauen */`
+> heißen dort heute `legeKontoAn`, `verknuepfeKennung`, `leseKennungen` und
+> `loescheKennung` aus `speicher.mjs`.
+
 Das Zwischenstück, fertig zum Einsetzen in `server.mjs`:
 
 ```js
@@ -769,20 +776,21 @@ und `allowCredentials: []`.
 
 ## 9. Was offen bleibt
 
-1. **Das Zwischenstück zum Kern aus 0.3 ist noch nicht geschrieben**, und drei
-   Speicherfunktionen fehlen dort. Das ist der einzige Punkt, der zwischen
-   diesem Stand und einer laufenden Anmeldung steht.
-2. **`dienst/package.json`** liegt beim Kern. `@simplewebauthn/server@^13` muss
-   dort eingetragen werden — diese Dateien laufen sonst überall außer in den
-   Tests ins Leere.
+1. ~~Das Zwischenstück zum Kern aus 0.3~~ **erledigt.** Es steht als
+   `speicherSchnittstelle` und `baueFremdanmeldung` in `src/server.mjs`, die
+   fünf fehlenden Speicherfunktionen (`legeKontoAn`, `verknuepfeKennung`,
+   `leseKennungen`, `loescheKennung`, dazu `kennungAusZeile` im Inneren) in
+   `src/speicher.mjs`. `test/kennung.test.mjs` prüft die Naht gegen den
+   echten Speicher statt gegen eine Attrappe.
+2. ~~`@simplewebauthn/server@^13` in `dienst/package.json`~~ **erledigt**,
+   eingetragen als `^13.3.2`.
 3. **Der Widerspruch in Googles Doku** zum 100-Nutzer-Deckel (1.1). Einschätzung:
    veraltete Passage. Nicht belegt.
 4. **Ein echter Ende-zu-Ende-Lauf** mit Browser und Authenticator steht aus. Die
    Tests decken alles ab, was ohne Gerät prüfbar ist.
-5. **Kontolöschung nach Art. 17** muss auch `verweise`-Zeilen für `google:`,
-   `apple:` und `passkey:` mitnehmen. Das gehört in `DELETE /api/konto` im Kern —
-   `loescheKennung` räumt beide Tabellen, aber nur für die Kennung, die man
-   nennt.
+5. ~~Kontolöschung nach Art. 17~~ **erledigt.** `loescheKonto` in
+   `speicher.mjs` liest jetzt alle `kennung:`-Zeilen der Partition und
+   löscht zu jeder den Verweis — nicht mehr nur den der Adresse.
 6. **Die Content-Security-Policy** (7.6) ist ein eigener Arbeitsschritt.
 
 7. **Ein Wettlauf beim erstmaligen Beanspruchen einer Adresse.** Melden sich

@@ -42,6 +42,7 @@ import {
     TABELLE_KONTEN, TABELLE_VERWEISE,
     normalisiereAdresse, adresseSiehtEchtAus, kennungAbdruck,
     findeKonto, holeOderLegeKontoAn, loescheKonto,
+    legeKontoAn, verknuepfeKennung, leseKennungen, loescheKennung,
 } from './speicher.mjs';
 import {
     pruefeSitzung, erzeugeSitzung, widerrufe, widerrufeAlle,
@@ -55,6 +56,7 @@ import {
     saeubereEintraege, verschmelzePlatten, nurDrin, raeumeGrabsteine, beschneide,
     saeubereVerlauf, verschmelzeVerlauf,
 } from './abgleich.mjs';
+import { erzeugeFremdanmeldung } from './fremd.mjs';
 
 const PORT = Number(process.env.PORT ?? 8081);
 const HOECHSTER_KOERPER = Number(process.env.HOECHSTER_KOERPER ?? 32 * 1024);
@@ -295,6 +297,117 @@ function pruefeHerkunft(anfrage) {
     if (!ERLAUBTE_URSPRUENGE.includes(herkunft)) throw new HttpFehler(403, 'herkunft_fremd');
 }
 
+// ── Das Zwischenstueck zur Fremdanmeldung ───────────────────────────
+
+/*
+  fremd.mjs, google.mjs, apple.mjs und passkey.mjs sind gegen eine
+  abgesprochene Schnittstelle gebaut worden: Methodenobjekte `speicher`,
+  `sitzung`, `protokoll`. Der Kern hier ist parallel entstanden und
+  exportiert freie Funktionen mit `speicher` als erstem Argument.
+
+  Das ist kein Fehler auf einer der beiden Seiten, sondern die Naht, an der
+  zwei gleichzeitig gebaute Haelften aufeinandertreffen — und sie wird genau
+  hier geschlossen, an einer Stelle, nicht in vier Dateien verstreut.
+  FREMDANMELDUNG.md 0.3 hat die Umrechnung Zeile fuer Zeile.
+
+  `erzeugeFremdanmeldung` laedt google.mjs, apple.mjs und passkey.mjs traege
+  nach, deshalb ist es asynchron und deshalb steht es hier und nicht in
+  `baueDienst`: Gebaut wird beim Start, einmal.
+
+  Die fuenf Speichermethoden stehen als eigene Funktion daneben, damit ein
+  Test genau das pruefen kann, was der Betrieb benutzt — und nicht eine
+  Attrappe, die ihm aehnlich sieht.
+*/
+export function speicherSchnittstelle(speicher) {
+    return {
+        findeKontoUeberKennung: (art, wert) => findeKonto(speicher, art, wert),
+        legeKontoAn: ({ kennungen }) => legeKontoAn(speicher, { kennungen }),
+        verknuepfeKennung: (kontoId, art, wert, daten) =>
+            verknuepfeKennung(speicher, kontoId, art, wert, daten),
+        leseKennungen: (kontoId) => leseKennungen(speicher, kontoId),
+        loescheKennung: (kontoId, art, wert) => loescheKennung(speicher, kontoId, art, wert),
+    };
+}
+
+export async function baueFremdanmeldung(speicher, zusatz = {}) {
+    return erzeugeFremdanmeldung({
+        speicher: speicherSchnittstelle(speicher),
+        sitzung: {
+            async erzeuge(kontoId) {
+                const { wert } = await erzeugeSitzung(speicher, kontoId);
+                /*
+                  Ein fertiger Set-Cookie-Kopf, kein blosser Wert:
+                  `plaetzchenKopf` in fremd.mjs erkennt ihn am Semikolon und
+                  uebernimmt ihn unveraendert. So gelten fuer die
+                  Fremdanmeldung dieselben Plaetzchenregeln wie fuer den
+                  Einmalcode — auch PLAETZCHEN_UNSICHER=1.
+                */
+                return { plaetzchen: baueSitzungsPlaetzchen(wert), ablauf: null };
+            },
+            async pruefe(anfrage) {
+                const stand = await pruefeSitzung(speicher, liesPlaetzchen(anfrage.headers.cookie));
+                return stand?.kontoId ?? null;
+            },
+        },
+        protokoll: {
+            /*
+              Zwei Argumente werden zu einem Objekt, und `kontoId` heisst in
+              der Erlaubnisliste von protokoll.mjs `konto`. Alles, was hier
+              nicht ausdruecklich durchgereicht wird, faellt weg — und das
+              ist die Absicht: Was ein Aufrufer sonst noch mitgibt, hat im
+              Protokoll nichts verloren.
+            */
+            schreib: (art, { kontoId, ergebnis, anbieter } = {}) =>
+                protokolliere({ art, konto: kontoId, ergebnis, anbieter }),
+        },
+        ...zusatz,
+    });
+}
+
+/*
+  Drosselung der Fremdanmeldung.
+
+  Ohne sie sind diese Wege ein kostenloser Hebel gegen Google und Apple:
+  Jeder Start ist eine Anfrage, die wir dort verursachen, ohne dass jemand
+  angemeldet sein muss. konto.bicep.entwurf zieht in nginx dieselbe Grenze
+  ein zweites Mal; hier steht sie, weil der Dienst auf 127.0.0.1 hoert und
+  wer im selben Namensraum steht, an nginx vorbeikommt.
+
+  Die Zahlen sind KEINE neuen. Ein Anbieterstart ist eine Anmeldung, nur bei
+  jemand anderem, und bekommt die Werte von /api/anmelden (20 je Netz, 200
+  global). Ein Passkey-Lauf prueft einen Nachweis: je Netz die 40 von
+  /api/anmelden/passwort, global aber die 300 von /api/anmelden/code und
+  nicht dessen 120 — die 120 stehen dort fuer die Argon2-Schranke, und eine
+  Signaturpruefung kostet nichts dergleichen.
+
+  Die Achse „Adresse" faellt ueberall weg: An diesen Stellen ist keine
+  bekannt, und das ist der Grund, warum sie hier nicht fehlt, sondern nicht
+  gebraucht wird.
+
+  NICHT gedrosselt werden die beiden Rueckwege. Apples kommt von Apples
+  Adressen, nicht von der des Nutzers — eine Drosselung nach Netz traefe
+  dort alle gleichzeitig. Googles kostet nichts ohne einen `state`, und den
+  gibt es nur ueber den gedrosselten Start.
+*/
+function fremdDrossel(schluessel, netz) {
+    switch (schluessel) {
+        case 'GET /api/google/start':
+        case 'GET /api/apple/start':
+            return [
+                ['netz', 'fremd:' + netz, 20, 10 * 60_000],
+                ['global', 'fremd:*', 200, 60_000],
+            ];
+        case 'POST /api/passkey/anmelden/start':
+        case 'POST /api/passkey/anmelden/fertig':
+            return [
+                ['netz', 'pkey:' + netz, 40, 10 * 60_000],
+                ['global', 'pkey:*', 300, 60_000],
+            ];
+        default:
+            return null;
+    }
+}
+
 // ── Der Dienst ──────────────────────────────────────────────────────
 
 /**
@@ -302,7 +415,7 @@ function pruefeHerkunft(anfrage) {
  * Netzwerk aufrufen koennen — und damit Speicher und Versender von aussen
  * einsetzbar sind.
  */
-export function baueDienst({ speicher, versender, drossel = erzeugeDrossel() } = {}) {
+export function baueDienst({ speicher, versender, drossel = erzeugeDrossel(), fremd = null } = {}) {
 
     // ── Kleinkram, der von mehreren Stellen gebraucht wird ──────────
 
@@ -802,21 +915,53 @@ export function baueDienst({ speicher, versender, drossel = erzeugeDrossel() } =
             return;
         }
 
-        const behandler = wege[schluessel];
-        if (!behandler) {
-            /*
-              Nur /api/ gehoert diesem Dienst. Alles andere ist entweder ein
-              Pfad, den jemand anders baut (soziale Anmeldung, Passkeys),
-              oder es gehoert nginx. Ein 404 beansprucht nichts.
-            */
-            antworte(antwort, 404, { fehler: 'unbekannter_pfad' });
-            return;
-        }
-
         try {
+            const netz = netzVon(anfrage.headers['x-forwarded-for']);
+
+            /*
+              Google, Apple und Passkeys VOR der eigenen Wegwahl. Sie lesen
+              ihren Rumpf selbst — Formular bei Apple, JSON bei den
+              Passkeys —, deshalb darf `liesKoerper` vorher nicht daran
+              gewesen sein.
+
+              Und deshalb laeuft `pruefeHerkunft` hier auch nicht: Jeder
+              veraendernde Weg dort prueft den Ursprung selbst, gegen
+              dieselbe Liste. Es muss so sein, denn GENAU EINER darf es
+              nicht — Apples Rueckweg ist ein form_post von
+              appleid.apple.com, dort ist der Ursprung fremd und der einmal
+              gueltige `state` der Schutz.
+            */
+            if (fremd) {
+                const achsen = fremdDrossel(schluessel, netz);
+                if (achsen) drossle(achsen);
+                /*
+                  Die drei Kopfzeilen aus `antworte` vorab setzen, damit auch
+                  Umleitungen und Passkey-Antworten sie tragen. writeHead in
+                  fremd.mjs ueberschreibt, was es selbst setzt, und laesst den
+                  Rest stehen — no-referrer ist der Zusatz, den es dort nicht
+                  gibt und den eine Umleitung zu Google gut gebrauchen kann.
+                */
+                antwort.setHeader('Cache-Control', 'no-store');
+                antwort.setHeader('X-Content-Type-Options', 'nosniff');
+                antwort.setHeader('Referrer-Policy', 'no-referrer');
+                if (await fremd.behandle(anfrage, antwort)) {
+                    stosseAufraeumenAn(speicher);
+                    return;
+                }
+            }
+
+            const behandler = wege[schluessel];
+            if (!behandler) {
+                /*
+                  Nur /api/ gehoert diesem Dienst. Alles andere gehoert
+                  nginx. Ein 404 beansprucht nichts.
+                */
+                antworte(antwort, 404, { fehler: 'unbekannter_pfad' });
+                return;
+            }
+
             if (anfrage.method !== 'GET') pruefeHerkunft(anfrage);
             const koerper = anfrage.method === 'GET' ? {} : await liesKoerper(anfrage);
-            const netz = netzVon(anfrage.headers['x-forwarded-for']);
 
             const ergebnis = await behandler({ anfrage, koerper, netz, start, pfad });
             antworte(antwort, ergebnis.status, ergebnis.koerper ?? null, ergebnis.kopf);
@@ -912,7 +1057,15 @@ export async function starte({ port = PORT } = {}) {
             + 'Arbeitsspeicher und sind beim naechsten Neustart weg. Das ist nur fuer Tests.\n');
     }
 
-    const server = http.createServer(baueDienst({ speicher, versender }));
+    /*
+      Einmal beim Start, nicht bei der ersten Anmeldung: Das Nachladen von
+      google.mjs, apple.mjs und passkey.mjs faellt sonst dem ersten Menschen
+      zur Last, der sich anmeldet — und der wartet ohnehin schon auf den
+      Kaltstart.
+    */
+    const fremd = await baueFremdanmeldung(speicher);
+
+    const server = http.createServer(baueDienst({ speicher, versender, fremd }));
 
     /*
       Zeitgrenzen ausdruecklich setzen. Die Vorgaben von node:http sind
