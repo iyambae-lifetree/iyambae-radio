@@ -598,8 +598,14 @@ resource maildomaene 'Microsoft.Communication/emailServices/domains@2023-04-01' 
         --email-service-name acs-iyambae-mail -g iyambae \
         --query "properties.verificationStates.Domain.status" -o tsv
 
-  Steht dort `Verified`, läuft derselbe Befehl noch einmal mit
+  Steht dort bei ALLEN VIER `Verified`, läuft derselbe Befehl noch einmal mit
   `mailBereit=true` — und erst dann entsteht die Verknüpfung.
+
+  ALLE VIER, und das ist gemessen, nicht abgeschrieben: Am 21.08.2026 waren
+  Domain und SPF geprüft, DKIM und DKIM2 nicht. Die Verknüpfung schlug mit
+  demselben `DomainValidationError` fehl wie ganz ohne Prüfung. DKIM ist hier
+  also keine Kosmetik für die Zustellbarkeit, sondern eine harte Vorbedingung
+  — die beiden CNAMEs müssen stehen, bevor irgendetwas weitergeht.
 */
 resource absender 'Microsoft.Communication/emailServices/domains/senderUsernames@2023-04-01' = if (mailBereit) {
   parent: maildomaene

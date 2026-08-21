@@ -190,6 +190,22 @@ Der Null-MX (`0 .`) ist Absicht: `mail.iyambae.fm` sendet nur. Ein
 Punkt als Ziel heißt nach RFC 7505 „hier nimmt niemand Post an" — das ist
 ehrlicher als ein MX, der auf einen Server zeigt, der die Post wegwirft.
 
+> **Gemessen am 21.08.2026, und es kostet sonst einen halben Tag:** Domain
+> und SPF geprüft reichen **nicht**. Solange DKIM und DKIM2 auf `NotStarted`
+> stehen, lehnt Azure die Verknüpfung der Domäne mit der ACS-Ressource ab —
+> mit derselben Meldung wie ganz ohne Prüfung
+> (`Requested domain is not in a valid state for linking`). DKIM ist hier
+> keine Kosmetik für die Zustellbarkeit, sondern harte Vorbedingung.
+>
+> Und: Azure prüft **nicht von selbst**. Die Einträge können seit Stunden im
+> DNS stehen und der Status bleibt `NotStarted`, bis jemand anstößt:
+>
+> ```bash
+> for art in Domain SPF DKIM DKIM2; do
+>   az communication email domain initiate-verification >     --domain-name mail.iyambae.fm >     --email-service-name acs-iyambae-mail -g iyambae >     --verification-type $art
+> done
+> ```
+
 ### 2.5 Fertig, wenn das hier grün ist
 
 ```bash
