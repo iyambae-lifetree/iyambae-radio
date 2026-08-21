@@ -21,6 +21,9 @@
  stehen bleibt, bis der Besucher entscheidet.
 */
 
+import { t } from './sprache.mjs';
+
+
 const STUNDE = 60 * 60 * 1000;
 
 /**
@@ -54,7 +57,7 @@ export function beobachteAktualisierung({ spieltGerade, melde }) {
              niemand, weil hier ein leeres catch stand.
             */
             console.error('Service Worker nicht registrierbar:', fehler);
-            melde?.('Offline-Betrieb steht nicht zur Verfügung.', 'warnung');
+            melde?.(t('aktualisierung.keinOffline'), 'warnung');
         });
 
     /*
@@ -88,18 +91,18 @@ function zeigeHinweis() {
     kasten.setAttribute('role', 'status');
 
     const text = document.createElement('span');
-    text.textContent = 'Neue Fassung bereit.';
+    text.textContent = t('aktualisierung.bereit');
 
     const knopf = document.createElement('button');
     knopf.type = 'button';
     knopf.className = 'meldung__knopf';
-    knopf.textContent = 'Neu laden';
+    knopf.textContent = t('aktualisierung.neuLaden');
     knopf.addEventListener('click', () => location.reload());
 
     const spaeter = document.createElement('button');
     spaeter.type = 'button';
     spaeter.className = 'meldung__knopf meldung__knopf--leise';
-    spaeter.textContent = 'Später';
+    spaeter.textContent = t('aktualisierung.spaeter');
     spaeter.addEventListener('click', () => kasten.remove());
 
     kasten.append(text, knopf, spaeter);

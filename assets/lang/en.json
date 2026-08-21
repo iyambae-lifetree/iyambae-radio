@@ -90,5 +90,12 @@
   "regalwand.sender": "{anzahl} stations",
   "filter.bereich": "Filter stations",
   "filter.zuruecksetzen": "Clear filters",
-  "karte.spielen": "Play"
+  "karte.spielen": "Play",
+  "aktualisierung.keinOffline": "Offline mode is unavailable.",
+  "aktualisierung.bereit": "A new version is ready.",
+  "aktualisierung.neuLaden": "Reload",
+  "aktualisierung.spaeter": "Later",
+  "fehler.frage": "Something went wrong. Send an anonymous report so it can be fixed?",
+  "fehler.senden": "Send",
+  "fehler.nein": "No"
 }

@@ -90,5 +90,12 @@
   "regalwand.sender": "{anzahl} Sender",
   "filter.bereich": "Sender filtern",
   "filter.zuruecksetzen": "Filter zurücksetzen",
-  "karte.spielen": "Abspielen"
+  "karte.spielen": "Abspielen",
+  "aktualisierung.keinOffline": "Offline-Betrieb steht nicht zur Verfügung.",
+  "aktualisierung.bereit": "Neue Fassung bereit.",
+  "aktualisierung.neuLaden": "Neu laden",
+  "aktualisierung.spaeter": "Später",
+  "fehler.frage": "Ein Fehler ist aufgetreten. Anonymen Bericht senden, damit er behoben wird?",
+  "fehler.senden": "Senden",
+  "fehler.nein": "Nein"
 }

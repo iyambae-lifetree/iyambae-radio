@@ -16,6 +16,9 @@
  Pfad wird ohne Abfrageteil gesendet — dort könnte ein Suchbegriff stehen.
 */
 
+import { t } from './sprache.mjs';
+
+
 const SCHLUESSEL = 'hz_fehlerbericht';
 const ZIEL = './fehler';
 
@@ -78,14 +81,14 @@ async function sende(bericht) {
 function frage(melde) {
     if (!melde) return;
     melde.frage(
-        'Ein Fehler ist aufgetreten. Anonymen Bericht senden, damit er behoben wird?',
+        t('fehler.frage'),
         [
-            { text: 'Senden', haupt: true, tun: () => {
+            { text: t('fehler.senden'), haupt: true, tun: () => {
                 zustand = EINWILLIGUNG.erlaubt;
                 schreib(zustand);
                 warteschlange.splice(0).forEach(sende);
             }},
-            { text: 'Nein', tun: () => {
+            { text: t('fehler.nein'), tun: () => {
                 zustand = EINWILLIGUNG.abgelehnt;
                 schreib(zustand);
                 warteschlange = [];

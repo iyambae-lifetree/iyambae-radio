@@ -776,10 +776,26 @@ class UI {
       const knopf = karte.querySelector('.karte__favorit');
       if (knopf) { knopf.innerHTML = symbol(favorit ? 'gemerkt' : 'merken', 18); knopf.classList.toggle('ist-favorit', favorit); }
     });
+    /*
+     Nur das Wort tauschen, nicht den ganzen Knopfinhalt.
+
+     Vorher stand hier heroKnopf.textContent = ... — das loescht ALLE
+     Kindelemente, also auch das SVG-Herz daneben. Nach dem ersten Merken war
+     das Zeichen weg und kam bis zum Neuladen nicht wieder.
+    */
     const heroKnopf = document.getElementById('heroFavorit');
     if (heroKnopf && this.aktuelleId) {
-      heroKnopf.textContent = this.istFavorit(this.aktuelleId)
-        ? t('hero.knopf.gemerkt') : t('hero.knopf.merken');
+      const ist = this.istFavorit(this.aktuelleId);
+      const schluessel = ist ? 'hero.knopf.gemerkt' : 'hero.knopf.merken';
+      const zeichen = heroKnopf.querySelector('[data-symbol]');
+      const wort = heroKnopf.querySelector('[data-text]');
+      if (zeichen) {
+        zeichen.dataset.symbol = ist ? 'gemerkt' : 'merken';
+        zeichen.innerHTML = symbol(zeichen.dataset.symbol,
+                                   Number(zeichen.dataset.symbolGroesse) || 17);
+      }
+      if (wort) { wort.dataset.text = schluessel; wort.textContent = t(schluessel); }
+      heroKnopf.classList.toggle('ist-favorit', ist);
     }
   }
 
