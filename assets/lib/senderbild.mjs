@@ -12,6 +12,19 @@ export const MARKE = '/assets/logo/iyambae-marke.svg';
  Schlag weg. Der Schraegstrich kommt deshalb hier dazu und nicht in die
  Daten: Die Daten beschreiben den Sender, nicht die Wegfuehrung.
 */
+// Fuer das Plattenlabel eine eigene Fassung: Sie ist auf den blauen Punkt im
+// Wirbel der Spirale ausgerichtet, nicht auf die Bildmitte. Dadurch faellt der
+// Punkt mit der Drehachse zusammen und wird zur Spindel, auf der die Platte
+// sitzt. Mit der gewoehnlichen Marke wuerde er beim Drehen eiern.
+export const LABEL_MARKE = '/assets/logo/iyambae-label.svg';
+
+// Was auf dem Plattenteller liegt.
+export function labelbild(sender) {
+  const bild = sender?.logo;
+  if (!bild) return LABEL_MARKE;
+  return bild.startsWith('/') || bild.startsWith('http') ? bild : '/' + bild;
+}
+
 export function senderbild(sender) {
   const bild = sender?.logo;
   if (!bild) return MARKE;

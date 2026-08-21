@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v20';
+const SW_VERSION = 'iyambae-v21';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -37,6 +37,14 @@ const SHELL_FILES = [
     // Ladeschirm und Logo im Kopf. Ohne dieses Bild oeffnet der Laden
     // offline mit einer leeren Flaeche.
     '/assets/logo/iyambae-marke.svg',
+    // Die runde Fassung fuer das Plattenlabel, auf den blauen Punkt
+    // ausgerichtet — der sitzt beim Drehen auf der Spindel.
+    '/assets/logo/iyambae-label.svg',
+    // Die Texturen des Plattenspielers: Vinyl, Filz, gebuerstetes
+    // Metall. Ohne sie faellt der Teller auf Farbverlaeufe zurueck.
+    '/assets/textur/vinyl.webp',
+    '/assets/textur/filz.webp',
+    '/assets/textur/metall.webp',
     '/assets/styles.css',
     '/assets/schrift/schriften.css',
     // Die SIL OFL verlangt, dass der Lizenztext die Schriften begleitet.

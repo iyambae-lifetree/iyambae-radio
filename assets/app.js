@@ -11,7 +11,7 @@ import { findeVerwandten } from './lib/verwandt.mjs';
 import { frageMyRetuner, wartAufEinwilligung, anzeigeStimmung, anzeigeQuelle, ZUSTAND }
   from './lib/myretuner.mjs';
 import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
-import { senderbild, hatEigenesLogo, regalton, REGALTON, MARKE, huellenzeilen,
+import { senderbild, labelbild, hatEigenesLogo, regalton, REGALTON, MARKE, LABEL_MARKE, huellenzeilen,
          huellengroesse, regalmosaik, zerlegeName, haeuserMitMehreren, bandbreite }
   from './lib/senderbild.mjs';
 import { symbol, setzeSymbole } from './lib/symbole.mjs';
@@ -1249,14 +1249,17 @@ class UI {
     const label = document.getElementById('labelBild');
     if (label && label.dataset.senderId !== sender.id) {
       label.dataset.senderId = sender.id;
-      const bild = senderbild(sender);
-      if (bild === MARKE) {
-        label.src = MARKE;
+      const bild = labelbild(sender);
+      // Traegt der Sender kein eigenes Logo, liegt die Hausmarke auf dem
+      // Teller — und ihr blauer Punkt sitzt dann genau auf der Spindel.
+      label.closest('.label')?.classList.toggle('traegt-marke', bild === LABEL_MARKE);
+      if (bild === LABEL_MARKE) {
+        label.src = LABEL_MARKE;
       } else {
         // Erst laden, dann tauschen — sonst blitzt kurz ein leeres Label auf
         const probe = new Image();
         probe.onload  = () => { label.src = bild; };
-        probe.onerror = () => { label.src = MARKE; };
+        probe.onerror = () => { label.src = LABEL_MARKE; label.closest('.label')?.classList.add('traegt-marke'); };
         probe.src = bild;
       }
     }
@@ -1516,8 +1519,15 @@ class App {
   }
 
   // ── Die drei Zugänge ─────────────────────────────────────────────
+  // Zurueckgenommene Regale sind ausgenommen — die Wuehlkiste ist da, um
+  // Besucher abzuholen, die etwas Vertrautes suchen. Wer das will, legt
+  // selbst auf. Der Zufall ist fuer die Besonderheiten da, sonst verfehlt
+  // er seinen Zweck. Das gilt fuer Nadel, Auslage und Sender der Woche.
   _ziehbareSender() {
-    return this.ui.sender.filter(s => !istWackelig(s.id));
+    const zurueckgenommen = new Set(
+      this.ui.regale.filter((r) => r.zurueckgenommen).map((r) => r.id));
+    return this.ui.sender.filter(
+      (s) => !istWackelig(s.id) && !zurueckgenommen.has(s.regal));
   }
 
   // Der Sender der Woche. Erfindet nichts: er kommt aus dem eigenen,
