@@ -101,6 +101,17 @@
     </button>
 </section>
 
+<!-- Die Kategorieübersicht. Steht vor der Filterleiste, weil sie die Frage
+     „was gibt es hier überhaupt?" beantwortet — und ein Klick darauf setzt
+     genau den Regalfilter, der darunter klebt. -->
+<section class="regalwand" id="regalwand" data-aria="regalwand.bereich" aria-label="Regale">
+    <div class="regalwand__kopf">
+        <h2 class="regalwand__titel" data-text="regalwand.titel">Die Regale</h2>
+        <span class="regalwand__zahl" id="regalwandZahl"></span>
+    </div>
+    <div class="regalwand__raster" id="regalwandRaster"></div>
+</section>
+
 <section class="tipp" id="tipp" data-aria="tipp.bereich" aria-label="Sender der Woche" hidden>
     <div class="tipp__marke">
         <span class="tipp__stern" data-symbol="stern" data-symbol-groesse="15"></span>
@@ -131,22 +142,29 @@
     <div class="auslage__raster" id="auslageRaster"></div>
 </section>
 
-<div class="filter">
-    <div class="filter__guete" role="group" data-aria="filter.guete.bereich" aria-label="Nach Klangqualität filtern">
+<div class="filter" role="group" data-aria="filter.bereich" aria-label="Sender filtern">
+    <div class="filter__stand" id="filterStand" hidden>
+        <span id="filterStandText"></span>
+        <button class="filter__zuruecksetzen" id="filterZuruecksetzen"
+                data-aria="filter.zuruecksetzen" aria-label="Filter zurücksetzen"
+                title="Filter zurücksetzen">&times;</button>
+    </div>
+    <div class="filter__gruppe">
         <span class="filter__titel" data-text="filter.guete.titel">Klang</span>
         <button class="guete-knopf" data-guete="verlustfrei" data-text="filter.guete.verlustfrei">verlustfrei &amp; Opus <span>11</span></button>
         <button class="guete-knopf" data-guete="hoch" data-text="filter.guete.hoch">ab 256 kbit/s <span>45</span></button>
     </div>
+    <div class="filter__trenner" aria-hidden="true"></div>
     <!-- Regale kommen aus data/sender.json, damit ein neues hier nichts kostet. -->
-    <div class="filter__regale" role="group" data-aria="filter.regal.bereich" aria-label="Nach Regal filtern">
+    <div class="filter__gruppe">
         <span class="filter__titel" data-text="filter.regal.titel">Regal</span>
-        <span id="regalFilter"></span>
+        <span id="regalFilter" class="etiketten"></span>
     </div>
-    <div class="filter__stichwort" role="group" data-aria="filter.etikett.bereich" aria-label="Nach Stichwort filtern">
+    <div class="filter__trenner" aria-hidden="true"></div>
+    <div class="filter__gruppe">
         <span class="filter__titel" data-text="filter.etikett.titel">Stichwort</span>
         <span class="etiketten" id="etiketten"></span>
     </div>
-    <div class="filter__stand" id="filterStand" hidden></div>
 </div>
 
 <main class="regale" id="regale"></main>

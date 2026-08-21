@@ -11,8 +11,8 @@ import { findeVerwandten } from './lib/verwandt.mjs';
 import { frageMyRetuner, wartAufEinwilligung, anzeigeStimmung, anzeigeQuelle, ZUSTAND }
   from './lib/myretuner.mjs';
 import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
-import { senderbild, hatEigenesLogo, regalton, MARKE, huellenzeilen, huellengroesse }
-  from './lib/senderbild.mjs';
+import { senderbild, hatEigenesLogo, regalton, REGALTON, MARKE, huellenzeilen,
+         huellengroesse, regalmosaik } from './lib/senderbild.mjs';
 import { symbol, setzeSymbole } from './lib/symbole.mjs';
 import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 import { beobachteFehler } from './lib/fehlerbericht.mjs';
@@ -476,11 +476,14 @@ class UI {
     const wackelig = istWackelig(sender.id) ? ' ans-regalende' : '';
     const favorit = this.istFavorit(sender.id);
     /*
-     Klangqualitaet in drei Stufen, nicht in zwei.
+     Klangqualitaet in vier Stufen, nicht in zwei.
 
      Fuer audiophile Hoerer ist FLAC etwas anderes als 256 kbit/s, und Opus
      bei 128 klingt besser als MP3 bei 192. Die Abstufung steht deshalb im
      Abzeichen selbst — sie ist die Information, nicht Schmuck.
+
+     Sie steht jetzt in der Namenszeile statt auf dem Cover. Auf dem Bild war
+     sie ueber hellen Covern unlesbar; genau darauf zielte die Beschwerde.
     */
     const guete = sender.codec === 'flac' ? 'FLAC'
                 : ['opus', 'vorbis'].includes(sender.codec) ? sender.codec.toUpperCase()
@@ -499,9 +502,6 @@ class UI {
     return `
       <article class="karte${aktiv}${wackelig}" data-sender-id="${sender.id}"
                style="--regalton:${regalton(sender)}">
-        <button class="karte__favorit${favorit ? ' ist-favorit' : ''}"
-                aria-label="${favorit ? t('karte.favorit.entfernen') : t('karte.favorit.hinzu')}">${symbol(favorit ? 'gemerkt' : 'merken', 18)}</button>
-        ${guete ? `<span class="karte__guete karte__guete--${stufe}" title="${guetetitel}">${guete}</span>` : ''}
         <div class="karte__bild">
           ${eigenes
             ? `<img src="${senderbild(sender)}" alt="" loading="lazy" width="512" height="512">`
@@ -514,16 +514,25 @@ class UI {
                  <span class="huelle__name">${huellenzeilen(sender).join('<br>')}</span>
                  <img class="huelle__marke" src="${MARKE}" alt="" width="28" height="20">
                </div>`}
+          <div class="karte__schleier"></div>
+          <p class="karte__kaertchen"><span>${sender.kaertchen}</span></p>
+          <button class="karte__favorit${favorit ? ' ist-favorit' : ''}"
+                  aria-label="${favorit ? t('karte.favorit.entfernen') : t('karte.favorit.hinzu')}">${symbol(favorit ? 'gemerkt' : 'merken', 20)}</button>
+          <button class="karte__spielen" aria-label="${t('karte.spielen')}">
+            <span class="karte__ikon--an">${symbol('abspielen', 20)}</span><span class="karte__ikon--aus">${symbol('pause', 20)}</span>
+          </button>
+          <div class="karte__laeuft"><span></span><span></span><span></span></div>
         </div>
-        <div class="karte__kopf">
-          <h3 class="karte__name">${sender.name}</h3>
+        <div class="karte__etikett">
+          <div class="karte__zeile">
+            <h3 class="karte__name">${sender.name}</h3>
+            ${guete ? `<span class="karte__guete karte__guete--${stufe}" title="${guetetitel}">${guete}</span>` : ''}
+          </div>
           <p class="karte__ort">${sender.ort} · ${sender.land}</p>
+          <div class="karte__fuss">
+            ${(sender.etiketten ?? []).slice(0, 2).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
+          </div>
         </div>
-        <p class="karte__kaertchen">${sender.kaertchen}</p>
-        <div class="karte__fuss">
-          ${(sender.etiketten ?? []).slice(0, 3).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
-        </div>
-        <div class="karte__laeuft"><span></span><span></span><span></span></div>
       </article>`;
   }
 
@@ -532,6 +541,7 @@ class UI {
       const id = karte.dataset.senderId;
       karte.addEventListener('click', (e) => {
         if (e.target.closest('.karte__favorit')) return;
+        if (e.target.closest('.karte__spielen')) return;
         const sender = this.senderMitId(id);
         if (sender) window.app.spieleSender(sender);
       });
@@ -539,7 +549,68 @@ class UI {
         e.stopPropagation();
         this.toggleFavorit(id);
       });
+      /*
+       Der Abspielknopf haelt an, wenn der Sender schon laeuft — sonst wuerde
+       ein Klick auf ein sichtbares Pausenzeichen den Strom neu aufbauen.
+      */
+      karte.querySelector('.karte__spielen')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (this.aktuelleId === id) return window.app.wechselSpiel();
+        const sender = this.senderMitId(id);
+        if (sender) window.app.spieleSender(sender);
+      });
     });
+  }
+
+  /*
+   Die Regalwand — neun Faecher mit Bild.
+
+   Bisher gab es die Regale nur als Ueberschriften mitten im Fluss. Wer wissen
+   wollte, was der Laden fuehrt, musste an allem vorbeiscrollen.
+
+   Die Bilder sind erzeugt, aber nicht erfunden: vier echte Cover aus dem Fach
+   als Mosaik, getoent im Regalton. Ein gemaltes Fantasiebild waere huebscher
+   und wuerde zeigen, was NICHT im Fach steht.
+  */
+  zeichneRegalwand() {
+    const raster = document.getElementById('regalwandRaster');
+    if (!raster) return;
+
+    const proRegal = new Map();
+    for (const s of this.sender) {
+      if (!proRegal.has(s.regal)) proRegal.set(s.regal, []);
+      proRegal.get(s.regal).push(s);
+    }
+
+    const faecher = this.regale.filter(r => (proRegal.get(r.id) ?? []).length);
+    raster.innerHTML = faecher.map(r => {
+      const drin = proRegal.get(r.id);
+      const bilder = regalmosaik(drin);
+      return `
+        <button class="regalfach" data-regal="${r.id}" style="--regalton:${REGALTON[r.id] ?? REGALTON.grenzgaenger}"
+                title="${r.beschreibung ?? ''}">
+          <div class="regalfach__mosaik">
+            ${bilder.map(b => `<img src="${b}" alt="" loading="lazy" width="256" height="256">`).join('')}
+          </div>
+          <div class="regalfach__text">
+            <span class="regalfach__name">${r.name}</span>
+            <span class="regalfach__zahl">${t('regalwand.sender', { anzahl: drin.length })}</span>
+          </div>
+        </button>`;
+    }).join('');
+
+    const zahl = document.getElementById('regalwandZahl');
+    if (zahl) zahl.textContent = t('regalwand.zahl', { faecher: faecher.length, sender: this.sender.length });
+
+    raster.onclick = (e) => {
+      const fach = e.target.closest('.regalfach');
+      if (!fach) return;
+      this.setzeRegalFilter(fach.dataset.regal);
+      // Zum Ergebnis fuehren, aber unter die klebende Leiste — sonst steht
+      // die erste Reihe Huellen dahinter.
+      document.getElementById('regale')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
   }
 
   // ── Regale ───────────────────────────────────────────────────────
@@ -563,9 +634,10 @@ class UI {
       const el = document.createElement('section');
       el.className = 'regal';
       el.dataset.regal = regal.id;
+      el.style.setProperty('--regalton', REGALTON[regal.id] ?? REGALTON.grenzgaenger);
       el.innerHTML = `
         <div class="regal__kopf">
-          <h2 class="regal__titel"><span class="regal__icon">${regal.icon}</span> ${regal.name}</h2>
+          <h2 class="regal__titel">${regal.name}</h2>
           <span class="regal__zahl">${drin.length}</span>
         </div>
         <p class="regal__beschreibung">${regal.beschreibung}</p>
@@ -589,8 +661,9 @@ class UI {
     if (regalKasten) {
       regalKasten.innerHTML = this.regale
         .filter(r => proRegal.get(r.id))
-        .map(r => `<button class="regal-knopf" data-regal="${r.id}" title="${r.beschreibung ?? ''}">`
-                + `${r.icon} ${r.name}<span>${proRegal.get(r.id)}</span></button>`)
+        .map(r => `<button class="regal-knopf" data-regal="${r.id}" title="${r.beschreibung ?? ''}"`
+                + ` style="--regalton:${REGALTON[r.id] ?? REGALTON.grenzgaenger}">`
+                + `${r.name}<span>${proRegal.get(r.id)}</span></button>`)
         .join(' ');
     }
 
@@ -670,28 +743,29 @@ class UI {
       k.classList.toggle('ist-aktiv', k.dataset.regal === f.regal));
     document.querySelectorAll('.etikett').forEach(k =>
       k.classList.toggle('ist-aktiv', k.dataset.etikett === f.etikett));
+    document.querySelectorAll('.regalfach').forEach(k =>
+      k.classList.toggle('ist-aktiv', k.dataset.regal === f.regal));
 
     this.zeigeFilterstand(treffer.length);
     this.zeichneRegale(this.istGefiltert() ? treffer : null);
   }
 
+  /*
+   Der Filterstand klebt am linken Rand der Leiste und sagt, wie viele Sender
+   uebrig sind. Ohne ihn wirkt ein Filter kaputt, sobald er greift.
+
+   Knopf und Kasten stehen fest im Dokument — frueher baute diese Funktion
+   den Knopf bei jedem Durchlauf neu, samt Ereignisbehandlung. Bei zehn
+   Filterklicks waren das zehn verworfene Knoepfe.
+  */
   zeigeFilterstand(anzahl) {
     const kasten = document.getElementById('filterStand');
-    if (!kasten) return;
-    if (!this.istGefiltert()) { kasten.hidden = true; kasten.replaceChildren(); return; }
-
-    const text = document.createElement('span');
+    const text = document.getElementById('filterStandText');
+    if (!kasten || !text) return;
+    if (!this.istGefiltert()) { kasten.hidden = true; return; }
     text.textContent = anzahl === 1
       ? t('filter.stand.eins')
       : t('filter.stand.mehrere', { anzahl, gesamt: this.sender.length });
-
-    const knopf = document.createElement('button');
-    knopf.type = 'button';
-    knopf.className = 'filter__zuruecksetzen';
-    knopf.textContent = t('filter.knopf.alle');
-    knopf.addEventListener('click', () => this.filterZuruecksetzen());
-
-    kasten.replaceChildren(text, knopf);
     kasten.hidden = false;
   }
 
@@ -871,6 +945,8 @@ class App {
     this.engine.setze432(speicher.lies(SCHLUESSEL.pitch432, true));
 
     this.ui.zeichneEtiketten();
+    this.ui.zeichneRegalwand();
+    this.misstKopf();
     this.ui.zeichneRegale();
     this.zeichneWochentipp();
     this.zeichneAuslage();
@@ -1012,6 +1088,28 @@ class App {
       });
     });
     abschnitt.hidden = false;
+  }
+
+  /*
+   Misst den Kopf und gibt seine Hoehe als --kopf-hoehe weiter, damit die
+   Filterleiste genau darunter klebt.
+
+   Fest verdrahten geht nicht: Der Kopf ist je nach Fensterbreite ein- oder
+   zweizeilig, weil das Suchfeld umbricht. Ein fester Wert waere auf der
+   einen Breite eine Luecke und auf der anderen eine Ueberdeckung.
+  */
+  misstKopf() {
+    const kopf = document.getElementById('kopf');
+    if (!kopf) return;
+    const setze = () => {
+      // Auf dem Handy scrollt der Kopf weg, dort klebt die Leiste bei 0.
+      const klebt = getComputedStyle(kopf).position === 'sticky';
+      document.documentElement.style.setProperty(
+        '--kopf-hoehe', klebt ? Math.round(kopf.offsetHeight) + 'px' : '0px');
+    };
+    setze();
+    if (window.ResizeObserver) new ResizeObserver(setze).observe(kopf);
+    window.addEventListener('resize', setze, { passive: true });
   }
 
   zeichneAuslage() {
@@ -1213,6 +1311,7 @@ class App {
     anKlick('knopf432',          () => this.wechsle432());
     anKlick('knopfMyRetuner',    () => this.frageMyRetunerAn());
     anKlick('auslageNeu',        () => this.zeichneAuslage());
+    anKlick('filterZuruecksetzen', () => this.ui.filterZuruecksetzen());
     anKlick('heroFavorit',       () => { if (this.ui.aktuelleId) this.ui.toggleFavorit(this.ui.aktuelleId); });
 
     document.getElementById('etiketten')?.addEventListener('click', (e) => {

@@ -1,9 +1,7 @@
 {
   "seite.titel": "IYAMBAE Radio — ein Plattenladen zum Zuhören",
   "seite.beschreibung": "IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 129 Sender aus 29 Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Fundstücke, Freakshow, Rückspiegel.",
-
   "laden.hinweis": "Plattenladen wird aufgeschlossen …",
-
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "Sender, Ort, Stichwort …",
   "kopf.suche.hinweis": "Sender suchen",
@@ -15,7 +13,6 @@
   "kopf.myretuner.knopf": "Ich habe MyRetuner",
   "kopf.holen.titel": "Diese Seite rät. MyRetuner misst.",
   "kopf.holen.knopf": "Dauerhaft in 432 Hz — MyRetuner",
-
   "hero.guete.bereit": "bereit",
   "hero.guete.flac": "verlustfrei FLAC",
   "hero.guete.bitrate": "{codec} {bitrate} kbit/s",
@@ -25,28 +22,23 @@
   "hero.ort.start": "129 Sender aus 29 Ländern, in neun Regalen",
   "hero.kaertchen.start": "Leg eine Platte auf — oder lass die Nadel fallen und sieh, wo sie landet.",
   "hero.knopf.abspielen": "Abspielen",
-  "hero.knopf.merken": "♡ Merken",
-  "hero.knopf.gemerkt": "♥ Gemerkt",
-
-  "allgemein.senderseite": "Senderseite ↗",
-
+  "hero.knopf.merken": "Merken",
+  "hero.knopf.gemerkt": "Gemerkt",
+  "allgemein.senderseite": "Senderseite",
   "griff.bereich": "Zugänge",
   "griff.meine.titel": "Meine Platten",
   "griff.meine.leer": "noch leer",
   "griff.meine.zahl": "{anzahl} Sender",
   "griff.nadel.titel": "Nadel fallen lassen",
   "griff.nadel.unter": "Zufall aus neun Regalen",
-
   "tipp.bereich": "Sender der Woche",
   "tipp.marke": "Sender der Woche",
   "tipp.woche": "Sender der Woche · KW {woche} / {jahr}",
-  "tipp.knopf.auflegen": "▶ Auflegen",
+  "tipp.knopf.auflegen": "Auflegen",
   "tipp.dazu.titel": "Steht im selben Regal",
-
   "auslage.bereich": "Auslage",
   "auslage.titel": "Auf dem Tisch",
   "auslage.knopf.neu": "Anderes zeigen",
-
   "filter.guete.bereich": "Nach Klangqualität filtern",
   "filter.guete.titel": "Klang",
   "filter.guete.verlustfrei": "verlustfrei & Opus",
@@ -58,28 +50,22 @@
   "filter.stand.eins": "1 Sender passt",
   "filter.stand.mehrere": "{anzahl} von {gesamt} Sendern passen",
   "filter.knopf.alle": "Alle zeigen",
-
   "karte.favorit.hinzu": "Zu Meine Platten",
   "karte.favorit.entfernen": "Aus Meine Platten entfernen",
   "karte.guete.verlustfrei": "Verlustfrei — nichts geht verloren",
   "karte.guete.opus": "{codec} bei {bitrate} kbit/s — klingt besser als MP3 bei gleicher Datenrate",
   "karte.guete.mp3": "MP3, {bitrate} kbit/s",
   "karte.stumm": "antwortet gerade nicht",
-
   "leer.titel": "Nichts gefunden",
   "leer.hinweis": "Anderer Suchbegriff, oder Filter wieder ausschalten.",
-
   "ausfall.text": "{name} antwortet gerade nicht.",
   "ausfall.knopf": "Stattdessen {name}",
-
   "fuss.hinweis": "Diese Seite <em>rät</em>. Sie nimmt an, jeder Sender sei auf 440 Hz gestimmt, und zieht pauschal um 1,8 Prozent herunter. Bei einem Live-Mitschnitt, einer historischen Einspielung oder einem ohnehin auf 432 produzierten Stück verstimmt sie damit in die falsche Richtung. <strong>MyRetuner</strong> <em>misst</em> die tatsächliche Stimmung und korrigiert genau — und beherrscht auch andere Stimmungen als 432 Hz. Läuft die App auf diesem Rechner, erkennt die Seite sie von selbst und überlässt ihr das Feld.",
   "fuss.powered": "powered by",
   "fuss.test": "im offenen Test",
-
   "spieler.kein": "Kein Sender",
   "spieler.knopf.hinweis": "Abspielen oder pausieren",
   "spieler.lautstaerke": "Lautstärke",
-
   "status.bereit": "Bereit",
   "status.verbinden": "Verbinden …",
   "status.puffern": "Puffert …",
@@ -87,18 +73,22 @@
   "status.live440": "Live — 440Hz",
   "status.live432": "Live — 432Hz",
   "status.live432Gemessen": "Live — 432Hz gemessen",
-
   "nav.bereich": "Navigation",
   "nav.laden": "Laden",
   "nav.meine": "Meine",
   "nav.zufall": "Zufall",
   "nav.suche": "Suche",
-
   "meldung.nadel": "Nadel gefallen: {name}",
   "meldung.meineLeer": "Noch nichts im Fach — spiel einen Sender oder setz ein Herz.",
-
   "myretuner.warte": "Warte auf Bestätigung in MyRetuner …",
   "myretuner.quelle": "Quelle {wert} Hz → {ziel} Hz",
   "myretuner.quelleUnsicher": "Quelle etwa {wert} Hz → {ziel} Hz",
-  "myretuner.erkannt": "MyRetuner erkannt · {ziel} Hz"
+  "myretuner.erkannt": "MyRetuner erkannt · {ziel} Hz",
+  "regalwand.bereich": "Regale",
+  "regalwand.titel": "Die Regale",
+  "regalwand.zahl": "{faecher} Fächer · {sender} Sender",
+  "regalwand.sender": "{anzahl} Sender",
+  "filter.bereich": "Sender filtern",
+  "filter.zuruecksetzen": "Filter zurücksetzen",
+  "karte.spielen": "Abspielen"
 }

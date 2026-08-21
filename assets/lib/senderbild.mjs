@@ -63,3 +63,30 @@ export function huellengroesse(sender) {
   if (laenge <= 16) return 'mittel';
   return 'klein';
 }
+
+/*
+ Das Bild eines Regalfachs: vier Cover aus dem Fach, zu einem Mosaik gelegt.
+
+ Erzeugt, aber nicht erfunden. Ein gemaltes Fantasiebild waere huebscher und
+ wuerde zeigen, was NICHT im Fach steht — das Mosaik zeigt, was drin ist, und
+ bleibt richtig, wenn morgen ein Sender dazukommt.
+
+ Genau der Griff, mit dem Spotify und Apple Music ihre Sammlungen bebildern.
+
+ Ausgewaehlt wird nach Klangguete, nicht zufaellig: Das Fach zeigt vorne, was
+ es am besten kann. Bei weniger als vier Covern wiederholen sich die
+ vorhandenen — vier Felder bleiben vier Felder, sonst reisst das Raster.
+*/
+export function regalmosaik(sender, felder = 4) {
+  const mit = sender.filter(hatEigenesLogo);
+  if (!mit.length) return Array(felder).fill(MARKE);
+
+  const rang = (s) => s.codec === 'flac' ? 0
+                    : ['opus', 'vorbis'].includes(s.codec) ? 1
+                    : (s.bitrate ?? 0) >= 256 ? 2
+                    : (s.bitrate ?? 0) >= 192 ? 3 : 4;
+  const sortiert = [...mit].sort((a, b) => rang(a) - rang(b));
+
+  return Array.from({ length: felder },
+                    (_, i) => senderbild(sortiert[i % sortiert.length]));
+}
