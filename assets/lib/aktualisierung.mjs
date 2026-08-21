@@ -66,10 +66,32 @@ export function beobachteAktualisierung({ spieltGerade, melde }) {
      Feuert, sobald ein neuer Worker die Kontrolle übernommen hat. Weil
      `skipWaiting()` im Worker steht, passiert das ohne weiteres Zutun.
     */
+    /*
+     War beim Betreten schon ein Worker am Ruder?
+
+     Diese Frage MUSS vor der Anmeldung gestellt werden, und sie ist der
+     Unterschied zwischen Aktualisierung und Erstinstallation.
+
+     Beim allerersten Besuch gibt es noch keinen Worker. Er wird angemeldet,
+     uebernimmt (der Worker ruft `clients.claim()`), und `controllerchange`
+     feuert — obwohl sich nichts GEAENDERT hat, es gab ja vorher nichts. Die
+     alte Bedingung sah darin eine neue Fassung und lud neu.
+
+     Gemessen: zwei Navigationen des Hauptrahmens beim ersten Besuch mit
+     frischem Profil, null beim zweiten. Jeder Erstbesucher hat die Seite
+     also doppelt geladen — Datenverkehr, ein sichtbares Blinken, und die
+     Musik waere abgerissen, haette sie schon gespielt.
+    */
+    const hatteWorker = Boolean(navigator.serviceWorker.controller);
+
     let schonNeugeladen = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (schonNeugeladen) return;
         schonNeugeladen = true;
+
+        // Erstinstallation: Der Worker uebernimmt einfach. Was schon im Bild
+        // steht, bleibt richtig — es gibt keine alte Fassung, die stoerte.
+        if (!hatteWorker) return;
 
         if (!spieltGerade()) {
             location.reload();
