@@ -14,6 +14,8 @@ import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
 import { senderbild, hatEigenesLogo, regalton, REGALTON, MARKE, huellenzeilen,
          huellengroesse, regalmosaik } from './lib/senderbild.mjs';
 import { symbol, setzeSymbole } from './lib/symbole.mjs';
+import { leererFilter, istGefiltert, anzahlAktiv, wendeAn, vorschau,
+         regionVon, etikettName, regionName, SCHNELL } from './lib/achsen.mjs';
 import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 import { beobachteFehler } from './lib/fehlerbericht.mjs';
 import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t }
@@ -461,7 +463,7 @@ class UI {
      wieder. Die Suche verwarf ohnehin alles. Das fuehlte sich kaputt an, ohne
      dass ein Fehler vorlag — die Filter waren einfach nicht kombinierbar.
     */
-    this.filter = { guete: null, regal: null, etikett: null, suche: '' };
+    this.filter = leererFilter();
     this.favoriten = new Set(speicher.lies(SCHLUESSEL.favoriten, []));
   }
 
@@ -532,7 +534,7 @@ class UI {
         </div>
         <div class="karte__etikett">
           <div class="karte__zeile">
-            <h3 class="karte__name">${sender.name}</h3>
+            <h3 class="karte__name" title="${sender.name}">${sender.name}</h3>
             ${guete ? `<span class="karte__guete karte__guete--${stufe}" title="${guetetitel}">${guete}</span>` : ''}
           </div>
           <p class="karte__ort">${sender.ort} · ${sender.land}</p>
@@ -621,82 +623,270 @@ class UI {
   }
 
   // ── Regale ───────────────────────────────────────────────────────
+  /*
+   Ungefiltert eine waagerechte Reihe je Regal, gefiltert ein Raster.
+
+   Warum der Unterschied: Das sind zwei verschiedene Handlungen. Ungefiltert
+   STOEBERT man — man weiss noch nicht, was man sucht, und blaettert quer
+   durch die Kiste. Genau das tun Netflix, Spotify und Apple Music auf ihrer
+   Startseite, und im Plattenladen tut man es auch: Man geht die Reihe
+   entlang und zieht Huellen halb heraus. Neun Regale untereinander als
+   Raster waeren zweiunddreissig Bildschirmhoehen Scrollweg.
+
+   Gefiltert SUCHT man. Dann will man alle Treffer auf einmal sehen und
+   vergleichen — dafuer ist ein Raster richtig, und seitwaerts blaettern
+   waere Arbeit. Dieselbe Trennung hat Spotify zwischen Startseite und
+   Suchergebnis.
+  */
   zeichneRegale(auswahl = null) {
     const behaelter = document.getElementById('regale');
-    behaelter.innerHTML = '';
+    const gefiltert = auswahl !== null;
     const daten = auswahl ?? this.sender;
 
-    if (!daten.length) {
-      behaelter.innerHTML = `
-        <div class="leer">
-          <p class="leer__titel">${t('leer.titel')}</p>
-          <p class="leer__hinweis">${t('leer.hinweis')}</p>
-        </div>`;
-      return;
-    }
+    const zeichne = () => {
+      behaelter.innerHTML = '';
+      behaelter.classList.toggle('ist-gefiltert', gefiltert);
 
-    for (const regal of this.regale) {
-      const drin = daten.filter(s => s.regal === regal.id);
-      if (!drin.length) continue;
-      const el = document.createElement('section');
-      el.className = 'regal';
-      el.dataset.regal = regal.id;
-      el.style.setProperty('--regalton', REGALTON[regal.id] ?? REGALTON.grenzgaenger);
-      el.innerHTML = `
-        <div class="regal__kopf">
-          <h2 class="regal__titel">${regal.name}</h2>
-          <span class="regal__zahl">${drin.length}</span>
-        </div>
-        <p class="regal__beschreibung">${regal.beschreibung}</p>
-        <div class="regal__raster">${drin.map(s => this._karteHTML(s)).join('')}</div>`;
-      behaelter.appendChild(el);
+      if (!daten.length) {
+        behaelter.innerHTML = `
+          <div class="leer">
+            <p class="leer__titel">${t('leer.titel')}</p>
+            <p class="leer__hinweis">${t('leer.hinweis')}</p>
+            <button class="knopf" id="leerZuruecksetzen">${t('filter.knopf.alle')}</button>
+          </div>`;
+        behaelter.querySelector('#leerZuruecksetzen')
+          ?.addEventListener('click', () => this.filterZuruecksetzen());
+        return;
+      }
+
+      for (const regal of this.regale) {
+        const drin = daten.filter(s => s.regal === regal.id);
+        if (!drin.length) continue;
+        behaelter.appendChild(this._regalHTML(regal, drin, gefiltert));
+      }
+      this._verdrahteKarten(behaelter);
+      this._verdrahteReihen(behaelter);
+    };
+
+    /*
+     View Transitions: Beim Filterwechsel verschwinden und erscheinen Karten.
+     Ohne Uebergang springt das Bild, und man verliert die Stelle, an der man
+     war. Mit Uebergang blendet der Browser den alten in den neuen Zustand.
+
+     Nur wenn der Besucher keine reduzierte Bewegung verlangt hat — sonst ist
+     ein Uebergang genau das, was er abbestellt hat.
+    */
+    const magBewegung = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (document.startViewTransition && magBewegung && this._schonGezeichnet) {
+      document.startViewTransition(zeichne);
+    } else {
+      zeichne();
     }
-    this._verdrahteKarten(behaelter);
+    this._schonGezeichnet = true;
   }
 
-  // ── Etiketten ────────────────────────────────────────────────────
-  zeichneEtiketten() {
+  _regalHTML(regal, drin, alsRaster) {
+    const el = document.createElement('section');
+    el.className = 'regal';
+    el.dataset.regal = regal.id;
+    el.style.setProperty('--regalton', REGALTON[regal.id] ?? REGALTON.grenzgaenger);
+
+    const reihe = alsRaster ? 'regal__raster' : 'regal__reihe';
+    /*
+     Die Blaetterknoepfe stehen nur da, wo es einen Zeiger gibt. Auf einem
+     Handy wischt man; ein Pfeilknopf waere dort ein Knopf, den niemand
+     drueckt und der Platz kostet.
+    */
+    const blaettern = alsRaster ? '' : `
+        <div class="regal__blaettern" aria-hidden="true">
+          <button class="regal__pfeil" data-richtung="-1" tabindex="-1">${symbol('zurueck', 16)}</button>
+          <button class="regal__pfeil" data-richtung="1"  tabindex="-1">${symbol('weiter', 16)}</button>
+        </div>`;
+
+    el.innerHTML = `
+      <div class="regal__kopf">
+        <h2 class="regal__titel">${regal.name}</h2>
+        <span class="regal__zahl">${drin.length}</span>
+        ${blaettern}
+      </div>
+      <p class="regal__beschreibung">${regal.beschreibung}</p>
+      <div class="${reihe}" role="group" aria-label="${regal.name}">
+        ${drin.map(s => this._karteHTML(s)).join('')}
+      </div>`;
+    return el;
+  }
+
+  /*
+   Die Blaetterknoepfe.
+
+   Sie stehen auf aria-hidden und tabindex -1, und das ist Absicht: Mit der
+   Tastatur kommt man ohnehin durch die Karten, und der Browser scrollt die
+   Reihe dabei von selbst mit. Zwei zusaetzliche Tabstopps je Regal — bei
+   neun Regalen achtzehn — waeren reine Wegstrecke ohne Gewinn.
+
+   Geblaettert wird um fast eine volle Reihenbreite, nicht um genau eine:
+   Die angeschnittene Huelle am Rand bleibt sichtbar und sagt, dass es
+   weitergeht.
+  */
+  _verdrahteReihen(behaelter) {
+    for (const reihe of behaelter.querySelectorAll('.regal__reihe')) {
+      const kopf = reihe.closest('.regal')?.querySelector('.regal__blaettern');
+      if (!kopf) continue;
+
+      const stand = () => {
+        const platz = reihe.scrollWidth - reihe.clientWidth;
+        // In RTL ist scrollLeft negativ oder rueckwaerts gezaehlt, je nach
+        // Browser. Der Betrag stimmt in beiden Faellen.
+        const wo = Math.abs(reihe.scrollLeft);
+        kopf.hidden = platz < 8;
+        kopf.querySelector('[data-richtung="-1"]').disabled = wo < 8;
+        kopf.querySelector('[data-richtung="1"]').disabled = wo > platz - 8;
+      };
+      stand();
+      reihe.addEventListener('scroll', stand, { passive: true });
+      new ResizeObserver(stand).observe(reihe);
+
+      kopf.addEventListener('click', (e) => {
+        const knopf = e.target.closest('[data-richtung]');
+        if (!knopf) return;
+        const richtung = Number(knopf.dataset.richtung)
+                       * (getComputedStyle(reihe).direction === 'rtl' ? -1 : 1);
+        reihe.scrollBy({ left: richtung * reihe.clientWidth * 0.85, behavior: 'smooth' });
+      });
+    }
+  }
+
+  // ── Verlauf ──────────────────────────────────────────────────────
+  /*
+   Zuletzt gehoert.
+
+   Die Daten lagen schon da — merkeZuletzt() schreibt sie seit jeher, aber
+   gezeigt wurden sie nur als Gewicht fuer den Zufallsgriff. Wer gestern
+   etwas Gutes gehoert und den Namen vergessen hat, konnte es nicht
+   wiederfinden. Das ist die haeufigste verlorene Handlung eines Radios.
+
+   Neueste zuerst, jeder Sender einmal, hoechstens zwoelf. Laenger waere
+   kein Verlauf mehr, sondern ein zweiter Katalog.
+  */
+  zeichneVerlauf() {
+    const abschnitt = document.getElementById('verlauf');
+    const reihe = document.getElementById('verlaufReihe');
+    if (!abschnitt || !reihe) return;
+
+    const ids = [...new Set(ladeZuletzt().slice().reverse())];
+    const sender = ids.map(id => this.senderMitId(id)).filter(Boolean).slice(0, 12);
+
+    abschnitt.hidden = sender.length < 2;
+    if (abschnitt.hidden) return;
+
+    reihe.innerHTML = sender.map(s => this._karteHTML(s)).join('');
+    document.getElementById('verlaufZahl').textContent = sender.length;
+    this._verdrahteKarten(abschnitt);
+    this._verdrahteReihen(abschnitt);
+  }
+
+  // ── Filter ───────────────────────────────────────────────────────
+  /*
+   Die Leiste zeigt wenig, das Panel zeigt alles.
+
+   Sechzehn Chips in eine klebende Leiste zu quetschen hiesse, sie entweder
+   abzuschneiden oder die halbe Seite damit zu belegen. Beides ist falsch;
+   abgeschnittene Filterchips sind ein bekannter Fehler, weil man nicht sehen
+   kann, was man nicht sieht.
+
+   Also: In der Leiste stehen die drei Fragen, die am haeufigsten gestellt
+   werden, dazu die gerade aktiven Filter als abwaehlbare Chips und die
+   Trefferzahl. Alles Weitere haengt hinter einem Knopf, der sagt, wie viele
+   Filter es gibt.
+  */
+  zeichneFilter() {
     const zaehler = new Map();
     for (const s of this.sender) {
       for (const e of s.etiketten ?? []) zaehler.set(e, (zaehler.get(e) ?? 0) + 1);
     }
-    // Die Regale sind die Genres dieses Ladens — aus den Daten erzeugt,
-    // damit ein neuntes Regal hier nichts kostet.
-    const proRegal = new Map();
-    for (const x of this.sender) proRegal.set(x.regal, (proRegal.get(x.regal) ?? 0) + 1);
-    const regalKasten = document.getElementById('regalFilter');
-    if (regalKasten) {
-      regalKasten.innerHTML = this.regale
-        .filter(r => proRegal.get(r.id))
-        .map(r => `<button class="regal-knopf" data-regal="${r.id}" title="${r.beschreibung ?? ''}"`
-                + ` style="--regalton:${REGALTON[r.id] ?? REGALTON.grenzgaenger}">`
-                + `${r.name}<span>${proRegal.get(r.id)}</span></button>`)
-        .join(' ');
+    this._etikettenNachHaeufigkeit = [...zaehler.entries()].sort((a, b) => b[1] - a[1]);
+
+    const proRegion = new Map();
+    for (const s of this.sender) {
+      const r = regionVon(s);
+      if (r) proRegion.set(r, (proRegion.get(r) ?? 0) + 1);
     }
+    this._regionen = [...proRegion.entries()].sort((a, b) => b[1] - a[1]);
 
-    document.getElementById('etiketten').innerHTML = [...zaehler.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .map(([e, n]) => `<button class="etikett" data-etikett="${e}">${e}<span>${n}</span></button>`)
-      .join('');
-  }
-
-  // Klangqualität ist der häufigste Grund zu filtern — beim ersten Tester
-  // war sie die erste Frage. Sie steckte bisher nur im Etikett 'lossless'
-  // versteckt, das man kennen musste.
-  setzeGueteFilter(stufe) {
-    this.filter.guete = this.filter.guete === stufe ? null : stufe;
+    this.zeichneFilterPanel();
     this.wendeFilterAn();
   }
 
-  setzeRegalFilter(regal) {
-    this.filter.regal = this.filter.regal === regal ? null : regal;
+  _chip(art, achse, wert, beschriftung, zahl) {
+    const aktiv = achse === 'etikett' ? this.filter.etiketten.has(wert)
+                : achse === 'region'  ? this.filter.regionen.has(wert)
+                : achse === 'guete'   ? this.filter.guete === wert
+                : achse === 'gemerkte' ? this.filter.nurGemerkte
+                : false;
+    // Wie viele Sender bleiben, wenn man DIESEN Chip zusaetzlich waehlt.
+    // Bei einem bereits aktiven Chip ist die Zahl der Ist-Zustand.
+    const rest = aktiv ? null
+      : vorschau(this.sender, this.filter, (id) => this.istFavorit(id), achse, wert);
+    const stumpf = rest === 0 ? ' ist-stumpf' : '';
+    return `<button class="chip chip--${art}${aktiv ? ' ist-aktiv' : ''}${stumpf}"
+              data-achse="${achse}" data-wert="${wert}"
+              ${rest === 0 ? 'disabled' : ''}
+              aria-pressed="${aktiv}">${beschriftung}<span>${rest ?? zahl}</span></button>`;
+  }
+
+  zeichneFilterPanel() {
+    const kasten = document.getElementById('filterPanelInhalt');
+    if (!kasten) return;
+    const F = this.filter;
+
+    const gruppe = (titel, chips) => !chips ? '' : `
+      <div class="filter__gruppe">
+        <p class="filter__titel">${titel}</p>
+        <div class="filter__chips">${chips}</div>
+      </div>`;
+
+    kasten.innerHTML =
+      gruppe(t('filter.guete.titel'),
+        this._chip('klang', 'guete', 'verlustfrei', t('filter.guete.verlustfrei'), 0)
+      + this._chip('klang', 'guete', 'hoch', t('filter.guete.hoch'), 0))
+    + gruppe(t('filter.wofuer.titel'),
+        this._etikettenNachHaeufigkeit
+          .map(([e, n]) => this._chip('wofuer', 'etikett', e, etikettName(e), n)).join(''))
+    + gruppe(t('filter.wo.titel'),
+        this._regionen
+          .map(([r, n]) => this._chip('wo', 'region', r, regionName(r), n)).join(''))
+    + (this.favoriten.size ? gruppe(t('filter.meine.titel'),
+        this._chip('meine', 'gemerkte', 'ja', t('filter.meine.knopf'), this.favoriten.size)) : '');
+
+    document.getElementById('filterAnzahl').textContent =
+      2 + this._etikettenNachHaeufigkeit.length + this._regionen.length
+      + (this.favoriten.size ? 1 : 0);
+  }
+
+  zeichneSchnellchips() {
+    const kasten = document.getElementById('filterSchnell');
+    if (!kasten) return;
+    const vorhanden = new Set(this._etikettenNachHaeufigkeit.map(([e]) => e));
+    const chips = SCHNELL.filter(e => vorhanden.has(e))
+      .map(e => this._chip('wofuer', 'etikett', e, etikettName(e),
+                           this._etikettenNachHaeufigkeit.find(([k]) => k === e)?.[1] ?? 0));
+    if (this.favoriten.size) {
+      chips.unshift(this._chip('meine', 'gemerkte', 'ja', t('filter.meine.knopf'), this.favoriten.size));
+    }
+    kasten.innerHTML = chips.join('');
+  }
+
+  schalteFilter(achse, wert) {
+    const f = this.filter;
+    if (achse === 'etikett') f.etiketten.has(wert) ? f.etiketten.delete(wert) : f.etiketten.add(wert);
+    else if (achse === 'region') f.regionen.has(wert) ? f.regionen.delete(wert) : f.regionen.add(wert);
+    else if (achse === 'guete') f.guete = f.guete === wert ? null : wert;
+    else if (achse === 'gemerkte') f.nurGemerkte = !f.nurGemerkte;
+    else if (achse === 'regal') f.regal = f.regal === wert ? null : wert;
     this.wendeFilterAn();
   }
 
-  setzeEtikettFilter(etikett) {
-    this.filter.etikett = this.filter.etikett === etikett ? null : etikett;
-    this.wendeFilterAn();
-  }
+  setzeRegalFilter(regal) { this.schalteFilter('regal', regal); }
 
   setzeSuche(text) {
     this.filter.suche = text ?? '';
@@ -704,76 +894,69 @@ class UI {
   }
 
   filterZuruecksetzen() {
-    this.filter = { guete: null, regal: null, etikett: null, suche: '' };
+    this.filter = leererFilter();
     const feld = document.getElementById('suche');
     if (feld) feld.value = '';
     this.wendeFilterAn();
   }
 
-  istGefiltert() {
-    const f = this.filter;
-    return !!(f.guete || f.regal || f.etikett || f.suche.trim());
-  }
+  istGefiltert() { return istGefiltert(this.filter); }
 
-  /*
-   Die eine Stelle, an der gefiltert wird. Alle vier Dimensionen wirken
-   zusammen — jede fuer sich, keine loescht eine andere.
-  */
   wendeFilterAn() {
-    const f = this.filter;
+    const treffer = wendeAn(this.sender, this.filter, (id) => this.istFavorit(id));
 
-    const gueteTest = {
-      // Verlustfrei oder ein Format, das bei gleicher Datenrate deutlich
-      // besser klingt als MP3
-      verlustfrei: x => ['flac', 'opus', 'vorbis'].includes(x.codec),
-      hoch:        x => x.codec === 'flac' || ['opus', 'vorbis'].includes(x.codec) || (x.bitrate ?? 0) >= 256,
-    }[f.guete];
+    this.zeichneSchnellchips();
+    this.zeichneFilterPanel();
 
-    const suchtext = f.suche.toLowerCase().trim();
-    const suchTest = (x) =>
-      x.name.toLowerCase().includes(suchtext) ||
-      (x.betreiber ?? '').toLowerCase().includes(suchtext) ||
-      (x.ort ?? '').toLowerCase().includes(suchtext) ||
-      (x.land ?? '').toLowerCase().includes(suchtext) ||
-      (x.kaertchen ?? '').toLowerCase().includes(suchtext) ||
-      (x.etiketten ?? []).some(e => e.toLowerCase().includes(suchtext));
-
-    const treffer = this.sender.filter(x =>
-      (!gueteTest || gueteTest(x)) &&
-      (!f.regal   || x.regal === f.regal) &&
-      (!f.etikett || (x.etiketten ?? []).includes(f.etikett)) &&
-      (!suchtext  || suchTest(x)));
-
-    document.querySelectorAll('.guete-knopf').forEach(k =>
-      k.classList.toggle('ist-aktiv', k.dataset.guete === f.guete));
-    document.querySelectorAll('.regal-knopf').forEach(k =>
-      k.classList.toggle('ist-aktiv', k.dataset.regal === f.regal));
-    document.querySelectorAll('.etikett').forEach(k =>
-      k.classList.toggle('ist-aktiv', k.dataset.etikett === f.etikett));
     document.querySelectorAll('.regalfach').forEach(k =>
-      k.classList.toggle('ist-aktiv', k.dataset.regal === f.regal));
+      k.classList.toggle('ist-aktiv', k.dataset.regal === this.filter.regal));
 
     this.zeigeFilterstand(treffer.length);
     this.zeichneRegale(this.istGefiltert() ? treffer : null);
   }
 
   /*
-   Der Filterstand klebt am linken Rand der Leiste und sagt, wie viele Sender
-   uebrig sind. Ohne ihn wirkt ein Filter kaputt, sobald er greift.
+   Der Filterstand: was greift, und wie viel bleibt.
 
-   Knopf und Kasten stehen fest im Dokument — frueher baute diese Funktion
-   den Knopf bei jedem Durchlauf neu, samt Ereignisbehandlung. Bei zehn
-   Filterklicks waren das zehn verworfene Knoepfe.
+   Jeder aktive Filter steht als eigener Chip mit einem Kreuz da. Eine
+   Sammelmeldung "3 Filter aktiv" waere kuerzer und schlechter — man muesste
+   das Panel oeffnen, um zu sehen, welche drei, und einzeln abwaehlen ginge
+   gar nicht.
   */
   zeigeFilterstand(anzahl) {
     const kasten = document.getElementById('filterStand');
-    const text = document.getElementById('filterStandText');
-    if (!kasten || !text) return;
-    if (!this.istGefiltert()) { kasten.hidden = true; return; }
-    text.textContent = anzahl === 1
+    const aktive = document.getElementById('filterAktive');
+    const knopf  = document.getElementById('filterKnopf');
+    if (!kasten || !aktive) return;
+
+    const f = this.filter;
+    const teile = [];
+    if (f.nurGemerkte) teile.push(['gemerkte', 'ja', t('filter.meine.knopf')]);
+    if (f.guete) teile.push(['guete', f.guete, t('filter.guete.' + f.guete)]);
+    if (f.regal) teile.push(['regal', f.regal,
+                             this.regale.find(r => r.id === f.regal)?.name ?? f.regal]);
+    for (const e of f.etiketten) teile.push(['etikett', e, etikettName(e)]);
+    for (const r of f.regionen) teile.push(['region', r, regionName(r)]);
+
+    aktive.innerHTML = teile.map(([achse, wert, text]) =>
+      `<button class="chip chip--aktiv" data-achse="${achse}" data-wert="${wert}"
+               aria-label="${t('filter.entfernen', { name: text })}">${text}<span>&times;</span></button>`
+    ).join('');
+
+    kasten.hidden = !this.istGefiltert();
+    document.getElementById('filterStandText').textContent = anzahl === 1
       ? t('filter.stand.eins')
       : t('filter.stand.mehrere', { anzahl, gesamt: this.sender.length });
-    kasten.hidden = false;
+    if (knopf) knopf.dataset.aktiv = anzahlAktiv(this.filter) || '';
+
+    // Dieselbe Zahl noch einmal im Panel: Wer dort Chips waehlt, sieht die
+    // Leiste dahinter nicht.
+    const imPanel = document.getElementById('filterPanelStand');
+    if (imPanel) {
+      imPanel.textContent = anzahl === 1
+        ? t('filter.stand.eins')
+        : t('filter.stand.mehrere', { anzahl, gesamt: this.sender.length });
+    }
   }
 
   // ── Anzeigen aktualisieren ───────────────────────────────────────
@@ -967,10 +1150,10 @@ class App {
     if (typeof lautstaerke === 'number') this.engine.setzeLautstaerke(lautstaerke, false);
     this.engine.setze432(speicher.lies(SCHLUESSEL.pitch432, true));
 
-    this.ui.zeichneEtiketten();
+    this.ui.zeichneFilter();
     this.ui.zeichneRegalwand();
+    this.ui.zeichneVerlauf();
     this.misstKopf();
-    this.ui.zeichneRegale();
     this.zeichneWochentipp();
     this.zeichneAuslage();
     this.aktualisiereGriff();
@@ -1063,6 +1246,7 @@ class App {
       zaehleGehoert(sender.id);
       merkeZuletzt(sender.id);
       this.aktualisiereGriff();
+      this.ui.zeichneVerlauf();
     }
     await this.engine.spiele(sender);
   }
@@ -1139,6 +1323,7 @@ class App {
     const auswahl = waehleUeberraschung(this._ziehbareSender(), ladeGehoert(), 6, ladeZuletzt());
     const raster = document.getElementById('auslageRaster');
     raster.innerHTML = auswahl.map(s => this.ui._karteHTML(s)).join('');
+    this.ui._verdrahteReihen(raster.parentElement);
     this.ui._verdrahteKarten(raster);
   }
 
@@ -1335,20 +1520,43 @@ class App {
     anKlick('knopfMyRetuner',    () => this.frageMyRetunerAn());
     anKlick('auslageNeu',        () => this.zeichneAuslage());
     anKlick('filterZuruecksetzen', () => this.ui.filterZuruecksetzen());
+    anKlick('filterPanelLeeren',   () => this.ui.filterZuruecksetzen());
+
+    /*
+     Das Filterpanel ist ein natives <dialog>.
+
+     showModal() bringt mit, was man sonst von Hand nachbaut und dabei falsch
+     macht: Der Fokus bleibt gefangen, Escape schliesst, der Rest der Seite
+     wird fuer Vorlesestimmen unsichtbar, und der Verdunkler kommt aus dem
+     Browser statt aus einem eigenen Element mit geratenem z-index.
+    */
+    const panel = document.getElementById('filterPanel');
+    const filterKnopf = document.getElementById('filterKnopf');
+    if (panel && filterKnopf) {
+      const auf = () => { panel.showModal(); filterKnopf.setAttribute('aria-expanded', 'true'); };
+      const zu = () => panel.close();
+      filterKnopf.addEventListener('click', auf);
+      anKlick('filterPanelZu', zu);
+      anKlick('filterPanelFertig', zu);
+      panel.addEventListener('close', () => filterKnopf.setAttribute('aria-expanded', 'false'));
+      // Klick auf den Verdunkler schliesst. Der Verdunkler IST der Dialog —
+      // ein Treffer ausserhalb des Inhalts landet auf ihm selbst.
+      panel.addEventListener('click', (e) => { if (e.target === panel) zu(); });
+    }
     anKlick('heroFavorit',       () => { if (this.ui.aktuelleId) this.ui.toggleFavorit(this.ui.aktuelleId); });
 
-    document.getElementById('etiketten')?.addEventListener('click', (e) => {
-      const knopf = e.target.closest('.etikett');
-      if (knopf) this.ui.setzeEtikettFilter(knopf.dataset.etikett);
+    /*
+     Ein Zuhoerer fuer alle Chips, egal wo sie stehen.
+
+     Die Chips entstehen bei jedem Filterwechsel neu — in der Leiste, im
+     Panel und in der Standanzeige. Sie einzeln zu verdrahten hiesse, bei
+     jedem Klick Dutzende Zuhoerer wegzuwerfen und neu anzulegen. Der Klick
+     steigt ohnehin bis zum Dokument auf; hier wird er einmal abgefangen.
+    */
+    document.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip[data-achse]');
+      if (chip && !chip.disabled) this.ui.schalteFilter(chip.dataset.achse, chip.dataset.wert);
     });
-    // Auf dem Behaelter, nicht je Knopf: Die Regal-Knoepfe entstehen erst
-    // beim Zeichnen, ein Knopf-weises Verdrahten liefe ins Leere.
-    document.getElementById('regalFilter')?.addEventListener('click', (e) => {
-      const knopf = e.target.closest('.regal-knopf');
-      if (knopf) this.ui.setzeRegalFilter(knopf.dataset.regal);
-    });
-    document.querySelectorAll('.guete-knopf').forEach(k =>
-      k.addEventListener('click', () => this.ui.setzeGueteFilter(k.dataset.guete)));
 
     const suchfeld = document.getElementById('suche');
     suchfeld?.addEventListener('input', (e) => this.suche(e.target.value));

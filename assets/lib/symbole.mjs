@@ -51,6 +51,25 @@ const PFADE = {
             '<path d="M12 3.8v2M12 18.2v2"/>',
 
     stern: '<path d="m12 4 2.3 5 5.4.6-4 3.7 1.1 5.3-4.8-2.7-4.8 2.7 1.1-5.3-4-3.7 5.4-.6z"/>',
+
+    // Blaettern in einer Regalreihe. Ein Winkel, kein Pfeil mit Schaft: Der
+    // Schaft wuerde bei 16 px zur Flaeche verschmieren.
+    zurueck: '<path d="m14.5 5-7 7 7 7"/>',
+    weiter:  '<path d="m9.5 5 7 7-7 7"/>',
+
+    // Trichter fuer den Filterknopf.
+    filter: '<path d="M4 5h16l-6.2 7.4v5.9l-3.6 1.7v-7.6z"/>',
+
+    // Uhr mit Zeiger nach hinten — der Verlauf.
+    verlauf: '<circle cx="12" cy="12" r="8.2"/><path d="M12 7.4V12l3.2 1.9"/>',
+
+    // Konto. Schulterlinie statt vollem Koerper, damit es bei 20 px nicht
+    // zur Bohne wird.
+    konto: '<circle cx="12" cy="8.4" r="3.6"/>' +
+           '<path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/>',
+
+    // Schliessen.
+    zu: '<path d="m6 6 12 12M18 6 6 18"/>',
 };
 
 /**

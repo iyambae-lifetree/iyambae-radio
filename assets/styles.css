@@ -23,11 +23,14 @@
     --schrift:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --mono:         'JetBrains Mono', ui-monospace, monospace;
     --anzeige:      'Orbitron', var(--schrift);
-    /* 2 px statt 14. Vierzehn ist die Rundung, an der man Software erkennt —
-       auf Flaechen, die hier Regalschilder und Kaertchen sein sollen, war sie
-       schlicht falsch. Zwei Pixel sind die Kante eines geschnittenen Kartons,
-       nicht die eines Dialogfensters. Pillen (999px) und Kreise (50%) bleiben:
-       Ein Aufkleber ist rund, ein Drehknopf auch. */
+    /* 2 px, ueberall wo Text steht: Chip, Karte, Knopf, Suchfeld, Panel.
+       Vierzehn Pixel sind die Rundung, an der man Software erkennt, und in
+       einem Plattenladen war sie schlicht falsch.
+
+       AUSGENOMMEN und das ist kein Bruch, sondern die Regel dahinter: Was
+       einen echten Drehknopf oder eine Lampe abbildet, bleibt rund —
+       .knopf-rund am Spieler, .status-punkt, .schalter__punkt. Karten sind
+       eckig, Knoepfe sind rund. Zwei Formen, eine Begruendung. */
     --rund:         2px;
     --schatten:     0 8px 28px rgba(0, 0, 0, 0.45);
     --glut:         0 0 0 1px rgba(242, 183, 5, 0.55), 0 0 22px rgba(242, 183, 5, 0.30);
@@ -93,7 +96,7 @@ a { color: var(--pink-hell); }
     flex: 1 1 14rem;
     display: flex; align-items: center; gap: 0.5rem;
     padding: 0.45rem 0.85rem;
-    background: var(--karte); border: 1px solid var(--rand); border-radius: 999px;
+    background: var(--karte); border: 1px solid var(--rand); border-radius: var(--rund);
 }
 .kopf__suche input {
     flex: 1; min-width: 0;
@@ -103,11 +106,14 @@ a { color: var(--pink-hell); }
 .kopf__suche input::placeholder { color: var(--text-leise); }
 
 .kopf__schalter { display: flex; align-items: center; gap: 0.5rem; }
+/* Die gemessene Stimmung ist eine Klangangabe — blauer Reiter wie die
+   Klanggrade auf der Huelle und in der Filterleiste. */
 .messung {
+    border-inline-start: 3px solid var(--blau-hell);
     padding: 0.35rem 0.7rem;
     background: rgba(42, 124, 199, 0.16);
     border: 1px solid rgba(62, 146, 214, 0.4);
-    border-radius: 999px;
+    border-radius: var(--rund);
     font-family: var(--mono); font-size: 0.7rem; color: var(--blau-hell);
     white-space: nowrap;
 }
@@ -116,14 +122,20 @@ a { color: var(--pink-hell); }
     display: inline-flex; align-items: center; gap: 0.45rem;
     padding: 0.45rem 0.8rem;
     background: var(--karte); color: var(--text-leise);
-    border: 1px solid var(--rand); border-radius: 999px;
+    border: 1px solid var(--rand); border-radius: var(--rund);
     font-family: var(--mono); font-size: 0.72rem; cursor: pointer;
     transition: all 0.2s ease; white-space: nowrap;
 }
 .schalter:hover:not(:disabled) { border-color: var(--rand-hell); color: var(--text); }
 .schalter:disabled { opacity: 0.5; cursor: not-allowed; }
 .schalter__punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--text-leise); transition: all 0.2s ease; }
-.schalter.ist-an { color: var(--text); border-color: rgba(242, 183, 5, 0.5); }
+/* Laeuft die Umstimmung, traegt der Schalter denselben goldenen Reiter wie
+   alles andere, was zur Marke gehoert. */
+.schalter.ist-an {
+    color: var(--text);
+    border-color: rgba(242, 183, 5, 0.5);
+    border-inline-start: 3px solid var(--pink);
+}
 .schalter.ist-an .schalter__punkt { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
 
 /* Hinweis auf die App — die Voreinstellung für alle, die MyRetuner nicht
@@ -277,7 +289,7 @@ body.spielt .platte { animation-play-state: running; }
     display: inline-flex; align-items: center; gap: 0.45rem;
     padding: 0.6rem 1.1rem;
     background: var(--karte-hoch); color: var(--text);
-    border: 1px solid var(--rand); border-radius: 999px;
+    border: 1px solid var(--rand); border-radius: var(--rund);
     font-family: inherit; font-size: 0.88rem; font-weight: 500;
     cursor: pointer; text-decoration: none;
     transition: all 0.2s ease;
@@ -357,8 +369,12 @@ body.spielt .platte { animation-play-state: running; }
 .tipp__dazuKnopf span { font-family: var(--mono); font-size: 0.62rem; color: var(--text-leise); }
 
 /* ── Auslage ─────────────────────────────────────────────────────── */
-.auslage { padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0; }
-.auslage__kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+.auslage { padding: clamp(1.5rem, 4vw, 2.5rem) 0 0; min-width: 0; }
+.auslage__kopf {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    margin-bottom: 0.9rem;
+}
 .auslage__titel { font-family: var(--anzeige); font-size: 1.15rem; font-weight: 600; }
 
 /* Das Raster. Bis sechs Spalten auf breiten Schirmen — hundertneunundzwanzig
@@ -472,110 +488,252 @@ body.spielt .platte { animation-play-state: running; }
     color: color-mix(in srgb, var(--regalton) 75%, #ffffff);
 }
 
-/* ── Filterleiste ────────────────────────────────────────────────
-   Klebt unter dem Kopf und scrollt mit. Ein Filter, den man nicht mehr sieht,
-   sobald man das Ergebnis anschaut, ist ein Filter, den man vergisst — und
-   dann wirkt die Seite kaputt, weil plötzlich nur noch elf Sender da sind.
+/* ═══════════════════════════════════════════════════════════════════
+   DER REITER — das eine Prinzip, das alles zusammenhält
 
-   --kopf-hoehe misst app.js am echten Kopf, weil der je nach Breite ein- oder
-   zweizeilig ist. Der Rückfallwert gilt nur für die Millisekunde vor der
-   ersten Messung. */
+   Vorher hatte diese Seite drei Formensprachen nebeneinander: Pillen mit
+   999 px Rundung für die Filter, scharfkantige Quadrate für die Hüllen,
+   gerundete Kästen für alles andere. Ich hatte das einmal damit begründet,
+   ein Aufkleber sei nun mal rund. Das war eine Ausrede dafür, die Arbeit
+   nicht zu machen — drei Sprachen in einem Bild sind keine Absicht, sondern
+   ein Versäumnis, und genau daran erkennt man erzeugte Oberflächen.
+
+   Was einen echten Plattenladen lesbar macht, ist die TRENNKARTE: ein
+   Stück Karton in der Kiste, hochkant, mit einer farbigen Kante. Die Farbe
+   sagt, in welchem Abschnitt man gerade wühlt. Nichts daran ist rund.
+
+   Also trägt hier jedes Element, das eine Kategorie bezeichnet, dieselbe
+   3-px-Kante am Zeilenanfang — und die Farbe sagt, welche Art:
+
+     Gold   Marke, Merkliste, das eigene Regal
+     Blau   Klang — dieselbe Farbe wie die Güteangabe auf der Hülle
+     Weiß   Wofür, die Anlässe
+     Grau   Wo, die Weltregion
+
+   Die Kante gibt es schon an zwei Stellen: an der Klangangabe im Etikett
+   und am Regalkopf. Sie war der Ansatz, dem der Rest jetzt folgt.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.chip {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.34rem 0.7rem;
+    border: 1px solid var(--rand);
+    border-inline-start: 3px solid var(--reiter, var(--rand-hell));
+    border-radius: var(--rund);
+    background: var(--karte);
+    color: var(--text-leise);
+    font-family: var(--mono); font-size: 0.72rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease,
+                border-color 0.18s ease, opacity 0.18s ease;
+}
+.chip span {
+    font-size: 0.65rem;
+    opacity: 0.55;
+    font-variant-numeric: tabular-nums;
+}
+.chip:hover:not(:disabled) { color: var(--text); background: var(--karte-hoch); }
+
+/* Aktiv heißt: die Reiterfarbe füllt den ganzen Chip. Ein Zustand, eine
+   Farbe — nicht Farbe plus Rahmen plus Fettung plus Haken. */
+.chip.ist-aktiv {
+    background: var(--reiter);
+    border-color: var(--reiter);
+    color: var(--grund);
+    font-weight: 700;
+}
+.chip.ist-aktiv span { opacity: 0.65; }
+
+/* Ein Chip, der zu null Treffern führte, bleibt stehen und wird stumpf.
+   Ihn zu verstecken wäre schlimmer: Dann wüsste niemand, dass es diesen
+   Filter gibt, und die Leiste spränge bei jedem Klick um. */
+.chip.ist-stumpf, .chip:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+}
+
+.chip--klang  { --reiter: var(--blau-hell); }
+.chip--wofuer { --reiter: rgba(255, 255, 255, 0.55); }
+.chip--wo     { --reiter: var(--text-leise); }
+.chip--meine  { --reiter: var(--pink); }
+
+/* Der aktive Filter in der Leiste. Trägt sein Kreuz nach, weil sein Klick
+   entfernt statt hinzufügt — dasselbe Aussehen wäre bei umgekehrter Wirkung
+   eine Falle. */
+.chip--aktiv {
+    --reiter: var(--pink);
+    background: var(--pink);
+    border-color: var(--pink);
+    color: var(--grund);
+    font-weight: 700;
+}
+.chip--aktiv span {
+    opacity: 0.7; font-size: 0.85rem; line-height: 1;
+    margin-inline-start: 0.05rem;
+}
+.chip--aktiv:hover { background: var(--pink-hell); color: var(--grund); }
+
+/* ── Filterleiste ────────────────────────────────────────────────
+   Klebt unter dem Kopf. Sie zeigt bewusst wenig: den Knopf zum Panel, drei
+   häufige Fragen, und was gerade greift.
+
+   Sechzehn Chips hineinzuquetschen hieße, sie abzuschneiden — und was
+   abgeschnitten ist, findet niemand. Deshalb bricht diese Leiste um statt
+   zu scrollen, und was nicht hineinpasst, steht vollständig im Panel. */
 .filter {
     position: sticky; top: var(--kopf-hoehe, 3.6rem); z-index: 40;
-    display: flex; align-items: center; gap: 0.45rem;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;
     padding: 0.55rem clamp(1rem, 4vw, 2.5rem);
     background: rgba(5, 2, 10, 0.93);
     backdrop-filter: blur(16px);
-    border-top: 1px solid var(--rand);
-    border-bottom: 1px solid var(--rand);
-    overflow-x: auto; overflow-y: hidden;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    scroll-padding-inline-start: 1rem;
+    border-block: 1px solid var(--rand);
 }
-.filter::-webkit-scrollbar { display: none; }
-.filter > * { flex: none; }
 
-.filter__gruppe { display: flex; align-items: center; gap: 0.4rem; }
-.filter__titel {
-    font-family: var(--mono); font-size: 0.62rem; color: var(--text-leise);
-    text-transform: uppercase; letter-spacing: 0.12em;
+.filter__knopf {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.4rem 0.8rem;
+    background: var(--karte-hoch);
+    border: 1px solid var(--rand-hell);
+    border-inline-start: 3px solid var(--pink);
+    border-radius: var(--rund);
+    color: var(--text);
+    font-family: var(--mono); font-size: 0.74rem;
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease;
 }
-.filter__trenner { width: 1px; height: 1.4rem; background: var(--rand); margin: 0 0.35rem; }
-
-/* Der Filterstand klebt am linken Rand der Leiste — auch wenn man die Chips
-   nach rechts geschoben hat, bleibt sichtbar, was gerade greift. */
-.filter__stand {
-    position: sticky; inset-inline-start: 0; z-index: 2;
-    display: flex; align-items: center; gap: 0.5rem;
-    padding-block: 0.28rem; padding-inline: 0.6rem 0.7rem;
-    margin-inline-end: 0.2rem;
+.filter__knopf:hover { background: #241636; }
+.filter__anzahl {
+    font-size: 0.64rem; color: var(--text-leise);
+    font-variant-numeric: tabular-nums;
+}
+/* Greift ein Filter, steht die Zahl der aktiven Achsen im Knopf — golden,
+   damit man von jeder Stelle der Seite sieht, dass gefiltert wird. */
+.filter__knopf[data-aktiv]:not([data-aktiv=""]) {
+    background: rgba(242, 183, 5, 0.14);
+    border-color: var(--pink);
+}
+.filter__knopf[data-aktiv]:not([data-aktiv=""]) .filter__anzahl { display: none; }
+.filter__knopf[data-aktiv]:not([data-aktiv=""])::after {
+    content: attr(data-aktiv);
+    display: grid; place-items: center;
+    min-width: 1.15rem; height: 1.15rem;
+    padding: 0 0.25rem;
     background: var(--pink); color: var(--grund);
-    font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
-    box-shadow: 0 0 18px rgba(242, 183, 5, 0.35);
+    font-size: 0.64rem; font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.filter__schnell,
+.filter__aktive { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.filter__stand {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+    margin-inline-start: auto;
 }
 .filter__stand[hidden] { display: none; }
+.filter__zahl {
+    font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise);
+    font-variant-numeric: tabular-nums;
+}
 .filter__zuruecksetzen {
-    display: grid; place-items: center;
-    width: 1.15rem; height: 1.15rem;
-    padding: 0; cursor: pointer;
-    background: rgba(0, 0, 0, 0.28); border: 0; color: var(--grund);
-    font-family: var(--mono); font-size: 0.8rem; line-height: 1;
-}
-.filter__zuruecksetzen:hover { background: rgba(0, 0, 0, 0.5); }
-
-.guete-knopf, .regal-knopf, .etikett {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    padding: 0.3rem 0.75rem;
-    border-radius: 999px;
+    padding: 0.3rem 0.7rem;
+    background: none; color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: var(--rund);
     font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.15s ease;
+    transition: color 0.18s ease, border-color 0.18s ease;
 }
-.guete-knopf span, .regal-knopf span, .etikett span { opacity: 0.6; font-size: 0.65rem; }
+.filter__zuruecksetzen:hover { color: var(--text); border-color: var(--rand-hell); }
 
-.guete-knopf {
-    background: rgba(62, 146, 214, 0.12); color: var(--blau-hell);
-    border: 1px solid rgba(62, 146, 214, 0.32);
+/* ── Filterpanel ─────────────────────────────────────────────────
+   Ein natives <dialog>. Es bringt Fokusfang, Escape und den Verdunkler mit —
+   drei Dinge, die man von Hand nachbaut und dabei falsch macht. */
+.filter-panel {
+    width: min(38rem, 100vw);
+    max-height: 85dvh;
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--rand-hell);
+    border-radius: var(--rund);
+    background: var(--grund-hoch);
+    color: var(--text);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
 }
-.guete-knopf:hover { background: rgba(62, 146, 214, 0.22); }
-.guete-knopf.ist-aktiv { background: var(--blau); border-color: var(--blau); color: #fff; }
-.guete-knopf.ist-aktiv span { opacity: 0.85; }
+.filter-panel::backdrop { background: rgba(5, 2, 10, 0.72); backdrop-filter: blur(3px); }
+.filter-panel__kopf {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.1rem 0.8rem;
+    border-block-end: 1px solid var(--rand);
+}
+.filter-panel__titel { font-family: var(--anzeige); font-size: 1.05rem; font-weight: 600; }
+.filter-panel__zu {
+    display: grid; place-items: center;
+    width: 2.5rem; height: 2.5rem;
+    background: none; border: 0; border-radius: var(--rund);
+    color: var(--text-leise); cursor: pointer;
+    transition: color 0.18s ease, background-color 0.18s ease;
+}
+.filter-panel__zu:hover { color: var(--text); background: rgba(255, 255, 255, 0.07); }
+.filter-panel__inhalt {
+    display: grid; gap: 1.3rem;
+    padding: 1.1rem;
+    overflow-y: auto;
+    max-height: calc(85dvh - 8.5rem);
+    overscroll-behavior: contain;
+}
+.filter-panel__fuss {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.8rem 1.1rem;
+    border-block-start: 1px solid var(--rand);
+    background: var(--karte);
+}
+.filter-panel__stand {
+    margin-inline-end: auto;
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise);
+    font-variant-numeric: tabular-nums;
+}
 
-/* Regale sind die Genres dieses Ladens. Gold, damit auf einen Blick zu sehen
-   ist, welche Art Filter greift: Klang blau, Regal gold, Stichwort neutral. */
-.regal-knopf {
-    background: rgba(242, 183, 5, 0.10); color: var(--pink-hell);
-    border: 1px solid rgba(242, 183, 5, 0.28);
+.filter__gruppe { display: grid; gap: 0.5rem; }
+.filter__titel {
+    font-family: var(--mono); font-size: 0.64rem; color: var(--text-leise);
+    text-transform: uppercase; letter-spacing: 0.12em;
 }
-/* Derselbe farbige Reiter wie am Regalkopf, nur klein. */
-.regal-knopf::before {
-    content: '';
-    width: 0.4rem; height: 0.4rem;
-    background: var(--regalton, var(--pink));
-    flex: none;
-}
-.regal-knopf.ist-aktiv::before { background: var(--grund); }
-.regal-knopf:hover { background: rgba(242, 183, 5, 0.2); }
-.regal-knopf.ist-aktiv { background: var(--pink); border-color: var(--pink); color: var(--grund); font-weight: 700; }
-.regal-knopf.ist-aktiv span { opacity: 0.75; }
+/* Hier darf umbrechen — das ist der ganze Sinn des Panels. */
+.filter__chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.filter__chips .chip { white-space: normal; }
 
-.etiketten { display: flex; align-items: center; gap: 0.4rem; }
-.etikett {
-    background: var(--karte); color: var(--text-leise);
-    border: 1px solid var(--rand);
-}
-.etikett:hover { color: var(--text); border-color: var(--rand-hell); }
-.etikett.ist-aktiv { background: var(--pink); border-color: var(--pink); color: var(--grund); font-weight: 700; }
-.etikett.ist-aktiv span { opacity: 0.8; }
+/* ── Regalreihen ─────────────────────────────────────────────────
+   Ungefiltert waagerecht, gefiltert als Raster. Zwei Handlungen, zwei
+   Formen: Beim Stöbern geht man die Reihe entlang und zieht Hüllen halb
+   heraus; beim Suchen will man alle Treffer nebeneinander vergleichen.
 
-/* ── Regale ──────────────────────────────────────────────────────── */
-.regale { padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 4vw, 2.5rem); display: grid; gap: 2.5rem; }
-.regal__kopf { display: flex; align-items: baseline; gap: 0.7rem; }
-.regal__titel { font-family: var(--anzeige); font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 600; }
-/* Statt eines Emojis eine Trennkarte in der Regalfarbe. Ein Plattenladen
-   markiert seine Faecher mit farbigen Reitern, nicht mit Bildchen — und die
-   Farbe ist dieselbe, die die Kachel in der Regalwand traegt. */
+   content-visibility spart dem Browser Layout und Malen für alles, was
+   gerade nicht im Bild ist — bei 129 Hüllen ist das der Unterschied
+   zwischen flüssigem und zähem Scrollen. contain-intrinsic-size MUSS
+   dabeistehen: Ohne sie fällt der Abschnitt auf null Höhe zusammen, und die
+   Bildlaufleiste springt bei jedem Scrollen. */
+.regale { padding: clamp(1rem, 3vw, 2rem) 0 0; display: grid; gap: 2.2rem; }
+.regal {
+    /* min-width: 0 ist hier nicht Feinschliff, sondern die Bedingung dafuer,
+       dass die Reihe ueberhaupt scrollt. Ein Rasterfeld ist von Haus aus
+       mindestens so breit wie sein Inhalt (min-width: auto); ohne diese
+       Zeile waechst das Feld auf 24 Huellen Breite, die Reihe laeuft nie
+       ueber, und der ganze Seitenkoerper scrollt stattdessen quer.
+       Gemessen: scrollWidth == clientWidth, 24 von 24 Huellen "sichtbar". */
+    min-width: 0;
+    content-visibility: auto;
+    contain-intrinsic-size: auto none auto 380px;
+}
+.regal__kopf {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
+.regal__titel { font-family: var(--anzeige); font-size: clamp(1.05rem, 3vw, 1.4rem); font-weight: 600; }
 .regal__titel::before {
     content: '';
     display: inline-block; vertical-align: 0.08em;
@@ -583,8 +741,139 @@ body.spielt .platte { animation-play-state: running; }
     margin-inline-end: 0.5rem;
     background: var(--regalton, var(--pink));
 }
-.regal__zahl { font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
-.regal__beschreibung { font-size: 0.85rem; color: var(--text-leise); margin: 0.1rem 0 0.9rem; }
+.regal__zahl {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise);
+    font-variant-numeric: tabular-nums;
+}
+.regal__beschreibung {
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    font-size: 0.84rem; color: var(--text-leise); margin: 0.15rem 0 0.8rem;
+}
+
+.regal__blaettern { display: none; margin-inline-start: auto; gap: 0.3rem; }
+.regal__pfeil {
+    display: grid; place-items: center;
+    width: 2rem; height: 2rem;
+    background: var(--karte); color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: var(--rund);
+    cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+}
+.regal__pfeil:hover:not(:disabled) { color: var(--text); border-color: var(--rand-hell); }
+.regal__pfeil:disabled { opacity: 0.25; cursor: default; }
+/* Nur wo es einen Zeiger gibt. Auf dem Handy wischt man. */
+@media (hover: hover) and (pointer: fine) {
+    .regal__blaettern { display: flex; }
+}
+
+.regal__reihe {
+    display: flex; gap: 0.9rem;
+    overflow-x: auto; overflow-y: hidden;
+    /* proximity statt mandatory: Bei mandatory reisst der Browser eine
+       angefangene Bewegung zum naechsten Fach — auf dem Handy fuehlt sich
+       das an, als wehre sich die Seite. */
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    /* Damit die erste Huelle nicht unter der Kante klebt, wenn man
+       zurueckblaettert oder die Tastatur den Fokus hineinschiebt. */
+    scroll-padding-inline: clamp(1rem, 4vw, 2.5rem);
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    padding-block-end: 0.4rem;
+}
+.regal__reihe::-webkit-scrollbar { display: none; }
+.regal__reihe > .karte {
+    flex: 0 0 clamp(9.2rem, 40vw, 12.5rem);
+    scroll-snap-align: start;
+    height: auto;
+}
+.regal__reihe { align-items: stretch; }
+
+/* Gefiltert: Raster statt Reihe. */
+.regale.ist-gefiltert { gap: 2.5rem; }
+.regal__raster {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
+@media (min-width: 720px)  { .regal__raster { grid-template-columns: repeat(3, 1fr); gap: 1rem; } }
+@media (min-width: 1100px) { .regal__raster { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1500px) { .regal__raster { grid-template-columns: repeat(5, 1fr); } }
+@media (min-width: 1900px) { .regal__raster { grid-template-columns: repeat(6, 1fr); } }
+
+/* ── Reihen-Block (Verlauf) ──────────────────────────────────────
+   Dieselbe Reihe wie ein Regal, aber ohne Regalfarbe — der Verlauf ist kein
+   Fach, sondern eine Spur. */
+.reihe-block { padding-block: clamp(1.2rem, 3vw, 2rem) 0; min-width: 0; }
+.reihe-block[hidden] { display: none; }
+.reihe-block__kopf {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    margin-block-end: 0.8rem;
+}
+.reihe-block__titel {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-family: var(--anzeige); font-size: 1.1rem; font-weight: 600;
+}
+.reihe-block__zeichen { display: grid; place-items: center; color: var(--text-leise); }
+.reihe-block__zahl {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Skelett ─────────────────────────────────────────────────────
+   Die Vorschau, die vor dem Programmcode steht.
+
+   Kein grauer Schimmerblock, sondern eine leere Hülle: quadratisches Feld
+   in Regalfarbe-Grau, darunter zwei Textbalken — exakt die Maße der echten
+   Karte, damit beim Austausch nichts springt. Ein Platzhalter, der andere
+   Maße hat als das, was er ersetzt, ist die Ursache von Layoutsprüngen und
+   damit schlimmer als gar keiner.
+
+   Die Bewegung ist ein einzelner, langsamer Streifen. Ein schnelles Pulsen
+   liest sich als Fehler, nicht als Ladevorgang. */
+.skelett {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(148deg, #1a1228 0%, #140e20 100%);
+}
+.skelett::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(100deg,
+        transparent 30%, rgba(255, 255, 255, 0.045) 48%, transparent 66%);
+    transform: translateX(-100%);
+    animation: streift 1.9s ease-in-out infinite;
+}
+@keyframes streift { to { transform: translateX(100%); } }
+
+.karte--skelett { pointer-events: none; }
+.karte--skelett .karte__bild { aspect-ratio: 1; }
+.karte--skelett .karte__etikett { display: grid; gap: 0.45rem; }
+.skelett--zeile { height: 0.85rem; width: 78%; }
+.skelett--kurz  { height: 0.62rem; width: 46%; }
+.skelett--titel { display: block; height: 1.1rem; width: 8.5rem; }
+.regal--skelett .regal__kopf { padding-block-end: 0.9rem; }
+
+/* ── Ein Fokusring für alles ─────────────────────────────────────
+   Vorher hatte jedes Element den Ring, den der Browser gerade vorsah. Ein
+   sichtbarer, überall gleicher Ring ist Teil davon, dass die Oberfläche wie
+   aus einem Guss wirkt — und er ist die Bedingung dafür, dass man die Seite
+   ohne Maus bedienen kann. */
+:where(a, button, input, select, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--pink);
+    outline-offset: 2px;
+    border-radius: var(--rund);
+}
+
+/* ── Antippbare Flächen ──────────────────────────────────────────
+   Auf Geräten ohne Zeiger misst ein Finger rund 9 mm. Alles, was man
+   antippen soll, ist deshalb mindestens 44 px hoch — die Zahl kommt nicht
+   aus dem Gefühl, sondern aus den Richtlinien von Apple und Google. */
+@media (pointer: coarse) {
+    .chip, .filter__knopf, .filter__zuruecksetzen { min-height: 2.75rem; }
+    .karte__favorit, .karte__spielen { width: 2.75rem; height: 2.75rem; }
+    .sprachwahl__knopf { min-height: 2.5rem; }
+}
 
 /* ── Karte ───────────────────────────────────────────────────────
    Eine Plattenhülle, keine Kachel — aber eine, die man bedienen kann.
@@ -718,7 +1007,19 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
    wird. */
 @media (hover: none) {
     .karte__kaertchen { display: none; }
-    .karte__spielen { opacity: 1; transform: none; }
+    /*
+     Der Abspielknopf bleibt auch hier verborgen — anders als zuerst gebaut.
+
+     Auf einem Zeigergeraet ist er die Antwort auf "was passiert, wenn ich
+     hier klicke". Auf einem Handy gibt es diese Frage nicht: Man tippt die
+     Huelle an, und sie spielt. Neunundzwanzig goldene Knoepfe gleichzeitig
+     im Bild beantworten nichts und schreien nur. Netflix und Spotify zeigen
+     auf dem Handy ebenfalls keinen Knopf je Kachel.
+
+     Bei Tastaturbedienung kommt er zurueck, siehe :focus-within oben.
+    */
+    .karte__spielen:not(:focus-visible) { opacity: 0; }
+    .karte.ist-aktiv .karte__spielen { opacity: 1; transform: none; }
 }
 
 /* Läuft gerade: drei Balken unten links auf dem Cover. */
@@ -770,8 +1071,18 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .huelle__marke { position: absolute; inset-inline-end: 0.55rem; inset-block-end: 0.5rem; opacity: 0.28; }
 
 /* ── Das Etikett ─────────────────────────────────────────────── */
+/* Das Etikett ist eine Spalte, kein Raster — und der Name bekommt seine
+   zwei Zeilen fest zugeteilt, ob er sie braucht oder nicht.
+
+   Ohne das tanzen Ort und Stichwoerter: "dublab" braucht eine Zeile,
+   "dublab Barcelona" zwei, und in einer Reihe nebeneinander sitzen die
+   Angaben dann auf verschiedenen Hoehen. Das liest sich unruhig, obwohl
+   jede Karte fuer sich richtig ist. Zwei Zeilen reichen fuer 127 der 129
+   Namen; die zwei laengeren werden abgeschnitten und stehen vollstaendig im
+   Titel des Elements. */
 .karte__etikett {
-    display: grid; gap: 0.2rem;
+    display: flex; flex-direction: column; gap: 0.2rem;
+    flex: 1;
     padding: 0.7rem 0.8rem 0.8rem;
     border-top: 1px solid var(--rand);
 }
@@ -782,6 +1093,9 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .karte__name {
     font-size: 0.92rem; font-weight: 600; line-height: 1.3;
     min-width: 0;
+    min-height: 2.6em;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 .karte__ort {
     font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise);
@@ -808,7 +1122,12 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .karte__guete--ordentlich { color: rgba(255, 255, 255, 0.82); }
 .karte__guete--einfach    { color: rgba(255, 255, 255, 0.42); }
 
-.karte__fuss { display: flex; flex-wrap: wrap; gap: 0.28rem; margin-top: 0.25rem; }
+/* Die Stichwoerter sitzen unten, nicht direkt unter dem Ort — dadurch
+   liegen sie ueber alle Karten einer Reihe auf einer Linie. */
+.karte__fuss {
+    display: flex; flex-wrap: wrap; gap: 0.28rem;
+    margin-top: auto; padding-top: 0.4rem;
+}
 .marke {
     padding: 0.1rem 0.4rem;
     background: rgba(255, 255, 255, 0.06);
@@ -903,7 +1222,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 }
 .meldung__knopf {
     font-family: var(--mono); font-size: 0.74rem;
-    padding: 0.3rem 0.7rem; border-radius: 999px; cursor: pointer;
+    padding: 0.3rem 0.7rem; border-radius: var(--rund); cursor: pointer;
     border: 1px solid transparent; color: var(--grund); font-weight: 700;
     background: linear-gradient(180deg, var(--pink-hell), var(--pink));
     transition: filter 0.2s ease;
@@ -987,7 +1306,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .sprachwahl__knopf {
     display: inline-flex; align-items: center; gap: 0.3rem;
     padding: 0.35rem 0.7rem;
-    background: var(--karte); border: 1px solid var(--rand); border-radius: 999px;
+    background: var(--karte); border: 1px solid var(--rand); border-radius: var(--rund);
     color: var(--text-leise);
     font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em;
     cursor: pointer; list-style: none;

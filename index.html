@@ -152,35 +152,96 @@
         <h2 class="auslage__titel" data-text="auslage.titel">Auf dem Tisch</h2>
         <button class="knopf knopf--leise" id="auslageNeu" data-text="auslage.knopf.neu">Anderes zeigen</button>
     </div>
-    <div class="auslage__raster" id="auslageRaster"></div>
+    <div class="regal__reihe" id="auslageRaster" role="group" data-aria="auslage.bereich" aria-label="Auslage"></div>
 </section>
 
+<!-- Zuletzt gehört. Steht vor der Auslage, weil Wiederfinden häufiger ist als
+     Neuentdecken — und weil die Daten schon da waren, nur nie gezeigt wurden.
+     Bleibt versteckt, solange weniger als zwei Sender darin stehen. -->
+<section class="reihe-block" id="verlauf" data-aria="verlauf.bereich" aria-label="Zuletzt gehört" hidden>
+    <div class="reihe-block__kopf">
+        <h2 class="reihe-block__titel"><span class="reihe-block__zeichen" data-symbol="verlauf" data-symbol-groesse="17"></span><span data-text="verlauf.titel">Zuletzt gehört</span></h2>
+        <span class="reihe-block__zahl" id="verlaufZahl"></span>
+    </div>
+    <div class="regal__reihe" id="verlaufReihe" role="group" data-aria="verlauf.bereich" aria-label="Zuletzt gehört"></div>
+</section>
+
+<!-- Die Filterleiste.
+     Sie zeigt bewusst wenig: drei häufige Fragen, was gerade greift, und wie
+     viel übrig bleibt. Sechzehn Chips in eine klebende Leiste zu quetschen
+     hieße, sie abzuschneiden — und was abgeschnitten ist, findet niemand.
+     Alles Weitere hängt hinter dem Knopf, der sagt, wie viele es gibt. -->
 <div class="filter" role="group" data-aria="filter.bereich" aria-label="Sender filtern">
+    <button class="filter__knopf" id="filterKnopf" aria-expanded="false" aria-controls="filterPanel">
+        <span data-symbol="filter" data-symbol-groesse="15"></span>
+        <span data-text="filter.knopf.titel">Filter</span>
+        <span class="filter__anzahl" id="filterAnzahl"></span>
+    </button>
+
+    <div class="filter__schnell" id="filterSchnell"></div>
+
     <div class="filter__stand" id="filterStand" hidden>
-        <span id="filterStandText"></span>
+        <div class="filter__aktive" id="filterAktive"></div>
+        <span class="filter__zahl" id="filterStandText"></span>
         <button class="filter__zuruecksetzen" id="filterZuruecksetzen"
-                data-aria="filter.zuruecksetzen" aria-label="Filter zurücksetzen"
-                title="Filter zurücksetzen">&times;</button>
-    </div>
-    <div class="filter__gruppe">
-        <span class="filter__titel" data-text="filter.guete.titel">Klang</span>
-        <button class="guete-knopf" data-guete="verlustfrei" data-text="filter.guete.verlustfrei">verlustfrei &amp; Opus <span>11</span></button>
-        <button class="guete-knopf" data-guete="hoch" data-text="filter.guete.hoch">ab 256 kbit/s <span>45</span></button>
-    </div>
-    <div class="filter__trenner" aria-hidden="true"></div>
-    <!-- Regale kommen aus data/sender.json, damit ein neues hier nichts kostet. -->
-    <div class="filter__gruppe">
-        <span class="filter__titel" data-text="filter.regal.titel">Regal</span>
-        <span id="regalFilter" class="etiketten"></span>
-    </div>
-    <div class="filter__trenner" aria-hidden="true"></div>
-    <div class="filter__gruppe">
-        <span class="filter__titel" data-text="filter.etikett.titel">Stichwort</span>
-        <span class="etiketten" id="etiketten"></span>
+                data-text="filter.knopf.alle" data-titel="filter.zuruecksetzen">Alle zeigen</button>
     </div>
 </div>
 
-<main class="regale" id="regale"></main>
+<!-- Das Panel. Ein natives <dialog>: Es bringt Fokusfang, Escape und den
+     Verdunkler mit, die man sonst von Hand nachbauen und dabei falsch machen
+     würde. Die Filter greifen sofort — kein „Übernehmen"-Knopf, denn die
+     Trefferzahl steht daneben und man sieht die Wirkung. -->
+<dialog class="filter-panel" id="filterPanel" data-aria="filter.panel.bereich" aria-label="Alle Filter">
+    <div class="filter-panel__kopf">
+        <h2 class="filter-panel__titel" data-text="filter.panel.titel">Alle Filter</h2>
+        <button class="filter-panel__zu" id="filterPanelZu"
+                data-aria="filter.panel.schliessen" aria-label="Schließen">
+            <span data-symbol="zu" data-symbol-groesse="18"></span>
+        </button>
+    </div>
+    <div class="filter-panel__inhalt" id="filterPanelInhalt"></div>
+    <div class="filter-panel__fuss">
+        <span class="filter-panel__stand" id="filterPanelStand"></span>
+        <button class="knopf knopf--leise" id="filterPanelLeeren" data-text="filter.knopf.alle">Alle zeigen</button>
+        <button class="knopf knopf--gross" id="filterPanelFertig" data-text="filter.panel.fertig">Fertig</button>
+    </div>
+</dialog>
+
+<main class="regale" id="regale" data-aria="regale.bereich" aria-label="Regale">
+    <!-- Die Vorschau, die vor dem Programmcode steht.
+
+         Sie ist keine Verzierung: Bis der Katalog geladen und gezeichnet ist,
+         stuende hier sonst eine leere Flaeche, und eine leere Flaeche liest
+         sich wie ein Fehler. Die Platzhalter haben exakt die Masse der
+         echten Huelle — quadratisches Cover, zweizeiliges Etikett —, damit
+         beim Austausch nichts springt.
+
+         aria-hidden, weil eine Vorlesestimme mit "leer leer leer" niemandem
+         hilft; aria-busy am Behaelter sagt stattdessen, dass geladen wird. -->
+    <section class="regal regal--skelett" aria-hidden="true">
+        <div class="regal__kopf"><span class="skelett skelett--titel"></span></div>
+        <div class="regal__reihe">
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+        </div>
+    </section>
+    <section class="regal regal--skelett" aria-hidden="true">
+        <div class="regal__kopf"><span class="skelett skelett--titel"></span></div>
+        <div class="regal__reihe">
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+        </div>
+    </section>
+</main>
 
 <footer class="fuss">
     <p class="fuss__hinweis" data-html="fuss.hinweis">

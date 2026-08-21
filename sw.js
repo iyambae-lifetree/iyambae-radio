@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v16';
+const SW_VERSION = 'iyambae-v17';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -48,6 +48,7 @@ const SHELL_FILES = [
     '/assets/lib/wochentipp.mjs',
     '/assets/lib/senderbild.mjs',
     '/assets/lib/symbole.mjs',
+    '/assets/lib/achsen.mjs',
     '/assets/lib/sprache.mjs',
     '/assets/lib/aktualisierung.mjs',
     '/assets/lib/fehlerbericht.mjs',
