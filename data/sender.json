@@ -1085,7 +1085,9 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-20",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/cafedelmar-calm.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "nature-sleep",
@@ -1691,7 +1693,9 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-20",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/salsa-brava-ccs.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "cumbia-90s",
@@ -1755,7 +1759,9 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-20",
-      "cors": false
+      "cors": false,
+      "logo": "assets/logos/bytefm.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "wdr-cosmo",
@@ -1954,7 +1960,9 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-20",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/bamtaare-fm.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "radio-armisa",
@@ -2703,7 +2711,9 @@
       "regal": "rueckspiegel",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/somafm-u80s.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "new-wave-radio",
@@ -2744,7 +2754,9 @@
       "regal": "rueckspiegel",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/italopower.webp",
+      "logoQuelle": "apple-touch-icon"
     },
     {
       "id": "rautemusik-80s",
@@ -2829,7 +2841,9 @@
       "regal": "rueckspiegel",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/181fm-oldschool.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "181fm-90salt",
@@ -2849,7 +2863,9 @@
       "regal": "rueckspiegel",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/181fm-90salt.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "1fm-90s-best",
@@ -2889,7 +2905,9 @@
       "regal": "rueckspiegel",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/90s90s-eurodance.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "90s90s-grunge",
@@ -2909,7 +2927,9 @@
       "regal": "rueckspiegel",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/90s90s-grunge.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "90s90s-rave",
@@ -2930,7 +2950,9 @@
       "regal": "rueckspiegel",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/90s90s-rave.webp",
+      "logoQuelle": "og:image"
     }
   ]
 }

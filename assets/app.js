@@ -11,9 +11,18 @@ import { findeVerwandten } from './lib/verwandt.mjs';
 import { frageMyRetuner, wartAufEinwilligung, anzeigeStimmung, anzeigeQuelle, ZUSTAND }
   from './lib/myretuner.mjs';
 import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
-import { senderbild, hatEigenesLogo, regalton, MARKE } from './lib/senderbild.mjs';
+import { senderbild, hatEigenesLogo, regalton, MARKE, huellenzeilen, huellengroesse }
+  from './lib/senderbild.mjs';
+import { symbol, setzeSymbole } from './lib/symbole.mjs';
 import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 import { beobachteFehler } from './lib/fehlerbericht.mjs';
+import { ladeSprache, uebersetzeDokument, t } from './lib/sprache.mjs';
+
+// ── Sprache ────────────────────────────────────────────────────────
+// Zuerst, denn alles darunter schlaegt seine Texte hier nach. Die festen
+// Texte im Dokument werden in einem Zug ersetzt, bevor der Ladeschirm faellt.
+await ladeSprache();
+uebersetzeDokument();
 
 // ── Katalog laden ──────────────────────────────────────────────────
 const antwort = await fetch('./data/sender.json');
@@ -299,8 +308,8 @@ class AudioEngine {
   }
 
   statusText() {
-    if (!this.ist432An) return 'Live — 440Hz';
-    return this.kernUebernimmt() ? 'Live — 432Hz gemessen' : 'Live — 432Hz';
+    if (!this.ist432An) return t('status.live440');
+    return this.kernUebernimmt() ? t('status.live432Gemessen') : t('status.live432');
   }
 
   setzeLautstaerke(wert, merken = true) {
@@ -481,20 +490,30 @@ class UI {
                 : (sender.bitrate ?? 0) >= 256 ? 'gut'
                 : (sender.bitrate ?? 0) >= 192 ? 'ordentlich' : 'einfach';
     const guetetitel = sender.codec === 'flac'
-        ? 'Verlustfrei — nichts geht verloren'
+        ? t('karte.guete.verlustfrei')
         : ['opus', 'vorbis'].includes(sender.codec)
-          ? `${sender.codec.toUpperCase()} bei ${sender.bitrate} kbit/s — klingt besser als MP3 bei gleicher Datenrate`
-          : `MP3, ${sender.bitrate} kbit/s`;
+          ? t('karte.guete.opus', { codec: sender.codec.toUpperCase(), bitrate: sender.bitrate })
+          : t('karte.guete.mp3', { bitrate: sender.bitrate });
 
     const eigenes = hatEigenesLogo(sender);
     return `
       <article class="karte${aktiv}${wackelig}" data-sender-id="${sender.id}"
                style="--regalton:${regalton(sender)}">
         <button class="karte__favorit${favorit ? ' ist-favorit' : ''}"
-                aria-label="${favorit ? 'Aus Meine Platten entfernen' : 'Zu Meine Platten'}">${favorit ? '♥' : '♡'}</button>
+                aria-label="${favorit ? t('karte.favorit.entfernen') : t('karte.favorit.hinzu')}">${symbol(favorit ? 'gemerkt' : 'merken', 18)}</button>
         ${guete ? `<span class="karte__guete karte__guete--${stufe}" title="${guetetitel}">${guete}</span>` : ''}
-        <div class="karte__bild${eigenes ? '' : ' ist-hausmarke'}">
-          <img src="${senderbild(sender)}" alt="" loading="lazy" width="256" height="256">
+        <div class="karte__bild">
+          ${eigenes
+            ? `<img src="${senderbild(sender)}" alt="" loading="lazy" width="512" height="512">`
+            /*
+              Keine Huelle ohne Cover ist ein Fehler — in jedem Plattenladen
+              stehen Testpressungen mit gesetztem Namen. Deshalb wird der Name
+              gesetzt statt eine Hausmarke wiederholt.
+            */
+            : `<div class="huelle huelle--${huellengroesse(sender)}">
+                 <span class="huelle__name">${huellenzeilen(sender).join('<br>')}</span>
+                 <img class="huelle__marke" src="${MARKE}" alt="" width="28" height="20">
+               </div>`}
         </div>
         <div class="karte__kopf">
           <h3 class="karte__name">${sender.name}</h3>
@@ -532,8 +551,8 @@ class UI {
     if (!daten.length) {
       behaelter.innerHTML = `
         <div class="leer">
-          <p class="leer__titel">Nichts gefunden</p>
-          <p class="leer__hinweis">Anderer Suchbegriff, oder Filter wieder ausschalten.</p>
+          <p class="leer__titel">${t('leer.titel')}</p>
+          <p class="leer__hinweis">${t('leer.hinweis')}</p>
         </div>`;
       return;
     }
@@ -663,13 +682,13 @@ class UI {
 
     const text = document.createElement('span');
     text.textContent = anzahl === 1
-      ? '1 Sender passt'
-      : `${anzahl} von ${this.sender.length} Sendern passen`;
+      ? t('filter.stand.eins')
+      : t('filter.stand.mehrere', { anzahl, gesamt: this.sender.length });
 
     const knopf = document.createElement('button');
     knopf.type = 'button';
     knopf.className = 'filter__zuruecksetzen';
-    knopf.textContent = 'Alle zeigen';
+    knopf.textContent = t('filter.knopf.alle');
     knopf.addEventListener('click', () => this.filterZuruecksetzen());
 
     kasten.replaceChildren(text, knopf);
@@ -681,11 +700,12 @@ class UI {
     document.querySelectorAll('.karte').forEach(karte => {
       const favorit = this.istFavorit(karte.dataset.senderId);
       const knopf = karte.querySelector('.karte__favorit');
-      if (knopf) { knopf.textContent = favorit ? '♥' : '♡'; knopf.classList.toggle('ist-favorit', favorit); }
+      if (knopf) { knopf.innerHTML = symbol(favorit ? 'gemerkt' : 'merken', 18); knopf.classList.toggle('ist-favorit', favorit); }
     });
     const heroKnopf = document.getElementById('heroFavorit');
     if (heroKnopf && this.aktuelleId) {
-      heroKnopf.textContent = this.istFavorit(this.aktuelleId) ? '♥ Gemerkt' : '♡ Merken';
+      heroKnopf.textContent = this.istFavorit(this.aktuelleId)
+        ? t('hero.knopf.gemerkt') : t('hero.knopf.merken');
     }
   }
 
@@ -713,11 +733,11 @@ class UI {
     document.getElementById('heroName').textContent = sender.name;
     document.getElementById('heroOrt').textContent  = `${sender.betreiber} · ${sender.ort}, ${sender.land}`;
     document.getElementById('heroKaertchen').textContent = sender.kaertchen;
-    const guete = sender.codec === 'flac' ? 'verlustfrei FLAC'
+    const guete = sender.codec === 'flac' ? t('hero.guete.flac')
                 : ['opus','vorbis'].includes(sender.codec) ? sender.codec.toUpperCase()
-                : `${sender.codec.toUpperCase()} ${sender.bitrate ?? '?'} kbit/s`;
+                : t('hero.guete.bitrate', { codec: sender.codec.toUpperCase(), bitrate: sender.bitrate ?? '?' });
     // Ehrlich benennen, ob der Balkenkranz das echte Signal zeigt.
-    const pegel = sender.cors ? ' · Pegel live' : ' · Pegel nachempfunden';
+    const pegel = sender.cors ? t('hero.pegel.live') : t('hero.pegel.simuliert');
     document.getElementById('heroGuete').textContent = guete + pegel;
     document.getElementById('heroLink').href = sender.homepage;
     document.getElementById('barName').textContent = sender.name;
@@ -736,7 +756,7 @@ class UI {
   zeigeSpielzustand(laeuft) {
     for (const id of ['heroPlayIcon', 'barPlayIcon']) {
       const el = document.getElementById(id);
-      if (el) el.textContent = laeuft ? '⏸' : '▶';
+      if (el) el.innerHTML = symbol(laeuft ? 'pause' : 'abspielen', 20);
     }
     document.body.classList.toggle('spielt', laeuft);
     this.setzeTonarm(laeuft);
@@ -768,7 +788,7 @@ class UI {
     if (!karte.querySelector('.karte__stumm')) {
       const hinweis = document.createElement('span');
       hinweis.className = 'karte__stumm';
-      hinweis.textContent = 'antwortet gerade nicht';
+      hinweis.textContent = t('karte.stumm');
       karte.appendChild(hinweis);
     }
     if (istWackelig(senderId)) karte.classList.add('ans-regalende');
@@ -778,8 +798,8 @@ class UI {
     document.querySelector('.ausfall')?.remove();
     const kasten = document.createElement('div');
     kasten.className = 'ausfall';
-    kasten.innerHTML = `<span>${gescheitert.name} antwortet gerade nicht.</span>
-                        <button type="button">Stattdessen ${ersatz.name}</button>`;
+    kasten.innerHTML = `<span>${t('ausfall.text', { name: gescheitert.name })}</span>
+                        <button type="button">${t('ausfall.knopf', { name: ersatz.name })}</button>`;
     kasten.querySelector('button').addEventListener('click', () => {
       kasten.remove();
       window.app.spieleSender(ersatz);
@@ -866,8 +886,8 @@ class App {
       this._setzeMediaSession(this.engine.aktuellerSender);
     });
 
-    this.engine.bei('laden',   () => this.ui.zeigeStatus('laden', 'Verbinden …'));
-    this.engine.bei('puffern', () => this.ui.zeigeStatus('laden', 'Puffert …'));
+    this.engine.bei('laden',   () => this.ui.zeigeStatus('laden', t('status.verbinden')));
+    this.engine.bei('puffern', () => this.ui.zeigeStatus('laden', t('status.puffern')));
 
     // Kein automatisches Weiterspringen mehr. Früher wechselte die App alle
     // 2,5 s zum nächsten Sender und warf jedes Mal eine rote Meldung — bei
@@ -876,7 +896,7 @@ class App {
       const sender = this.engine.aktuellerSender;
       if (!sender) return;
       this.ui.zeigeSpielzustand(false);
-      this.ui.zeigeStatus('fehler', 'antwortet gerade nicht');
+      this.ui.zeigeStatus('fehler', t('karte.stumm'));
       this.ui.markiereStumm(sender.id);
       zaehleFehlschlag(sender.id);
       const ersatz = findeVerwandten(sender, this.ui.sender.filter(s => !istWackelig(s.id)), new Set([sender.id]));
@@ -886,6 +906,10 @@ class App {
     this.setzeMyRetuner(speicher.lies(SCHLUESSEL.myretuner, false), 'nutzer');
     this.starteMyRetunerErkennung();
     document.getElementById('ladeschirm')?.classList.add('weg');
+
+    // Symbole einsetzen, bevor der Ladeschirm weggeht — sonst blitzen leere
+    // Flaechen auf, wo Symbole hingehoeren.
+    setzeSymbole();
 
     this.folgeAdressZiel();
 
@@ -933,7 +957,7 @@ class App {
     this.engine.aktuellerSender = sender;
     this.ui.zeigeSender(sender);
     this.ui.markiereAktiv();
-    this.ui.zeigeStatus('laden', 'Verbinden …');
+    this.ui.zeigeStatus('laden', t('status.verbinden'));
     this.ui.raeumeAusfallAuf();
 
     if (!optionen.still) {
@@ -951,7 +975,7 @@ class App {
     this.engine.wechsle();
     this.ui.zeigeSpielzustand(this.engine.laeuft);
     this.ui.zeigeStatus(this.engine.laeuft ? 'live' : 'pause',
-                        this.engine.laeuft ? this.engine.statusText() : 'Pausiert');
+                        this.engine.laeuft ? this.engine.statusText() : t('status.pausiert'));
     if (!this.engine.laeuft) this.visualizer.stopp();
   }
 
@@ -969,7 +993,7 @@ class App {
     const s = tipp.sender;
 
     document.getElementById('tippWoche').textContent =
-      `Sender der Woche · KW ${tipp.woche} / ${tipp.jahr}`;
+      t('tipp.woche', { woche: tipp.woche, jahr: tipp.jahr });
     document.getElementById('tippName').textContent = s.name;
     document.getElementById('tippOrt').textContent =
       `${s.betreiber} · ${s.ort}, ${s.land} · ${this.ui.regale.find(r => r.id === s.regal)?.name ?? ''}`;
@@ -1001,7 +1025,7 @@ class App {
     const [treffer] = waehleUeberraschung(this._ziehbareSender(), ladeGehoert(), 1, ladeZuletzt());
     if (treffer) {
       this.spieleSender(treffer);
-      this.ui.meldung('Nadel gefallen: ' + treffer.name, 'info');
+      this.ui.meldung(t('meldung.nadel', { name: treffer.name }), 'info');
     }
   }
 
@@ -1014,7 +1038,7 @@ class App {
     const meine = [...favoriten, ...zuletzt];
 
     if (!meine.length) {
-      this.ui.meldung('Noch nichts im Fach — spiel einen Sender oder setz ein Herz.', 'info');
+      this.ui.meldung(t('meldung.meineLeer'), 'info');
       return;
     }
     this.ui.zeichneRegale(meine);
@@ -1024,7 +1048,7 @@ class App {
   aktualisiereGriff() {
     const anzahl = this.ui.favoriten.size + ladeZuletzt().length;
     const el = document.getElementById('griffMeineZahl');
-    if (el) el.textContent = anzahl ? anzahl + ' Sender' : 'noch leer';
+    if (el) el.textContent = anzahl ? t('griff.meine.zahl', { anzahl }) : t('griff.meine.leer');
   }
 
   // ── Suche ────────────────────────────────────────────────────────
@@ -1049,7 +1073,8 @@ class App {
     if (knopf432) {
       knopf432.disabled = this.myRetunerAktiv;
       knopf432.querySelector('span:last-child').textContent =
-        this.myRetunerAktiv ? 'MyRetuner übernimmt' : (this.engine.ist432An ? '432 Hz an' : '432 Hz aus');
+        this.myRetunerAktiv ? t('kopf.432.myretuner')
+                            : t(this.engine.ist432An ? 'kopf.432.an' : 'kopf.432.aus');
       knopf432.classList.toggle('ist-an', this.engine.ist432An && !this.myRetunerAktiv);
     }
     /*
@@ -1096,7 +1121,7 @@ class App {
     const feld  = document.getElementById('myRetunerMessung');
     if (knopf) knopf.disabled = true;
     if (feld) {
-      feld.textContent = 'Warte auf Bestätigung in MyRetuner …';
+      feld.textContent = t('myretuner.warte');
       feld.hidden = false;
     }
 
@@ -1142,10 +1167,9 @@ class App {
       const quelle = anzeigeQuelle(daten);
       // Der eigentliche Moment: die Seite raet 440, die App hat gemessen.
       const text = quelle
-        ? (quelle.sicher
-            ? `Quelle ${quelle.wert} Hz → ${ziel} Hz`
-            : `Quelle etwa ${quelle.wert} Hz → ${ziel} Hz`)
-        : `MyRetuner erkannt · ${ziel} Hz`;
+        ? t(quelle.sicher ? 'myretuner.quelle' : 'myretuner.quelleUnsicher',
+            { wert: quelle.wert, ziel })
+        : t('myretuner.erkannt', { ziel });
       const feld = document.getElementById('myRetunerMessung');
       if (feld) { feld.textContent = text; feld.hidden = false; }
       // Sie antwortet wieder — der Hinweis hat sich erledigt.
@@ -1175,7 +1199,7 @@ class App {
     this.engine.setze432(!this.engine.ist432An);
     this.setzeMyRetuner(false, 'anzeige');
     this.ui.zeigeStatus(this.engine.laeuft ? 'live' : 'pause',
-                        this.engine.laeuft ? this.engine.statusText() : 'Pausiert');
+                        this.engine.laeuft ? this.engine.statusText() : t('status.pausiert'));
   }
 
   // ── Verdrahtung ──────────────────────────────────────────────────

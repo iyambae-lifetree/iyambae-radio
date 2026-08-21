@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v12';
+const SW_VERSION = 'iyambae-v13';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -34,6 +34,12 @@ const SHELL_FILES = [
     './assets/lib/myretuner.mjs',
     './assets/lib/wochentipp.mjs',
     './assets/lib/senderbild.mjs',
+    './assets/lib/symbole.mjs',
+    './assets/lib/sprache.mjs',
+    // Beide Sprachdateien in die Huelle: Wer offline die Sprache umstellt,
+    // soll nicht ins Leere greifen.
+    './assets/lang/de.json',
+    './assets/lang/en.json',
     './assets/lib/aktualisierung.mjs',
     './assets/lib/fehlerbericht.mjs',
     // MyRetuners Signalkern. Der Worklet wird nicht importiert, sondern per

@@ -23,7 +23,12 @@
     --schrift:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --mono:         'JetBrains Mono', ui-monospace, monospace;
     --anzeige:      'Orbitron', var(--schrift);
-    --rund:         14px;
+    /* 2 px statt 14. Vierzehn ist die Rundung, an der man Software erkennt —
+       auf Flaechen, die hier Regalschilder und Kaertchen sein sollen, war sie
+       schlicht falsch. Zwei Pixel sind die Kante eines geschnittenen Kartons,
+       nicht die eines Dialogfensters. Pillen (999px) und Kreise (50%) bleiben:
+       Ein Aufkleber ist rund, ein Drehknopf auch. */
+    --rund:         2px;
     --schatten:     0 8px 28px rgba(0, 0, 0, 0.45);
     --glut:         0 0 0 1px rgba(242, 183, 5, 0.55), 0 0 22px rgba(242, 183, 5, 0.30);
 }
@@ -438,62 +443,78 @@ body.spielt .platte { animation-play-state: running; }
 .regal__zahl { font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
 .regal__beschreibung { font-size: 0.85rem; color: var(--text-leise); margin: 0.1rem 0 0.9rem; }
 
-/* ── Karte ───────────────────────────────────────────────────────── */
+/* ── Karte ───────────────────────────────────────────────────────
+   Eine Plattenhülle, keine Kachel.
+
+   Vorher hatte sie 14 px Rundung an allen vier Ecken. Das ist die Form, an
+   der man Software erkennt — und in einem Plattenladen ist sie schlicht
+   falsch: Eine Hülle ist quadratisch und scharfkantig. Die Rundung
+   wegzunehmen ist deshalb keine Mode, sondern eine Berichtigung.
+
+   Der Aufbau folgt der echten Hülle: das Cover randlos bis zur Kante, darunter
+   ein Etikett wie am Regalfach. */
 .karte {
     position: relative;
-    display: flex; flex-direction: column; gap: 0.5rem;
-    padding: 0.9rem;
+    display: flex; flex-direction: column;
     background: var(--karte);
-    border: 1px solid var(--rand); border-radius: var(--rund);
+    border: 1px solid var(--rand);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
 }
-.karte:hover { background: var(--karte-hoch); border-color: var(--rand-hell); transform: translateY(-2px); }
+/* Beim Überfahren hebt sich die Hülle einen Millimeter aus dem Fach — die
+   Geste, mit der man im Regal blättert. */
+.karte:hover {
+    border-color: var(--rand-hell);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+}
 .karte.ist-aktiv { border-color: var(--pink); box-shadow: var(--glut); }
-.karte.ist-stumm { opacity: 0.5; }
+.karte.ist-stumm { opacity: 0.45; }
 .karte.ans-regalende { order: 99; }
 
+/* Herz und Klangangabe liegen auf dem Cover, in den oberen Ecken. Beide
+   quadratisch: ein runder Knopf auf einer scharfkantigen Hülle wäre genau der
+   Stilbruch, der weg sollte. */
 .karte__favorit {
-    position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
-    width: 1.8rem; height: 1.8rem;
+    position: absolute; top: 0; right: 0; z-index: 2;
+    width: 2.1rem; height: 2.1rem;
     display: grid; place-items: center;
-    background: rgba(0, 0, 0, 0.35); color: var(--text-leise);
-    border: 0; border-radius: 50%;
-    font-size: 0.9rem; cursor: pointer; transition: all 0.15s ease;
+    background: linear-gradient(225deg, rgba(0, 0, 0, 0.65) 55%, transparent);
+    color: rgba(255, 255, 255, 0.75);
+    border: 0; cursor: pointer;
+    transition: color 0.15s ease;
 }
-.karte__favorit:hover { color: var(--pink-hell); background: rgba(0, 0, 0, 0.6); }
+.karte__favorit:hover { color: var(--pink-hell); }
 .karte__favorit.ist-favorit { color: var(--pink); }
+.karte__favorit .symbol { display: block; }
 
 /* Klangqualität — gegenüber vom Herzen. Die beiden gehören zusammen: wie es
    klingt, und ob ich es behalte. Vier Stufen, weil FLAC etwas anderes ist als
    256 kbit/s. */
 .karte__guete {
-    position: absolute; top: 0.6rem; left: 0.6rem; z-index: 2;
-    padding: 0.16rem 0.5rem;
-    border-radius: 0.35rem;
-    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.02em;
-    background: rgba(0, 0, 0, 0.45);
-    color: var(--text-leise);
-    border: 1px solid transparent;
-    backdrop-filter: blur(3px);
+    position: absolute; top: 0; left: 0; z-index: 2;
+    padding: 0.2rem 0.5rem;
+    font-family: var(--mono); font-size: 0.6rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.62);
+    color: rgba(255, 255, 255, 0.72);
+    border-bottom: 2px solid transparent;
     cursor: help;
 }
 /* Nur verlustfrei sticht heraus. Stäche alles heraus, wäre nichts abgestuft. */
 .karte__guete--verlustfrei {
     color: var(--gruen);
-    border-color: rgba(53, 224, 138, 0.55);
-    background: rgba(53, 224, 138, 0.16);
+    border-bottom-color: var(--gruen);
+    background: rgba(0, 0, 0, 0.72);
 }
-.karte__guete--gut         { color: var(--gruen); }
-.karte__guete--ordentlich  { color: var(--text); }
-.karte__guete--einfach     { color: var(--text-leise); opacity: 0.75; }
+.karte__guete--gut        { color: var(--gruen); }
+.karte__guete--ordentlich { color: rgba(255, 255, 255, 0.85); }
+.karte__guete--einfach    { color: rgba(255, 255, 255, 0.5); }
 
 /* Das Senderbild: der Eyecatcher, der aus einem Textkasten eine Hülle macht */
 .karte__bild {
     position: relative;
     aspect-ratio: 1;
-    margin: -0.9rem -0.9rem 0;
-    border-radius: var(--rund) var(--rund) 0 0;
     overflow: hidden;
     background: #100c1a;
 }
@@ -508,15 +529,46 @@ body.spielt .platte { animation-play-state: running; }
 /* Sender ohne eigenes Logo tragen die Hausmarke. Damit 33 davon
    nebeneinander nicht wie eine Kachelwand wirken, bekommt jede den
    Farbton ihres Regals hinterlegt. */
-.karte__bild.ist-hausmarke {
+/* Die gestaltete Hülle für Sender ohne Cover.
+
+   Eine Testpressung: Regalfarbe, der Name gesetzt, die Hausmarke klein in der
+   Ecke wie ein Prägestempel. Der diagonale Verlauf gibt jeder Hülle einen
+   eigenen Lichteinfall, damit nebeneinander keine Wand entsteht. */
+.huelle {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    padding: 12%;
     background:
-        radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--regalton) 26%, transparent), transparent 68%),
-        #100c1a;
+        linear-gradient(148deg,
+            color-mix(in srgb, var(--regalton) 30%, #0d0916) 0%,
+            color-mix(in srgb, var(--regalton) 12%, #0d0916) 52%,
+            #0a0712 100%);
 }
-.karte__bild.ist-hausmarke img {
-    object-fit: contain;
-    padding: 16%;
-    opacity: 0.92;
+/* Feiner Rillenschimmer, wie das Licht auf einer Hülle im Regal. */
+.huelle::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(148deg,
+        rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 7px);
+    pointer-events: none;
+}
+.huelle__name {
+    font-family: var(--anzeige);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    line-height: 1.08;
+    text-align: center;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--regalton) 62%, #ffffff);
+    text-wrap: balance;
+}
+.huelle--gross  .huelle__name { font-size: clamp(1.1rem, 3.6vw, 1.6rem); }
+.huelle--mittel .huelle__name { font-size: clamp(0.85rem, 2.7vw, 1.15rem); }
+.huelle--klein  .huelle__name { font-size: clamp(0.68rem, 2.1vw, 0.88rem); letter-spacing: 0.02em; }
+
+.huelle__marke {
+    position: absolute; right: 0.55rem; bottom: 0.5rem;
+    opacity: 0.28;
 }
 
 .karte__name { font-size: 0.95rem; font-weight: 600; line-height: 1.25; padding-right: 2rem; }
@@ -531,7 +583,6 @@ body.spielt .platte { animation-play-state: running; }
 .marke {
     padding: 0.12rem 0.45rem;
     background: rgba(255, 255, 255, 0.06);
-    border-radius: 0.35rem;
     font-family: var(--mono); font-size: 0.62rem; color: var(--text-leise);
 }
 .marke--gut { background: rgba(53, 224, 138, 0.14); color: var(--gruen); }
