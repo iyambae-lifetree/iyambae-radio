@@ -15,6 +15,13 @@ __pycache__/
 /ja/
 /ar/
 
+# robots.txt und sitemap.xml erzeugt derselbe Lauf. Sie stehen aus demselben
+# Grund hier: Die Sitemap fuehrt die sieben Sprachwurzeln auf und traegt den
+# Pruefstand aus data/sender.json — von Hand gepflegt veraltete sie still,
+# und eine veraltete Sitemap ist schlechter als keine.
+/robots.txt
+/sitemap.xml
+
 # Die Rechtsseiten erzeugt Scripts/baue-recht.py aus docs/recht/*.md.
 # Die Markdown-Quellen sind der Bestand, das HTML ist Ergebnis.
 /recht/
