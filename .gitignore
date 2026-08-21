@@ -1,0 +1,4 @@
+
+# Python-Zwischenstaende der Pruefskripte
+__pycache__/
+*.pyc
