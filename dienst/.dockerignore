@@ -1,0 +1,22 @@
+# Was nicht in den Bau-Kontext gehoert.
+#
+# Der wichtigste Eintrag ist der erste, und er ist kein Aufraeumen, sondern
+# eine Fehlerbehebung: `node_modules` entsteht beim oertlichen Entwickeln auf
+# dem Rechner, der gerade da ist — hier ein Windows-Rechner. Darin liegt
+# `@node-rs/argon2-win32-x64-msvc`, eine DLL. Landet sie im Kontext, kopiert
+# sie das Dockerfile in ein Linux-Abbild, und der Dienst faellt beim ersten
+# Passwort mit „cannot find module" um. Das Abbild loest seine
+# Abhaengigkeiten selbst auf, gegen dieselbe package-lock.json.
+node_modules
+
+# Die Tests laufen vor dem Bau, nicht im Abbild. 174 davon, `node --test`.
+test
+
+# Unterlagen. FREMDANMELDUNG.md und README.md beschreiben, wie der Dienst
+# gebaut ist — im ausgelieferten Abbild waere das eine Bauanleitung fuer
+# jeden, der hineinsieht.
+README.md
+FREMDANMELDUNG.md
+
+Dockerfile
+.dockerignore

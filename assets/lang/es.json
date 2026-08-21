@@ -140,7 +140,7 @@
   "einstellungen.noetig.was": "Tu idioma, el ajuste de 432 Hz, el volumen y esta misma elección. Sin ellos, la página no sabría nada de ti en cada visita.",
   "einstellungen.immer": "siempre activo",
   "einstellungen.messung.titel": "Medición de audiencia",
-  "einstellungen.messung.was": "Qué emisora se inicia y qué filtros se usan — sin identificador, sin cookies, con la dirección acortada. En nuestro propio servidor, no en el de un tercero.",
+  "einstellungen.messung.was": "Qué emisora se inicia y qué filtros se usan — sin identificador, sin cookies, sin dirección alguna. En nuestro propio servidor, no en el de un tercero.",
   "einstellungen.fehler.titel": "Informes de error",
   "einstellungen.fehler.was": "Cuando algo falla, se te pregunta si el informe puede enviarse. Aquí puedes retirar un consentimiento ya dado.",
   "einstellungen.nachwort": "Lo que se guarda, y durante cuánto tiempo, está en la <a href=\"/recht/datenschutz/\" hreflang=\"de\">política de privacidad</a> (en alemán).",

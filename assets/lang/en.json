@@ -140,7 +140,7 @@
   "einstellungen.noetig.was": "Your language, the 432 Hz setting, the volume, and this choice. Without them the site would know nothing about you on every visit.",
   "einstellungen.immer": "always on",
   "einstellungen.messung.titel": "Audience measurement",
-  "einstellungen.messung.was": "Which station gets started and which filters are used — no identifier, no cookie, shortened address. On our own server, not a third party's.",
+  "einstellungen.messung.was": "Which station gets started and which filters are used — no identifier, no cookie, no address at all. On our own server, not a third party's.",
   "einstellungen.fehler.titel": "Error reports",
   "einstellungen.fehler.was": "When something breaks, you are asked whether the report may be sent. Here you can withdraw a consent you gave.",
   "einstellungen.nachwort": "What is stored and for how long is in the <a href=\"/recht/datenschutz/\" hreflang=\"de\">privacy policy</a>.",

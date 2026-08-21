@@ -11,9 +11,13 @@
 // sie dann.
 //
 // Damit greift § 25 nicht, und es bleibt die DSGVO. Verarbeitet wird: was
-// passiert ist, wann, und die schon von nginx gekürzte Besucheradresse.
+// passiert ist, wann, und in welcher Sprachfassung. Sonst nichts — die
+// Protokollzeile hat kein Adressfeld, auch kein gekürztes.
 // Rechtsgrundlage ist das berechtigte Interesse — zu wissen, ob die Seite
-// benutzt wird und ob die Sender überhaupt laufen.
+// benutzt wird und ob die Sender überhaupt laufen. Diese Abwägung geht
+// deutlich auf, gerade WEIL auf der anderen Seite fast nichts liegt; der
+// Abschalter unten ist dabei kein Zierrat, sondern der Grund, warum sie
+// aufgeht (Art. 21 DSGVO).
 //
 // Die DSK-Orientierungshilfe „Digitale Dienste" (Nov. 2024) warnt in Rz. 116
 // ausdrücklich davor, Banner dort zu zeigen, wo keine Einwilligung nötig ist:

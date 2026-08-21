@@ -140,7 +140,7 @@
   "einstellungen.noetig.was": "言語、432 Hz の設定、音量、そしてこの選択そのもの。これがなければ、サイトは訪れるたびにあなたのことを何も覚えていません。",
   "einstellungen.immer": "常にオン",
   "einstellungen.messung.titel": "利用状況の計測",
-  "einstellungen.messung.was": "どの局が再生され、どの絞り込みが使われたか — 識別子なし、クッキーなし、アドレスは短縮済み。第三者ではなく自前のサーバーで。",
+  "einstellungen.messung.was": "どの局が再生され、どの絞り込みが使われたか — 識別子なし、クッキーなし、アドレスも一切なし。第三者ではなく自前のサーバーで。",
   "einstellungen.fehler.titel": "エラー報告",
   "einstellungen.fehler.was": "不具合が起きたときに、報告を送ってよいか確認します。一度与えた同意は、ここで取り消せます。",
   "einstellungen.nachwort": "何がどれだけの期間保存されるかは<a href=\"/recht/datenschutz/\" hreflang=\"de\">プライバシーポリシー</a>（ドイツ語）に書いてあります。",

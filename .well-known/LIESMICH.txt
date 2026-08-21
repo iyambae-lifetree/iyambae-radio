@@ -1,0 +1,26 @@
+Was hier hineingehoert
+
+Dateien, mit denen fremde Stellen pruefen, dass uns diese Domaene gehoert.
+Sie werden unveraendert ausgeliefert, unter genau dem Namen, den die fremde
+Stelle vorgibt.
+
+Erwartet, sobald "Anmelden mit Apple" eingerichtet wird:
+
+    apple-developer-domain-association.txt
+
+Die Datei laedt man im Apple Developer Portal herunter, nachdem man unter
+Certificates, Identifiers & Profiles > Identifiers > die Service ID >
+Sign in with Apple > Configure die Domaene iyambae.fm eingetragen hat. Sie
+kommt hierher, das Abbild wird neu gebaut und ausgerollt, und ERST DANN
+drueckt man bei Apple auf Verify. Vorher schlaegt die Pruefung fehl, weil
+die Datei noch nicht ausgeliefert wird.
+
+Nachpruefen laesst sich das ohne Apple:
+
+    curl -i https://iyambae.fm/.well-known/apple-developer-domain-association.txt
+
+Erwartet wird 200 und der blanke Inhalt. Kommt 302, greift der Block in
+deploy/nginx.conf nicht; kommt 404, liegt die Datei nicht im Abbild.
+
+Diese LIESMICH-Datei wird mit ausgeliefert und ist harmlos: Sie steht in
+keinem Verzeichnis und verraet nichts, was nicht ohnehin oeffentlich ist.
