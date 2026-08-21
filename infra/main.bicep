@@ -162,21 +162,25 @@ param grabsteinTage int = 90
 
   Eine Client-ID steht bei jedem Anmeldevorgang im Browser des Nutzers; sie
   hier im Klartext zu führen verrät nichts. Das Client-Geheimnis und Apples
-  privater Schlüssel dagegen gehen nach unten in `configuration.secrets` und
-  kommen nur als `secretRef` an den Container — nirgends in dieser Datei, in
-  keiner Ausgabe und in keinem `az deployment show`.
+  privater Schlüssel dagegen stehen im KEY VAULT und kommen als Verweis an den
+  Container — nirgends in dieser Datei, in keiner Ausgabe, in keinem
+  `az deployment show` und in KEINER BEFEHLSZEILE.
 
-  Leer lassen ist zulässig und die Vorgabe: Dann wird das Geheimnis gar nicht
-  erst angelegt, die Umgebungsvariable fehlt, und fremd.mjs schaltet den
-  betroffenen Anbieter still ab. Anmeldung per Mail, Passwort und Passkey
-  läuft davon unberührt weiter.
+  Der letzte Punkt ist der Grund für den Umbau. Solange der Wert ein
+  Aufrufparameter war, stand er beim Ausrollen in der Befehlszeile, im
+  Verlauf der Schale und in jedem Werkzeug dazwischen. Jetzt geht er einmal
+  in den Tresor und danach nie wieder durch eine Kommandozeile.
+
+  Die beiden Schalter sagen nur, OB dort etwas liegt. Stehen sie auf false,
+  wird kein Geheimnis eingebunden, die Umgebungsvariable fehlt, und fremd.mjs
+  schaltet den betroffenen Anbieter still ab — er antwortet dann mit 501.
+  Anmeldung per Mail, Passwort und Passkey läuft davon unberührt weiter.
 */
 @description('Google OAuth-Client-ID. Öffentlich, kein Geheimnis.')
 param googleKennung string = ''
 
-@description('Google Client-Geheimnis. Wird als Container-Apps-Secret abgelegt.')
-@secure()
-param googleGeheimnis string = ''
+@description('Liegt das Google-Geheimnis im Tresor? Erst dann bindet der Container es ein.')
+param mitGoogle bool = false
 
 @description('Apple Team-ID (10 Zeichen).')
 param appleTeamId string = ''
@@ -195,9 +199,8 @@ param appleDienstId string = ''
   Werkzeugkette. fremd.mjs biegt sie beim Lesen zurück — siehe
   `leseUmgebung()` in dienst/src/fremd.mjs.
 */
-@description('Apples privater Schlüssel aus der .p8-Datei, Zeilenumbrüche als zwei Zeichen. Wird als Container-Apps-Secret abgelegt.')
-@secure()
-param appleSchluessel string = ''
+@description('Liegt Apples Schlüssel im Tresor? Erst dann bindet der Container ihn ein.')
+param mitApple bool = false
 
 /*
   NICHT VORBELEGT, und das ist eine bewusst OFFENE Entscheidung.
@@ -238,6 +241,25 @@ param acsRolleId string = ''
 @description('Objekt-IDs der Personen, die Kontodaten LESEN dürfen. Höchstens zwei.')
 @maxLength(2)
 param verwalter array = []
+
+/*
+  Wer Geheimnisse in den Tresor legen und austauschen darf.
+
+  Eine andere Liste als `verwalter`, mit Absicht: Kontodaten lesen und
+  Anbieterschlüssel austauschen sind zwei verschiedene Befugnisse, und wer
+  das eine braucht, braucht nicht zwangsläufig das andere.
+
+  „Key Vault Secrets Officer" darf ablegen, austauschen und löschen — der
+  Dienst selbst hat nur „Secrets User" und darf ausschließlich holen.
+
+  Auch hier gilt: leer lassen ist zulässig, und eine falsche ID reißt die
+  ganze Bereitstellung mit.
+
+      az ad signed-in-user show --query id -o tsv
+*/
+@description('Objekt-IDs der Personen, die Geheimnisse im Tresor ablegen dürfen. Höchstens zwei.')
+@maxLength(2)
+param tresorwarte array = []
 
 /*
   DIE BEREITSCHAFTSSONDIERUNG DES SIDECARS — und der Satz, der dazugehört.
@@ -653,6 +675,73 @@ var rolleTabellenLesen = '76199698-9eea-4c19-bc75-cec21354c6b6' // Storage Table
   zweite anzulegen — sonst sammeln sich Karteileichen an, die niemand mehr
   zuordnen kann.
 */
+/*
+  ════════════════════════════════════════════════════════════════════
+   Der Tresor
+  ════════════════════════════════════════════════════════════════════
+
+  enableRbacAuthorization: Zugriffsrichtlinien am Tresor selbst sind der alte
+  Weg. Sie leben neben dem übrigen Rechtemodell, tauchen in keiner
+  Rollenübersicht auf und werden beim Aufräumen übersehen. Rollen gelten
+  überall gleich.
+
+  softDelete und Löschschutz: Ein versehentlich gelöschter Tresor nimmt die
+  Anmeldung mit, und ohne Wiederherstellungsfrist wäre sie fort. 90 Tage sind
+  die Vorgabe; der Löschschutz verhindert zusätzlich, dass jemand die Frist
+  abkürzt.
+
+  Keine Netzsperre: Container Apps greift von wechselnden Adressen zu, und
+  eine Sperre, die man dafür weit genug öffnen müsste, wäre Zierde. Die
+  Grenze zieht hier die Rolle, nicht das Netz.
+*/
+resource tresor 'Microsoft.KeyVault/vaults@2023-07-01' = {
+  name: 'kv-${name}-${take(uniqueString(resourceGroup().id, 'tresor'), 8)}'
+  location: location
+  tags: marken
+  properties: {
+    tenantId: subscription().tenantId
+    sku: { family: 'A', name: 'standard' }
+    enableRbacAuthorization: true
+    enableSoftDelete: true
+    softDeleteRetentionInDays: 90
+    enablePurgeProtection: true
+    publicNetworkAccess: 'Enabled'
+  }
+}
+
+/*
+  Lesen darf nur der Dienst, und nur lesen.
+
+  "Key Vault Secrets User" (4633458b-…) darf Werte HOLEN, aber keine
+  schreiben, keine auflisten, die es nicht kennt, und keine löschen. Wer
+  Geheimnisse ablegt, ist ein Mensch mit "Secrets Officer" — das ist eine
+  andere Rolle und eine andere Gelegenheit.
+*/
+resource dienstDarfLesen 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: tresor
+  name: guid(tresor.id, dienstIdentitaet.id, 'secrets-user')
+  properties: {
+    principalId: dienstIdentitaet.properties.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      '4633458b-17de-408a-b874-0445c86b69e6')
+  }
+}
+
+resource warteDuerfenAblegen 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for id in tresorwarte: {
+  scope: tresor
+  name: guid(tresor.id, id, 'secrets-officer')
+  properties: {
+    // Key Vault Secrets Officer — ablegen, austauschen, löschen.
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      'b86a8fe4-44ce-4948-aee5-eccb2c155cd7')
+    principalId: id
+    principalType: 'User'
+  }
+}]
+
 resource dienstDarfSchreiben 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: speicher
   name: guid(speicher.id, dienstIdentitaet.id, rolleTabellenSchreiben)
@@ -771,11 +860,11 @@ var kontoUmgebung = concat([
   { name: 'APPLE_TEAM_ID', value: appleTeamId }
   { name: 'APPLE_KEY_ID', value: appleKeyId }
   { name: 'APPLE_SERVICE_ID', value: appleDienstId }
-], empty(googleGeheimnis) ? [] : [
+], !mitGoogle ? [] : [
   // `secretRef`, nicht `value`: Der Wert steht in `configuration.secrets` und
   // taucht in keinem `az containerapp show` und in keiner Ausgabe auf.
   { name: 'GOOGLE_CLIENT_SECRET', secretRef: 'google-geheimnis' }
-], empty(appleSchluessel) ? [] : [
+], !mitApple ? [] : [
   { name: 'APPLE_PRIVATE_KEY', secretRef: 'apple-schluessel' }
 ])
 
@@ -910,28 +999,40 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
         Bereitstellung scheitern. Deshalb hängen Geheimnis und
         Umgebungsvariable an DERSELBEN Bedingung.
 
-        Warum hier und nicht in Key Vault: Key Vault kostet je Zugriff, will
-        eine eigene Rollenzuweisung und eine zweite Ressource, die jemand
-        pflegen muss. Für zwei Werte, die ohnehin nur dieser eine Container
-        liest, ist das Container-Apps-Geheimnis die kleinere Maschinerie. Es
-        liegt verschlüsselt, wird in `az containerapp show` als Name ohne Wert
-        ausgegeben und lässt sich in einem Zug ersetzen.
+        HIER STAND EINMAL DER WERT. Jetzt steht hier ein Verweis.
 
-        WAS ES NICHT KANN, und das gehört in den Kalender: Apples Geheimnis
-        ist ein JWT mit HÖCHSTENS SECHS MONATEN Laufzeit. Es läuft ab, ohne
-        dass sich etwas geändert hätte, und dann steht die Apple-Anmeldung
-        still. Key Vault könnte daran erinnern, ein Container-Apps-Geheimnis
-        kann es nicht.
+        Die frühere Fassung legte die Geheimnisse als Container-Apps-Secret
+        ab, mit der Begründung, das sei die kleinere Maschinerie: kein zweiter
+        Dienst, keine Rollenzuweisung, kein Zugriffsentgelt. Das stimmte und
+        wog trotzdem zu leicht.
+
+        Erstens: Solange der Wert ein Aufrufparameter ist, steht er beim
+        Ausrollen in der Befehlszeile und im Verlauf der Schale. Ein Geheimnis,
+        das man nur ablegen kann, indem man es durch eine Kommandozeile
+        schiebt, ist an genau der Stelle offen, an der man es für sicher hält.
+
+        Zweitens, und den Punkt notierte die frühere Fassung selbst: Apples
+        Geheimnis ist ein JWT mit HÖCHSTENS SECHS MONATEN Laufzeit. Es läuft
+        ab, ohne dass sich etwas geändert hätte, und dann steht die
+        Apple-Anmeldung still. Der Tresor führt ein Ablaufdatum je Geheimnis
+        und kann davor warnen. Ein Container-Apps-Secret kann das nicht.
+
+        Der Container holt den Wert über die Identität, die oben "Key Vault
+        Secrets User" bekommen hat — dieselbe, mit der er auch an die Tabellen
+        geht. Ohne Versionsnummer im Pfad: Dann zieht ein Austausch im Tresor
+        beim nächsten Neustart von selbst nach.
       */
-      secrets: concat(empty(googleGeheimnis) ? [] : [
+      secrets: concat(!mitGoogle ? [] : [
         {
           name: 'google-geheimnis'
-          value: googleGeheimnis
+          keyVaultUrl: '${tresor.properties.vaultUri}secrets/google-geheimnis'
+          identity: dienstIdentitaet.id
         }
-      ], empty(appleSchluessel) ? [] : [
+      ], !mitApple ? [] : [
         {
           name: 'apple-schluessel'
-          value: appleSchluessel
+          keyVaultUrl: '${tresor.properties.vaultUri}secrets/apple-schluessel'
+          identity: dienstIdentitaet.id
         }
       ])
     }
@@ -1052,3 +1153,9 @@ output dienstObjektId string = dienstIdentitaet.properties.principalId
 */
 @description('SPF-, DKIM- und Prüfeinträge für die Absenderdomäne. Bei Cloudflare eintragen, alle DNS only.')
 output mailDnsEintraege object = maildomaene.properties.verificationRecords
+
+@description('Der Tresor. Geheimnisse legt man dort ab, nicht über Aufrufparameter.')
+output tresorName string = tresor.name
+
+@description('Adresse des Tresors, für az keyvault secret set --vault-name.')
+output tresorAdresse string = tresor.properties.vaultUri
