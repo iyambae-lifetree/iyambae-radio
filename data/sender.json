@@ -9,10 +9,10 @@
       "beschreibung": "Sender, die sich weigern, ein Genre zu haben."
     },
     {
-      "id": "maschinenraum",
-      "name": "Maschinenraum",
-      "icon": "⚙",
-      "beschreibung": "Elektronisch mit Kante."
+      "id": "freakshow",
+      "name": "Freakshow",
+      "icon": "🎪",
+      "beschreibung": "Mashups, Vaporwave, Genre-Unfälle mit Ansage."
     },
     {
       "id": "tiefe",
@@ -21,16 +21,16 @@
       "beschreibung": "Ambient, Drone, Weltraum. Musik zum Verschwinden."
     },
     {
-      "id": "jazz",
-      "name": "Jazz & Verwandtes",
-      "icon": "🎷",
-      "beschreibung": "Jazz und was daran grenzt."
-    },
-    {
       "id": "japan",
       "name": "Japan",
       "icon": "🗾",
       "beschreibung": "City Pop, J-Jazz, Lokalradio, Community."
+    },
+    {
+      "id": "maschinenraum",
+      "name": "Maschinenraum",
+      "icon": "⚙",
+      "beschreibung": "Elektronisch mit Kante."
     },
     {
       "id": "barrio",
@@ -39,22 +39,29 @@
       "beschreibung": "Salsa, Cumbia, Latin Alternative — von Havanna bis Buenos Aires."
     },
     {
+      "id": "rueckspiegel",
+      "name": "Rückspiegel",
+      "icon": "⟲",
+      "beschreibung": "Alte Zeiten, aber die eigenwilligen. Italo Disco, Spacesynth, früher Rave — was damals schon niemand spielte und heute erst recht nicht."
+    },
+    {
       "id": "fundstuecke",
       "name": "Fundstücke",
       "icon": "🧭",
       "beschreibung": "Regionales und Kurioses aus aller Welt."
     },
     {
-      "id": "freakshow",
-      "name": "Freakshow",
-      "icon": "🎪",
-      "beschreibung": "Mashups, Vaporwave, Genre-Unfälle mit Ansage."
+      "id": "jazz",
+      "name": "Jazz & Verwandtes",
+      "icon": "🎷",
+      "beschreibung": "Jazz und was daran grenzt."
     },
     {
-      "id": "rueckspiegel",
-      "name": "Rückspiegel",
-      "icon": "⟲",
-      "beschreibung": "Achtziger und Neunziger. Von Italo bis Grunge."
+      "id": "wuehlkiste",
+      "name": "Die Wühlkiste",
+      "icon": "🧺",
+      "beschreibung": "Mainstream, klar abgegrenzt. Hier liegt, was jeder kennt — für Besucher, die etwas Vertrautes suchen. Von hier sind es ein paar Regale bis zu Musik, die man noch nie gehört hat.",
+      "zurueckgenommen": true
     }
   ],
   "sender": [
@@ -80,7 +87,8 @@
       "geprueft_am": "2026-08-20",
       "cors": false,
       "logo": "assets/logos/nts-1.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "1"
     },
     {
       "id": "nts-2",
@@ -103,7 +111,8 @@
       "geprueft_am": "2026-08-20",
       "cors": false,
       "logo": "assets/logos/nts-2.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "2"
     },
     {
       "id": "nts-slow-focus",
@@ -127,7 +136,8 @@
       "geprueft_am": "2026-08-20",
       "cors": false,
       "logo": "assets/logos/nts-slow-focus.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Slow Focus"
     },
     {
       "id": "dublab-la",
@@ -353,7 +363,9 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-20",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/wfmu.webp",
+      "logoQuelle": "icon"
     },
     {
       "id": "yammat-fm",
@@ -468,7 +480,8 @@
       "geprueft_am": "2026-08-20",
       "cors": true,
       "logo": "assets/logos/rp-main-flac.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Main"
     },
     {
       "id": "rp-world-flac",
@@ -491,7 +504,8 @@
       "geprueft_am": "2026-08-20",
       "cors": true,
       "logo": "assets/logos/rp-world-flac.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "World/Etc"
     },
     {
       "id": "worldwide-fm",
@@ -538,7 +552,8 @@
       "geprueft_am": "2026-08-20",
       "cors": true,
       "logo": "assets/logos/hirschmilch-techno.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Techno"
     },
     {
       "id": "hirschmilch-electronic",
@@ -561,7 +576,8 @@
       "geprueft_am": "2026-08-20",
       "cors": true,
       "logo": "assets/logos/hirschmilch-electronic.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Electronic"
     },
     {
       "id": "hirschmilch-hypnotic",
@@ -585,7 +601,8 @@
       "geprueft_am": "2026-08-20",
       "cors": true,
       "logo": "assets/logos/hirschmilch-hypnotic.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Hypnotic"
     },
     {
       "id": "hirschmilch-progressive",
@@ -608,7 +625,8 @@
       "geprueft_am": "2026-08-20",
       "cors": true,
       "logo": "assets/logos/hirschmilch-progressive.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Progressive"
     },
     {
       "id": "bassdrive",
@@ -1018,7 +1036,9 @@
       "samplerate": 48000,
       "status": "ok",
       "geprueft_am": "2026-08-20",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/newage-flac.webp",
+      "logoQuelle": "icon"
     },
     {
       "id": "ambi-nature",
@@ -1305,7 +1325,8 @@
       "geprueft_am": "2026-08-20",
       "cors": false,
       "logo": "assets/logos/listen-moe-jpop.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "J-Pop"
     },
     {
       "id": "listen-moe-kpop",
@@ -1328,7 +1349,8 @@
       "geprueft_am": "2026-08-20",
       "cors": false,
       "logo": "assets/logos/listen-moe-kpop.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "K-Pop"
     },
     {
       "id": "radio-nanahira",
@@ -1567,7 +1589,8 @@
       "geprueft_am": "2026-08-20",
       "cors": true,
       "logo": "assets/logos/gladys-coleccion.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Colección"
     },
     {
       "id": "gladys-latinfresh",
@@ -1589,7 +1612,8 @@
       "geprueft_am": "2026-08-20",
       "cors": true,
       "logo": "assets/logos/gladys-latinfresh.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Latin Fresh"
     },
     {
       "id": "ibero-909",
@@ -1916,7 +1940,9 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-20",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/yurd-fm.webp",
+      "logoQuelle": "icon"
     },
     {
       "id": "radyo-siran",
@@ -2009,7 +2035,8 @@
       "geprueft_am": "2026-08-20",
       "cors": false,
       "logo": "assets/logos/nts-field-recordings.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Field Recordings"
     },
     {
       "id": "bootie-mashup",
@@ -2146,7 +2173,8 @@
       "geprueft_am": "2026-08-20",
       "cors": true,
       "logo": "assets/logos/vapor-funk.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "Vapor Funk"
     },
     {
       "id": "chiptune-247",
@@ -2169,7 +2197,8 @@
       "geprueft_am": "2026-08-20",
       "cors": true,
       "logo": "assets/logos/chiptune-247.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "Chiptune Radio"
     },
     {
       "id": "nolife-radio",
@@ -2190,7 +2219,9 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-20",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/nolife-radio.webp",
+      "logoQuelle": "icon"
     },
     {
       "id": "shmup-radio",
@@ -2535,28 +2566,6 @@
       "logoQuelle": "somafm"
     },
     {
-      "id": "soma-u80s",
-      "name": "SomaFM Underground 80s",
-      "betreiber": "SomaFM",
-      "ort": "San Francisco",
-      "land": "US",
-      "regal": "grenzgaenger",
-      "etiketten": [
-        "ohne-werbung"
-      ],
-      "stream": "https://ice6.somafm.com/u80s-256-mp3",
-      "homepage": "https://somafm.com/u80s",
-      "kaertchen": "Post-Punk, New Wave und Synthpop der Achtziger, aber konsequent an den Hits vorbei — was in Clubs lief, nicht was im Radio kam. Die Gegenerzählung zu jedem Achtziger-Revival-Sender.",
-      "codec": "mp3",
-      "bitrate": 256,
-      "samplerate": 44100,
-      "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
-      "logo": "assets/logos/soma-u80s.webp",
-      "logoQuelle": "somafm"
-    },
-    {
       "id": "soma-insound",
       "name": "SomaFM The In-Sound",
       "betreiber": "SomaFM",
@@ -2643,7 +2652,8 @@
       "geprueft_am": "2026-08-20",
       "cors": false,
       "logo": "assets/logos/nts-poolside.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Poolside"
     },
     {
       "id": "nts-labyrinth",
@@ -2667,7 +2677,8 @@
       "geprueft_am": "2026-08-20",
       "cors": false,
       "logo": "assets/logos/nts-labyrinth.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Labyrinth"
     },
     {
       "id": "nts-otaku",
@@ -2689,7 +2700,8 @@
       "geprueft_am": "2026-08-20",
       "cors": false,
       "logo": "assets/logos/nts-otaku.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Otaku"
     },
     {
       "id": "somafm-u80s",
@@ -2730,10 +2742,12 @@
       "codec": "mp3",
       "bitrate": 128,
       "samplerate": 44100,
-      "regal": "rueckspiegel",
+      "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "logo": "assets/logos/new-wave-radio.webp",
+      "logoQuelle": "apple-touch-icon"
     },
     {
       "id": "italopower",
@@ -2774,7 +2788,7 @@
       "codec": "mp3",
       "bitrate": 192,
       "samplerate": 44100,
-      "regal": "rueckspiegel",
+      "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true
@@ -2791,11 +2805,11 @@
       ],
       "stream": "https://rautemusik.stream38.radiohost.de/90s",
       "homepage": "https://www.rm.fm/90s",
-      "kaertchen": "Dasselbe Prinzip, ein Jahrzehnt später: Pop und Charts der Neunziger, breit statt kuratiert. Deckt die Lücke, die zwischen Eurodance und Grunge sonst offenbliebe.",
+      "kaertchen": "Dasselbe Prinzip, ein Jahrzehnt später: Pop und Charts der Neunziger, breit statt kuratiert. Deckt die Lücke, die zwischen Eurodance und Grunge sonst offenbliebe. Wer die Neunziger als Ganzes hören will statt in Genre-Scheiben, ist hier richtig.",
       "codec": "mp3",
       "bitrate": 192,
       "samplerate": 44100,
-      "regal": "rueckspiegel",
+      "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true
@@ -2817,7 +2831,7 @@
       "codec": "mp3",
       "bitrate": 192,
       "samplerate": 44100,
-      "regal": "rueckspiegel",
+      "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true
@@ -2834,16 +2848,17 @@
       ],
       "stream": "https://listen.181fm.com/181-oldschool_128k.mp3",
       "homepage": "https://www.181.fm/",
-      "kaertchen": "Wu-Tang, A Tribe Called Quest, TLC, Boyz II Men — die Hip-Hop- und R&B-Seite der Neunziger, die im Laden bisher ganz fehlte. Statt Werbeblöcken nur kurze Senderkennungen.",
+      "kaertchen": "Wu-Tang, A Tribe Called Quest, TLC, Boyz II Men — die Hip-Hop- und R&B-Seite der Neunziger, die im Laden bisher ganz fehlte. Statt Werbeblöcken nur kurze Senderkennungen. Der Sender läuft seit 2001 aus Virginia und hat den Klang der Zeit bewahrt, statt ihn nachzupolieren.",
       "codec": "mp3",
       "bitrate": 128,
       "samplerate": 44100,
-      "regal": "rueckspiegel",
+      "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/181fm-oldschool.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Old School HipHop"
     },
     {
       "id": "181fm-90salt",
@@ -2856,16 +2871,17 @@
       ],
       "stream": "https://listen.181fm.com/181-90salt_128k.mp3",
       "homepage": "https://www.181.fm/",
-      "kaertchen": "Nirvana, Pearl Jam, Soundgarden, Stone Temple Pilots. Gitarren als Gegengewicht zu einem Regal, das sonst stark elektronisch schlagseite hätte.",
+      "kaertchen": "Nirvana, Pearl Jam, Soundgarden, Stone Temple Pilots. Gitarren als Gegengewicht zu einem Regal, das sonst stark elektronisch schlagseite hätte. Aufnahmen aus den Jahren, in denen aus einer Regionalszene in Seattle binnen Monaten Weltmusik wurde.",
       "codec": "mp3",
       "bitrate": 128,
       "samplerate": 44100,
-      "regal": "rueckspiegel",
+      "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/181fm-90salt.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "90s Alternative"
     },
     {
       "id": "1fm-90s-best",
@@ -2878,11 +2894,11 @@
       ],
       "stream": "https://strm112.1.fm/90s_mobile_mp3",
       "homepage": "https://1.fm/",
-      "kaertchen": "Breite Neunziger-Popmusik aus der Schweiz, und mit 256 kbit/s der klanglich beste Eintrag dieses Regals. 1.FM sendet seit den Anfängen des Webradios.",
+      "kaertchen": "Breite Neunziger-Popmusik aus der Schweiz, und mit 256 kbit/s der klanglich beste Eintrag dieses Regals. 1.FM sendet seit den Anfängen des Webradios. Von Boygroups bis Britpop, ohne die Schere, die andere Sender bei allem ansetzen, was heute nicht mehr eingängig klingt.",
       "codec": "mp3",
       "bitrate": 256,
       "samplerate": 44100,
-      "regal": "rueckspiegel",
+      "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true
@@ -2898,16 +2914,17 @@
       ],
       "stream": "https://streams.90s90s.de/eurodance/mp3-192/",
       "homepage": "https://www.90s90s.de/",
-      "kaertchen": "2 Unlimited, Snap!, Culture Beat, Dr. Alban — Eurodance ohne Entschuldigung. Genau das Genre, an dem sich die Geister scheiden und das im Laden bisher nicht vorkam.",
+      "kaertchen": "2 Unlimited, Snap!, Culture Beat, Dr. Alban — Eurodance ohne Entschuldigung. Genau das Genre, an dem sich die Geister scheiden und das im Laden bisher nicht vorkam. Eine Musik, die von billigen Synthesizern, gerappten Strophen und gesungenen Refrains lebte — und die Charts eines halben Jahrzehnts beherrschte.",
       "codec": "mp3",
       "bitrate": 192,
       "samplerate": 44100,
-      "regal": "rueckspiegel",
+      "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/90s90s-eurodance.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Eurodance"
     },
     {
       "id": "90s90s-grunge",
@@ -2924,12 +2941,13 @@
       "codec": "mp3",
       "bitrate": 192,
       "samplerate": 44100,
-      "regal": "rueckspiegel",
+      "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/90s90s-grunge.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Grunge"
     },
     {
       "id": "90s90s-rave",
@@ -2943,7 +2961,7 @@
       ],
       "stream": "https://streams.90s90s.de/RAVE/mp3-192/",
       "homepage": "https://www.90s90s.de/",
-      "kaertchen": "Die frühen Neunziger, als Rave noch nach Lagerhalle klang und nicht nach Festivalbühne. Acid House und Hardcore vor Eurodance und lange vor Trance.",
+      "kaertchen": "Die frühen Neunziger, als Rave noch nach Lagerhalle klang und nicht nach Festivalbühne. Acid House und Hardcore vor Eurodance und lange vor Trance. Stücke, die für Anlagen gebaut wurden, welche die Bässe kaum aushielten, und die genau davon ihre Härte haben.",
       "codec": "mp3",
       "bitrate": 192,
       "samplerate": 44100,
@@ -2952,7 +2970,143 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/90s90s-rave.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "RAVE"
+    },
+    {
+      "id": "soma-seventies",
+      "name": "SomaFM Left Coast 70s",
+      "betreiber": "SomaFM",
+      "ort": "San Francisco",
+      "land": "US",
+      "regal": "rueckspiegel",
+      "etiketten": [
+        "ohne-werbung",
+        "siebziger"
+      ],
+      "stream": "https://ice5.somafm.com/seventies-320-mp3",
+      "homepage": "https://somafm.com/seventies",
+      "kaertchen": "Kalifornischer Rock und Yacht Rock der Siebziger, kuratiert statt rotiert — Steely Dan neben Namen, die es nie in eine Best-of-Sammlung geschafft haben. Mit 320 kbit/s einer der bestklingenden Kanäle im ganzen Laden.",
+      "logo": "assets/logos/soma-seventies.webp",
+      "logoQuelle": "somafm",
+      "codec": "mp3",
+      "bitrate": 320,
+      "samplerate": 44100,
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "cowabunga",
+      "name": "Radio Cowabunga",
+      "betreiber": "Radio Cowabunga",
+      "ort": "Madrid",
+      "land": "ES",
+      "regal": "rueckspiegel",
+      "etiketten": [
+        "community",
+        "ohne-werbung"
+      ],
+      "stream": "https://hello.citrus3.com:2020/stream/radiocowabunga",
+      "homepage": "http://www.cowabunga.es",
+      "kaertchen": "Northern Soul, Boogaloo, Garage und Power Pop aus einem spanischen Kollektiv. Musik, die in den Sechzigern gefloppt ist und Jahrzehnte später in britischen Tanzsälen wiederentdeckt wurde — die zweite Karriere schlechter verkaufter Platten.",
+      "logo": "assets/logos/cowabunga.webp",
+      "logoQuelle": "apple-touch-icon",
+      "codec": "aac",
+      "bitrate": 128,
+      "samplerate": 22050,
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "xraydio-jukebox",
+      "name": "XRaydio 2 — Vintage Jukebox",
+      "betreiber": "XRaydio",
+      "ort": "Sofia",
+      "land": "BG",
+      "regal": "rueckspiegel",
+      "etiketten": [
+        "ohne-werbung"
+      ],
+      "stream": "https://xraydio.ddns.net/jukebox",
+      "homepage": "https://xraydio.net",
+      "kaertchen": "Eine bulgarische Jukebox mit Mod, Vintage Soul und Jet-Set-Lounge. Klingt nach einer Bar, in der die Platten seit 1966 nicht getauscht wurden — und genau das ist der Reiz an dieser Auswahl.",
+      "logo": "assets/logos/xraydio-jukebox.webp",
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "2 — Vintage Jukebox",
+      "codec": "aac",
+      "bitrate": 160,
+      "samplerate": 32000,
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "xraydio-live",
+      "name": "XRaydio 1 — Kaleidoscope",
+      "betreiber": "XRaydio",
+      "ort": "Sofia",
+      "land": "BG",
+      "regal": "rueckspiegel",
+      "etiketten": [
+        "ohne-werbung",
+        "community"
+      ],
+      "stream": "https://xraydio.ddns.net/live",
+      "homepage": "https://xraydio.net",
+      "kaertchen": "Der breitere Schwesterkanal: Garage Punk, Dream Pop, Acid House und Americana im selben Programm. Ein Sender, der sich weigert, sich zu entscheiden, und dabei erstaunlich schlüssig bleibt.",
+      "logo": "assets/logos/xraydio-live.webp",
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "1 — Kaleidoscope",
+      "codec": "aac",
+      "bitrate": 160,
+      "samplerate": 22050,
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "wraith-vision",
+      "name": "Wraith Vision",
+      "betreiber": "Wraith Vision",
+      "ort": "Berlin",
+      "land": "DE",
+      "regal": "rueckspiegel",
+      "etiketten": [
+        "community"
+      ],
+      "stream": "https://stream.laut.fm/wraith-vision",
+      "homepage": "https://wraith-vision-radio.com",
+      "kaertchen": "Doo Wop, Crooner und Rhythm and Blues der Fünfziger und Sechziger. Die Musik, mit der Popmusik anfing, gespielt ohne den Nostalgiefilter, den Oldiesender sonst darüberlegen — als wären die Aufnahmen gerade erst erschienen.",
+      "codec": "mp3",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "rsa-ostrock",
+      "name": "R.SA Ostrock",
+      "betreiber": "R.SA",
+      "ort": "Leipzig",
+      "land": "DE",
+      "regal": "rueckspiegel",
+      "etiketten": [
+        "regional"
+      ],
+      "stream": "https://streams.rsa-sachsen.de/rsa-ostrock/mp3-192/",
+      "homepage": "https://www.rsa-sachsen.de",
+      "kaertchen": "Rockmusik aus der DDR — Puhdys, Karat, Silly, City. Eine Musikgeschichte, die vierzig Jahre lang parallel zur westlichen lief und außerhalb Ostdeutschlands bis heute kaum jemand kennt.",
+      "logo": "assets/logos/rsa-ostrock.webp",
+      "logoQuelle": "apple-touch-icon",
+      "codec": "mp3",
+      "bitrate": 192,
+      "samplerate": 44100,
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
     }
   ]
 }

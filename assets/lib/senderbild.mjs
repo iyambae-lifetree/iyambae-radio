@@ -34,6 +34,12 @@ export const REGALTON = {
   fundstuecke:   '#C9A227',
   freakshow:     '#B563C9',
   rueckspiegel:  '#E8734A',
+  // Sāmi-Ras zehntes Regal, angelegt am 21.08.2026. Er hat neun
+  // Jahrzehnte-Kanaele aus dem Rueckspiegel hierher umgehaengt; dort bleiben
+  // die Kuriositaeten. Ein gedecktes Gruen, weil die acht warmen Toene
+  // nebeneinander sonst ineinanderlaufen — und weil Barrio das einzige
+  // andere Gruen ist und weit genug weg steht.
+  wuehlkiste:    '#7FA65C',
 };
 
 export function regalton(sender) {

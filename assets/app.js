@@ -538,7 +538,7 @@ class UI {
             <h3 class="karte__name" title="${sender.name}">${sender.name}</h3>
             ${guete ? `<span class="karte__guete karte__guete--${stufe}" title="${guetetitel}">${guete}</span>` : ''}
           </div>
-          <p class="karte__ort">${sender.ort} · ${sender.land}</p>
+          <p class="karte__ort">${sender.kanal ? `<span class="karte__kanal">${sender.kanal}</span>` : ''}${sender.ort} · ${sender.land}</p>
           <div class="karte__fuss">
             ${(sender.etiketten ?? []).slice(0, 2).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
           </div>
