@@ -1,3 +1,3 @@
 7d93dd636390a817de69bbe470fcf866782bcd410c1d5de6f860a923d6e75fda *iyambae-tuner-0.1.0-test.dmg
 545c2644ed5b54f2fc28b51098ead3277b8643ce1b76d450f5e54f41114aaf90 *iyambae-tuner-0.1.0-test-linux.tar.gz
-cfb412c3f9db4102235ed29397817c0d80e1e329b355e9e45d1a9ebdbb437da3 *iyambae-tuner-0.1.0-test-windows.zip
+0dc56792f6323f72581249fb21bc04df878cbf4cf0874939206025b1e13ee56f *iyambae-tuner-0.1.0-test-windows.zip
