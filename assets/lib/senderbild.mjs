@@ -110,3 +110,68 @@ export function regalmosaik(sender, felder = 4) {
   return Array.from({ length: felder },
                     (_, i) => senderbild(sortiert[i % sortiert.length]));
 }
+
+/*
+ Häuser mit mehreren Kanälen — und wie ihr Name auf der Hülle steht.
+
+ Sāmi-Ra hat das Feld `kanal` bei allen 146 Sendern gesetzt. Bei 93 steht dort
+ der volle Name, bei 53 der Kanal eines Hauses: "NTS 1" → "1",
+ "SomaFM Drone Zone" → "Drone Zone".
+
+ Zwölf Marken haben mehrere Kanäle, SomaFM allein 22. Auf einer Regalreihe
+ stand damit zweiundzwanzigmal fett "SomaFM" — und das Wort, das die Hüllen
+ voneinander unterscheidet, lief als Anhängsel hinterher. Genau umgekehrt, als
+ es sein sollte: Das Haus ist der Zusammenhang, der Kanal ist die Sache.
+
+ WARUM DAS HAUS AUS DEM NAMEN KOMMT UND NICHT AUS `betreiber`
+
+ `betreiber` ist die Firma, nicht die Marke. Dort steht "REGIOCAST" für
+ 90s90s, "Zelerk" für 24/7 und "RauteMusik GmbH" für RauteMusik. Ein Aufdruck
+ "REGIOCAST / Eurodance" wäre schlechter als "90s90s Eurodance" — niemand
+ sucht nach der Firma.
+
+ Der Name trägt die Marke selbst: Alle 53 Namen enden auf ihren Kanal, ohne
+ Ausnahme. Was davor steht, ist die Marke, wie sie auf der Hülle stehen soll.
+*/
+export function zerlegeName(sender) {
+  const kanal = (sender?.kanal ?? '').trim();
+  const name = (sender?.name ?? '').trim();
+  if (!kanal || kanal === name || !name.endsWith(kanal)) return { haus: null, kanal: name };
+  return { haus: name.slice(0, -kanal.length).trim(), kanal };
+}
+
+/**
+ * Welche Häuser mehr als einen Kanal führen.
+ * Ein Haus mit genau einem Kanal ist kein Haus, sondern ein Sender — dort
+ * bleibt der Name, wie er ist.
+ */
+export function haeuserMitMehreren(sender) {
+  const zaehler = new Map();
+  for (const s of sender) {
+    const { haus } = zerlegeName(s);
+    if (haus) zaehler.set(haus, (zaehler.get(haus) ?? 0) + 1);
+  }
+  return new Set([...zaehler].filter(([, n]) => n > 1).map(([h]) => h));
+}
+
+/*
+ Was die Verbindung dauerhaft hergeben muss.
+
+ Bei verlustbehafteten Strömen steht die Datenrate schon im Abzeichen — 320k
+ heißt 0,32 Mbit/s, das rechnet jeder selbst. Bei FLAC steht dort nur "FLAC",
+ und die Zahl fehlt: Der Katalog hat für die vier verlustfreien Sender keine
+ gemessene Datenrate, weil sie schwankt.
+
+ Also wird sie ausgerechnet, und zwar als OBERGRENZE: Abtastrate × 16 Bit ×
+ 2 Kanäle. FLAC ist verlustfrei komprimiert und liegt in der Praxis bei 60
+ bis 70 Prozent davon — mehr als der unkomprimierte Wert kann es nie werden.
+ Eine ausgerechnete Obergrenze ist ehrlicher als eine erfundene Messung, und
+ für die Frage "reicht meine Leitung?" ist die Obergrenze ohnehin die
+ richtige Zahl.
+*/
+export function bandbreite(sender) {
+  if (sender?.codec !== 'flac') return null;
+  const takt = sender.samplerate ?? 44100;
+  const bit = takt * 16 * 2;
+  return (bit / 1e6).toFixed(1).replace('.', ',');
+}

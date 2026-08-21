@@ -131,5 +131,6 @@
   "fuss.impressum": "Legal notice",
   "fuss.datenschutz": "Privacy",
   "fuss.widerruf": "Stop sending error reports",
-  "fuss.widerrufen": "No more error reports will be sent."
+  "fuss.widerrufen": "No more error reports will be sent.",
+  "karte.bandbreite": "needs up to {wert} Mbit/s"
 }

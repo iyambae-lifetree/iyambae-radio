@@ -12,7 +12,8 @@ import { frageMyRetuner, wartAufEinwilligung, anzeigeStimmung, anzeigeQuelle, ZU
   from './lib/myretuner.mjs';
 import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
 import { senderbild, hatEigenesLogo, regalton, REGALTON, MARKE, huellenzeilen,
-         huellengroesse, regalmosaik } from './lib/senderbild.mjs';
+         huellengroesse, regalmosaik, zerlegeName, haeuserMitMehreren, bandbreite }
+  from './lib/senderbild.mjs';
 import { symbol, setzeSymbole } from './lib/symbole.mjs';
 import { leererFilter, istGefiltert, anzahlAktiv, wendeAn, vorschau,
          regionVon, etikettName, regionName, SCHNELL } from './lib/achsen.mjs';
@@ -502,8 +503,17 @@ class UI {
                 : ['opus', 'vorbis'].includes(sender.codec) ? 'gut'
                 : (sender.bitrate ?? 0) >= 256 ? 'gut'
                 : (sender.bitrate ?? 0) >= 192 ? 'ordentlich' : 'einfach';
+    /*
+     Was die Leitung dauerhaft hergeben muss — nur bei verlustfrei.
+
+     Bei 320k steht die Zahl schon im Abzeichen. Bei FLAC steht dort nur
+     "FLAC", und der Katalog hat fuer die vier verlustfreien Sender keine
+     gemessene Datenrate. Ausgerechnet als Obergrenze ist ehrlicher als
+     erfunden — siehe bandbreite() in senderbild.mjs.
+    */
+    const breite = bandbreite(sender);
     const guetetitel = sender.codec === 'flac'
-        ? t('karte.guete.verlustfrei')
+        ? t('karte.guete.verlustfrei') + (breite ? ' — ' + t('karte.bandbreite', { wert: breite }) : '')
         : ['opus', 'vorbis'].includes(sender.codec)
           ? t('karte.guete.opus', { codec: sender.codec.toUpperCase(), bitrate: sender.bitrate })
           : t('karte.guete.mp3', { bitrate: sender.bitrate });
@@ -552,10 +562,24 @@ class UI {
         </div>
         <div class="karte__etikett">
           <div class="karte__zeile">
-            <h3 class="karte__name" title="${sender.name}">${sender.name}</h3>
+            ${(() => {
+              /*
+               Haus klein, Kanal gross — aber nur, wenn das Haus mehrere
+               Kanaele fuehrt. Bei einem einzelnen Sender waere die Zerlegung
+               eine Erfindung: "Kiosk" ueber "Radio" zu setzen macht aus
+               einem Namen zwei.
+              */
+              const { haus, kanal } = zerlegeName(sender);
+              const mehrkanalig = haus && this._haeuser?.has(haus);
+              return mehrkanalig
+                ? `<h3 class="karte__name" title="${sender.name}">`
+                  + `<span class="karte__haus">${haus}</span>${kanal}</h3>`
+                : `<h3 class="karte__name" title="${sender.name}">${sender.name}</h3>`;
+            })()}
             ${guete ? `<span class="karte__guete karte__guete--${stufe}" title="${guetetitel}">${guete}</span>` : ''}
           </div>
           <p class="karte__ort">${sender.ort} · ${sender.land}</p>
+          ${breite ? `<p class="karte__leitung">${t('karte.bandbreite', { wert: breite })}</p>` : ''}
           <div class="karte__fuss">
             ${(sender.etiketten ?? []).slice(0, 2).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
           </div>
@@ -982,6 +1006,10 @@ class UI {
    Filter es gibt.
   */
   zeichneFilter() {
+    // Einmal bestimmen, welche Marken mehrere Kanaele fuehren — davon haengt
+    // ab, wie der Name auf der Huelle gesetzt wird.
+    this._haeuser = haeuserMitMehreren(this.sender);
+
     const zaehler = new Map();
     for (const s of this.sender) {
       for (const e of s.etiketten ?? []) zaehler.set(e, (zaehler.get(e) ?? 0) + 1);

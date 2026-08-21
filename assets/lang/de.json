@@ -131,5 +131,6 @@
   "fuss.impressum": "Impressum",
   "fuss.datenschutz": "Datenschutz",
   "fuss.widerruf": "Fehlerberichte nicht mehr senden",
-  "fuss.widerrufen": "Es werden keine Fehlerberichte mehr gesendet."
+  "fuss.widerrufen": "Es werden keine Fehlerberichte mehr gesendet.",
+  "karte.bandbreite": "braucht bis {wert} Mbit/s"
 }
