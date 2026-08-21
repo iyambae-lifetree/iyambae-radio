@@ -677,6 +677,60 @@ var rolleTabellenLesen = '76199698-9eea-4c19-bc75-cec21354c6b6' // Storage Table
 */
 /*
   ════════════════════════════════════════════════════════════════════
+   Der Ablageort für die Programmdateien
+  ════════════════════════════════════════════════════════════════════
+
+  WARUM NICHT INS ABBILD, WO SIE ANFANGS LAGEN
+
+  Gemessen am 21.08.2026: Das Abbild wog 97,5 MB. Die Windows-App wiegt
+  allein 67,9 MB. Sie hineinzunehmen hiesse, jedes Ausrollen des Radios um
+  drei Viertel zu verteuern — und zwar auch dann, wenn sich an der Seite
+  nichts geändert hat und nur ein Sender dazugekommen ist. Das Abbild wird
+  bei jedem Replikatstart gezogen.
+
+  Ein EIGENES Speicherkonto, nicht das der Konten. Dort liegen Merklisten
+  und Hörverläufe hinter einer verwalteten Identität; hier liegen Dateien,
+  die jeder herunterladen darf. Beides in einem Konto zu halten hiesse, eine
+  Fehlkonfiguration im öffentlichen Teil auf den privaten durchschlagen zu
+  lassen.
+
+  allowBlobPublicAccess ist hier bewusst AN — anders als beim Kontospeicher.
+  Das ist der Zweck: Ein Download soll ohne Anmeldung gehen. Der Behälter
+  steht auf 'Blob', nicht auf 'Container': Wer die genaue Adresse kennt,
+  bekommt die Datei; das Verzeichnis lässt sich nicht auflisten. Für einen
+  öffentlichen Download ist das Auflisten kein Gewinn, aber es verrät, was
+  sonst noch dort liegt.
+*/
+resource dateienSpeicher 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: 'st${name}dateien${take(uniqueString(resourceGroup().id, 'dateien'), 8)}'
+  location: location
+  tags: marken
+  sku: { name: 'Standard_LRS' }
+  kind: 'StorageV2'
+  properties: {
+    accessTier: 'Hot'
+    allowBlobPublicAccess: true
+    minimumTlsVersion: 'TLS1_2'
+    supportsHttpsTrafficOnly: true
+    allowSharedKeyAccess: false
+  }
+}
+
+resource dateienDienst 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
+  parent: dateienSpeicher
+  name: 'default'
+}
+
+resource dateienBehaelter 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
+  parent: dateienDienst
+  name: 'herunterladen'
+  properties: {
+    publicAccess: 'Blob'
+  }
+}
+
+/*
+  ════════════════════════════════════════════════════════════════════
    Die Registry
   ════════════════════════════════════════════════════════════════════
 
@@ -785,6 +839,31 @@ resource dienstDarfLesen 'Microsoft.Authorization/roleAssignments@2022-04-01' = 
       '4633458b-17de-408a-b874-0445c86b69e6')
   }
 }
+
+/*
+  Wer die Programmdateien hochladen darf.
+
+  Dieselbe Liste wie beim Tresor: Wer Geheimnisse austauscht, ist derselbe
+  Personenkreis, der Ausgaben veroeffentlicht. Zwei Listen zu pflegen waere
+  hier eine Trennung ohne Unterschied.
+
+  Ueber die Vorlage und nicht ueber `az role assignment create`, weil der
+  Befehl in diesem Abonnement mit "MissingSubscription" scheitert — und weil
+  eine Rollenzuweisung, die nur in der Befehlsgeschichte eines Rechners
+  existiert, beim naechsten Aufsetzen fehlt.
+*/
+resource warteDuerfenHochladen 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for id in tresorwarte: {
+  scope: dateienSpeicher
+  name: guid(dateienSpeicher.id, id, 'blob-contributor')
+  properties: {
+    // Storage Blob Data Contributor
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+    principalId: id
+    principalType: 'User'
+  }
+}]
 
 resource warteDuerfenAblegen 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for id in tresorwarte: {
   scope: tresor
@@ -1238,3 +1317,9 @@ output registryName string = registry.name
 
 @description('Anmeldeadresse der Registry, fuer docker tag und docker push.')
 output registryAdresse string = registry.properties.loginServer
+
+@description('Adresse der Programmdateien. Dorthin leitet nginx /herunterladen/ weiter.')
+output dateienAdresse string = '${dateienSpeicher.properties.primaryEndpoints.blob}herunterladen'
+
+@description('Name des Speicherkontos fuer die Programmdateien.')
+output dateienKonto string = dateienSpeicher.name

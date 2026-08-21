@@ -27,3 +27,6 @@ __pycache__/
 /recht/
 
 dienst/node_modules/
+
+# Programmdateien liegen im Blob-Speicher, nicht im Abbild — siehe nginx.conf
+/apps/herunterladen/

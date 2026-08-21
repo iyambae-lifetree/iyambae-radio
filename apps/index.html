@@ -3,11 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>IYAMBAE Tuner — dein Systemton in 432 Hz</title>
-<meta name="description" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<title>IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln</title>
+<meta name="description" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
 <meta name="theme-color" content="#0A0908">
 <link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/schrift/schriften.css">
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   BETRIEBSSYSTEM ERKENNEN — und zwar HIER, im Kopf.
+
+   WARUM NICHT AM SEITENENDE: Drei Knöpfe zu zeigen und zwei davon nach
+   dem Laden wieder wegzunehmen ist ein sichtbares Umbauen. Der Besucher
+   sieht dann etwas, greift danach, und es springt ihm weg. Dieses
+   Skriptchen läuft, bevor der Körper überhaupt gebaut wird: es setzt ein
+   Merkmal an <html>, und das Stilblatt entscheidet danach von Anfang an,
+   was überhaupt je gezeichnet wird. Es gibt keinen Zwischenzustand.
+
+   WARUM ES NICHTS ERZWINGT: Ohne JavaScript, bei abgeschalteter
+   Erkennung oder bei einem System, das wir nicht kennen, wird gar kein
+   Merkmal gesetzt — dann zeigt die Seite alle drei gleichberechtigt, so
+   wie sie es ohne diese Zeilen täte. Erkennung darf nie die Bedingung
+   dafür sein, dass jemand an seine Datei kommt.
+
+   navigator.userAgentData ist die neue, ehrliche Auskunft; sie liegt
+   synchron vor. navigator.platform ist der alte Weg für alles andere.
+   Beides ist frei erfindbar — deshalb steuert das Ergebnis nur die
+   REIHENFOLGE und die Betonung, niemals die Erreichbarkeit.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  var os = '';
+  try {
+    var uad = navigator.userAgentData || null;
+    var plattform = (uad && uad.platform) || navigator.platform || '';
+    var kennung = navigator.userAgent || '';
+    /* Ein iPad meldet sich seit iPadOS 13 als "MacIntel". Der einzige
+       verlässliche Unterschied ist, dass es mehrere Berührpunkte kennt —
+       deshalb muss diese Prüfung VOR der Mac-Prüfung stehen. */
+    var telefon = (uad && uad.mobile === true)
+      || /Android|iPhone|iPod/i.test(kennung)
+      || (/iPad/i.test(kennung))
+      || (/Mac/i.test(plattform) && navigator.maxTouchPoints > 1);
+
+    if (telefon)                                                os = 'mobil';
+    else if (/Mac|Darwin/i.test(plattform) || /Macintosh/i.test(kennung))  os = 'mac';
+    else if (/Win/i.test(plattform) || /Windows/i.test(kennung))           os = 'win';
+    else if (/Linux|X11|CrOS|BSD/i.test(plattform) || /Linux|X11|CrOS/i.test(kennung)) os = 'linux';
+  } catch (e) {
+    os = '';
+  }
+  if (os) document.documentElement.setAttribute('data-os', os);
+})();
+</script>
 
 <style>
 /* ═══════════════════════════════════════════════════════════════════
@@ -139,22 +187,39 @@ strong { font-weight: 600; }
 @media (max-width: 30rem) { .kopfknopf:not(.kopfknopf--haupt) { display: none; } }
 
 /* ── Aufmacher ───────────────────────────────────────────────────── */
-.aufmacher { padding-block: clamp(2.8rem, 8vw, 5rem) clamp(1.5rem, 4vw, 2.5rem); }
+/* Oben knapper als vorher. Jede Zeile Luft über der Falz kostet eine
+   Zeile Inhalt darunter, und was oben stand, war nur Luft. */
+.aufmacher { padding-block: clamp(2rem, 5vw, 3.2rem) clamp(1.5rem, 4vw, 2.5rem); }
 
-/* Zwei Spalten: das Versprechen links, das eine Bild rechts. Unter 58rem
-   wird daraus eine Spalte — nebeneinander bliebe für beides zu wenig. */
+/* Zwei Spalten: das Versprechen links, die PROBE rechts.
+
+   Rechts stand vorher ein gerechnetes Bild. Jetzt steht dort das Gerät,
+   das man anfassen kann — es beweist die Sache in acht Sekunden und
+   verlangt dafür keinen Download. Es ist damit das Einzige oben, das der
+   Besucher selbst nachprüfen kann, statt es zu glauben.
+
+   Unter 64rem wird daraus eine Spalte: das Gerät braucht mehr Breite als
+   das alte Bild, und eine gequetschte Messkurve misst nichts mehr. In
+   einer Spalte steht der Knopf oben und die Probe direkt darunter — auch
+   das ist die richtige Reihenfolge. */
 .aufmacher__satz {
-  display: grid; gap: clamp(2rem, 5vw, 3.5rem);
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  display: grid; gap: clamp(2rem, 5vw, 3.2rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
   align-items: center;
 }
-@media (max-width: 58rem) { .aufmacher__satz { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 64rem) { .aufmacher__satz { grid-template-columns: minmax(0, 1fr); } }
 
+/* Kleiner als vorher, und das ist Absicht.
+
+   Die alte Überschrift war fünf Wörter lang und durfte 4,6rem gross sein.
+   Diese ist neun Wörter lang; in derselben Grösse ergäbe sie vier Zeilen,
+   und vier Zeilen Überschrift schieben den Knopf unter die Falz. Eine
+   Überschrift, die den Knopf verdrängt, arbeitet gegen sich selbst. */
 .aufmacher h1 {
   font-family: var(--anzeige); font-weight: 400;
-  font-size: clamp(2.4rem, 7vw, 4.6rem);
-  line-height: .99; letter-spacing: -.015em;
-  margin: 0 0 1.1rem; text-wrap: balance;
+  font-size: clamp(2.1rem, 4.6vw, 3.5rem);
+  line-height: 1.02; letter-spacing: -.015em;
+  margin: 0 0 1rem; text-wrap: balance;
 }
 .aufmacher h1 em { font-style: italic; color: var(--messing-hell); }
 
@@ -163,25 +228,61 @@ strong { font-weight: 600; }
   color: var(--leise); max-width: 30rem; margin: 0 0 2rem;
 }
 
-/* ── Knöpfe ──────────────────────────────────────────────────────── */
-.tatreihe { display: flex; flex-wrap: wrap; gap: .7rem; }
+/* ── Der eine Knopf, und wie er sein System findet ───────────────── */
 
-.knopf {
-  display: inline-block; text-decoration: none; text-align: center;
-  font-family: var(--daten); font-size: .74rem; letter-spacing: .08em;
-  text-transform: uppercase; font-weight: 700; padding: .8rem 1.5rem;
-  color: var(--nacht); background: var(--messing-hell); border: 1px solid var(--messing-hell);
-  transition: background .18s, border-color .18s, color .18s;
+/* Alles, was nur für EIN System gilt, ist zunächst nicht da. Sichtbar
+   wird es erst, wenn <html> das passende Merkmal trägt. Ist gar keines
+   gesetzt — kein JavaScript, unbekanntes System —, greift die letzte
+   Zeile und es erscheint der neutrale Weg zu allen dreien.
+
+   `--fuer-anzeige` gibt es, weil hier Klötze, Zeilen und Marken durch
+   dieselbe Schaltung laufen und `display: block` einer Marke im Fliesstext
+   den Umbruch zerrisse. Jedes Element sagt selbst, was es sein will. */
+.fuer { display: none; }
+html[data-os="mac"]   .fuer--mac,
+html[data-os="linux"] .fuer--linux,
+html[data-os="win"]   .fuer--win,
+html[data-os="mobil"] .fuer--mobil,
+html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
+
+.holzone { margin-top: clamp(1.5rem, 4vw, 2.1rem); }
+
+.grossknopf {
+  --fuer-anzeige: flex;
+  flex-direction: column; align-items: flex-start; gap: .3rem;
+  max-width: 27rem; text-decoration: none;
+  padding: 1.05rem 1.6rem;
+  color: var(--nacht); background: var(--messing-hell);
+  border: 1px solid var(--messing-hell);
+  transition: background .18s, border-color .18s;
 }
-.knopf:hover { background: var(--messing); border-color: var(--messing); color: var(--nacht); }
-.knopf__zusatz {
-  display: block; font-size: .6rem; font-weight: 400;
-  letter-spacing: .04em; text-transform: none; opacity: .8;
+.grossknopf:hover { background: var(--messing); border-color: var(--messing); color: var(--nacht); }
+.grossknopf__tat {
+  font-family: var(--daten); font-size: clamp(.82rem, 2.2vw, .95rem);
+  font-weight: 700; letter-spacing: .05em; text-transform: uppercase; line-height: 1.15;
 }
-.knopf--leise {
+.grossknopf__zusatz {
+  font-family: var(--daten); font-size: .65rem; letter-spacing: .04em;
+  line-height: 1.35; opacity: .8;
+}
+
+/* Windows und Telefon bekommen denselben Platz, aber kein Messing.
+
+   Ein Knopf, hinter dem keine Datei liegt, darf nicht aussehen wie einer,
+   hinter dem eine liegt. Das ist kein Gestaltungsgeschmack, das ist der
+   Unterschied zwischen einem Hinweis und einer Enttäuschung. */
+.grossknopf--warten {
   background: transparent; color: var(--text); border-color: var(--gravur-hell);
 }
-.knopf--leise:hover { background: transparent; color: var(--messing-hell); border-color: var(--messing); }
+.grossknopf--warten:hover { background: transparent; color: var(--text); border-color: var(--kalt); }
+.grossknopf--warten .grossknopf__zusatz { opacity: 1; color: var(--leise); }
+
+/* Die leise Zeile darunter: die anderen Systeme bleiben erreichbar,
+   sie drängeln nur nicht. */
+.nebenweg { margin: .9rem 0 0; font-size: .84rem; color: var(--leiser); }
+.nebenweg .fuer { --fuer-anzeige: inline; }
+.nebenweg a { color: var(--leise); text-decoration: underline; }
+.nebenweg a:hover { color: var(--messing-hell); }
 
 /* ── Das eine Bild: das Menüleisten-Fenster ──────────────────────── */
 .schaubild { margin: 0; }
@@ -253,6 +354,39 @@ strong { font-weight: 600; }
 }
 .dreizeiler p { margin: 0; font-size: .92rem; color: var(--leise); }
 
+/* Der Ersatz fuer die Probe, wenn kein Skript laeuft.
+
+   Er liegt UEBER dem Schirm, nicht daneben: Ohne Skript bleibt der Canvas
+   schwarz und leer, und ein leerer schwarzer Kasten neben einer Erklaerung
+   sieht aus wie ein Ladefehler. */
+.sicht__ersatz {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  gap: .7rem; padding: clamp(1rem, 3vw, 1.8rem);
+  background: var(--blech);
+  font-size: .92rem; line-height: 1.55; color: var(--leise);
+}
+.sicht__ersatz p { margin: 0; }
+
+/* Die Ueberschrift ueber den Karten richtet sich nach dem System.
+   "Hol es dir" ist eine Aufforderung — auf Windows und am Telefon gibt es
+   nichts zu holen, und eine Aufforderung ins Leere ist die unhoeflichste
+   Art, jemanden wegzuschicken. Ohne Skript gilt die erste, weil sie fuer
+   zwei von drei Systemen stimmt.
+
+   EIGENE KLASSENNAMEN, und das ist kein Geschmack. Der erste Versuch nahm
+   `.fuer--win`, also denselben Namen, den die Knoepfe oben schon benutzen.
+   Die Regel `display: block` schlug dort das `display: flex` der Knoepfe,
+   und Beschriftung und Erklaerung liefen in einer Zeile ineinander —
+   sichtbar erst bei schmaler Breite. Zwei Dinge, die verschieden sind,
+   duerfen nicht denselben Namen tragen. */
+.kopf--win, .kopf--mobil { display: none; }
+html[data-os="win"]   .kopf--holen,
+html[data-os="mobil"] .kopf--holen { display: none; }
+html[data-os="win"]   .kopf--win   { display: block; }
+html[data-os="mobil"] .kopf--mobil { display: block; }
+.sicht__ersatz strong { color: var(--text); font-weight: 600; }
+
 /* ── Die dunklen Abschnitte ──────────────────────────────────────── */
 .teil { padding-block: clamp(3rem, 8vw, 5rem); }
 .teil--linie { border-top: 1px solid var(--gravur); }
@@ -269,6 +403,16 @@ h2 em { font-style: italic; color: var(--messing-hell); }
 .teil strong { color: var(--text); font-weight: 500; }
 
 /* ── Das Messgerät ───────────────────────────────────────────────── */
+
+/* Es steht jetzt im Aufmacher, nicht mehr in der Mitte der Seite.
+
+   Grund: Es ist die einzige Stelle, an der jemand die Sache PRÜFEN kann,
+   statt sie zu glauben — acht Hertz, acht Sekunden, kein Download. Wer
+   das erst nach zwei Bildschirmhöhen findet, hat schon entschieden.
+
+   Im Aufmacher ist es enger gesetzt: kleineres Sichtfenster, weniger
+   Luft. Es soll neben den Knopf passen, ohne ihn unter die Falz zu
+   drücken. */
 .geraet {
   margin-top: clamp(2rem, 5vw, 3rem);
   border: 1px solid var(--gravur-hell);
@@ -379,6 +523,16 @@ input[type="range"]::-moz-range-thumb {
   font-size: .8rem; color: var(--leiser); margin: 0;
 }
 
+/* Die engere Fassung fürs Kopfende der Seite. */
+.aufmacher .geraet { margin-top: 0; }
+.aufmacher .geraet__kopf { padding-top: 1.1rem; }
+.aufmacher .ablesung { margin-top: .9rem; padding-bottom: .85rem; }
+.aufmacher .ablesung__wert { font-size: clamp(1.3rem, 3.4vw, 1.75rem); }
+.aufmacher .sicht canvas { height: 150px; }
+.aufmacher .bedienteil { padding-bottom: 1.1rem; }
+.aufmacher .stimmungen { padding-bottom: 1.1rem; }
+@media (max-width: 40rem) { .aufmacher .sicht canvas { height: 118px; } }
+
 /* ── Downloadkarten ──────────────────────────────────────────────── */
 .karten {
   display: grid; gap: 1px; margin-top: 2.2rem;
@@ -442,18 +596,124 @@ input[type="range"]::-moz-range-thumb {
   text-transform: uppercase; font-size: .6rem; margin-bottom: .35rem; font-weight: 400;
 }
 
-/* Der Warnkasten über den Karten. Er steht DAVOR, nicht darunter:
-   Wer erst lädt und dann liest, hat schon geklickt. */
-.warnung {
-  margin-top: 2rem; padding: 1.2rem 1.4rem;
-  border: 1px solid var(--gravur-hell);
-  border-inline-start: 3px solid var(--messing);
-  background: var(--blech);
+/* Die Marke „dein System“.
+
+   Sie ist nicht Zierrat: Sie sagt dem Besucher, dass die Seite geraten
+   hat, und was sie geraten hat. Wer eine Vermutung anstellt, soll sie
+   auch zeigen — sonst wundert sich jemand, warum eine Karte anders
+   aussieht als die daneben. */
+.karte__deins {
+  --fuer-anzeige: inline-block; align-self: flex-start;
+  font-family: var(--daten); font-size: .56rem; letter-spacing: .16em;
+  text-transform: uppercase; font-weight: 700;
+  color: var(--nacht); background: var(--messing-hell); padding: .22rem .55rem;
+}
+
+/* Erkanntes System nach vorn. `order` verschiebt nur die Darstellung —
+   die Reihenfolge im Text bleibt macOS, Linux, Windows, und damit bleibt
+   sie auch für Sprachausgabe und Tastatur die, die im Quelltext steht. */
+html[data-os="linux"] .karte--linux { order: -1; }
+html[data-os="win"]   .karte--win   { order: -1; }
+/* Auf Windows gibt es nichts zu holen — aber die Karte, die den Besucher
+   angeht, soll trotzdem die hellere sein. Sonst wirkt sein System wie
+   eine Fussnote. */
+html[data-os="win"]   .karte--win   { background: var(--blech-hoch); }
+html[data-os="win"]   .karte--win .karte__name { color: var(--kalt); }
+/* Auf der Windows-Karte liegt nichts zum Laden. Ihre Marke trägt deshalb
+   Kalt und kein Messing — Messing ist auf dieser Seite die Farbe der
+   Dinge, die man mitnehmen kann. */
+html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
+
+/* ── Was gleich passiert: die drei Schritte ──────────────────────── */
+
+/* Hier stand vorher ein Warnkasten, und zwar VOR den Karten. Er hat
+   gearbeitet wie ein Türsteher: Wer noch gar nicht wusste, ob er will,
+   las zuerst, was schiefgehen kann.
+
+   Der Inhalt ist vollständig derselbe geblieben — nichts ist weggelassen,
+   nichts beschönigt. Geändert hat sich Ort und Tonfall: Er steht jetzt
+   HINTER den Karten und heisst nicht mehr Warnung, sondern Anleitung.
+   Drei nummerierte Schritte sind keine Drohung, sie sind ein Weg. */
+.hinterher {
+  margin-top: clamp(2rem, 4vw, 2.8rem);
+  display: grid; gap: clamp(1.6rem, 4vw, 2.8rem);
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+}
+@media (max-width: 56rem) { .hinterher { grid-template-columns: minmax(0, 1fr); } }
+
+.hinterher h3 {
+  font-family: var(--daten); font-size: .66rem; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--messing); font-weight: 400;
+  margin: 0 0 1rem;
+}
+
+.schritte ol { list-style: none; margin: 0; padding: 0; counter-reset: schritt; }
+.schritte li {
+  display: grid; grid-template-columns: 1.9rem minmax(0, 1fr); gap: .9rem;
+  padding: .95rem 0; border-top: 1px solid var(--gravur);
   font-size: .92rem; color: var(--leise);
 }
-.warnung p { margin: 0; }
-.warnung p + p { margin-top: .7rem; }
-.warnung strong { color: var(--text); }
+.schritte li::before {
+  counter-increment: schritt; content: counter(schritt);
+  display: flex; align-items: center; justify-content: center;
+  width: 1.9rem; height: 1.9rem;
+  font-family: var(--daten); font-size: .78rem; font-weight: 700;
+  color: var(--messing-hell); border: 1px solid var(--gravur-hell);
+}
+.schritte li p { margin: 0; }
+.schritte li strong { color: var(--text); font-weight: 600; }
+.schritte__auch {
+  margin: 1.3rem 0 0; padding-top: 1.3rem;
+  border-top: 1px solid var(--gravur);
+  font-size: .88rem; color: var(--leiser);
+}
+.schritte__auch strong { color: var(--leise); font-weight: 600; }
+
+.pruefung {
+  border: 1px solid var(--gravur); background: var(--blech);
+  padding: 1.4rem clamp(1.2rem, 3vw, 1.6rem);
+}
+.pruefung p { margin: 0 0 1rem; font-size: .87rem; color: var(--leise); }
+.pruefung p:last-child { margin-bottom: 0; }
+.pruefung strong { color: var(--text); font-weight: 600; }
+
+/* ── Die Beweisleiste ────────────────────────────────────────────── */
+
+/* Es gibt keinen einzigen Nutzer. Also gibt es keine Stimmen, keine
+   Logos und keine Zahl darüber, wie viele es sind — und wir erfinden
+   auch keine. Was es stattdessen gibt, sind Messwerte, und die sind
+   besser: Eine Stimme muss man glauben, eine Zahl kann man nachrechnen.
+
+   Deshalb steht unter jeder Zahl nicht nur, was sie ist, sondern WARUM
+   sie zählt. Eine Zahl ohne Folge ist Angeberei. */
+.beweise {
+  list-style: none; margin: clamp(2rem, 5vw, 3rem) 0 0; padding: 0;
+  display: grid; gap: 1px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: var(--gravur); border: 1px solid var(--gravur);
+}
+@media (max-width: 62rem) { .beweise { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 40rem) { .beweise { grid-template-columns: minmax(0, 1fr); } }
+.beweise li {
+  background: var(--blech); padding: 1.5rem clamp(1.2rem, 3vw, 1.6rem);
+  display: flex; flex-direction: column; gap: .35rem;
+}
+.beweise b {
+  font-family: var(--daten); font-weight: 700; line-height: 1;
+  font-size: clamp(1.85rem, 4.2vw, 2.4rem); letter-spacing: -.02em;
+  color: var(--messing-hell); font-variant-numeric: tabular-nums;
+}
+.beweise strong { font-size: .88rem; color: var(--text); font-weight: 600; line-height: 1.35; }
+.beweise span { font-size: .86rem; color: var(--leise); }
+
+/* Das gerechnete Bild schliesst die Leiste ab — es IST eine Rechnung
+   und gehört damit zum Beweis, nicht zum Aufmacher. */
+.beweis__bild { margin: clamp(2rem, 5vw, 2.8rem) 0 0; }
+/* Ohne Begrenzung zieht sich die Bildunterschrift als eine einzige dünne
+   Zeile über die volle Satzbreite — unter einem 23rem breiten Panel sieht
+   das aus wie ein Versehen. */
+.beweis__bild figcaption { max-width: 32rem; margin-inline: auto; }
 
 /* ═══ DIE HELLE WELT — Papier ════════════════════════════════════ */
 .papier {
@@ -687,10 +947,15 @@ input[type="range"]::-moz-range-thumb {
   font-size: clamp(1.3rem, 3.4vw, 1.9rem); line-height: 1.3; color: var(--text);
 }
 
+/* `overflow-wrap: anywhere` steht hier, weil eine apt-Zeile länger ist als
+   ein Telefon breit. Ohne diese Zeile schiebt sie bei 320 px die ganze
+   Seite waagerecht auf — und waagerechtes Scrollen bricht jede Seite. */
 code {
   font-family: var(--daten); font-size: .86em; color: var(--text);
   background: var(--gravur); border: 1px solid var(--gravur-hell); padding: .05em .4em;
+  overflow-wrap: anywhere;
 }
+.papier code { overflow-wrap: anywhere; }
 
 /* ── Fuß ─────────────────────────────────────────────────────────── */
 .fuss {
@@ -730,47 +995,135 @@ code {
 
 <main>
 
-<!-- ══ 1 · Das Versprechen, zwei Knöpfe, ein Bild ═══════════════ -->
+<!-- ══ 1 · Ein Satz, EIN Knopf, die Probe ═══════════════════════
+
+     ÜBER DER FALZ STEHT NUR NOCH DREIERLEI: was es tut, der Knopf für
+     das System, auf dem der Besucher gerade sitzt, und das Gerät, an
+     dem er es selbst nachprüfen kann. Alles andere ist nach unten
+     gewandert. Ein zweiter Knopf oben („Erst anhören“) ist ersatzlos
+     weg — die Probe steht ja daneben, ein Verweis darauf wäre ein
+     Knopf, der auf das zeigt, was man schon sieht.
+     ═════════════════════════════════════════════════════════════ -->
 <section class="rahmen aufmacher">
   <div class="aufmacher__satz">
     <div>
-      <p class="eyebrow">Menüleisten-App · macOS und Linux</p>
-      <h1>Alles, was dein Mac spielt&nbsp;— <em>in 432 Hz</em>.</h1>
+      <p class="eyebrow">Menüleisten-App · macOS · Linux · Windows</p>
+      <h1>Spotify in <em>432 Hz</em>. Ohne eine einzige Datei umzuwandeln.</h1>
       <p class="aufmacher__vorwort">
-        Systemweit, in Echtzeit, ohne dass du eine einzige Datei anfasst.
+        Netflix, YouTube, dein Player genauso. Der Tuner sitzt im Systemton —
+        nicht in der Datei.
       </p>
-      <div class="tatreihe">
-        <a class="knopf" href="#holen">
-          Herunterladen
-          <span class="knopf__zusatz">Testausgabe · macOS und Linux</span>
+
+      <div class="holzone">
+        <!-- Fünf Knöpfe im Quelltext, immer genau einer im Bild. Welcher,
+             entscheidet das Merkmal an <html>, das im Kopf gesetzt wurde. -->
+        <a class="grossknopf fuer fuer--mac" href="/herunterladen/iyambae-tuner-0.1.0-test.dmg">
+          <span class="grossknopf__tat">Für macOS laden</span>
+          <span class="grossknopf__zusatz">DMG · 923 KB · ab macOS 14.4 · kein Konto</span>
         </a>
-        <a class="knopf knopf--leise" href="#anhoeren">Erst anhören</a>
+        <a class="grossknopf fuer fuer--linux" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb">
+          <span class="grossknopf__tat">Für Linux laden</span>
+          <span class="grossknopf__zusatz">DEB · 43 KB · Debian 13 · PipeWire ab 0.3.60</span>
+        </a>
+        <!-- Windows war bisher eine Sackgasse: drei Karten, und auf einer
+             stand sinngemäss „für dich nichts“. Jetzt bekommt auch dieser
+             Besucher etwas zu tun — den Grund in einem Satz und einen Weg,
+             sich merken zu lassen. -->
+        <a class="grossknopf grossknopf--warten fuer fuer--win"
+           href="mailto:hello@infosys-consult.com?subject=IYAMBAE%20Tuner%20f%C3%BCr%20Windows%20%E2%80%94%20bitte%20Bescheid%20geben">
+          <span class="grossknopf__tat">Bescheid geben, sobald es sie gibt</span>
+          <span class="grossknopf__zusatz">Windows lässt Systemton mithören, aber nicht ersetzen — es fehlt das virtuelle Ausgabegerät.</span>
+        </a>
+        <a class="grossknopf grossknopf--warten fuer fuer--mobil" href="#fragen">
+          <span class="grossknopf__tat">Dafür braucht es einen Rechner</span>
+          <span class="grossknopf__zusatz">Am Telefon gibt keine App den Ton von Spotify oder Netflix heraus.</span>
+        </a>
+        <!-- Kein JavaScript, oder ein System, das wir nicht kennen: dann
+             alle drei gleichberechtigt, eine Bildschirmhöhe tiefer. -->
+        <a class="grossknopf fuer fuer--alle" href="#holen">
+          <span class="grossknopf__tat">Herunterladen</span>
+          <span class="grossknopf__zusatz">macOS · Linux · Testausgabe 0.1.0 · kein Konto</span>
+        </a>
+
+        <p class="nebenweg">
+          <span class="fuer fuer--mac">Auch für <a href="#holen">Linux</a> · Windows <a href="#holen">noch nicht</a> · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
+          <span class="fuer fuer--linux">Auch für <a href="#holen">macOS</a> · Windows <a href="#holen">noch nicht</a> · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
+          <span class="fuer fuer--win">Heute gibt es sie für <a href="#holen">macOS</a> und <a href="#holen">Linux</a>.</span>
+          <span class="fuer fuer--mobil">Am Rechner: <a href="#holen">macOS</a> oder <a href="#holen">Linux</a>.</span>
+          <span class="fuer fuer--alle">Testausgabe 0.1.0 · kostenlos · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256 nachrechnen</a></span>
+        </p>
       </div>
     </div>
 
-    <figure class="schaubild">
-      <div class="panel" role="img" aria-label="Beispielrechnung: Eine Aufnahme steht auf 443,1 Hertz, Ziel ist 432,0 Hertz, das sind minus 43,9 Cent. Die schnelle Engine braucht dafür 11 Millisekunden.">
-        <div class="panel__kopf">
-          <span class="panel__marke">Beispielrechnung</span>
-          <span class="panel__lampe">443,1 → 432,0</span>
-        </div>
-        <div class="panel__gross">
-          <span class="panel__zahl">432,0</span><span class="panel__einheit">Hz</span>
-          <span class="panel__unter">Kammerton a′</span>
-        </div>
-        <div class="panel__balken" aria-hidden="true"><span></span></div>
-        <dl class="panel__werte">
-          <div><dt>erkannt</dt><dd>443,1 Hz</dd></div>
-          <div><dt>Verschiebung</dt><dd>−43,9 Cent</dd></div>
-          <div><dt>Engine</dt><dd>Delay-Line · 11 ms</dd></div>
-        </dl>
+    <!-- ── Die Probe. Sie verlangt keinen Download und dauert acht
+         Sekunden. Deshalb steht sie hier und nicht in der Mitte. ── -->
+    <div class="geraet" id="probe">
+      <div class="geraet__kopf">
+        <p class="geraet__titel">Die Probe · kein Download nötig</p>
+        <p class="geraet__hilfe">Ton an, dann von 440 auf 432 ziehen.</p>
       </div>
-      <figcaption>
-        Eine Aufnahme auf 443,1 Hz — dem heute in Deutschland üblichen Wert —
-        auf 432,0 gebracht. <strong>Kein Bildschirmfoto:</strong> gerechnet,
-        nicht abfotografiert.
-      </figcaption>
-    </figure>
+
+      <div class="ablesung" aria-live="polite">
+        <div class="ablesung__feld">
+          <span class="ablesung__marke">Kammerton</span>
+          <span class="ablesung__wert" id="anzeigeHz">432,0<small>Hz</small></span>
+        </div>
+        <div class="ablesung__feld">
+          <span class="ablesung__marke">Abstand zu 440</span>
+          <span class="ablesung__wert" id="anzeigeCent">−31,8<small>Cent</small></span>
+        </div>
+        <div class="ablesung__feld">
+          <span class="ablesung__marke">Schwebung</span>
+          <span class="ablesung__wert" id="anzeigeSchweb">8,0<small>/s</small></span>
+        </div>
+      </div>
+
+      <div class="sicht">
+        <canvas id="schirm" width="1400" height="340" role="img"
+                aria-label="Sichtfenster: zeigt die Schwebung zwischen Referenzton und eingestelltem Kammerton als pulsierende Wellenform."></canvas>
+        <noscript>
+          <div class="sicht__ersatz">
+            <p><strong>Die Probe braucht JavaScript.</strong> Worum es geht,
+            lässt sich aber auch rechnen:</p>
+            <p>440 minus 432 sind <strong>acht Hertz</strong>. Zwei Töne mit
+            acht Hertz Abstand löschen sich <strong>achtmal je Sekunde</strong>
+            gegenseitig aus — dieses Pulsieren hört man, und daran stimmen
+            Menschen seit Jahrhunderten Instrumente: Man wartet, bis es
+            aufhört.</p>
+            <p>Der Tuner macht mit dem ganzen Systemton dasselbe, was der
+            Regler hier mit zwei Tönen macht.</p>
+          </div>
+        </noscript>
+      </div>
+
+      <div class="bedienteil">
+        <div>
+          <label class="regler__marke" for="regler">Kammerton A₄</label>
+          <input type="range" id="regler" min="415" max="448" step="0.1" value="432">
+          <div class="skala"><span>415</span><span>432</span><span>440</span><span>448</span></div>
+        </div>
+        <button class="hoerknopf" id="hoerknopf" type="button" aria-pressed="false">Ton einschalten</button>
+      </div>
+
+      <div class="stimmungen" role="group" aria-label="Historische Kammertöne">
+        <button class="stimmung" type="button" data-hz="415"><b>415</b><span>Barock</span></button>
+        <button class="stimmung" type="button" data-hz="432" aria-pressed="true"><b>432</b><span>Mailand 1880</span></button>
+        <button class="stimmung" type="button" data-hz="435"><b>435</b><span>Paris 1859</span></button>
+        <button class="stimmung" type="button" data-hz="440"><b>440</b><span>ISO 16</span></button>
+        <button class="stimmung" type="button" data-hz="443"><b>443</b><span>D · A heute</span></button>
+        <button class="stimmung" type="button" data-hz="445"><b>445</b><span>Karajan</span></button>
+      </div>
+
+      <!-- Kurz gehalten, weil dieser Absatz über der Falz steht. Alles,
+           was hier länger würde, kostet Aufmerksamkeit an einer Stelle,
+           an der der Besucher noch entscheidet. -->
+      <p class="geraet__fuss">
+        Zwei Sinustöne im Browser. Was pulsiert, ist die Schwebung — zwei nahe
+        Töne löschen sich abwechselnd aus. So stimmt man Instrumente seit
+        Jahrhunderten: Man wartet, bis es aufhört. Der Tuner selbst verschiebt
+        den fertigen Klang, ohne das Tempo anzutasten.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -793,93 +1146,99 @@ code {
   </div>
 </section>
 
-<!-- ══ 3 · Wie es sich anhört — der Schwebungsmesser ════════════ -->
-<section class="rahmen teil teil--linie" id="anhoeren">
+<!-- ══ 3 · Die Beweisleiste ═════════════════════════════════════
+
+     WAS HIER NICHT STEHT UND NIE STEHEN WIRD: Nutzerstimmen, Logos von
+     Zeitschriften, Sterne, „von 10.000 Menschen benutzt“. Es gibt noch
+     keinen einzigen Nutzer. So etwas zu erfinden wäre irreführende
+     Werbung, und man würde es ohnehin durchschauen.
+
+     Was stattdessen hier steht, ist besser: Zahlen, die jemand
+     nachrechnen kann. Und neben jeder von ihnen die Folge — denn eine
+     Zahl ohne Folge ist Angeberei, keine Auskunft.
+     ═════════════════════════════════════════════════════════════ -->
+<section class="rahmen teil teil--linie" id="beweis">
   <div class="eng">
-    <p class="eyebrow">Wie es sich anhört</p>
-    <h2>Acht Hertz sind der Unterschied. <em>Hör ihn dir an.</em></h2>
+    <p class="eyebrow">Nachprüfbar</p>
+    <h2>Keine Stimmen, keine Sterne. <em>Nur Messwerte.</em></h2>
     <p>
-      Zwei Töne dicht beieinander löschen sich abwechselnd aus; man hört ein
-      Pulsieren. So stimmen Menschen seit Jahrhunderten Instrumente — sie
-      warten, bis es aufhört. <strong>Zieh den Regler von 440 auf 432.</strong>
+      Es gibt noch keinen einzigen Nutzer — also zitieren wir auch keinen.
+      Was es gibt, sind Zahlen aus dem Bau und aus der Messung. Sie stehen
+      hier mitsamt dem, <strong>warum</strong> sie zählen.
     </p>
   </div>
 
-  <div class="geraet">
-    <div class="geraet__kopf">
-      <p class="geraet__titel">Schwebungsmesser · Referenz A = 440,0 Hz</p>
-      <p class="geraet__hilfe">Ton einschalten, dann den Regler bewegen.</p>
-    </div>
+  <ul class="beweise">
+    <li>
+      <b>11 ms</b>
+      <strong>Verzögerung mit der schnellen Engine</strong>
+      <span>Das ist die Grenze zwischen „geht bei Video“ und „geht nicht“: Der Ton bleibt an den Lippen. Wer lieber Klang als Gleichlauf will, schaltet auf die gute Engine — 240 ms, unbrauchbar bei Bild.</span>
+    </li>
+    <li>
+      <b>0</b>
+      <strong>Allokationen im Echtzeitpfad</strong>
+      <span>Nicht behauptet, geprüft: Das Bauskript zerlegt die fertige Bibliothek und listet jeden Aufruf, der aus dem Echtzeitpfad herausführt. Es sind keine. Kein Speicher, kein Schloss — und damit nichts, was mitten im Stück knacken kann.</span>
+    </li>
+    <li>
+      <b>88</b>
+      <strong>Tests, 436 Zusicherungen, null Fehler</strong>
+      <span>Gebaut auf macOS 26 mit Xcode 26.6. Die Zahl steht hier, weil sie bei jedem Bau neu entsteht — sie ist kein Abzeichen, sondern ein Messwert von heute.</span>
+    </li>
+    <li>
+      <b>432,33 Hz</b>
+      <strong>gemessen — drei Systeme, ein Ergebnis</strong>
+      <span>440 Hz hinein, Ziel 432: heraus kommen 432,33 Hz mit der schnellen und 432,09 Hz mit der guten Engine. Auf macOS, auf Linux und auf Windows. Abweichung untereinander: <strong>0,01 Cent</strong>.</span>
+    </li>
+    <li>
+      <b>0,09 %</b>
+      <strong>eines Prozessorkerns</strong>
+      <span>Das 1077-fache der Echtzeit. Der Lüfter merkt nicht, dass etwas läuft, und der Akku auch nicht — es gibt also keinen Grund, den Tuner zwischendurch auszuschalten.</span>
+    </li>
+    <li>
+      <b>0</b>
+      <strong>Anfragen an fremde Server</strong>
+      <span>Diese Seite lädt nichts nach: keine Schrift von Google, keine Messung, kein Cookie. Der Tuner verlangt kein Konto, keine E-Mail-Adresse und schickt nichts weg. Du lädst eine Datei, und das war es.</span>
+    </li>
+  </ul>
 
-    <div class="ablesung" aria-live="polite">
-      <div class="ablesung__feld">
-        <span class="ablesung__marke">Kammerton</span>
-        <span class="ablesung__wert" id="anzeigeHz">432,0<small>Hz</small></span>
+  <figure class="schaubild beweis__bild">
+    <div class="panel" role="img" aria-label="Beispielrechnung: Eine Aufnahme steht auf 443,1 Hertz, Ziel ist 432,0 Hertz, das sind minus 43,9 Cent. Die schnelle Engine braucht dafür 11 Millisekunden.">
+      <div class="panel__kopf">
+        <span class="panel__marke">Beispielrechnung</span>
+        <span class="panel__lampe">443,1 → 432,0</span>
       </div>
-      <div class="ablesung__feld">
-        <span class="ablesung__marke">Abstand zu 440</span>
-        <span class="ablesung__wert" id="anzeigeCent">−31,8<small>Cent</small></span>
+      <div class="panel__gross">
+        <span class="panel__zahl">432,0</span><span class="panel__einheit">Hz</span>
+        <span class="panel__unter">Kammerton a′</span>
       </div>
-      <div class="ablesung__feld">
-        <span class="ablesung__marke">Schwebung</span>
-        <span class="ablesung__wert" id="anzeigeSchweb">8,0<small>/s</small></span>
-      </div>
+      <div class="panel__balken" aria-hidden="true"><span></span></div>
+      <dl class="panel__werte">
+        <div><dt>erkannt</dt><dd>443,1 Hz</dd></div>
+        <div><dt>Verschiebung</dt><dd>−43,9 Cent</dd></div>
+        <div><dt>Engine</dt><dd>Delay-Line · 11 ms</dd></div>
+      </dl>
     </div>
-
-    <div class="sicht">
-      <canvas id="schirm" width="1400" height="340" role="img"
-              aria-label="Sichtfenster: zeigt die Schwebung zwischen Referenzton und eingestelltem Kammerton als pulsierende Wellenform."></canvas>
-    </div>
-
-    <div class="bedienteil">
-      <div>
-        <label class="regler__marke" for="regler">Kammerton A₄</label>
-        <input type="range" id="regler" min="415" max="448" step="0.1" value="432">
-        <div class="skala"><span>415</span><span>432</span><span>440</span><span>448</span></div>
-      </div>
-      <button class="hoerknopf" id="hoerknopf" type="button" aria-pressed="false">Ton einschalten</button>
-    </div>
-
-    <div class="stimmungen" role="group" aria-label="Historische Kammertöne">
-      <button class="stimmung" type="button" data-hz="415"><b>415</b><span>Barock</span></button>
-      <button class="stimmung" type="button" data-hz="432" aria-pressed="true"><b>432</b><span>Mailand 1880</span></button>
-      <button class="stimmung" type="button" data-hz="435"><b>435</b><span>Paris 1859</span></button>
-      <button class="stimmung" type="button" data-hz="440"><b>440</b><span>ISO 16</span></button>
-      <button class="stimmung" type="button" data-hz="443"><b>443</b><span>D · A heute</span></button>
-      <button class="stimmung" type="button" data-hz="445"><b>445</b><span>Karajan</span></button>
-    </div>
-
-    <p class="geraet__fuss">
-      Zwei Sinustöne im Browser, nichts weiter. Der Tuner selbst arbeitet am
-      fertigen Klang und verschiebt das ganze Signal — ohne das Tempo anzutasten.
-    </p>
-  </div>
+    <figcaption>
+      Eine Aufnahme auf 443,1 Hz — dem heute in Deutschland üblichen Wert —
+      auf 432,0 gebracht. <strong>Kein Bildschirmfoto:</strong> gerechnet,
+      nicht abfotografiert.
+    </figcaption>
+  </figure>
 </section>
 
 <!-- ══ 4 · Holen ════════════════════════════════════════════════ -->
 <section class="rahmen teil teil--linie" id="holen">
   <div class="eng">
-    <p class="eyebrow">Testausgabe 0.1.0</p>
-    <h2>Drei Systeme, <em>drei verschiedene</em> Hindernisse.</h2>
-  </div>
-
-  <div class="warnung">
-    <p>
-      <strong>Diese Ausgabe ist nicht signiert und nicht notarisiert.</strong>
-      Gebaut und geprüft — <strong>88 Tests, 436 Zusicherungen, null Fehler</strong>
-      auf macOS 26 —, aber von einem Menschen noch nicht im Alltag benutzt.
-    </p>
-    <p>
-      Auf dem Mac weist Gatekeeper sie ab, und der Rechtsklick-Weg hilft seit
-      August 2024 nicht mehr. Der Weg ist jetzt: <strong>einmal doppelklicken,
-      abweisen lassen, dann Systemeinstellungen → Datenschutz &amp; Sicherheit
-      → „Dennoch öffnen“</strong>. Das Linux-Paket ist nicht betroffen.
-    </p>
+    <p class="eyebrow">Testausgabe 0.1.0 · kostenlos · kein Konto</p>
+    <h2 class="kopf--holen">Hol es dir. <em>Dann drei Schritte.</em></h2>
+    <h2 class="kopf--win">Hol es dir. <em>Dann einmal durchwinken.</em></h2>
+    <h2 class="kopf--mobil">Am Telefon geht es <em>nicht</em>. Hier steht, warum.</h2>
   </div>
 
   <div class="karten">
 
-    <div class="karte karte--bereit">
+    <div class="karte karte--bereit karte--mac">
+      <span class="karte__deins fuer fuer--mac">dein System</span>
       <div class="karte__kopf">
         <span class="karte__name">macOS</span>
         <span class="karte__wofuer">14.4 oder neuer</span>
@@ -899,45 +1258,109 @@ code {
       </div>
     </div>
 
-    <div class="karte karte--bereit">
+    <div class="karte karte--bereit karte--linux">
+      <span class="karte__deins fuer fuer--linux">dein System</span>
       <div class="karte__kopf">
         <span class="karte__name">Linux</span>
         <span class="karte__wofuer">PipeWire ab 0.3.60</span>
       </div>
       <p class="karte__was">
-        Ein LADSPA-Plugin in PipeWires Filterkette — mit <code>apt install</code>
-        fertig, mit <code>iyambae-tuner start</code> an. Gebaut für Debian 13.
+        <strong>Symbol in der Leiste</strong> — Stimmungen unter Namen, Ein und
+        Aus, Wahl der Engine, Start beim Anmelden. Darunter ein LADSPA-Plugin in
+        PipeWires Filterkette. Gebaut für Debian 13.
+      </p>
+      <p class="karte__was">
+        Gemessen über D-Bus: Klick auf „Verdi-Stimmung“ → <strong>432,331 Hz</strong>
+        am Ausgabegerät.
       </p>
       <div class="karte__fuellen"></div>
       <div class="karte__tat">
         <a class="laden" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb">
           <span>DEB laden</span><span class="laden__groesse">43 KB</span>
         </a>
-      </div>
-    </div>
-
-    <div class="karte">
-      <div class="karte__kopf">
-        <span class="karte__name">Windows</span>
-        <span class="karte__wofuer">noch kein Download</span>
-      </div>
-      <p class="karte__was">
-        <strong>Der Signalpfad läuft und ist nachgemessen</strong> — beide
-        Engines, 440 Hz hinein, 432,33 Hz heraus. Was fehlt, ist die App darum
-        herum: Fenster, Symbol, Installer. Sie wird gerade gebaut.
-      </p>
-      <div class="karte__fuellen"></div>
-      <div class="karte__stand">
-        <b>Zustand</b>
-        Kern fertig · App im Bau · kein Installer
-      </div>
-      <div class="karte__tat">
-        <a class="laden laden--leise" href="mailto:hello@infosys-consult.com?subject=IYAMBAE%20Tuner%20f%C3%BCr%20Windows%20%E2%80%94%20bitte%20Bescheid%20geben">
-          <span>Bescheid geben</span><span class="laden__groesse">↗</span>
+        <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
+          <span>SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
         </a>
       </div>
     </div>
 
+    <div class="karte karte--win">
+      <span class="karte__deins fuer fuer--win">dein System</span>
+      <div class="karte__kopf">
+        <span class="karte__name">Windows</span>
+        <span class="karte__wofuer">10 und 11 · x64</span>
+      </div>
+      <p class="karte__was">
+        Eigenes Fenster, Leistensymbol, Installer. <strong>Installiert ohne
+        Administratorrechte</strong> — kein UAC-Fenster, kein Passwort.
+      </p>
+      <p class="karte__was">
+        Dateien umstimmen läuft. Systemton läuft über ein virtuelles
+        Audiogerät, wenn eines da ist — Windows lässt Mithören zu, aber nicht
+        Ersetzen. Die App sagt dir, was sie auf deinem Rechner kann.
+      </p>
+      <div class="karte__fuellen"></div>
+      <div class="karte__tat">
+        <a class="laden" href="/herunterladen/iyambae-tuner-1.0.0-windows-setup.exe">
+          <span>Installer laden</span><span class="laden__groesse">68 MB</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hinterher">
+    <div class="schritte">
+      <h3>Was gleich passiert — auf dem Mac</h3>
+      <!-- Jeder Schritt trägt seinen Text in EINEM Kind, nicht als Gemisch
+           aus Textknoten und <strong>. Im Raster wird sonst jede freie
+           Textstelle zu einem eigenen Rasterfeld — und ab dem zweiten
+           landet sie in der 1,9rem schmalen Spalte der Ziffer. -->
+      <ol>
+        <li><p>DMG öffnen, die App in „Programme“ ziehen, doppelklicken.</p></li>
+        <li><p>
+          <strong>macOS weist sie ab. Das ist erwartet:</strong> Diese
+          Testausgabe ist <strong>nicht signiert und nicht notarisiert</strong>,
+          und der früher übliche Rechtsklick-Weg hilft seit August 2024 nicht
+          mehr.
+        </p></li>
+        <li><p>
+          <strong>Systemeinstellungen → Datenschutz &amp; Sicherheit → „Dennoch
+          öffnen“.</strong> Ab da startet sie wie jede andere App. Beim ersten
+          Einschalten fragt macOS nach „Systemaudio aufnehmen“.
+        </p></li>
+      </ol>
+      <p class="schritte__auch">
+        <strong>Auf Windows heisst dasselbe Fenster SmartScreen.</strong>
+        Der Weg dort: „Weitere Informationen“, dann „Trotzdem ausführen“.
+        Grund ist derselbe — die Ausgabe ist nicht signiert. Der Installer
+        selbst braucht danach keine Administratorrechte.
+      </p>
+      <p class="schritte__auch">
+        <strong>Das Linux-Paket ist davon nicht betroffen.</strong>
+        <code>apt install ./iyambae-tuner_0.1.0-1_amd64.deb</code> — danach steht
+        das Symbol in der Leiste. Unter GNOME braucht es einmalig die
+        AppIndicator-Erweiterung; das Paket empfiehlt sie, und das Programm sagt
+        es dir, statt unsichtbar zu bleiben.
+      </p>
+    </div>
+
+    <div class="pruefung">
+      <h3>Bevor du sie startest</h3>
+      <p>
+        Gebaut und geprüft — <strong>88 Tests, 436 Zusicherungen, null Fehler</strong>
+        auf macOS 26 —, aber von einem Menschen noch nicht im Alltag benutzt. Das
+        ist der ehrliche Stand einer Testausgabe.
+      </p>
+      <p>
+        Beide Dateien tragen ihre SHA-256-Summe. Rechne sie nach, statt uns zu
+        glauben: <code>shasum -a 256</code> auf dem Mac,
+        <code>sha256sum -c</code> unter Linux.
+      </p>
+      <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
+        <span>PRUEFSUMMEN.txt</span><span class="laden__groesse">↓</span>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -1171,9 +1594,18 @@ code {
         <div class="antwort">
           <p>
             <strong>macOS ab 14.4</strong> — die vollständige App in der
-            Menüleiste. <strong>Linux mit PipeWire ab 0.3.60</strong> — ein
-            LADSPA-Plugin in der Filterkette, gebaut für Debian 13; für Ubuntu und
-            Zorin muss neu gebaut werden.
+            Menüleiste. <strong>Linux mit PipeWire ab 0.3.60</strong> — seit
+            Kurzem ebenfalls mit Symbol in der Leiste: Stimmungen unter Namen,
+            Ein und Aus, Wahl der Engine, Start beim Anmelden. Darunter arbeitet
+            ein LADSPA-Plugin in der Filterkette. Nachgewiesen über D-Bus, der
+            Klick gemessen: „Verdi-Stimmung“ → 432,331 Hz am Ausgabegerät.
+            Gebaut für Debian 13; für Ubuntu und Zorin muss neu gebaut werden.
+          </p>
+          <p>
+            Unter GNOME braucht das Leistensymbol einmalig die
+            AppIndicator-Erweiterung. Das Paket empfiehlt sie, und das Programm
+            sagt es beim Start — statt unsichtbar zu bleiben und den Eindruck zu
+            hinterlassen, es sei nichts installiert worden.
           </p>
           <p>
             <strong>Windows: noch nicht.</strong> Der Signalpfad läuft dort und
