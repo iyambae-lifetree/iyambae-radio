@@ -508,6 +508,23 @@ class UI {
           ? t('karte.guete.opus', { codec: sender.codec.toUpperCase(), bitrate: sender.bitrate })
           : t('karte.guete.mp3', { bitrate: sender.bitrate });
 
+    /*
+     Das Feld `kanal` wird bewusst NICHT gezeigt.
+
+     Saemi-Ra hat es angelegt und bei allen 146 Sendern gefuellt, und ich
+     hatte es als Reiter vor den Ort gesetzt. Live sah man dann
+     "Gamesboro Radio · Gamesboro Radio".
+
+     Nachgezaehlt: Bei 93 Sendern ist `kanal` woertlich der Name, bei 53
+     steckt er darin ("NTS 1" -> "1", "NTS Slow Focus" -> "Slow Focus").
+     Bei NULL Sendern steht dort etwas, das der Name nicht schon sagt.
+
+     `kanal` ist also keine Zusatzangabe, sondern eine ZERLEGUNG des Namens:
+     Betreiber plus Kanal. Nuetzlich waere sie, um mehrere Kanaele desselben
+     Senders zusammenzufassen — "NTS" einmal mit drei Kanaelen darunter,
+     statt dreimal "NTS" nebeneinander. Das ist ein eigener Umbau, nicht ein
+     Abzeichen. Bis dahin waere jede Anzeige eine Wiederholung.
+    */
     const eigenes = hatEigenesLogo(sender);
     return `
       <article class="karte${aktiv}${wackelig}" data-sender-id="${sender.id}"
@@ -538,7 +555,7 @@ class UI {
             <h3 class="karte__name" title="${sender.name}">${sender.name}</h3>
             ${guete ? `<span class="karte__guete karte__guete--${stufe}" title="${guetetitel}">${guete}</span>` : ''}
           </div>
-          <p class="karte__ort">${sender.kanal ? `<span class="karte__kanal">${sender.kanal}</span>` : ''}${sender.ort} · ${sender.land}</p>
+          <p class="karte__ort">${sender.ort} · ${sender.land}</p>
           <div class="karte__fuss">
             ${(sender.etiketten ?? []).slice(0, 2).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
           </div>

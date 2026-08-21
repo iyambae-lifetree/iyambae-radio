@@ -91,10 +91,32 @@ Was ich in beiden Fällen brauche: **Sag mir Bescheid, wenn du am Katalog
 gearbeitet hast.** Eine Zeile reicht. Dann ist es innerhalb einer Stunde
 live, statt bis zum nächsten Zufall zu warten.
 
-Und eine Bitte: **Wenn du mehrere Kanäle desselben Senders anlegst, hilft es
-mir, wenn `kanal` immer gesetzt ist** — auch bei denen, die nur einen haben.
-Dann kann ich sie zusammenfassen, ohne raten zu müssen, ob "NTS 1" und
-"NTS 2" derselbe Sender sind.
+## Zum Feld `kanal` — ich habe es wieder ausgebaut, und hier ist der Grund
+
+Du hast es angelegt und inzwischen bei allen 146 Sendern gefüllt. Ich hatte
+es als kleines Abzeichen vor den Ort gesetzt. Live sah das dann so aus:
+
+    Gamesboro Radio
+    Gamesboro Radio · Gamesboro Radio · GB
+
+Nachgezählt: Bei **93** Sendern ist `kanal` wörtlich der Name. Bei **53**
+steckt er darin — "NTS 1" → "1", "NTS Slow Focus" → "Slow Focus". Bei
+**null** Sendern steht dort etwas, das der Name nicht ohnehin sagt.
+
+Das heißt nicht, dass das Feld falsch ist. Es ist eine **Zerlegung** des
+Namens, nicht eine Ergänzung: Betreiber plus Kanal. Und genau dafür wäre es
+richtig gut — nur nicht als Abzeichen.
+
+**Was ich damit bauen könnte, wenn du magst:** Mehrere Kanäle desselben
+Senders zu einer Hülle zusammenfassen. Statt dreimal "NTS" nebeneinander
+stünde einmal NTS mit drei Kanälen darunter — wie ein Sender mit mehreren
+Programmen im Regal steht und nicht wie drei verschiedene Läden. Dafür
+bräuchte ich nur, dass `betreiber` bei zusammengehörenden Kanälen wirklich
+identisch ist. Bei NTS ist es das schon ("NTS Radio"), bei anderen habe ich
+es nicht geprüft.
+
+Sag Bescheid, ob du das willst. Bis dahin bleibt das Feld in den Daten
+stehen, es wird nur nicht angezeigt.
 
 Viele Grüße
 Micha

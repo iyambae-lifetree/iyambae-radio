@@ -1191,18 +1191,6 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-/* Der Kanal — Sāmi-Ras Feld fuer Sender, die mehrere Programme fahren:
-   "90s Alternative", "Chiptune Radio", "Colección". Er steht VOR dem Ort,
-   weil er zum Namen gehoert: "181.FM" allein sagt nichts, "181.FM ·
-   90s Alternative" schon. Als Reiter gesetzt wie alles, was benennt. */
-.karte__kanal {
-    display: inline-block;
-    margin-inline-end: 0.4rem;
-    padding-inline-start: 0.35rem;
-    border-inline-start: 2px solid var(--regalton, var(--pink));
-    color: var(--text);
-}
-
 /* Die Klangangabe. Der farbige Balken links macht die vier Stufen im Raster
    als Spalte lesbar, ohne dass vier Farben um Aufmerksamkeit streiten. */
 .karte__guete {
