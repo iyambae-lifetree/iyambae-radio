@@ -122,7 +122,10 @@
         <h2 class="regalwand__titel" data-text="regalwand.titel">Die Regale</h2>
         <span class="regalwand__zahl" id="regalwandZahl"></span>
     </div>
-    <div class="regalwand__raster" id="regalwandRaster"></div>
+    <!-- Neun Platzhalter, weil es neun Regale sind. Die Hoehe ist damit vor
+         dem ersten Programmschritt richtig, und nichts darunter rutscht,
+         wenn die echten Faecher kommen. -->
+    <div class="regalwand__raster" id="regalwandRaster"><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button></div>
 </section>
 
 <section class="tipp" id="tipp" data-aria="tipp.bereich" aria-label="Sender der Woche" hidden>
@@ -152,7 +155,7 @@
         <h2 class="auslage__titel" data-text="auslage.titel">Auf dem Tisch</h2>
         <button class="knopf knopf--leise" id="auslageNeu" data-text="auslage.knopf.neu">Anderes zeigen</button>
     </div>
-    <div class="regal__reihe" id="auslageRaster" role="group" data-aria="auslage.bereich" aria-label="Auslage"></div>
+    <div class="regal__reihe" id="auslageRaster" role="group" data-aria="auslage.bereich" aria-label="Auslage"><div class="karte karte--skelett" aria-hidden="true"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div><div class="karte karte--skelett" aria-hidden="true"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div><div class="karte karte--skelett" aria-hidden="true"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div><div class="karte karte--skelett" aria-hidden="true"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div><div class="karte karte--skelett" aria-hidden="true"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div><div class="karte karte--skelett" aria-hidden="true"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div></div>
 </section>
 
 <!-- Zuletzt gehört. Steht vor der Auslage, weil Wiederfinden häufiger ist als
@@ -222,23 +225,23 @@
     <section class="regal regal--skelett" aria-hidden="true">
         <div class="regal__kopf"><span class="skelett skelett--titel"></span></div>
         <div class="regal__reihe">
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
         </div>
     </section>
     <section class="regal regal--skelett" aria-hidden="true">
         <div class="regal__kopf"><span class="skelett skelett--titel"></span></div>
         <div class="regal__reihe">
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
-            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--zeile"></span><span class="skelett skelett--kurz"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
+            <div class="karte karte--skelett"><div class="karte__bild skelett"></div><div class="karte__etikett"><span class="skelett skelett--name"></span><span class="skelett skelett--kurz"></span><span class="skelett skelett--marken"></span></div></div>
         </div>
     </section>
 </main>
@@ -277,7 +280,7 @@
     </div>
 </div>
 
-<nav class="handy-leiste" data-aria="nav.bereich" aria-label="Navigation">
+<nav class="handy-leiste" id="handyLeiste" data-aria="nav.bereich" aria-label="Navigation">
     <button data-ziel="laden"><span data-symbol="laden" data-symbol-groesse="22"></span><span data-text="nav.laden">Laden</span></button>
     <button data-ziel="meine"><span data-symbol="meine" data-symbol-groesse="22"></span><span data-text="nav.meine">Meine</span></button>
     <button data-ziel="nadel"><span data-symbol="platte" data-symbol-groesse="22"></span><span data-text="nav.zufall">Zufall</span></button>

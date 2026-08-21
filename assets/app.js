@@ -1306,16 +1306,29 @@ class App {
    einen Breite eine Luecke und auf der anderen eine Ueberdeckung.
   */
   misstKopf() {
-    const kopf = document.getElementById('kopf');
-    if (!kopf) return;
+    this._misst('kopf', '--kopf-hoehe', true);
+    // Dieselbe Messung fuer die untere Navigationsleiste. Ihre Hoehe haengt
+    // an der Sprache: 65 px in de/en/es/it, 72 px in ja, 73 px in ar und
+    // 86 px in fr. Die Spielerleiste stand darueber fest auf 62,4 px und
+    // ueberlappte sie je nach Sprache um 3 bis 24 px.
+    this._misst('handyLeiste', '--leiste-hoehe', false);
+  }
+
+  _misst(kennung, variable, nurWennKlebend) {
+    const el = document.getElementById(kennung);
+    if (!el) return;
     const setze = () => {
+      const stil = getComputedStyle(el);
       // Auf dem Handy scrollt der Kopf weg, dort klebt die Leiste bei 0.
-      const klebt = getComputedStyle(kopf).position === 'sticky';
+      // Die Navigationsleiste ist auf dem Rechner gar nicht da (display: none)
+      // — dann gilt ebenfalls null.
+      const zaehlt = stil.display !== 'none'
+                  && (!nurWennKlebend || stil.position === 'sticky');
       document.documentElement.style.setProperty(
-        '--kopf-hoehe', klebt ? Math.round(kopf.offsetHeight) + 'px' : '0px');
+        variable, zaehlt ? Math.round(el.offsetHeight) + 'px' : '0px');
     };
     setze();
-    if (window.ResizeObserver) new ResizeObserver(setze).observe(kopf);
+    if (window.ResizeObserver) new ResizeObserver(setze).observe(el);
     window.addEventListener('resize', setze, { passive: true });
   }
 

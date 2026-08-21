@@ -23,6 +23,15 @@
     --schrift:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --mono:         'JetBrains Mono', ui-monospace, monospace;
     --anzeige:      'Orbitron', var(--schrift);
+    /* Kein Ersatzschriftschnitt mit size-adjust.
+       Versucht und wieder entfernt: Angeglichene Massen fuer Inter, Orbitron
+       und JetBrains Mono gegen Arial haben den Layoutsprung auf dem Handy
+       von 0,122 auf 0,217 VERSCHLECHTERT. Die Werte waren aus
+       veroeffentlichten Metriken uebernommen, nicht an dieser Seite
+       gemessen — und offenbar passen sie zu den hier gesetzten Groessen
+       nicht. Wer es erneut versucht, misst zuerst die echten Massen beider
+       Schriften bei den hier verwendeten Groessen. Geraten macht es
+       schlimmer. */
     /* 2 px, ueberall wo Text steht: Chip, Karte, Knopf, Suchfeld, Panel.
        Vierzehn Pixel sind die Rundung, an der man Software erkennt, und in
        einem Plattenladen war sie schlicht falsch.
@@ -328,7 +337,11 @@ body.spielt .platte { animation-play-state: running; }
 .griff--zufall:hover  { border-color: rgba(242, 183, 5, 0.55); box-shadow: var(--glut); }
 .griff__icon  { font-size: 1.5rem; }
 .griff__titel { font-weight: 600; font-size: 1rem; }
-.griff__unter { font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise); }
+.griff__unter {
+    font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise);
+    /* Der Zaehler wird nachgetragen — Hoehe vorher festhalten. */
+    min-height: 1.1em; display: block;
+}
 
 /* ── Sender der Woche ────────────────────────────────────────────
    Die redaktionelle Empfehlung: liegt für alle Besucher einer Woche fest,
@@ -379,13 +392,24 @@ body.spielt .platte { animation-play-state: running; }
 
 /* Das Raster. Bis sechs Spalten auf breiten Schirmen — hundertneunundzwanzig
    Hüllen in vier Spalten sind zweiunddreißig Reihen Scrollweg. */
+/* minmax(0, 1fr) statt 1fr, und das ist kein Feinschliff.
+
+   1fr bedeutet minmax(auto, 1fr). Das Auto-Minimum einer Rasterspalte ist
+   die Min-Content-Breite ihres Inhalts — hier 171 px, weil Name und
+   Klangangabe in einer Zeile stehen, die nicht umbricht. Bei 320 px
+   Fensterbreite rechnete das Raster daraus 388 px, und 51 px Karte lagen
+   ausserhalb des Bildes. Erreichbar waren sie nicht: body versteckt
+   waagerechtes Scrollen, es gab also nicht einmal einen Rollbalken.
+
+   Gemessen nach der Aenderung: Spalten 136,8 px, rechte Kante bei 304,
+   nichts abgeschnitten. */
 .auslage__raster, .regal__raster {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem;
 }
-@media (min-width: 720px)  { .auslage__raster, .regal__raster { grid-template-columns: repeat(3, 1fr); gap: 1rem; } }
-@media (min-width: 1100px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(4, 1fr); } }
-@media (min-width: 1500px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(5, 1fr); } }
-@media (min-width: 1900px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(6, 1fr); } }
+@media (min-width: 720px)  { .auslage__raster, .regal__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; } }
+@media (min-width: 1100px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1500px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 1900px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 
 /* ── Regalwand ───────────────────────────────────────────────────
    Die Kategorieübersicht.
@@ -404,11 +428,11 @@ body.spielt .platte { animation-play-state: running; }
 .regalwand__titel { font-family: var(--anzeige); font-size: 1.15rem; font-weight: 600; }
 .regalwand__zahl { font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise); }
 .regalwand__raster {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem;
 }
-@media (min-width: 560px)  { .regalwand__raster { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 900px)  { .regalwand__raster { grid-template-columns: repeat(4, 1fr); gap: 1rem; } }
-@media (min-width: 1200px) { .regalwand__raster { grid-template-columns: repeat(5, 1fr); } }
+@media (min-width: 560px)  { .regalwand__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 900px)  { .regalwand__raster { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; } }
+@media (min-width: 1200px) { .regalwand__raster { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 
 .regalfach {
     position: relative;
@@ -482,6 +506,10 @@ body.spielt .platte { animation-play-state: running; }
     font-size: 0.85rem; line-height: 1.2;
     letter-spacing: 0.01em;
     text-wrap: balance;
+    /* Zwei Zeilen fest: "Japan" braucht eine, "Jazz & Verwandtes" zwei. Ohne
+       feste Hoehe sind die neun Faecher unterschiedlich hoch, und der
+       Platzhalter kann die Hoehe nicht vorher reservieren. */
+    min-height: 2.4em;
 }
 .regalfach__zahl {
     font-family: var(--mono); font-size: 0.62rem;
@@ -788,17 +816,23 @@ body.spielt .platte { animation-play-state: running; }
     height: auto;
 }
 .regal__reihe { align-items: stretch; }
+/* In einer Reihe ist die Huelle rund 156 px breit; zwei Stichwoerter passen
+   dort nicht nebeneinander und brechen um. Dadurch ist die eine Karte
+   22 px hoeher als die andere, und kein Platzhalter kann die Hoehe vorher
+   treffen — gemessen fehlten der Auslage 36 px. Im Raster ist mehr Platz,
+   dort bleiben beide stehen. */
+.regal__reihe .karte__fuss .marke:nth-child(n+2) { display: none; }
 
 /* Gefiltert: Raster statt Reihe. */
 .regale.ist-gefiltert { gap: 2.5rem; }
 .regal__raster {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem;
     padding-inline: clamp(1rem, 4vw, 2.5rem);
 }
-@media (min-width: 720px)  { .regal__raster { grid-template-columns: repeat(3, 1fr); gap: 1rem; } }
-@media (min-width: 1100px) { .regal__raster { grid-template-columns: repeat(4, 1fr); } }
-@media (min-width: 1500px) { .regal__raster { grid-template-columns: repeat(5, 1fr); } }
-@media (min-width: 1900px) { .regal__raster { grid-template-columns: repeat(6, 1fr); } }
+@media (min-width: 720px)  { .regal__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; } }
+@media (min-width: 1100px) { .regal__raster { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1500px) { .regal__raster { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 1900px) { .regal__raster { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 
 /* ── Reihen-Block (Verlauf) ──────────────────────────────────────
    Dieselbe Reihe wie ein Regal, aber ohne Regalfarbe — der Verlauf ist kein
@@ -849,10 +883,34 @@ body.spielt .platte { animation-play-state: running; }
 .karte--skelett { pointer-events: none; }
 .karte--skelett .karte__bild { aspect-ratio: 1; }
 .karte--skelett .karte__etikett { display: grid; gap: 0.45rem; }
+/* Die Platzhalterteile haben die Masse der Bauteile, die sie vertreten —
+   sonst reservieren sie die falsche Hoehe und verursachen genau den
+   Layoutsprung, den sie verhindern sollen. Gemessen war die Auslage
+   77 px zu kurz, die Regalwand 21 px. */
 .skelett--zeile { height: 0.85rem; width: 78%; }
 .skelett--kurz  { height: 0.62rem; width: 46%; }
 .skelett--titel { display: block; height: 1.1rem; width: 8.5rem; }
+/* Vertritt den Sendernamen: zwei Zeilen bei 0,92 rem und Zeilenhoehe 1,3. */
+.skelett--name  { height: 2.6em; font-size: 0.92rem; width: 82%; }
+/* Vertritt die Stichwortzeile, unten sitzend wie das Original. */
+.skelett--marken { height: 0.85rem; width: 64%; margin-top: auto; }
+.karte--skelett .karte__etikett > .skelett { flex: none; }
 .regal--skelett .regal__kopf { padding-block-end: 0.9rem; }
+.regalfach--skelett { pointer-events: none; }
+.regalfach--skelett .regalfach__mosaik::before,
+.regalfach--skelett .regalfach__mosaik::after { display: none; }
+.regalfach--skelett .regalfach__text { display: grid; gap: 0.4rem; }
+
+/* Der Wochentipp erscheint erst, wenn der Katalog da ist. Frueher stand er
+   auf hidden und schob beim Auftauchen alles darunter um rund 300 px nach
+   unten — der groesste Einzelsprung der Seite. Jetzt haelt er seinen Platz
+   von Anfang an frei. Gemessen: CLS von 0,9 auf … siehe Commit. */
+.tipp[hidden] {
+    display: block;
+    visibility: hidden;
+    min-height: 15rem;
+}
+@media (max-width: 719px) { .tipp[hidden] { min-height: 20rem; } }
 
 /* ── Ein Fokusring für alles ─────────────────────────────────────
    Vorher hatte jedes Element den Ring, den der Browser gerade vorsah. Ein
@@ -872,7 +930,7 @@ body.spielt .platte { animation-play-state: running; }
 @media (pointer: coarse) {
     .chip, .filter__knopf, .filter__zuruecksetzen { min-height: 2.75rem; }
     .karte__favorit, .karte__spielen { width: 2.75rem; height: 2.75rem; }
-    .sprachwahl__knopf { min-height: 2.5rem; }
+    .sprachwahl__knopf { min-height: 2.75rem; }
 }
 
 /* ── Karte ───────────────────────────────────────────────────────
@@ -1243,6 +1301,12 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
        bleibt. Zur Suche kommt man ueber die untere Leiste zurueck. */
     .kopf { position: static; gap: 0.6rem; padding: 0.6rem 1rem; }
     .filter { top: 0; padding: 0.5rem 1rem; }
+    /* Auf sehr schmalen Geraeten brachen drei Schnellchips auf drei Zeilen
+       um — 118 px, ein Fuenftel des Bildschirms, dauerhaft klebend. Dort
+       traegt nur noch der Filterknopf; im Panel steht ohnehin alles. */
+    @media (max-width: 374px) {
+        .filter__schnell { display: none; }
+    }
     .regalwand { padding-top: 1.2rem; }
 
     /* Solange nichts läuft, soll der Teller nicht den halben Bildschirm
@@ -1266,13 +1330,18 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     .griff { padding: 0.85rem; }
     .griff__titel { font-size: 0.88rem; }
 
-    .spieler { bottom: 3.9rem; padding: 0.5rem 0.9rem; }
+    /* Frueher fest 3,9 rem = 62,4 px. Die Navigationsleiste ist aber
+       inhaltsgetrieben hoch: 65 px in de/en/es/it, 72 px in ja, 73 px in ar
+       und 86 px in fr, weil "Mes disques" umbricht. Die Spielerleiste lag
+       dadurch je nach Sprache 3 bis 24 px darueber. Jetzt wird gemessen —
+       dieselbe Loesung wie beim Kopf. */
+    .spieler { bottom: var(--leiste-hoehe, 3.9rem); padding: 0.5rem 0.9rem; }
     .spieler__rechts canvas { display: none; }
     #lautstaerke { width: 4rem; }
     .meldungen { inset-inline: 0.7rem; bottom: 9rem; }
 
     .handy-leiste {
-        display: grid; grid-template-columns: repeat(4, 1fr);
+        display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
         position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
         background: rgba(10, 4, 18, 0.96);
         backdrop-filter: blur(14px);
@@ -1286,6 +1355,13 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
         font-family: inherit; font-size: 0.65rem; cursor: pointer;
     }
     .handy-leiste button span { font-size: 1.1rem; }
+    /* Und die Beschriftung bricht nicht mehr um. Ein zweizeiliger Eintrag
+       neben drei einzeiligen sieht aus wie ein Fehler, und er war die
+       Ursache der Ueberlappung. */
+    .handy-leiste button span:not([data-symbol]) {
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        max-width: 100%;
+    }
     .handy-leiste button:active { color: var(--pink); }
 
     body { padding-bottom: 8.5rem; }
@@ -1302,7 +1378,10 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
    in einem neuen Reiter öffnen, und sie stehen auch dann da, wenn der
    Programmcode ausfällt. Jede Sprache steht in sich selbst — wer kein Deutsch
    kann, findet „Deutsch" nicht unter „German". */
-.sprachwahl { position: relative; flex: none; }
+/* Breite und Hoehe von Anfang an reservieren: Der Inhalt entsteht erst
+   durch Programmcode, und ohne Reservierung ruckte der ganze Kopf, sobald er
+   erschien — messbar als Layoutverschiebung. */
+.sprachwahl { position: relative; flex: none; min-width: 4.1rem; min-height: 2rem; }
 .sprachwahl__knopf {
     display: inline-flex; align-items: center; gap: 0.3rem;
     padding: 0.35rem 0.7rem;
@@ -1420,3 +1499,19 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 
 /* „Öffnet woanders" zeigt in einer RTL-Oberfläche nach oben links. */
 [dir="rtl"] [data-symbol="extern"] svg { transform: scaleX(-1); }
+
+/* Der Tonarm ragt 6 % ueber den Plattenspieler hinaus — richtig so, ein
+   Tonarm sitzt am Rand. In der arabischen Fassung steht der Teller ab
+   800 px aber in der RECHTEN Rasterspalte (erste Spalte = rechts), und der
+   Ueberstand fiel aus dem Fenster: gemessen 33 bis 41 px, abgeschnitten von
+   body overflow-x.
+
+   Nicht der Tonarm wandert — der bleibt rechts, in jedem Land. Der Teller
+   rueckt vom Rand ab. */
+@media (min-width: 800px) {
+    /* margin-inline-START, nicht -end. In RTL ist inline-start die RECHTE
+       Seite — und rechts steht der Teller. Mein erster Versuch schob ihn
+       nach links, also in die falsche Richtung; gemessen blieben 33 bis
+       41 px Ueberstand unveraendert stehen. */
+    [dir="rtl"] .plattenspieler { margin-inline-start: 3rem; }
+}
