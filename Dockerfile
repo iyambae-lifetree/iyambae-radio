@@ -44,7 +44,15 @@ USER 101
 EXPOSE 8080
 
 # Ein Container, der nicht antwortet, soll das melden, statt still zu stehen.
-# Auf / steht jetzt eine Umleitung — 302 ist hier der Erfolg, deshalb
-# --max-redirect=0 statt einer Prüfung auf 200.
+#
+# Geprüft wird /en/ und nicht /: Auf / steht eine Umleitung, und was BusyBox
+# daraus macht, hängt an Schaltern, die es nicht gibt. /en/ antwortet direkt
+# mit 200.
+#
+# KEIN --max-redirect: Alpine bringt BusyBox-wget mit, nicht GNU-wget, und
+# BusyBox kennt den Schalter nicht. Er stand hier zwei Fassungen lang und
+# machte den Container dauerhaft „unhealthy", während die Seite tadellos
+# antwortete — gemessen: 20 Fehlversuche in Folge, jedes Mal „unrecognized
+# option", nie eine einzige HTTP-Anfrage.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget -q -O /dev/null --max-redirect=0 http://127.0.0.1:8080/en/ || exit 1
+    CMD wget -q -O /dev/null http://127.0.0.1:8080/en/ || exit 1
