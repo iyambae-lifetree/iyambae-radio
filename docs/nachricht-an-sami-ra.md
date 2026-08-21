@@ -1,128 +1,151 @@
 # Nachricht an Sāmi-Ra
 
-*Entwurf vom 21.08.2026. Micha schickt sie, nicht ich.*
+*Zweiter Entwurf, 21.08.2026 mittags. Micha schickt sie, nicht ich.*
 
 ---
 
 Hallo Sāmi-Ra,
 
-deine Arbeit von heute Morgen ist angekommen — die Wühlkiste, die sechs neuen
-Sender und das Feld `kanal`. Ich habe alles übernommen, es läuft seit heute
-auf iyambae.fm. Zwei Dinge musst du dabei wissen, und eines davon ist
-unangenehm.
+**das Merge ist durch. Die Umbenennung kann losgehen.**
 
-## Was ich an deinem Katalog ergänzt habe
+`main` von MyRetuner trägt jetzt alles: die Einwilligung als eigener Baustein
+im portablen Kern, den PipeWire-Prototyp, den Windows-Kreuzbau, RTFFT statt
+Accelerate. `linux-pipewire` und `bruecke-einwilligung` sind vollständig
+enthalten — null Commits offen, null Konflikte. Deine drei neuen
+CIPCA-Commits aus `doku-und-planung` sind ebenfalls drin.
 
-Deine sechs neuen Sender hatten noch keine technischen Angaben — kein Format,
-keine Datenrate, kein CORS. Das letzte ist wichtiger, als es klingt: Ohne
-CORS-Freigabe darf der Browser den Ton nicht in den Web-Audio-Graphen holen,
-und dann kann die Seite nicht wirklich umstimmen, sondern nur über
-`playbackRate` raten. Ich habe alle sechs gemessen:
+Eine Sache musst du wissen, bevor du umbenennst: **`Sources/MyRetuner` ist
+nie übersetzt worden.** Der Commit `cf81534` trägt UNGEPRÜFT im Titel, und
+das gilt weiterhin. Statusdienst, Menüleiste und PopoverView sind macOS-eigen;
+auf diesem Rechner bricht `swift build` mit „no such module 'CoreAudio'" ab.
+Geprüft ist der portable Teil: **88 Tests, 436 Zusicherungen**, im
+swift:latest-Container unter Linux. Wer als Erster an einem Mac sitzt, sollte
+`Sources/MyRetuner` bauen, **bevor** die Bundle-Kennung wechselt — sonst
+mischen sich zwei Fehlerquellen.
 
-| Sender | Format | Datenrate | CORS |
-|---|---|---|---|
-| SomaFM Left Coast 70s | mp3 | 320 kbit/s | ja |
-| R.SA Ostrock | mp3 | 192 kbit/s | ja |
-| XRaydio 1 — Kaleidoscope | aac | 160 kbit/s | ja |
-| XRaydio 2 — Vintage Jukebox | aac | 160 kbit/s | ja |
-| Radio Cowabunga | aac | 128 kbit/s | ja |
-| Wraith Vision | mp3 | 128 kbit/s | ja |
+## Dein Vorschlag angenommen, mit einem Zusatz
 
-Alle sechs erreichbar, alle mit Freigabe.
+`main` als gemeinsamer Zweig: einverstanden. Du lieferst `data/sender.json`
+und `assets/logos`, alles andere ist meins.
 
-**Nachtrag, drei Stunden später:** Du hast inzwischen noch einmal nachgelegt —
-das Regal **Klassik** mit zwölf Sendern, und vor allem: Du hast den ganzen
-Katalog neu vermessen. Damit sind jetzt **128 von 146 Sendern im Browser
-umstimmbar**, vorher waren es 89 von 134. Bei 32 Sendern hast du CORS neu als
-vorhanden gemessen, bei dreien als fehlend. Deine Messung ist von heute,
-meine war von gestern — deine gilt. Klassik hat ein kühles Blaugrau bekommen.
+Der Zusatz: **Was live geht, kommt weiterhin aus `bruecke-einwilligung`**, bis
+wir den Code nach `main` bringen. Ich baue das Abbild aus diesem Zweig und
+rolle es direkt nach Azure aus; `main` ist noch der Katalogstand. Wenn du
+willst, führe ich beim nächsten Mal den Code nach `main` zusammen — dann ist
+es wirklich ein Zweig. Sag Bescheid, ich mache es nicht ungefragt.
 
-Zwei Logos hatte dein Stand nicht: **Caracas Salsa Brava** und
-**Bamtaare FM 103.4**. Ich hatte sie geholt, nachdem du deinen Stand gezogen
-hattest, deshalb konntest du sie nicht kennen. Sind wieder verknüpft.
+Dass dein Skript bei jedem Lauf ein leeres Repository angelegt und die
+Historie ersetzt hat, wusste ich nicht — danke fürs Nachsehen und fürs
+Umschreiben. Das Regelwerk auf `main` und der pre-push-Haken sind genau
+richtig.
 
-Und eine Kennung: SomaFM Underground 80s hieß bei mir `soma-u80s`, bei dir
-`somafm-u80s`. **Deine gilt** — du führst den Katalog, und zwei Kennungen für
-denselben Sender wären der Anfang von Ärger.
+## Zum Katalog: 146 in 11, und wir sind gleichauf
 
-Die Wühlkiste hat eine Regalfarbe bekommen, ein gedecktes Grün. Die Regalwand
-und die Trennkarte am Regalkopf brauchen sie; ohne wären das zehnte Fach und
-sein Reiter farblos. Wenn dir der Ton nicht gefällt, sag es — er steht an
-genau einer Stelle in `assets/lib/senderbild.mjs`.
+Ich habe deinen Stand vollständig übernommen, inklusive Klassik. Der Vergleich
+sagt: **identisch**, kein Sender und kein Feld unterschiedlich.
 
-## Das Unangenehme: dein `main` geht nicht live
+Zwei Dinge, die ich beigesteuert hatte und die du übernommen hast: die Logos
+für Caracas Salsa Brava und Bamtaare FM. Und deine Messung hat meine
+abgelöst — **128 von 146 im Browser umstimmbar** statt meiner 89 von 134. Bei
+32 Sendern hattest du CORS neu als vorhanden gemessen. Das ist der Wert, der
+darüber entscheidet, ob die Seite wirklich umstimmt oder nur rät.
 
-**Was auf iyambae.fm läuft, kommt nicht aus `main`.** Es kommt aus dem Zweig
-`bruecke-einwilligung`, und dort liegt inzwischen einiges, das `main` nicht
-kennt:
+Klassik hat ein kühles Blaugrau bekommen. Es ist das einzige Regal, das nicht
+von der Nacht, der Straße oder der Maschine erzählt; ein warmer Ton hätte es
+in die falsche Nachbarschaft gestellt.
 
-- Die Seite gibt es in **sieben Sprachen** unter `/de/ /en/ /fr/ /es/ /it/
-  /ja/ /ar/`, Arabisch von rechts nach links. Wer `iyambae.fm` aufruft, wird
-  anhand seines Browsers weitergeleitet.
-- Die Regale sind **waagerechte Reihen** wie bei Netflix, der Filter fragt
-  nach Anlässen statt nach Genres, und es gibt eine Regalwand mit Mosaiken
-  aus echten Covern.
-- **Impressum, Datenschutzerklärung und Verarbeitungsverzeichnis** stehen
-  unter `/recht/`. Die brauchten wir: Ohne Impressum lief die Seite in eine
-  Ordnungswidrigkeit, und die Schriften kamen von einem Google-Server, was
-  die IP jedes Besuchers dorthin schickte. Beides ist erledigt.
-- Ein **Anmeldedienst** ist gebaut und getestet, aber noch nicht ausgerollt.
+## `kanal`: du hattest recht, und ich hatte es falsch benutzt
 
-Dein `main` hat genau **einen Commit** — den ganzen Laden zusammengefasst —
-und er wurde heute mit `--force` über den Stand von gestern geschrieben. Das
-ist der Spiegel-Push aus deinem getrennten Arbeitsstand.
+Ich hatte es als Abzeichen neben den Ort gesetzt. Live stand da
+„Gamesboro Radio · Gamesboro Radio". Also wieder ausgebaut — und dann richtig
+eingebaut.
 
-Solange das so läuft, haben wir zwei Wahrheiten:
+**Zwölf Marken führen mehrere Kanäle**, SomaFM allein zweiundzwanzig. Auf
+einer Regalreihe stand damit zweiundzwanzigmal fett „SomaFM", und das Wort,
+das die Hüllen unterscheidet, lief als Anhängsel hinterher. Genau umgekehrt,
+als es sein sollte.
 
-- Du kuratierst gegen einen Stand, der nie ausgeliefert wird.
-- Ich baue auf einem Zweig, den dein Spiegel nicht kennt.
+Jetzt steht das Haus klein darüber und der Kanal groß:
 
-Deine sechs neuen Sender waren heute Morgen **nicht live**, obwohl du sie
-gepusht hattest. Erst weil ich nachgeschaut habe, sind sie es jetzt.
+    NTS                    SomaFM               24/7
+    1                      Vaporwaves           Vapor Funk
+    London · GB            San Francisco · US   Chicago · US
 
-## Zwei Wege, und du entscheidest
+Wie auf einer Plattenhülle das Label klein oben und der Titel groß in der
+Mitte steht.
 
-**Erstens: `main` wird der gemeinsame Zweig.** Dann muss der Spiegel-Push
-aufhören — kein `--force` mehr auf `main`. Du arbeitest weiter nur an
-`data/sender.json` und den Logos, ich am Rest, und wir stoßen uns nicht. Das
-ist mein Vorschlag, weil es die Arbeitsteilung abbildet, die wir ohnehin
-haben.
+**Eine Sache musste ich dabei anders machen, als du vielleicht erwartest:**
+Das Haus kommt aus dem **Namen**, nicht aus `betreiber`. Dort steht die Firma
+— „REGIOCAST" für 90s90s, „Zelerk" für 24/7, „RauteMusik GmbH". Ein Aufdruck
+„REGIOCAST / Eurodance" wäre schlechter als „90s90s Eurodance"; niemand sucht
+nach der Firma.
 
-**Zweitens: dein Spiegel behält `main`, mein Code zieht dauerhaft um.** Dann
-ist `main` dein Schaufenster, und wir brauchen eine feste Verabredung, wie
-dein Katalog zu mir kommt — sonst schaue ich weiter jeden Tag nach, ob du
-etwas gepusht hast.
+Der Name trägt die Marke selbst, und deine Konvention macht das erst möglich:
+**Alle 53 mehrkanaligen Namen enden auf ihren Kanal, ohne eine einzige
+Ausnahme.** Genau deshalb funktioniert die Zerlegung. Bitte halte das so —
+wenn ein Name je nicht auf seinen Kanal endet, fällt er still auf die alte
+Darstellung zurück, und niemand merkt es.
 
-Was ich in beiden Fällen brauche: **Sag mir Bescheid, wenn du am Katalog
-gearbeitet hast.** Eine Zeile reicht. Dann ist es innerhalb einer Stunde
-live, statt bis zum nächsten Zufall zu warten.
+Bei Häusern mit genau einem Kanal bleibt der Name, wie er ist. Die Zerlegung
+wäre dort eine Erfindung: „Kiosk" über „Radio" zu setzen macht aus einem
+Namen zwei.
 
-## Zum Feld `kanal` — ich habe es wieder ausgebaut, und hier ist der Grund
+## Die Bandbreite steht jetzt auf den Karten
 
-Du hast es angelegt und inzwischen bei allen 146 Sendern gefüllt. Ich hatte
-es als kleines Abzeichen vor den Ort gesetzt. Live sah das dann so aus:
+Du schreibst, auf Karten ab 256 kbit/s und bei verlustfreien stehe, was die
+Verbindung dauerhaft hergeben muss. Das ist Oberfläche, also meins — hier ist
+es, mit einer Einschränkung:
 
-    Gamesboro Radio
-    Gamesboro Radio · Gamesboro Radio · GB
+Bei verlustbehafteten Strömen steht die Zahl schon im Abzeichen. 320k heißt
+0,32 Mbit/s; eine zweite Zahl daneben wäre Wiederholung. Bei **FLAC** steht
+dort nur „FLAC", und da fehlt sie wirklich.
 
-Nachgezählt: Bei **93** Sendern ist `kanal` wörtlich der Name. Bei **53**
-steckt er darin — "NTS 1" → "1", "NTS Slow Focus" → "Slow Focus". Bei
-**null** Sendern steht dort etwas, das der Name nicht ohnehin sagt.
+Der Katalog hat für die vier verlustfreien Sender **keine** gemessene
+Datenrate — sie schwankt. Ich rechne sie deshalb als **Obergrenze** aus:
+Abtastrate × 16 Bit × 2 Kanäle. Das ergibt 1,4 Mbit/s bei 44,1 kHz und
+1,5 bei 48. FLAC liegt in der Praxis bei 60 bis 70 Prozent davon, mehr als
+der unkomprimierte Wert kann es nie werden. Eine ausgerechnete Obergrenze ist
+ehrlicher als eine erfundene Messung — und für „reicht meine Leitung?" ist
+die Obergrenze ohnehin die richtige Zahl.
 
-Das heißt nicht, dass das Feld falsch ist. Es ist eine **Zerlegung** des
-Namens, nicht eine Ergänzung: Betreiber plus Kanal. Und genau dafür wäre es
-richtig gut — nur nicht als Abzeichen.
+Auf der Karte steht deshalb „braucht bis 1,4 Mbit/s", nicht „braucht
+1,4 Mbit/s".
 
-**Was ich damit bauen könnte, wenn du magst:** Mehrere Kanäle desselben
-Senders zu einer Hülle zusammenfassen. Statt dreimal "NTS" nebeneinander
-stünde einmal NTS mit drei Kanälen darunter — wie ein Sender mit mehreren
-Programmen im Regal steht und nicht wie drei verschiedene Läden. Dafür
-bräuchte ich nur, dass `betreiber` bei zusammengehörenden Kanälen wirklich
-identisch ist. Bei NTS ist es das schon ("NTS Radio"), bei anderen habe ich
-es nicht geprüft.
+## Deine zwei offenen Punkte
 
-Sag Bescheid, ob du das willst. Bis dahin bleibt das Feld in den Daten
-stehen, es wird nur nicht angezeigt.
+**Das Jazzregal mit neun Sendern:** Ja, das ist dünn — zusammen mit Barrio
+und Rückspiegel das kleinste. Such gern nach. Wenn du sie hast, messe ich sie
+durch, so wie bei deinen sechs vom Vormittag.
+
+**Anmeldedienst und MyRetuner-Warteliste:** Ja, lass uns abstimmen, bevor
+doppelt gebaut wird. Was steht:
+
+Der Dienst ist gebaut und getestet — 174 Tests grün — aber **nicht
+ausgerollt**. Er läuft als Sidecar in der bestehenden Container App, rund
+4,75 € im Monat bei 1000 Nutzern. Anmeldung über E-Mail mit Einmalcode,
+Passwort, Google und Apple; Passkeys danach. Er speichert Konto, Merkliste
+und Hörverlauf in Azure Table Storage — und ausdrücklich **nicht**, welcher
+Sender läuft.
+
+Eine Warteliste für den Tuner wäre damit fast geschenkt: Adresse, Zeitpunkt,
+Einwilligung. Der Mailversand über Azure Communication Services steht ohnehin
+im Entwurf. Was ich **nicht** ohne Absprache dazubaue, ist ein Newsletter —
+der bräuchte eine eigene Einwilligung nach Art. 6 Abs. 1 lit. a und einen
+Double-Opt-in, und er würde die Rechtsgrundlage des Kontos aufweichen. Die
+steht heute auf lit. b, Vertrag, und das trägt nur, solange nichts
+Werbliches dazukommt.
+
+Sag, was du dir vorstellst, dann baue ich es einmal statt zweimal.
+
+## Was bei mir noch offen ist
+
+- **Michas Anschrift** fürs Impressum. Die Texte stehen unter `/recht/`,
+  aber mit Platzhaltern.
+- Die Rechtstexte gibt es nur auf Deutsch.
+- Neun Punkte gehören zu einem Anwalt. Der, den ich für den teuersten halte,
+  steht in keinem Datenschutzdokument: das **Leistungsschutzrecht bei der
+  Einbettung fremder Livestreams**, dazu die 110 Senderlogos aus fremden
+  Seiten.
 
 Viele Grüße
 Micha
@@ -132,9 +155,12 @@ Micha
 ## Anhang: was auf iyambae.fm gerade steht
 
 146 Sender in 11 Regalen, 110 mit eigenem Bild, 36 mit gestalteter Hülle.
-128 im Browser umstimmbar. Sieben Sprachen. Kein Sender ungeprüft, kein
+128 im Browser umstimmbar. Sieben Sprachen unter `/de/ /en/ /fr/ /es/ /it/
+/ja/ /ar/`, Arabisch von rechts nach links. Kein Sender ungeprüft, kein
 verwaistes Logo, keine fehlende Datei.
 
-Neu seit heute Mittag: Die waagerechten Reihen lassen sich jetzt mit der Maus
-ziehen — mit Nachlauf, und ohne dass ein Zug versehentlich einen Sender
-startet.
+Neu seit heute Mittag: Die Regalreihen lassen sich mit der Maus ziehen — mit
+Nachlauf, und ohne dass ein Zug versehentlich einen Sender startet. Das Haus
+steht klein über dem Kanal. Impressum, Datenschutz und
+Verarbeitungsverzeichnis stehen unter `/recht/`. Die Schriften kommen aus dem
+eigenen Haus statt von Google.
