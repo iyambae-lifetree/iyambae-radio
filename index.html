@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>IYAMBAE Radio — ein Plattenladen zum Zuhören</title>
-    <meta name="description" content="IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 129 Sender aus 29 Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Fundstücke, Freakshow, Rückspiegel.">
+    <title data-text="seite.titel">IYAMBAE Radio — ein Plattenladen zum Zuhören</title>
+    <meta name="description" data-inhalt="seite.beschreibung" content="IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 129 Sender aus 29 Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Fundstücke, Freakshow, Rückspiegel.">
     <meta name="theme-color" content="#F2B705">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -17,31 +17,31 @@
 
 <div class="ladeschirm" id="ladeschirm">
     <img class="ladeschirm__marke" src="assets/logo/iyambae-marke.svg" alt="" width="150" height="109">
-    <div class="ladeschirm__unter">Plattenladen wird aufgeschlossen …</div>
+    <div class="ladeschirm__unter" data-text="laden.hinweis">Plattenladen wird aufgeschlossen …</div>
 </div>
 
 <header class="kopf" id="kopf">
-    <a class="logo" href="#" aria-label="IYAMBAE Radio">
+    <a class="logo" href="#" data-aria="kopf.marke" aria-label="IYAMBAE Radio">
         <img src="assets/logo/iyambae-marke.svg" alt="" width="46" height="33">
         <span class="logo__wort">IYAMBAE<span>Radio</span></span>
     </a>
 
     <div class="kopf__suche">
         <span aria-hidden="true">🔍</span>
-        <input type="search" id="suche" placeholder="Sender, Ort, Stichwort …" aria-label="Sender suchen">
+        <input type="search" id="suche" data-platzhalter="kopf.suche.platzhalter" data-aria="kopf.suche.hinweis" placeholder="Sender, Ort, Stichwort …" aria-label="Sender suchen">
     </div>
 
     <div class="kopf__schalter">
-        <button class="schalter" id="knopf432" title="432-Hz-Stimmung ein- und ausschalten">
-            <span class="schalter__punkt"></span><span>432 Hz an</span>
+        <button class="schalter" id="knopf432" data-titel="kopf.432.titel" title="432-Hz-Stimmung ein- und ausschalten">
+            <span class="schalter__punkt"></span><span data-text="kopf.432.an">432 Hz an</span>
         </button>
-        <button class="schalter" id="knopfMyRetuner" hidden title="Fragt einmal nach, ob MyRetuner auf diesem Rechner läuft. Die App fragt dich dann um Erlaubnis.">
-            <span class="schalter__punkt"></span><span>Ich habe MyRetuner</span>
+        <button class="schalter" id="knopfMyRetuner" hidden data-titel="kopf.myretuner.titel" title="Fragt einmal nach, ob MyRetuner auf diesem Rechner läuft. Die App fragt dich dann um Erlaubnis.">
+            <span class="schalter__punkt"></span><span data-text="kopf.myretuner.knopf">Ich habe MyRetuner</span>
         </button>
         <a class="schalter schalter--werbung" id="knopfMyRetunerHolen" hidden
            href="https://apps.iyambae.fm" target="_blank" rel="noopener"
-           title="Diese Seite rät. MyRetuner misst.">
-            <span>Dauerhaft in 432 Hz — MyRetuner</span>
+           data-titel="kopf.holen.titel" title="Diese Seite rät. MyRetuner misst.">
+            <span data-text="kopf.holen.knopf">Dauerhaft in 432 Hz — MyRetuner</span>
         </a>
         <span class="messung" id="myRetunerMessung" hidden></span>
     </div>
@@ -76,35 +76,35 @@
         </svg>
     </div>
     <div class="hero__text">
-        <p class="hero__guete" id="heroGuete">bereit</p>
-        <h1 class="hero__name" id="heroName">Willkommen</h1>
-        <p class="hero__ort" id="heroOrt">129 Sender aus 29 Ländern, in neun Regalen</p>
-        <p class="hero__kaertchen" id="heroKaertchen">Leg eine Platte auf — oder lass die Nadel fallen und sieh, wo sie landet.</p>
+        <p class="hero__guete" id="heroGuete" data-text="hero.guete.bereit">bereit</p>
+        <h1 class="hero__name" id="heroName" data-text="hero.name.start">Willkommen</h1>
+        <p class="hero__ort" id="heroOrt" data-text="hero.ort.start">129 Sender aus 29 Ländern, in neun Regalen</p>
+        <p class="hero__kaertchen" id="heroKaertchen" data-text="hero.kaertchen.start">Leg eine Platte auf — oder lass die Nadel fallen und sieh, wo sie landet.</p>
         <div class="hero__knoepfe">
-            <button class="knopf knopf--gross" id="heroPlay"><span id="heroPlayIcon">▶</span> Abspielen</button>
-            <button class="knopf" id="heroFavorit">♡ Merken</button>
-            <a class="knopf knopf--leise" id="heroLink" href="#" target="_blank" rel="noopener">Senderseite ↗</a>
+            <button class="knopf knopf--gross" id="heroPlay" data-text="hero.knopf.abspielen"><span id="heroPlayIcon">▶</span> Abspielen</button>
+            <button class="knopf" id="heroFavorit" data-text="hero.knopf.merken">♡ Merken</button>
+            <a class="knopf knopf--leise" id="heroLink" href="#" target="_blank" rel="noopener" data-text="allgemein.senderseite">Senderseite ↗</a>
         </div>
     </div>
 </section>
 
-<section class="griffe" aria-label="Zugänge">
+<section class="griffe" data-aria="griff.bereich" aria-label="Zugänge">
     <button class="griff griff--vertraut" id="griffMeinePlatten">
         <span class="griff__icon" aria-hidden="true">🗃</span>
-        <span class="griff__titel">Meine Platten</span>
-        <span class="griff__unter" id="griffMeineZahl">noch leer</span>
+        <span class="griff__titel" data-text="griff.meine.titel">Meine Platten</span>
+        <span class="griff__unter" id="griffMeineZahl" data-text="griff.meine.leer">noch leer</span>
     </button>
     <button class="griff griff--zufall" id="griffNadel">
         <span class="griff__icon" aria-hidden="true">💿</span>
-        <span class="griff__titel">Nadel fallen lassen</span>
-        <span class="griff__unter">Zufall aus neun Regalen</span>
+        <span class="griff__titel" data-text="griff.nadel.titel">Nadel fallen lassen</span>
+        <span class="griff__unter" data-text="griff.nadel.unter">Zufall aus neun Regalen</span>
     </button>
 </section>
 
-<section class="tipp" id="tipp" aria-label="Sender der Woche" hidden>
+<section class="tipp" id="tipp" data-aria="tipp.bereich" aria-label="Sender der Woche" hidden>
     <div class="tipp__marke">
         <span class="tipp__stern" aria-hidden="true">★</span>
-        <span id="tippWoche">Sender der Woche</span>
+        <span id="tippWoche" data-text="tipp.marke">Sender der Woche</span>
     </div>
     <div class="tipp__inhalt">
         <div class="tipp__text">
@@ -112,38 +112,38 @@
             <p class="tipp__ort" id="tippOrt"></p>
             <p class="tipp__kaertchen" id="tippKaertchen"></p>
             <div class="tipp__knoepfe">
-                <button class="knopf knopf--gross" id="tippPlay">▶ Auflegen</button>
-                <a class="knopf knopf--leise" id="tippLink" href="#" target="_blank" rel="noopener">Senderseite ↗</a>
+                <button class="knopf knopf--gross" id="tippPlay" data-text="tipp.knopf.auflegen">▶ Auflegen</button>
+                <a class="knopf knopf--leise" id="tippLink" href="#" target="_blank" rel="noopener" data-text="allgemein.senderseite">Senderseite ↗</a>
             </div>
         </div>
         <div class="tipp__dazu">
-            <p class="tipp__dazuTitel">Steht im selben Regal</p>
+            <p class="tipp__dazuTitel" data-text="tipp.dazu.titel">Steht im selben Regal</p>
             <div class="tipp__dazuListe" id="tippDazu"></div>
         </div>
     </div>
 </section>
 
-<section class="auslage" id="auslage" aria-label="Auslage">
+<section class="auslage" id="auslage" data-aria="auslage.bereich" aria-label="Auslage">
     <div class="auslage__kopf">
-        <h2 class="auslage__titel">Auf dem Tisch</h2>
-        <button class="knopf knopf--leise" id="auslageNeu">Anderes zeigen</button>
+        <h2 class="auslage__titel" data-text="auslage.titel">Auf dem Tisch</h2>
+        <button class="knopf knopf--leise" id="auslageNeu" data-text="auslage.knopf.neu">Anderes zeigen</button>
     </div>
     <div class="auslage__raster" id="auslageRaster"></div>
 </section>
 
 <div class="filter">
-    <div class="filter__guete" role="group" aria-label="Nach Klangqualität filtern">
-        <span class="filter__titel">Klang</span>
-        <button class="guete-knopf" data-guete="verlustfrei">verlustfrei &amp; Opus <span>11</span></button>
-        <button class="guete-knopf" data-guete="hoch">ab 256 kbit/s <span>45</span></button>
+    <div class="filter__guete" role="group" data-aria="filter.guete.bereich" aria-label="Nach Klangqualität filtern">
+        <span class="filter__titel" data-text="filter.guete.titel">Klang</span>
+        <button class="guete-knopf" data-guete="verlustfrei" data-text="filter.guete.verlustfrei">verlustfrei &amp; Opus <span>11</span></button>
+        <button class="guete-knopf" data-guete="hoch" data-text="filter.guete.hoch">ab 256 kbit/s <span>45</span></button>
     </div>
     <!-- Regale kommen aus data/sender.json, damit ein neues hier nichts kostet. -->
-    <div class="filter__regale" role="group" aria-label="Nach Regal filtern">
-        <span class="filter__titel">Regal</span>
+    <div class="filter__regale" role="group" data-aria="filter.regal.bereich" aria-label="Nach Regal filtern">
+        <span class="filter__titel" data-text="filter.regal.titel">Regal</span>
         <span id="regalFilter"></span>
     </div>
-    <div class="filter__stichwort" role="group" aria-label="Nach Stichwort filtern">
-        <span class="filter__titel">Stichwort</span>
+    <div class="filter__stichwort" role="group" data-aria="filter.etikett.bereich" aria-label="Nach Stichwort filtern">
+        <span class="filter__titel" data-text="filter.etikett.titel">Stichwort</span>
         <span class="etiketten" id="etiketten"></span>
     </div>
     <div class="filter__stand" id="filterStand" hidden></div>
@@ -152,7 +152,7 @@
 <main class="regale" id="regale"></main>
 
 <footer class="fuss">
-    <p class="fuss__hinweis">
+    <p class="fuss__hinweis" data-html="fuss.hinweis">
         Diese Seite <em>rät</em>. Sie nimmt an, jeder Sender sei auf 440 Hz gestimmt, und
         zieht pauschal um 1,8 Prozent herunter. Bei einem Live-Mitschnitt, einer
         historischen Einspielung oder einem ohnehin auf 432 produzierten Stück verstimmt
@@ -161,35 +161,35 @@
         Stimmungen als 432 Hz. Läuft die App auf diesem Rechner, erkennt die Seite sie
         von selbst und überlässt ihr das Feld.
     </p>
-    <p class="fuss__powered">
+    <p class="fuss__powered" data-text="fuss.powered">
         powered by <a href="https://apps.iyambae.fm" rel="noopener">MyRetuner</a>
-        <span class="fuss__test">im offenen Test</span>
+        <span class="fuss__test" data-text="fuss.test">im offenen Test</span>
     </p>
 </footer>
 
 <div class="spieler" id="spieler">
     <div class="spieler__info">
-        <div class="spieler__name" id="barName">Kein Sender</div>
+        <div class="spieler__name" id="barName" data-text="spieler.kein">Kein Sender</div>
         <div class="spieler__regal" id="barRegal"></div>
     </div>
     <div class="spieler__mitte">
-        <button class="knopf-rund" id="barPlay" aria-label="Abspielen oder pausieren"><span id="barPlayIcon">▶</span></button>
+        <button class="knopf-rund" id="barPlay" data-aria="spieler.knopf.hinweis" aria-label="Abspielen oder pausieren"><span id="barPlayIcon">▶</span></button>
         <div class="spieler__status">
             <span class="status-punkt" id="statusPunkt"></span>
-            <span id="statusText">Bereit</span>
+            <span id="statusText" data-text="status.bereit">Bereit</span>
         </div>
     </div>
     <div class="spieler__rechts">
         <canvas id="miniVisualizer" width="160" height="48" aria-hidden="true"></canvas>
-        <input type="range" id="lautstaerke" min="0" max="1" step="0.01" value="0.7" aria-label="Lautstärke">
+        <input type="range" id="lautstaerke" min="0" max="1" step="0.01" value="0.7" data-aria="spieler.lautstaerke" aria-label="Lautstärke">
     </div>
 </div>
 
-<nav class="handy-leiste" aria-label="Navigation">
-    <button data-ziel="laden"><span aria-hidden="true">🗄</span>Laden</button>
-    <button data-ziel="meine"><span aria-hidden="true">🗃</span>Meine</button>
-    <button data-ziel="nadel"><span aria-hidden="true">💿</span>Zufall</button>
-    <button data-ziel="suche"><span aria-hidden="true">🔍</span>Suche</button>
+<nav class="handy-leiste" data-aria="nav.bereich" aria-label="Navigation">
+    <button data-ziel="laden" data-text="nav.laden"><span aria-hidden="true">🗄</span>Laden</button>
+    <button data-ziel="meine" data-text="nav.meine"><span aria-hidden="true">🗃</span>Meine</button>
+    <button data-ziel="nadel" data-text="nav.zufall"><span aria-hidden="true">💿</span>Zufall</button>
+    <button data-ziel="suche" data-text="nav.suche"><span aria-hidden="true">🔍</span>Suche</button>
 </nav>
 
 <div class="meldungen" id="meldungen" role="status" aria-live="polite"></div>
