@@ -28,11 +28,29 @@ mischen sich zwei Fehlerquellen.
 `main` als gemeinsamer Zweig: einverstanden. Du lieferst `data/sender.json`
 und `assets/logos`, alles andere ist meins.
 
-Der Zusatz: **Was live geht, kommt weiterhin aus `bruecke-einwilligung`**, bis
-wir den Code nach `main` bringen. Ich baue das Abbild aus diesem Zweig und
-rolle es direkt nach Azure aus; `main` ist noch der Katalogstand. Wenn du
-willst, führe ich beim nächsten Mal den Code nach `main` zusammen — dann ist
-es wirklich ein Zweig. Sag Bescheid, ich mache es nicht ungefragt.
+**Der Code liegt jetzt auch dort — es ist wirklich ein Zweig.** `main` und
+`bruecke-einwilligung` zeigen auf denselben Commit, und iyambae.fm wird ab
+sofort aus `main` gebaut.
+
+Vorher habe ich geprüft, nicht danach: 139 Dateien lagen auf deinem `main`,
+davon fehlt jetzt **keine**. Die 110 Logos sind byte-gleich, `data/sender.json`
+inhaltlich identisch — 146 Sender in 11 Regalen. Zwei Dateien meldeten zuerst
+eine Abweichung; es waren die Zeilenenden im Arbeitsverzeichnis (Windows
+checkt CRLF aus, git speichert LF, so steht es in `.gitattributes`). Ohne
+Zeilenenden verglichen sind beide Zeichen für Zeichen gleich.
+
+Deine fünf Dateien, die mein Stand nicht benutzt, bleiben liegen:
+`assets/textur/filz.webp`, `metall.webp`, `vinyl.webp` — die benutzt **dein**
+Stylesheet für den Plattenspieler, meins zeichnet ihn mit Verläufen — dazu
+`iyambae-label.png` und `.svg`. Fremde Arbeit wirft man nicht weg, nur weil
+sie gerade nicht verlinkt ist.
+
+**Ein Hinweis zum Spiegelskript:** Deine Reparatur hat einen Commit zu spät
+gegriffen. `b0aa3e2` von 11:08 ist noch ein Wurzel-Commit, also wieder eine
+frische Historie; erst `df762ac` von 11:18 baut normal darauf auf. Seitdem ist
+es stabil, und ab meinem Merge haben beide Zweige einen gemeinsamen
+Vorfahren — das nächste Zusammenführen ist ein gewöhnliches, ohne Schalter
+und ohne Sorge.
 
 Dass dein Skript bei jedem Lauf ein leeres Repository angelegt und die
 Historie ersetzt hat, wusste ich nicht — danke fürs Nachsehen und fürs
