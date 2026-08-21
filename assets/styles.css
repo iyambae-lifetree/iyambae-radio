@@ -810,6 +810,38 @@ body.spielt .platte { animation-play-state: running; }
     padding-block-end: 0.4rem;
 }
 .regal__reihe::-webkit-scrollbar { display: none; }
+
+/* Der Zeiger sagt, dass man hineingreifen darf. `grab` ist die Geste, die
+   jeder aus Karten und Bildbetrachtern kennt — und sie steht nur da, wo es
+   einen Zeiger gibt und wirklich etwas zu schieben ist. */
+@media (hover: hover) and (pointer: fine) {
+    .regal__reihe { cursor: grab; }
+    .regal__reihe.wird-gezogen { cursor: grabbing; }
+    /*
+     Waehrend des Zuges rastet nichts ein.
+
+     scroll-snap und Ziehen arbeiten sonst gegeneinander: Der Zug schiebt,
+     das Einrasten zieht auf die naechste Huellenkante zurueck. Gemessen kam
+     dabei immer exakt EINE Huellenbreite heraus — 214 px bei 200 px Karte
+     und 14 px Luecke — egal wie weit man zog. Es fuehlte sich an, als sei
+     die Reihe verklemmt.
+
+     Die Klasse bleibt bis zum Stillstand des Nachlaufs; danach rastet die
+     Reihe wieder ein, und die Pfeilknoepfe treffen weiter die Kanten.
+    */
+    .regal__reihe.wird-gezogen,
+    .regal__reihe.rollt-aus { scroll-snap-type: none; }
+    /* Waehrend des Zuges nichts auswaehlen und nichts als Bild wegziehen.
+       Ohne das markiert die Maus Text und schleift Cover hinter sich her —
+       beides sieht aus wie ein Fehler. */
+    .regal__reihe.wird-gezogen,
+    .regal__reihe.wird-gezogen * {
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+    /* Der Zeiger bleibt ein Zeiger, wo etwas anderes gemeint ist. */
+    .regal__reihe :is(button, a) { cursor: pointer; }
+}
 .regal__reihe > .karte {
     flex: 0 0 clamp(9.2rem, 40vw, 12.5rem);
     scroll-snap-align: start;

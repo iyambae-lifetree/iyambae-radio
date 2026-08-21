@@ -729,8 +729,172 @@ class UI {
    Die angeschnittene Huelle am Rand bleibt sichtbar und sagt, dass es
    weitergeht.
   */
+  /*
+   Mit der Maus durch eine Reihe ziehen.
+
+   Auf dem Handy wischt man, und der Browser scrollt. Mit der Maus gab es
+   bisher nur die beiden Pfeilknoepfe — und wer eine Kiste vor sich hat,
+   greift hinein und schiebt. Genau das fehlte.
+
+   DREI DINGE MACHEN DEN UNTERSCHIED ZWISCHEN "GEHT" UND "FUEHLT SICH RICHTIG
+   AN", und alle drei sind hier gemeint:
+
+   1. Ein Zug darf nicht als Klick enden. Wer 200 Pixel schiebt und loslaesst,
+      hat NICHT auf die Huelle unter dem Zeiger getippt — sonst spielt beim
+      Blaettern staendig ein Sender an. Deshalb faengt ein Zug ueber der
+      Schwelle den naechsten Klick ab, einmal, in der Erfassungsphase.
+
+   2. Es muss nachlaufen. Ein Zug, der beim Loslassen sofort steht, fuehlt
+      sich an, als klemmte etwas. Aus der Geschwindigkeit der letzten
+      Bewegungen wird ein Schwung berechnet, der ausrollt — dieselbe Sache,
+      die ein Handy von selbst tut.
+
+   3. Waagerecht ja, senkrecht nein. Wer die Seite herunterscrollen will und
+      dabei ueber einer Reihe startet, darf nicht in ihr haengenbleiben. Die
+      Richtung wird aus den ersten Pixeln bestimmt und dann festgehalten.
+
+   Pointer Events statt mousedown/touchstart: Ein Satz Ereignisse fuer Maus,
+   Finger und Stift. setPointerCapture sorgt dafuer, dass der Zug auch dann
+   weiterlaeuft, wenn der Zeiger die Reihe verlaesst — ohne das reisst die
+   Bewegung am Rand ab, und genau am Rand zieht man am haeufigsten.
+  */
+  _machZiehbar(reihe) {
+    if (reihe.dataset.ziehbar) return;
+    reihe.dataset.ziehbar = '1';
+
+    const SCHWELLE = 6;        // Pixel, ab denen aus einem Klick ein Zug wird
+    const REIBUNG = 0.94;      // je Bild; darunter wirkt es schmierig
+    const MINDESTSCHWUNG = 0.4;
+
+    let zieht = false, entschieden = false, achse = null;
+    let startX = 0, startY = 0, startScroll = 0;
+    let letzteZeit = 0, letztesX = 0, schwung = 0, lauf = 0;
+    let gezogen = 0;
+
+    const halt = () => {
+      cancelAnimationFrame(lauf); lauf = 0;
+      reihe.classList.remove('rollt-aus');
+    };
+
+    const rollAus = () => {
+      if (Math.abs(schwung) < MINDESTSCHWUNG) {
+        halt();
+        reihe.classList.remove('rollt-aus');
+        // Erst JETZT das weiche Scrollen zurueckgeben — es gehoert den
+        // Pfeilknoepfen. Gab man es schon beim Loslassen zurueck, animierte
+        // der Browser jede einzelne Zuweisung dieser Schleife und arbeitete
+        // gegen sie: Gemessen kam null Nachlauf heraus, obwohl der Schwung
+        // stimmte.
+        reihe.style.scrollBehavior = '';
+        return;
+      }
+      reihe.scrollLeft -= schwung;
+      schwung *= REIBUNG;
+      lauf = requestAnimationFrame(rollAus);
+    };
+
+    reihe.addEventListener('pointerdown', (e) => {
+      /*
+       Nur die Hauptzeigertaste. ABER: auch ueber einem Knopf.
+
+       Zuerst hatte ich Knoepfe ausgenommen — wer aufs Herz zielt, will
+       merken. Gemessen hat sich das als schlechter erwiesen: Der
+       Abspielknopf erscheint beim Ueberfahren mitten auf dem Cover, und ein
+       Zug, der zufaellig dort beginnt, tat gar nichts. Die Reihe fuehlte
+       sich stellenweise kaputt an, ohne erkennbare Regel.
+
+       Wer eine Kiste greift, greift DIE KISTE, nicht den Knopf darunter.
+       Deshalb faengt der Zug ueberall an; ob es ein Klick oder ein Zug war,
+       entscheidet erst die Bewegung. Der Knopf bleibt bedienbar, weil ein
+       Druck ohne Bewegung nie zum Zug wird und der Klick dann normal
+       durchgeht — und ein Zug seinen Klick verschluckt.
+      */
+      if (e.button !== 0) return;
+      // Finger und Stift scrollen nativ besser, als wir es nachbauen koennen.
+      if (e.pointerType !== 'mouse') return;
+
+      halt();
+      zieht = true; entschieden = false; achse = null; gezogen = 0;
+      startX = e.clientX; startY = e.clientY;
+      startScroll = reihe.scrollLeft;
+      letzteZeit = performance.now(); letztesX = e.clientX; schwung = 0;
+    });
+
+    reihe.addEventListener('pointermove', (e) => {
+      if (!zieht) return;
+      const dx = e.clientX - startX, dy = e.clientY - startY;
+
+      if (!entschieden) {
+        if (Math.abs(dx) < SCHWELLE && Math.abs(dy) < SCHWELLE) return;
+        // Einmal festgelegt, bleibt es dabei — sonst kippt die Bewegung
+        // mitten im Zug von waagerecht auf senkrecht.
+        achse = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+        entschieden = true;
+        if (achse === 'y') { zieht = false; return; }
+        reihe.setPointerCapture(e.pointerId);
+        reihe.classList.add('wird-gezogen');
+        // Waehrend des Zuges kein weiches Scrollen: Das ist fuer die
+        // Pfeilknoepfe gedacht und macht den Zug traege.
+        reihe.style.scrollBehavior = 'auto';
+      }
+
+      gezogen = Math.abs(dx);
+      reihe.scrollLeft = startScroll - dx;
+
+      const jetzt = performance.now();
+      const spanne = jetzt - letzteZeit;
+      if (spanne > 0) {
+        // Geglaettet, damit ein einzelnes ruckeliges Ereignis den Schwung
+        // nicht verreisst.
+        const roh = (e.clientX - letztesX) / spanne * 16;
+        schwung = schwung * 0.7 + roh * 0.3;
+        letzteZeit = jetzt; letztesX = e.clientX;
+      }
+      e.preventDefault();
+    });
+
+    const loslassen = (e) => {
+      if (!zieht) return;
+      zieht = false;
+      reihe.classList.remove('wird-gezogen');
+      if (reihe.hasPointerCapture?.(e.pointerId)) reihe.releasePointerCapture(e.pointerId);
+
+      if (gezogen > SCHWELLE) {
+        /*
+         Den naechsten Klick verschlucken — aber nur diesen einen, und nur
+         wenn wirklich gezogen wurde. In der Erfassungsphase, weil der Klick
+         sonst zuerst bei der Karte ankommt und ein Sender anspielt.
+        */
+        const schluck = (k) => { k.stopPropagation(); k.preventDefault(); };
+        reihe.addEventListener('click', schluck, { capture: true, once: true });
+        // Kam gar kein Klick (Zug endete ausserhalb), muss der Horcher wieder
+        // weg — sonst frisst er irgendwann einen echten.
+        setTimeout(() => reihe.removeEventListener('click', schluck, true), 0);
+        // Das Einrasten bleibt aus, bis der Nachlauf steht — sonst zieht es
+        // die Reihe schon im ersten Bild wieder auf die Kartenkante.
+        reihe.classList.add('rollt-aus');
+        rollAus();
+      } else {
+        // Kein Zug, also auch kein Nachlauf — dann gehoert das weiche
+        // Scrollen sofort zurueck.
+        reihe.style.scrollBehavior = '';
+      }
+      gezogen = 0;
+    };
+
+    reihe.addEventListener('pointerup', loslassen);
+    reihe.addEventListener('pointercancel', loslassen);
+    // Ein neuer Zug hebt das Nachlaufen auf — sonst zieht man gegen den
+    // eigenen Schwung.
+    reihe.addEventListener('wheel', halt, { passive: true });
+  }
+
   _verdrahteReihen(behaelter) {
     for (const reihe of behaelter.querySelectorAll('.regal__reihe')) {
+      // Ziehen gilt fuer JEDE Reihe, auch fuer die ohne Pfeilknoepfe —
+      // Verlauf und Auslage haben keine, ziehen soll man dort trotzdem.
+      this._machZiehbar(reihe);
+
       const kopf = reihe.closest('.regal')?.querySelector('.regal__blaettern');
       if (!kopf) continue;
 

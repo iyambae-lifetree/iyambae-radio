@@ -40,6 +40,11 @@ export const REGALTON = {
   // nebeneinander sonst ineinanderlaufen — und weil Barrio das einzige
   // andere Gruen ist und weit genug weg steht.
   wuehlkiste:    '#7FA65C',
+  // Sāmi-Ras elftes Regal, angelegt am 21.08.2026: zwoelf Klassiksender,
+  // von BR-Klassik bis WQXR. Ein kuehles Blaugrau — Klassik ist das einzige
+  // Regal, das nicht von der Nacht, der Strasse oder der Maschine erzaehlt,
+  // und ein warmer Ton haette es in die falsche Nachbarschaft gestellt.
+  klassik:       '#8FA8C8',
 };
 
 export function regalton(sender) {

@@ -51,6 +51,12 @@
       "beschreibung": "Regionales und Kurioses aus aller Welt."
     },
     {
+      "id": "klassik",
+      "name": "Klassik",
+      "icon": "🎼",
+      "beschreibung": "Das Regal, das am meisten von der Verbindung abhängt: Klassik verliert beim Komprimieren mehr als andere Musik, weil leise Stellen und Obertöne zuerst gehen. Verlustfreie Klassikströme sind selten — was ein Sender liefert, steht auf seiner Karte, und wo es ins Gewicht fällt, auch die nötige Verbindung."
+    },
+    {
       "id": "jazz",
       "name": "Jazz & Verwandtes",
       "icon": "🎷",
@@ -84,8 +90,8 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/nts-1.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "1"
@@ -108,8 +114,8 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/nts-2.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "2"
@@ -133,8 +139,8 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/nts-slow-focus.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "Slow Focus"
@@ -158,8 +164,9 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "dublab"
     },
     {
       "id": "dublab-bcn",
@@ -179,8 +186,9 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": false,
+      "kanal": "Barcelona"
     },
     {
       "id": "dublab-de",
@@ -201,10 +209,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/dublab-de.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Deutschland"
     },
     {
       "id": "cashmere",
@@ -225,10 +234,11 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/cashmere.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Cashmere Radio"
     },
     {
       "id": "kiosk-radio",
@@ -245,13 +255,14 @@
       "homepage": "https://kioskradio.com",
       "kaertchen": "Ein umgebauter Zeitungskiosk im Brüsseler Warandepark, aus dem seit 2017 live gesendet wird — DJs stehen buchstäblich in einer Bude im Stadtpark. Die belgische Szene ist eigenwilliger als die britische, und hier hört man warum.",
       "codec": "aac",
-      "bitrate": 193,
+      "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/kiosk-radio.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Kiosk Radio"
     },
     {
       "id": "refuge-worldwide",
@@ -272,10 +283,11 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/refuge-worldwide.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Refuge Worldwide"
     },
     {
       "id": "rinse-uk",
@@ -295,10 +307,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/rinse-uk.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Rinse FM"
     },
     {
       "id": "rinse-france",
@@ -317,8 +330,9 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false
+      "geprueft_am": "2026-08-21",
+      "cors": false,
+      "kanal": "Rinse France"
     },
     {
       "id": "kool-fm",
@@ -338,10 +352,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/kool-fm.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Kool FM"
     },
     {
       "id": "wfmu",
@@ -359,13 +374,14 @@
       "homepage": "https://wfmu.org",
       "kaertchen": "Der dienstälteste Freeform-Sender der USA, seit 1958 hörerfinanziert und ohne jede Musikredaktion — jeder Moderator spielt, was er will. Legendär für Sendungen, in denen auf Free Jazz eine Werbeplatte von 1962 folgt.",
       "codec": "aac",
-      "bitrate": 256,
+      "bitrate": 265,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "cors": false,
       "logo": "assets/logos/wfmu.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "WFMU"
     },
     {
       "id": "yammat-fm",
@@ -382,13 +398,14 @@
       "homepage": "https://yammat.fm",
       "kaertchen": "Ein kroatischer Independent-Sender, der mit 320 kbit/s AAC sendet und damit besser klingt als die meisten großen Häuser. Programmatisch quer durch Funk, Soul, Balkan-Elektronik und alles, was in Zagreb gerade interessant ist.",
       "codec": "aac",
-      "bitrate": 321,
+      "bitrate": 322,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/yammat-fm.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Yammat FM"
     },
     {
       "id": "neu-radio",
@@ -408,10 +425,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/neu-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "NEU Radio"
     },
     {
       "id": "radio-nova",
@@ -431,10 +449,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/radio-nova.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Radio Nova"
     },
     {
       "id": "fip",
@@ -454,10 +473,11 @@
       "bitrate": 195,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/fip.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "FIP"
     },
     {
       "id": "rp-main-flac",
@@ -477,7 +497,7 @@
       "bitrate": null,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/rp-main-flac.webp",
       "logoQuelle": "apple-touch-icon",
@@ -501,7 +521,7 @@
       "bitrate": null,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/rp-world-flac.webp",
       "logoQuelle": "apple-touch-icon",
@@ -525,10 +545,11 @@
       "bitrate": 320,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/worldwide-fm.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Worldwide FM"
     },
     {
       "id": "hirschmilch-techno",
@@ -549,7 +570,7 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/hirschmilch-techno.webp",
       "logoQuelle": "apple-touch-icon",
@@ -573,7 +594,7 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/hirschmilch-electronic.webp",
       "logoQuelle": "apple-touch-icon",
@@ -598,7 +619,7 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/hirschmilch-hypnotic.webp",
       "logoQuelle": "apple-touch-icon",
@@ -622,7 +643,7 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/hirschmilch-progressive.webp",
       "logoQuelle": "apple-touch-icon",
@@ -646,10 +667,11 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/bassdrive.webp",
-      "logoQuelle": "direkt"
+      "logoQuelle": "direkt",
+      "kanal": "Bassdrive"
     },
     {
       "id": "brokenbeats",
@@ -666,13 +688,14 @@
       "homepage": "https://brokenbeats.net",
       "kaertchen": "Ein ukrainischer Sender für atmosphärischen Drum and Bass, der mit über 300 kbit/s AAC sendet — technisch einer der besten Streams im ganzen Katalog. Läuft seit Jahren durch, auch unter Bedingungen, unter denen andere längst abgeschaltet hätten.",
       "codec": "aac",
-      "bitrate": 279,
+      "bitrate": 340,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/brokenbeats.webp",
-      "logoQuelle": "direkt"
+      "logoQuelle": "direkt",
+      "kanal": "Brokenbeats"
     },
     {
       "id": "frisky",
@@ -691,8 +714,9 @@
       "bitrate": 96,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Frisky Radio"
     },
     {
       "id": "uzic-techno",
@@ -709,13 +733,14 @@
       "homepage": "https://www.uzic.ch",
       "kaertchen": "Ein Schweizer Sender, der ausschließlich Minimal und Techno spielt und dabei die reduzierte, fast karge Spielart bevorzugt. Wenig Aufbau, wenig Drama — dafür Stücke, die man sonst nur auf Zwölfzöllern findet.",
       "codec": "aac",
-      "bitrate": 129,
+      "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/uzic-techno.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "UZIC Techno & Minimal"
     },
     {
       "id": "fm4",
@@ -735,10 +760,11 @@
       "bitrate": 192,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/fm4.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "FM4"
     },
     {
       "id": "ukbass",
@@ -757,10 +783,11 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/ukbass.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "UK Bass Radio"
     },
     {
       "id": "atmospheric-dnb",
@@ -777,13 +804,14 @@
       "homepage": "https://brokenbeats.net",
       "kaertchen": "Der weichere Zwillingskanal von Brokenbeats: Liquid und atmosphärischer Drum and Bass in derselben hohen Klangqualität. Der Kanal für die Stunden, in denen die harte Variante zu viel wäre.",
       "codec": "aac",
-      "bitrate": 280,
+      "bitrate": 323,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/atmospheric-dnb.webp",
-      "logoQuelle": "direkt"
+      "logoQuelle": "direkt",
+      "kanal": "Atmospheric DnB Source"
     },
     {
       "id": "res-radio",
@@ -803,10 +831,11 @@
       "bitrate": 320,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/res-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "RES"
     },
     {
       "id": "isekoi-chill",
@@ -826,10 +855,11 @@
       "bitrate": null,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/isekoi-chill.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Isekoi Chill Zone"
     },
     {
       "id": "dnbfm",
@@ -849,10 +879,11 @@
       "bitrate": 320,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/dnbfm.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "DNB FM"
     },
     {
       "id": "soma-dronezone",
@@ -873,10 +904,11 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-dronezone.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Drone Zone"
     },
     {
       "id": "soma-deepspace",
@@ -897,10 +929,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-deepspace.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Deep Space One"
     },
     {
       "id": "soma-groovesalad",
@@ -920,10 +953,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-groovesalad.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Groove Salad"
     },
     {
       "id": "etx-fm",
@@ -943,10 +977,11 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/etx-fm.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "ETX.FM"
     },
     {
       "id": "camp-radio",
@@ -966,10 +1001,11 @@
       "bitrate": null,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/camp-radio.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "CAMP Radio"
     },
     {
       "id": "substrate-radio",
@@ -989,10 +1025,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/substrate-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Substrate Radio"
     },
     {
       "id": "deep-in-space",
@@ -1012,10 +1049,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/deep-in-space.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Deep In Space"
     },
     {
       "id": "newage-flac",
@@ -1035,10 +1073,11 @@
       "bitrate": null,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/newage-flac.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "1st Greek New Age Radio"
     },
     {
       "id": "ambi-nature",
@@ -1059,10 +1098,11 @@
       "bitrate": 320,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/ambi-nature.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "Ambi Nature Radio"
     },
     {
       "id": "spokoynoe",
@@ -1082,10 +1122,11 @@
       "bitrate": 320,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/spokoynoe.webp",
-      "logoQuelle": "direkt"
+      "logoQuelle": "direkt",
+      "kanal": "Spokoynoe Radio"
     },
     {
       "id": "cafedelmar-calm",
@@ -1101,13 +1142,14 @@
       "homepage": "https://cafedelmarmusic.com",
       "kaertchen": "Der ruhige Kanal der Bar in Sant Antoni, deren Sonnenuntergangs-Compilations ab 1994 das Chillout-Genre erfunden haben. Anders als die tausend Nachahmer hat dieser Sender die Originalplatten und den Sinn dahinter.",
       "codec": "aac",
-      "bitrate": 195,
+      "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/cafedelmar-calm.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Café del Mar CALM"
     },
     {
       "id": "nature-sleep",
@@ -1128,8 +1170,9 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Nature Radio Sleep"
     },
     {
       "id": "adroit-jazz",
@@ -1146,11 +1189,12 @@
       "homepage": "https://walmradio.com",
       "kaertchen": "Ein New Yorker Sender, der Jazz von originalen Schellack- und Vinylplatten abspielt, samt Knistern und allem. Man hört tatsächlich die Platte, nicht die remasterte Wiederveröffentlichung — ein Unterschied, den man nach zwei Titeln nicht mehr missen will.",
       "codec": "mp3",
-      "bitrate": 278,
+      "bitrate": 253,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Adroit Jazz Underground"
     },
     {
       "id": "classic-vinyl",
@@ -1166,11 +1210,12 @@
       "homepage": "https://walmradio.com",
       "kaertchen": "Der Schwesterkanal von Adroit Jazz, mit Aufnahmen aus den zwanziger bis fünfziger Jahren, ebenfalls direkt von der Platte. Radio als Archivbesuch — hier laufen Stücke, die seit siebzig Jahren niemand digitalisiert hat.",
       "codec": "mp3",
-      "bitrate": 248,
+      "bitrate": 281,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Classic Vinyl HD"
     },
     {
       "id": "jazz24",
@@ -1190,10 +1235,11 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/jazz24.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Jazz24"
     },
     {
       "id": "wbgo",
@@ -1213,10 +1259,11 @@
       "bitrate": 128,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/wbgo.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "WBGO Jazz 88.3"
     },
     {
       "id": "kjazz-bebop",
@@ -1236,8 +1283,9 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "KJazz Bebop Channel"
     },
     {
       "id": "ella-bebop",
@@ -1257,10 +1305,11 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/ella-bebop.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Ella Radio Bebop"
     },
     {
       "id": "ashiya-radio",
@@ -1280,8 +1329,9 @@
       "bitrate": 193,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Ashiya Radio"
     },
     {
       "id": "japan-citypop",
@@ -1300,8 +1350,9 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "BOX Japan City Pop"
     },
     {
       "id": "listen-moe-jpop",
@@ -1322,7 +1373,7 @@
       "bitrate": null,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/listen-moe-jpop.webp",
       "logoQuelle": "apple-touch-icon",
@@ -1346,7 +1397,7 @@
       "bitrate": null,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/listen-moe-kpop.webp",
       "logoQuelle": "apple-touch-icon",
@@ -1370,8 +1421,9 @@
       "bitrate": null,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false
+      "geprueft_am": "2026-08-21",
+      "cors": false,
+      "kanal": "Chifuru"
     },
     {
       "id": "gensokyo",
@@ -1392,8 +1444,9 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Gensokyo Radio"
     },
     {
       "id": "r-a-d-io",
@@ -1414,10 +1467,11 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/r-a-d-io.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "R/a/dio"
     },
     {
       "id": "fm-setagaya",
@@ -1437,8 +1491,9 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "FM Setagaya 83.4"
     },
     {
       "id": "gotanno-fm",
@@ -1458,8 +1513,9 @@
       "bitrate": 128,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Gotanno FM 89.2"
     },
     {
       "id": "jazz-sakura",
@@ -1479,8 +1535,9 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Jazz Sakura"
     },
     {
       "id": "stereo-anime",
@@ -1499,10 +1556,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/stereo-anime.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Stereo Anime"
     },
     {
       "id": "yumico-radio",
@@ -1522,10 +1580,11 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/yumico-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Yumi Co. Radio"
     },
     {
       "id": "sound-up-nfrs",
@@ -1545,8 +1604,9 @@
       "bitrate": 96,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Sound Up Station NFRS"
     },
     {
       "id": "anime-para-ti",
@@ -1565,8 +1625,9 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Anime Para Ti"
     },
     {
       "id": "gladys-coleccion",
@@ -1586,7 +1647,7 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/gladys-coleccion.webp",
       "logoQuelle": "apple-touch-icon",
@@ -1609,7 +1670,7 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/gladys-latinfresh.webp",
       "logoQuelle": "apple-touch-icon",
@@ -1634,10 +1695,11 @@
       "bitrate": 112,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/ibero-909.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Ibero 90.9"
     },
     {
       "id": "colombia-salsadura",
@@ -1656,8 +1718,9 @@
       "bitrate": 64,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false
+      "geprueft_am": "2026-08-21",
+      "cors": false,
+      "kanal": "Colombia Salsa Dura"
     },
     {
       "id": "cumbias-inmortales",
@@ -1673,11 +1736,12 @@
       "homepage": "https://retrolandigital.com",
       "kaertchen": "Klassische Cumbia aus Mexiko, die sonidero-Tradition der Straßenfeste in Monterrey und Mexiko-Stadt. Musik, die dort seit Jahrzehnten aus mannshohen Boxen an Häuserecken kommt — hier ohne Straßenlärm.",
       "codec": "aac",
-      "bitrate": 98,
+      "bitrate": 99,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Cumbias Inmortales"
     },
     {
       "id": "salsa-maestra",
@@ -1696,8 +1760,9 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "La Salsa Maestra"
     },
     {
       "id": "salsa-brava-ccs",
@@ -1713,13 +1778,12 @@
       "homepage": "https://zeno.fm",
       "kaertchen": "Venezolanische Salsa aus Caracas, einer Stadt mit eigener, härterer Spielart des Genres. Sendet mit 136 kbit/s AAC und ohne Werbeblöcke, was bei lateinamerikanischen Sendern die Ausnahme ist.",
       "codec": "aac",
-      "bitrate": 133,
+      "bitrate": 131,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
-      "logo": "assets/logos/salsa-brava-ccs.webp",
-      "logoQuelle": "og:image"
+      "kanal": "Caracas Salsa Brava"
     },
     {
       "id": "cumbia-90s",
@@ -1738,8 +1802,9 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false
+      "geprueft_am": "2026-08-21",
+      "cors": false,
+      "kanal": "Radio Cumbia 90s"
     },
     {
       "id": "panamericana-salsa",
@@ -1755,13 +1820,14 @@
       "homepage": "https://panamericana.pe",
       "kaertchen": "Der Salsa-Kanal eines großen peruanischen Senders, mit echter Moderation und Anrufern aus Lima. Weniger kuratiert als die anderen Kanäle im Regal, dafür näher an dem, was dort tatsächlich läuft.",
       "codec": "aac",
-      "bitrate": 129,
+      "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/panamericana-salsa.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Panamericana Salsa Power"
     },
     {
       "id": "bytefm",
@@ -1782,10 +1848,11 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/bytefm.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "ByteFM"
     },
     {
       "id": "wdr-cosmo",
@@ -1805,10 +1872,11 @@
       "bitrate": 128,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/wdr-cosmo.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "WDR Cosmo"
     },
     {
       "id": "radio-mega",
@@ -1829,8 +1897,9 @@
       "bitrate": 320,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Radio Méga"
     },
     {
       "id": "ancient-fm",
@@ -1850,8 +1919,9 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false
+      "geprueft_am": "2026-08-21",
+      "cors": false,
+      "kanal": "Ancient FM"
     },
     {
       "id": "nhyira-fm",
@@ -1871,10 +1941,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/nhyira-fm.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Nhyira FM 104.5"
     },
     {
       "id": "lagosjump",
@@ -1894,10 +1965,11 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/lagosjump.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "LagosJump Radio"
     },
     {
       "id": "yabiladi-chaabi",
@@ -1916,10 +1988,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/yabiladi-chaabi.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Yabiladi Chaabi"
     },
     {
       "id": "yurd-fm",
@@ -1939,10 +2012,11 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/yurd-fm.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "Yurd FM"
     },
     {
       "id": "radyo-siran",
@@ -1962,10 +2036,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/radyo-siran.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Radyo Şiran"
     },
     {
       "id": "bamtaare-fm",
@@ -1985,10 +2060,9 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
-      "logo": "assets/logos/bamtaare-fm.webp",
-      "logoQuelle": "og:image"
+      "kanal": "Bamtaare FM 103.4"
     },
     {
       "id": "radio-armisa",
@@ -2008,10 +2082,11 @@
       "bitrate": 195,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/radio-armisa.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Radio Armisa"
     },
     {
       "id": "nts-field-recordings",
@@ -2032,8 +2107,8 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/nts-field-recordings.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "Field Recordings"
@@ -2055,10 +2130,11 @@
       "bitrate": 320,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/bootie-mashup.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Bootie Mashup"
     },
     {
       "id": "nightwave-plaza",
@@ -2079,10 +2155,11 @@
       "bitrate": null,
       "samplerate": 48000,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/nightwave-plaza.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Nightwave Plaza"
     },
     {
       "id": "soma-vaporwaves",
@@ -2102,10 +2179,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-vaporwaves.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Vaporwaves"
     },
     {
       "id": "kohina",
@@ -2126,10 +2204,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/kohina.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Kohina"
     },
     {
       "id": "keygen-fm",
@@ -2149,8 +2228,9 @@
       "bitrate": 192,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Keygen FM"
     },
     {
       "id": "vapor-funk",
@@ -2170,7 +2250,7 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/vapor-funk.webp",
       "logoQuelle": "icon",
@@ -2194,7 +2274,7 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/chiptune-247.webp",
       "logoQuelle": "icon",
@@ -2218,10 +2298,11 @@
       "bitrate": 96,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
+      "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/nolife-radio.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "NoLife Radio"
     },
     {
       "id": "shmup-radio",
@@ -2241,10 +2322,11 @@
       "bitrate": 320,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "cors": false,
       "logo": "assets/logos/shmup-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Shoot em Up Radio"
     },
     {
       "id": "gamesboro",
@@ -2264,8 +2346,9 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": true
+      "geprueft_am": "2026-08-21",
+      "cors": true,
+      "kanal": "Gamesboro Radio"
     },
     {
       "id": "soma-sf1033",
@@ -2285,10 +2368,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-sf1033.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "SF 10-33"
     },
     {
       "id": "soma-missioncontrol",
@@ -2309,10 +2393,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-missioncontrol.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Mission Control"
     },
     {
       "id": "soma-sonicuniverse",
@@ -2332,10 +2417,11 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-sonicuniverse.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Sonic Universe"
     },
     {
       "id": "soma-suburbsofgoa",
@@ -2355,10 +2441,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-suburbsofgoa.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Suburbs of Goa"
     },
     {
       "id": "soma-illstreet",
@@ -2378,10 +2465,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-illstreet.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Illinois Street Lounge"
     },
     {
       "id": "soma-tikitime",
@@ -2400,10 +2488,11 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-tikitime.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Tiki Time"
     },
     {
       "id": "soma-7soul",
@@ -2422,10 +2511,11 @@
       "bitrate": 160,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-7soul.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Seven Inch Soul"
     },
     {
       "id": "soma-bootliquor",
@@ -2445,10 +2535,11 @@
       "bitrate": 320,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-bootliquor.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Boot Liquor"
     },
     {
       "id": "soma-thistle",
@@ -2467,10 +2558,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-thistle.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "ThistleRadio"
     },
     {
       "id": "soma-doomed",
@@ -2491,10 +2583,11 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-doomed.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Doomed"
     },
     {
       "id": "soma-cliqhop",
@@ -2514,10 +2607,11 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-cliqhop.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "cliqhop idm"
     },
     {
       "id": "soma-thetrip",
@@ -2538,10 +2632,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-thetrip.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "The Trip"
     },
     {
       "id": "soma-covers",
@@ -2560,10 +2655,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-covers.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Covers"
     },
     {
       "id": "soma-insound",
@@ -2582,10 +2678,11 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-insound.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "The In-Sound"
     },
     {
       "id": "soma-bossa",
@@ -2604,10 +2701,11 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-bossa.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Bossa Beyond"
     },
     {
       "id": "soma-brfm",
@@ -2627,10 +2725,11 @@
       "bitrate": 128,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/soma-brfm.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Black Rock FM"
     },
     {
       "id": "nts-poolside",
@@ -2649,8 +2748,8 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/nts-poolside.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "Poolside"
@@ -2674,8 +2773,8 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/nts-labyrinth.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "Labyrinth"
@@ -2697,8 +2796,8 @@
       "bitrate": 256,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-20",
-      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "cors": true,
       "logo": "assets/logos/nts-otaku.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "Otaku"
@@ -2725,7 +2824,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/somafm-u80s.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Underground 80s"
     },
     {
       "id": "new-wave-radio",
@@ -2747,7 +2847,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/new-wave-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "New Wave Radio"
     },
     {
       "id": "italopower",
@@ -2770,7 +2871,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/italopower.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Radio ITALOPOWER!"
     },
     {
       "id": "rautemusik-80s",
@@ -2791,7 +2893,8 @@
       "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "80s"
     },
     {
       "id": "rautemusik-90s",
@@ -2812,7 +2915,8 @@
       "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "90s"
     },
     {
       "id": "rautemusik-trance",
@@ -2834,7 +2938,8 @@
       "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Trance"
     },
     {
       "id": "181fm-oldschool",
@@ -2901,7 +3006,8 @@
       "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "1.FM 90s Best"
     },
     {
       "id": "90s90s-eurodance",
@@ -2989,12 +3095,13 @@
       "kaertchen": "Kalifornischer Rock und Yacht Rock der Siebziger, kuratiert statt rotiert — Steely Dan neben Namen, die es nie in eine Best-of-Sammlung geschafft haben. Mit 320 kbit/s einer der bestklingenden Kanäle im ganzen Laden.",
       "logo": "assets/logos/soma-seventies.webp",
       "logoQuelle": "somafm",
-      "codec": "mp3",
-      "bitrate": 320,
-      "samplerate": 44100,
       "status": "ok",
+      "codec": "mp3",
+      "samplerate": 44100,
+      "bitrate": 320,
+      "cors": true,
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "kanal": "Left Coast 70s"
     },
     {
       "id": "cowabunga",
@@ -3012,12 +3119,13 @@
       "kaertchen": "Northern Soul, Boogaloo, Garage und Power Pop aus einem spanischen Kollektiv. Musik, die in den Sechzigern gefloppt ist und Jahrzehnte später in britischen Tanzsälen wiederentdeckt wurde — die zweite Karriere schlechter verkaufter Platten.",
       "logo": "assets/logos/cowabunga.webp",
       "logoQuelle": "apple-touch-icon",
-      "codec": "aac",
-      "bitrate": 128,
-      "samplerate": 22050,
       "status": "ok",
+      "codec": "aac",
+      "samplerate": 44100,
+      "bitrate": 128,
+      "cors": true,
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "kanal": "Radio Cowabunga"
     },
     {
       "id": "xraydio-jukebox",
@@ -3035,12 +3143,12 @@
       "logo": "assets/logos/xraydio-jukebox.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "2 — Vintage Jukebox",
-      "codec": "aac",
-      "bitrate": 160,
-      "samplerate": 32000,
       "status": "ok",
-      "geprueft_am": "2026-08-21",
-      "cors": true
+      "codec": "aac",
+      "samplerate": 44100,
+      "bitrate": 165,
+      "cors": true,
+      "geprueft_am": "2026-08-21"
     },
     {
       "id": "xraydio-live",
@@ -3059,12 +3167,12 @@
       "logo": "assets/logos/xraydio-live.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "1 — Kaleidoscope",
-      "codec": "aac",
-      "bitrate": 160,
-      "samplerate": 22050,
       "status": "ok",
-      "geprueft_am": "2026-08-21",
-      "cors": true
+      "codec": "aac",
+      "samplerate": 44100,
+      "bitrate": 164,
+      "cors": true,
+      "geprueft_am": "2026-08-21"
     },
     {
       "id": "wraith-vision",
@@ -3079,12 +3187,13 @@
       "stream": "https://stream.laut.fm/wraith-vision",
       "homepage": "https://wraith-vision-radio.com",
       "kaertchen": "Doo Wop, Crooner und Rhythm and Blues der Fünfziger und Sechziger. Die Musik, mit der Popmusik anfing, gespielt ohne den Nostalgiefilter, den Oldiesender sonst darüberlegen — als wären die Aufnahmen gerade erst erschienen.",
-      "codec": "mp3",
-      "bitrate": 128,
-      "samplerate": 44100,
       "status": "ok",
+      "codec": "mp3",
+      "samplerate": 44100,
+      "bitrate": 128,
+      "cors": true,
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "kanal": "Wraith Vision"
     },
     {
       "id": "rsa-ostrock",
@@ -3101,12 +3210,291 @@
       "kaertchen": "Rockmusik aus der DDR — Puhdys, Karat, Silly, City. Eine Musikgeschichte, die vierzig Jahre lang parallel zur westlichen lief und außerhalb Ostdeutschlands bis heute kaum jemand kennt.",
       "logo": "assets/logos/rsa-ostrock.webp",
       "logoQuelle": "apple-touch-icon",
-      "codec": "mp3",
-      "bitrate": 192,
-      "samplerate": 44100,
       "status": "ok",
+      "codec": "mp3",
+      "samplerate": 44100,
+      "bitrate": 192,
+      "cors": true,
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "kanal": "R.SA Ostrock"
+    },
+    {
+      "id": "france-musique",
+      "name": "France Musique",
+      "betreiber": "Radio France",
+      "ort": "Paris",
+      "land": "FR",
+      "regal": "klassik",
+      "etiketten": [
+        "ohne-werbung",
+        "mensch-am-mikro"
+      ],
+      "stream": "https://icecast.radiofrance.fr/francemusique-hifi.aac",
+      "homepage": "https://www.radiofrance.fr/francemusique",
+      "kaertchen": "Der Klassikkanal des französischen Rundfunks, mit eigenen Orchestern und Live-Übertragungen aus dem Auditorium. Sendet in der hifi-Fassung mit 48 kHz — hörbar mehr Raum als bei den üblichen 44,1.",
+      "logo": "assets/logos/france-musique.webp",
+      "logoQuelle": "og:image",
+      "status": "ok",
+      "codec": "aac",
+      "samplerate": 48000,
+      "bitrate": 194,
+      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "kanal": "France Musique"
+    },
+    {
+      "id": "swiss-classic",
+      "name": "Radio Swiss Classic",
+      "betreiber": "SRG SSR",
+      "ort": "Bern",
+      "land": "CH",
+      "regal": "klassik",
+      "etiketten": [
+        "ohne-werbung",
+        "nur-instrumental"
+      ],
+      "stream": "https://stream.srg-ssr.ch/srgssr/rsc_de/aac/192",
+      "homepage": "https://www.radioswissclassic.ch",
+      "kaertchen": "Werbefrei, gebührenfinanziert, rund um die Uhr Klassik ohne Moderation zwischen den Stücken. Mit 192 kbit/s AAC einer der saubersten frei zugänglichen Klassikströme überhaupt. Kein Wortbeitrag unterbricht, kein Jingle — die Musik läuft, bis sie zu Ende ist.",
+      "logo": "assets/logos/swiss-classic.webp",
+      "logoQuelle": "og:image",
+      "status": "ok",
+      "codec": "aac",
+      "samplerate": 48000,
+      "bitrate": 192,
+      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "kanal": "Radio Swiss Classic"
+    },
+    {
+      "id": "czro-ddur",
+      "name": "ČRo D-dur",
+      "betreiber": "Český rozhlas",
+      "ort": "Prag",
+      "land": "CZ",
+      "regal": "klassik",
+      "etiketten": [
+        "ohne-werbung"
+      ],
+      "stream": "https://rozhlas.stream/ddur.mp3",
+      "homepage": "https://d-dur.rozhlas.cz",
+      "kaertchen": "Der Klassikkanal des tschechischen Rundfunks, mit auffällig viel tschechischem Repertoire — Janáček, Martinů, Suk. Komponisten, die im deutschsprachigen Programm selten über Dvořák hinauskommen.",
+      "logo": "assets/logos/czro-ddur.webp",
+      "logoQuelle": "apple-touch-icon",
+      "status": "ok",
+      "codec": "mp3",
+      "samplerate": 48000,
+      "bitrate": 128,
+      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "kanal": "ČRo D-dur"
+    },
+    {
+      "id": "br-klassik",
+      "name": "BR-Klassik",
+      "betreiber": "Bayerischer Rundfunk",
+      "ort": "München",
+      "land": "DE",
+      "regal": "klassik",
+      "etiketten": [
+        "ohne-werbung",
+        "mensch-am-mikro"
+      ],
+      "stream": "https://dispatcher.rndfnk.com/br/brklassik/live/mp3/high",
+      "homepage": "https://www.br-klassik.de",
+      "kaertchen": "Mit eigenem Symphonieorchester und Chor, deren Aufnahmen regelmäßig im Programm laufen. Wortbeiträge zwischen den Stücken erklären, was gleich kommt — die Sorte Radio, bei der man nebenbei etwas lernt.",
+      "logo": "assets/logos/br-klassik.webp",
+      "logoQuelle": "apple-touch-icon",
+      "status": "ok",
+      "codec": "mp3",
+      "samplerate": 48000,
+      "bitrate": 256,
+      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "kanal": "BR-Klassik"
+    },
+    {
+      "id": "ndr-kultur",
+      "name": "NDR Kultur",
+      "betreiber": "Norddeutscher Rundfunk",
+      "ort": "Hamburg",
+      "land": "DE",
+      "regal": "klassik",
+      "etiketten": [
+        "ohne-werbung",
+        "mensch-am-mikro"
+      ],
+      "stream": "https://icecast.ndr.de/ndr/ndrkultur/live/mp3/128/stream.mp3",
+      "homepage": "https://www.ndr.de/ndrkultur",
+      "kaertchen": "Klassik mit Literatur, Hörspiel und Gespräch dazwischen. Wer Musik ohne jedes Wort sucht, ist bei Radio Swiss Classic besser aufgehoben — hier gehört das Reden zum Programm. Ein Kulturprogramm im alten Sinn, das Musik und Sprache als zusammengehörig behandelt.",
+      "status": "ok",
+      "codec": "mp3",
+      "samplerate": 48000,
+      "bitrate": 128,
+      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "kanal": "NDR Kultur"
+    },
+    {
+      "id": "oe1",
+      "name": "Ö1",
+      "betreiber": "ORF",
+      "ort": "Wien",
+      "land": "AT",
+      "regal": "klassik",
+      "etiketten": [
+        "ohne-werbung",
+        "mensch-am-mikro"
+      ],
+      "stream": "https://orf-live.ors-shoutcast.at/oe1-q2a",
+      "homepage": "https://oe1.orf.at",
+      "kaertchen": "Der Kultursender des österreichischen Rundfunks, seit 1967. Klassik, Neue Musik, Wissenschaft und Feature in einem Programm — in Wien eine Institution, außerhalb kaum bekannt. Ein Sender, den man einschaltet und bei dem man am Ende etwas anderes gehört hat als geplant.",
+      "status": "ok",
+      "codec": "mp3",
+      "samplerate": 48000,
+      "bitrate": 192,
+      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "kanal": "Ö1"
+    },
+    {
+      "id": "kusc",
+      "name": "KUSC",
+      "betreiber": "University of Southern California",
+      "ort": "Los Angeles",
+      "land": "US",
+      "regal": "klassik",
+      "etiketten": [
+        "community",
+        "ohne-werbung"
+      ],
+      "stream": "https://playerservices.streamtheworld.com/api/livestream-redirect/KUSCMP128.mp3",
+      "homepage": "https://www.kusc.org",
+      "kaertchen": "Der größte hörerfinanzierte Klassiksender der USA, getragen von einer Universität in Los Angeles. Amerikanische Klassikradios klingen zugänglicher als europäische — weniger Ehrfurcht, mehr Erzählen.",
+      "logo": "assets/logos/kusc.webp",
+      "logoQuelle": "apple-touch-icon",
+      "status": "ok",
+      "codec": "mp3",
+      "samplerate": 44100,
+      "bitrate": 128,
+      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "kanal": "KUSC"
+    },
+    {
+      "id": "wqxr",
+      "name": "WQXR",
+      "betreiber": "New York Public Radio",
+      "ort": "New York",
+      "land": "US",
+      "regal": "klassik",
+      "etiketten": [
+        "community",
+        "ohne-werbung"
+      ],
+      "stream": "https://stream.wqxr.org/wqxr-web",
+      "homepage": "https://www.wqxr.org",
+      "kaertchen": "Seit 1936 New Yorks Klassiksender, früher der New York Times gehörend, heute hörerfinanziert. Überträgt regelmäßig aus der Carnegie Hall und von den Orchestern der Stadt. Für amerikanische Orchester und amerikanische Komponisten die beste Adresse im Katalog.",
+      "status": "ok",
+      "codec": "mp3",
+      "samplerate": 48000,
+      "bitrate": 128,
+      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "kanal": "WQXR"
+    },
+    {
+      "id": "venice-classic",
+      "name": "Venice Classic Radio",
+      "betreiber": "Venice Classic Radio",
+      "ort": "Venedig",
+      "land": "IT",
+      "regal": "klassik",
+      "etiketten": [
+        "ohne-werbung",
+        "nur-instrumental"
+      ],
+      "stream": "https://de2.streamingpulse.com/stream/vcr",
+      "homepage": "https://www.veniceclassicradio.eu",
+      "kaertchen": "Ein kleiner venezianischer Sender mit Schwerpunkt auf Barock und italienischem Repertoire — Vivaldi, Albinoni, Marcello, in deren Stadt. Werbefrei und ohne Moderation. Wer Barock nicht als Hintergrund, sondern als Repertoire hören will, findet hier die Tiefe dafür.",
+      "logo": "assets/logos/venice-classic.webp",
+      "logoQuelle": "apple-touch-icon",
+      "status": "ok",
+      "codec": "mp3",
+      "samplerate": 44100,
+      "bitrate": 128,
+      "cors": false,
+      "geprueft_am": "2026-08-21",
+      "kanal": "Venice Classic Radio"
+    },
+    {
+      "id": "early-music",
+      "name": "Early Music",
+      "betreiber": "laut.fm",
+      "ort": "Konstanz",
+      "land": "DE",
+      "regal": "klassik",
+      "etiketten": [
+        "nur-instrumental",
+        "ohne-werbung"
+      ],
+      "stream": "https://earlymusic.stream.laut.fm/early_music",
+      "homepage": "https://laut.fm/early_music",
+      "kaertchen": "Ausschließlich Alte Musik: Mittelalter, Renaissance, Frühbarock, auf historischen Instrumenten. Die Ergänzung zu Ancient FM in den Fundstücken — dasselbe Feld, andere Handschrift. Musik aus Jahrhunderten, in denen der Kammerton noch nicht bei 440 Hz festgeschrieben war.",
+      "logo": "assets/logos/early-music.webp",
+      "logoQuelle": "apple-touch-icon",
+      "status": "ok",
+      "codec": "mp3",
+      "samplerate": 44100,
+      "bitrate": 128,
+      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "kanal": "Early Music"
+    },
+    {
+      "id": "walm2-opus",
+      "name": "WALM 2 HD",
+      "betreiber": "WALM Radio",
+      "ort": "New York",
+      "land": "US",
+      "regal": "klassik",
+      "etiketten": [
+        "ohne-werbung",
+        "lossless"
+      ],
+      "stream": "https://icecast.walmradio.com:8443/walm2_opus",
+      "homepage": "https://walmradio.com",
+      "kaertchen": "Klassik von originalen Schellackplatten, gesendet in Opus mit 192 kbit/s. Dieselben Leute, die im Jazzregal Adroit Jazz betreiben — man hört die Platte, nicht die remasterte Wiederveröffentlichung.",
+      "status": "ok",
+      "codec": "opus",
+      "samplerate": 48000,
+      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "kanal": "WALM 2 HD"
+    },
+    {
+      "id": "flowstate-classical",
+      "name": "Flowstate Classical",
+      "betreiber": "Flowstate Radio",
+      "ort": "Zürich",
+      "land": "CH",
+      "regal": "klassik",
+      "etiketten": [
+        "nur-instrumental",
+        "ohne-werbung"
+      ],
+      "stream": "https://radio.flowstateradio.net/listen/classical/radio.mp3",
+      "homepage": "https://flowstateradio.net",
+      "kaertchen": "Klassik mit 320 kbit/s und 48 kHz, ausgewählt für langes konzentriertes Hören statt für den schnellen Höhepunkt. Der klanglich beste Eintrag dieses Regals nach WALM. Lange Sätze bleiben ganz, statt für die Aufmerksamkeitsspanne zurechtgeschnitten zu werden.",
+      "logo": "assets/logos/flowstate-classical.webp",
+      "logoQuelle": "apple-touch-icon",
+      "status": "ok",
+      "codec": "mp3",
+      "samplerate": 48000,
+      "bitrate": 320,
+      "cors": true,
+      "geprueft_am": "2026-08-21",
+      "kanal": "Flowstate Classical"
     }
   ]
 }
