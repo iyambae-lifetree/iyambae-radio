@@ -1,0 +1,682 @@
+/*
+  IYAMBAE — Konten, Merkliste, Hörverlauf.
+
+  ENTWURF. Die Endung `.bicep.entwurf` ist Absicht: `az deployment` findet die
+  Datei so nicht, und ein Tippfehler beim Ausrollen kann nichts anrichten.
+  Zum Scharfschalten in `konto.bicep` umbenennen — vorher aber „NOCH ZU TUN"
+  am Ende dieser Datei abarbeiten.
+
+  ── Was hier entsteht ───────────────────────────────────────────────
+
+    st…konto             Speicherkonto, nur Tabellendienst
+     ├── konten          alles zu EINEM Konto in EINER Partition
+     └── verweise        Kennung → kontoId, mehr nicht
+
+    acs-iyambae-mail     Email Communication Service
+     └── mail.iyambae.fm die geprüfte Absenderdomäne
+    acs-iyambae          Communication Service, mit der Domäne verknüpft
+
+    Rollenzuweisungen    ca-iyambae-web darf Zeilen schreiben und Mail senden,
+                         die beiden Verwalter dürfen lesen.
+
+  ── Warum Table Storage und nicht Cosmos DB ─────────────────────────
+
+  Weil die Daten winzig sind und bleiben. Tausend Nutzer mit je vierzig
+  gemerkten Sendern sind zusammen unter einem Megabyte.
+
+  Alle Preise am 21.08.2026 aus der Azure Retail Prices API geholt, Region
+  germanywestcentral, Währung EUR. Gerechnet für 1.000 Nutzer, 20.000
+  Schreib- und 100.000 Lesevorgänge im Monat, 50 MB Gesamtbestand:
+
+    Table Storage      0,0595 €/GB + 0,0003 €/10.000 Vorgänge  →  unter 0,01 €
+    Cosmos serverless  0,2680 €/Mio. RU + 0,2197 €/GB          →  rund 0,07 €
+    Azure SQL serverless   0,5043 € je vCore-Stunde             →  ab rund 30 €
+
+  EHRLICH DAZUGESAGT: Zwischen Table Storage und Cosmos serverless liegen bei
+  dieser Größe sechs Cent. Der Preis entscheidet das hier NICHT — wer das
+  Gegenteil behauptet, rechnet sich etwas zurecht.
+
+  Was tatsächlich entscheidet: Table Storage kennt keinen Durchsatzbegriff,
+  keine RU, keine Partitionsschlüssel-Strategie und keine Konsistenzstufen.
+  Es gibt eine Zeile, einen ETag und `If-Match`. Für eine Merkliste ist das
+  das ganze Werkzeug, und es ist eines weniger, das jemand lernen muss.
+
+  WAS COSMOS BESSER KÖNNTE, und es ist kein Nichts: Cosmos hat eine eingebaute
+  Ablaufzeit je Dokument (TTL). Sitzungen und Einmalcodes verfielen damit von
+  selbst. Table Storage kann das nicht — der Dienst muss abgelaufene Zeilen
+  selbst wegräumen. Der Weg dafür steht unten bei der Tabelle.
+
+  Azure SQL scheidet aus einem härteren Grund aus als dem Preis: Serverless
+  mit Auto-Pause hat einen EIGENEN Kaltstart. Der käme zu den 8,2 s der
+  Container App noch obendrauf (siehe README in diesem Ordner). Zwei
+  Kaltstarts hintereinander, ausgerechnet beim Anmelden, sind einer zu viel.
+
+  ── Warum es hier fast kein Geheimnis gibt ──────────────────────────
+
+  `allowSharedKeyAccess: false` schaltet die Kontoschlüssel ab. Der Zugriff
+  läuft ausschließlich über die verwaltete Identität, die `main.bicep` der
+  Container App schon mitgegeben hat („Für später: Zugriff auf Key Vault oder
+  Datenhaltung ohne Passwörter" — das ist dieses Später).
+
+  Damit bleibt in der Datenhaltung nichts übrig, das ablaufen, ins Repository
+  rutschen oder gestohlen werden könnte:
+
+    - keine Speicher-Kontoschlüssel   → abgeschaltet
+    - kein Sitzungs-Signierschlüssel  → Sitzungen sind Zufallswerte, von denen
+                                        nur der SHA-256-Abdruck in der Tabelle
+                                        liegt. Es gibt nichts zu signieren.
+    - keine ACS-Verbindungszeichenfolge → über verwaltete Identität, SIEHE
+                                        ABER den Vorbehalt bei `acsRolleId`.
+
+  Was sich NICHT vermeiden lässt, sobald soziale Anmeldung dazukommt: Google
+  und Apple verlangen ein Client-Geheimnis. Das gehört dann in Key Vault oder
+  in ein Container-Apps-Secret — nicht in diese Datei und nicht ins Abbild.
+  Apples Geheimnis ist zudem ein JWT mit HÖCHSTENS SECHS MONATEN Laufzeit; es
+  muss erneuert werden, sonst steht die Apple-Anmeldung eines Tages still,
+  ohne dass sich etwas geändert hätte.
+*/
+
+// ── Eingaben ────────────────────────────────────────────────────────
+
+@description('Kurzname, geht in alle Ressourcennamen ein. Wie in main.bicep.')
+param name string = 'iyambae'
+
+@description('Region für das Speicherkonto. Die ACS-Ressourcen liegen immer global, ihre Datenhaltung steuert `datenOrt`.')
+param location string = resourceGroup().location
+
+@description('Name der bestehenden Container App aus main.bicep. Ihre verwaltete Identität bekommt die Rechte.')
+param anwendung string = 'ca-${name}-web'
+
+/*
+  Absenderdomäne — bewusst eine Unterdomäne, NICHT der Apex.
+
+  Der von ACS vorgegebene SPF-Eintrag endet auf `-all`, also Hard Fail. Stünde
+  er auf iyambae.fm, wäre damit erklärt: NUR ACS darf je für iyambae.fm
+  senden. Jeder andere Absender — ein Mailhoster, GitHub-Benachrichtigungen,
+  ein Kontaktformular — würde ab dann hart abgelehnt. Ein Apex kann außerdem
+  nur einen SPF-Eintrag tragen; man könnte ihn nicht sauber danebenstellen.
+
+  Nebeneffekt, der zählt: Die Reputation der Transaktionsmails ist von der
+  übrigen Nutzung der Domäne getrennt. Geht bei einer etwas schief, reißt sie
+  die andere nicht mit.
+*/
+@description('Absenderdomäne für Transaktionsmails. Unterdomäne, nicht der Apex.')
+param mailDomaene string = 'mail.iyambae.fm'
+
+/*
+  Datenhaltung der Kommunikationsdienste.
+
+  „Germany" ist als eigene Geografie wählbar (Microsoft-Doku „Data residency
+  and user privacy", abgerufen 21.08.2026). Das ist die Einstellung, die
+  zählt — die ARM-Ressource selbst liegt IMMER global, und die Region der
+  Ressourcengruppe steuert hier gar nichts.
+
+  Ehrlich dazugesagt, und es gehört in die Datenschutzerklärung: Microsoft
+  schreibt, ruhende Daten blieben in der Geografie, Daten könnten aber
+  „transit or be processed in other geographies". Die Zusage lautet also
+  Ruhelage, nicht Verarbeitung.
+
+  Nach dem Anlegen NICHT mehr änderbar. Wer sich hier vertut, legt neu an.
+*/
+@allowed([
+  'Germany'
+  'Europe'
+])
+@description('Wo die Kommunikationsdaten ruhen. Nach dem Anlegen nicht mehr änderbar.')
+param datenOrt string = 'Germany'
+
+/*
+  Die Objekt-IDs der beiden Verwalter — NICHT die E-Mail-Adressen.
+
+      az ad user show --id mail@example.org --query id -o tsv
+
+  Leer lassen ist zulässig: Dann werden keine Leserechte vergeben, und die
+  Zuweisung passiert später von Hand. Das ist der Weg, wenn die IDs noch
+  nicht feststehen — eine Rollenzuweisung mit falscher ID scheitert erst beim
+  Ausrollen und reißt die ganze Bereitstellung mit.
+*/
+@description('Objekt-IDs der Personen, die Kontodaten LESEN dürfen. Höchstens zwei.')
+@maxLength(2)
+param verwalter array = []
+
+/*
+  NICHT BELEGT — und deshalb ein Parameter statt einer festen Kennung.
+
+  Für Table Storage konnte ich die Rollenkennungen am 21.08.2026 gegen
+  azadvertizer.net prüfen. Für Azure Communication Services ist mir das NICHT
+  gelungen: Die Microsoft-Doku bestätigt zwar, dass Email „Access Key oder
+  Microsoft Entra authentication" unterstützt, nennt aber an keiner der
+  gelesenen Stellen den Namen der dafür nötigen eingebauten Rolle.
+
+  Vor dem Ausrollen nachschlagen und hier eintragen:
+
+      az role definition list --scope <acs-ressourcen-id> \
+        --query "[?contains(roleName,'Communication')].{n:roleName,id:name}" -o table
+
+  Bleibt der Wert leer, wird keine ACS-Rolle zugewiesen. Dann ist der Rückweg
+  die Verbindungszeichenfolge als Container-Apps-Secret — sie funktioniert
+  sicher, kostet aber genau das Geheimnis, das diese Datei sonst vermeidet.
+  Das ist eine bewusste Entscheidung, keine Kleinigkeit: Wer sie trifft, muss
+  auch die Rotation regeln.
+*/
+@description('Rollenkennung für ACS-Datenzugriff. NICHT BELEGT — vor Gebrauch nachschlagen. Leer = keine Zuweisung.')
+param acsRolleId string = ''
+
+@description('Wie lange gelöschte Einträge als Grabstein liegen bleiben, in Tagen. Siehe Kommentar bei der Tabelle.')
+@minValue(30)
+@maxValue(365)
+param grabsteinTage int = 90
+
+var marken = {
+  anwendung: 'iyambae'
+  umgebung: 'prod'
+  verantwortlich: 'iyambae-lifetree'
+  verwaltetVon: 'bicep'
+  zweck: 'konten'
+}
+
+/*
+  Speicherkontonamen sind WELTWEIT eindeutig, kleingeschrieben, höchstens
+  24 Zeichen. `st iyambae konto` sind 14 — der Rest ist Streu aus der
+  Ressourcengruppen-Kennung, damit ein zweites Ausrollen in einer anderen
+  Gruppe nicht am Namen scheitert.
+*/
+var speicherName = take('st${name}konto${uniqueString(resourceGroup().id)}', 24)
+
+// ── Das Speicherkonto ───────────────────────────────────────────────
+
+resource speicher 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: speicherName
+  location: location
+  tags: marken
+  sku: {
+    /*
+      Standard_LRS: drei Kopien in EINEM Rechenzentrum.
+
+      Nicht ZRS, nicht GRS. GRS spiegelte die Daten nach germanynorth — immer
+      noch Deutschland, aber rund das Doppelte an Kosten und eine zweite Kopie
+      personenbezogener Daten, die ins Verzeichnis der Verarbeitungstätigkeiten
+      müsste. Für eine Merkliste keine sinnvolle Abwägung.
+    */
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    accessTier: 'Hot'
+    minimumTlsVersion: 'TLS1_2'
+    supportsHttpsTrafficOnly: true
+
+    /*
+      DER wichtigste Schalter in dieser Datei.
+
+      `false` schaltet die beiden Kontoschlüssel ab. Ohne sie gibt es keine
+      Verbindungszeichenfolge, die jemand in eine Umgebungsvariable, in ein
+      Repository oder in eine Chatnachricht kopieren könnte. Der einzige Weg
+      an die Daten führt über Entra-Rollen.
+
+      Der Preis: Werkzeuge, die nur Kontoschlüssel können (ältere
+      Storage-Explorer-Fassungen, `azcopy` ohne `--auth-mode login`, so gut
+      wie jedes Beispiel aus dem Netz), funktionieren nicht mehr. Gewollt.
+    */
+    allowSharedKeyAccess: false
+    defaultToOAuthAuthentication: true
+
+    // Es gibt keine Blobs in diesem Konto. Trotzdem ausdrücklich zu: ein
+    // leerer öffentlicher Container ist eine Einladung für später.
+    allowBlobPublicAccess: false
+    allowCrossTenantReplication: false
+    publicNetworkAccess: 'Enabled'
+    networkAcls: {
+      /*
+        Offen, und das ist kein Versäumnis: Die Container App läuft im
+        Consumption-Profil ohne eigenes Netz, ihre ausgehenden Adressen sind
+        die der Umgebung und ändern sich. Eine IP-Sperrliste wäre eine Liste,
+        die bei der nächsten Plattformänderung stillschweigend falsch wird —
+        und der Zugang hängt durch `allowSharedKeyAccess: false` ohnehin an
+        einer Identität, nicht an einer Adresse.
+
+        Wer es dichter will, braucht ein Workload-Profil mit VNet und einen
+        privaten Endpunkt. Das kostet ab dem ersten Tag Geld und ist für eine
+        Merkliste nicht zu rechtfertigen.
+      */
+      defaultAction: 'Allow'
+      bypass: 'AzureServices'
+    }
+  }
+}
+
+resource tabellendienst 'Microsoft.Storage/storageAccounts/tableServices@2023-05-01' = {
+  parent: speicher
+  name: 'default'
+  properties: {
+    /*
+      CORS bewusst LEER.
+
+      Der Browser spricht nie mit dem Speicherkonto. Er spricht mit /api/ auf
+      iyambae.fm — derselbe Ursprung — und dahinter steht der Anmeldedienst.
+      Eine CORS-Regel hier wäre eine Tür, die niemand braucht.
+    */
+    cors: {
+      corsRules: []
+    }
+  }
+}
+
+/*
+  ERSTE TABELLE: alles zu einem Konto in EINER Partition.
+
+  PartitionKey = kontoId, RowKey sagt, was die Zeile ist:
+
+    RowKey                      Inhalt
+    ─────────────────────────── ──────────────────────────────────────────
+    'konto'                     angelegt, zuletztGesehen (nur Datum), stand
+    'kennung:mail'              Adresse, bestaetigtAm, ggf. Passwort-Hash
+    'kennung:google:<sub>'      die stabile Kennung des Anbieters
+    'kennung:apple:<sub>'       dito
+    'kennung:passkey:<credId>'  öffentlicher Schlüssel, Zähler, BE/BS-Flags
+    'platten'                   die Merkliste als JSON-Zeichenkette
+    'verlauf'                   Hörzähler und zuletzt Gehörtes
+    'sitzung:<abdruck>'         eine angemeldete Sitzung, mit Ablaufdatum
+    'code:<abdruck>'            ein Einmalcode, mit Ablaufdatum
+
+  Warum eine Partition und nicht sechs Tabellen:
+
+  1. LÖSCHEN. „Konto löschen" ist eine Abfrage auf eine Partition und ein
+     Stapellöschen. Über sechs Tabellen verteilt wären es sechs Durchgänge,
+     von denen der vierte scheitern kann — und dann liegen Reste herum, die
+     niemand mehr findet. Bei einem Löschanspruch nach Art. 17 DSGVO ist
+     „ein Rest ist liegengeblieben" die falsche Antwort.
+  2. GESCHLOSSENE VORGÄNGE. Table Storage führt bis zu 100 Änderungen in
+     EINER Partition als eine Einheit aus. Merkliste schreiben und Stand
+     hochzählen wird damit ein Vorgang statt zwei, die halb misslingen können.
+  3. LESEN. Anmelden heißt: eine Partition holen, fertig.
+
+  Der Preis: Eine Partition ist die Einheit der Skalierung — rund 2.000
+  Entitäten je Sekunde. Das ist eine Grenze JE KONTO. Ein einzelner Mensch,
+  der zweitausend Mal in der Sekunde einen Sender merkt, existiert nicht.
+
+  ABGELAUFENES WEGRÄUMEN — die Hausaufgabe, die Table Storage einem lässt.
+
+  Sitzungen und Einmalcodes tragen ein Ablaufdatum als Feld, aber die Zeile
+  verschwindet davon nicht von selbst. Zwei Wege, und beide werden gebraucht:
+
+  1. BEIM LESEN. Wer eine abgelaufene Sitzung vorlegt, bekommt 401, und die
+     Zeile wird im selben Zug gelöscht. Das erledigt den Normalfall ohne
+     jeden Zeitplan — wer wiederkommt, räumt hinter sich auf.
+  2. EIN DURCHGANG JE WOCHE. Der Normalfall reicht nicht: Die Sitzung eines
+     Menschen, der nie wiederkommt, liegt sonst für immer da. Und genau die
+     ist die heikle — ein gültiges Sitzungsgeheimnis, das niemand mehr
+     beobachtet. Ein Durchgang über `RowKey ge 'sitzung:' and RowKey lt
+     'sitzung;'` mit Filter auf das Ablaufdatum räumt das ab.
+
+  Der Durchgang gehört NICHT in einen eigenen Dienst und nicht in einen
+  Zeitplan-Auftrag, der wieder Geld kostet. Er gehört in den Anmeldedienst
+  selbst: beim Start einmal, danach alle 24 Stunden. Der Container läuft
+  ohnehin.
+*/
+resource tabelleKonten 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
+  parent: tabellendienst
+  name: 'konten'
+}
+
+/*
+  ZWEITE TABELLE, und sie ist unvermeidlich.
+
+  Beim Anmelden kennt der Server die kontoId noch nicht, sondern nur die
+  Kennung — eine E-Mail-Adresse oder das `sub` von Google. Er braucht also
+  einen Weg von der Kennung zur Partition.
+
+    PartitionKey = SHA-256 der normalisierten Kennung ('mail:' + kleingeschrieben,
+                   bzw. 'google:' + sub)
+    RowKey       = 'v'
+    kontoId      = die Partition in `konten`
+
+  Der KLARTEXT der Adresse steht hier NICHT. Wer die Tabelle liest, kann
+  nicht nach „wer ist bei euch mit dieser Adresse angemeldet" durchsuchen,
+  ohne die Adresse schon zu kennen. Das ist kein Schutz gegen einen
+  gezielten Angriff auf eine bekannte Person — gegen den hilft nichts —,
+  aber es verhindert das massenhafte Auslesen eines Adressbestands.
+
+  Die Adresse selbst liegt im Klartext in `konten` unter 'kennung:mail'. Sie
+  muss dort stehen, denn ohne sie kann kein Bestätigungscode zugestellt
+  werden. Verschlüsseln wäre Theater: Der Dienst müsste den Schlüssel
+  ohnehin halten.
+*/
+resource tabelleVerweise 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
+  parent: tabellendienst
+  name: 'verweise'
+}
+
+// ── E-Mail ──────────────────────────────────────────────────────────
+
+/*
+  Zwei Ressourcen plus eine Verknüpfung — der Email Communication Service
+  entsteht NICHT automatisch mit dem Communication Service. Das muss man
+  wissen, sonst sucht man lange.
+
+  Die Azure-verwaltete Domäne (`…azurecomm.net`) ist bewusst nicht gewählt.
+  Nicht wegen der Zustellbarkeit, sondern wegen einer harten Zahl: Sie ist
+  auf 5 Mails je Minute und 10 je STUNDE gedeckelt, und diese Grenze lässt
+  sich laut Microsofts Tabelle „Service limits" (abgerufen 21.08.2026) NICHT
+  per Ticket anheben — die Spalte „Higher limits available" steht auf „No".
+  Microsoft nennt sie ausdrücklich „intended for testing purposes only".
+  Zehn Mails in der Stunde reichen für den ersten Funktionstest und sonst
+  für nichts.
+
+  Für die eigene Domäne gelten ab Werk 30 je Minute und 100 je Stunde, je
+  ABONNEMENT — nicht je Ressource, nicht je Domäne. Das trägt 20.000 Mails
+  im Monat im Schnitt (rund 28 je Stunde), aber es trägt keine SPITZE. Wer
+  diese Strecke baut, braucht eine Warteschlange, die 429 und `Retry-After`
+  beachtet. Das ist die eigentliche Hausaufgabe, nicht das Support-Ticket.
+*/
+resource maildienst 'Microsoft.Communication/emailServices@2023-04-01' = {
+  name: 'acs-${name}-mail'
+  // Immer 'global'. Die Datenhaltung steuert `dataLocation`, nicht der Ort.
+  location: 'global'
+  tags: marken
+  properties: {
+    dataLocation: datenOrt
+  }
+}
+
+resource maildomaene 'Microsoft.Communication/emailServices/domains@2023-04-01' = {
+  parent: maildienst
+  name: mailDomaene
+  location: 'global'
+  tags: marken
+  properties: {
+    // 'CustomerManaged' = eigene Domäne mit eigenen DNS-Einträgen.
+    domainManagement: 'CustomerManaged'
+    /*
+      Öffnungs- und Klickverfolgung AUS.
+
+      Sie ginge technisch, sobald die Domäne eigen ist. Sie einzuschalten
+      hieße aber, in jede Bestätigungsmail ein Zählpixel und umgeschriebene
+      Verweise zu setzen — also genau die Verfolgung, die diese Seite an
+      jeder anderen Stelle unterlässt (siehe dashboard.bicep). Für
+      Transaktionsmails bringt sie nichts, was eine Entscheidung trüge:
+      Ob eine Bestätigungsmail ankam, sagt der Zustellbericht, und ob sie
+      gewirkt hat, sagt die Anmeldung selbst.
+    */
+    userEngagementTracking: 'Disabled'
+  }
+}
+
+/*
+  Die Absenderadresse. Ein Anzeigename geht NUR bei eigener Domäne — bei
+  einer Azure-verwalteten lassen sich Sender-Benutzernamen gar nicht erst
+  anlegen.
+
+  `konto@` und nicht `noreply@`: ACS nimmt ohnehin keine eingehende Post an,
+  der Dienst ist rein ausgehend. Aber „noreply" sagt dem Leser, er sei nicht
+  gemeint. Wer auf eine Anmeldemail antworten möchte, soll wenigstens eine
+  Adresse sehen, die nach einem Menschen klingt — und im Text steht dann,
+  wohin er sich stattdessen wenden kann.
+*/
+resource absender 'Microsoft.Communication/emailServices/domains/senderUsernames@2023-04-01' = {
+  parent: maildomaene
+  name: 'konto'
+  properties: {
+    username: 'konto'
+    displayName: 'IYAMBAE FM'
+  }
+}
+
+resource kommunikation 'Microsoft.Communication/communicationServices@2023-04-01' = {
+  name: 'acs-${name}'
+  location: 'global'
+  tags: marken
+  properties: {
+    dataLocation: datenOrt
+    // Ohne diese Verknüpfung kennt der Dienst die Domäne nicht und lehnt
+    // jeden Sendeversuch als nicht autorisierten Absender ab.
+    linkedDomains: [
+      maildomaene.id
+    ]
+  }
+}
+
+// ── Wer darf was ────────────────────────────────────────────────────
+
+/*
+  Eingebaute Rollen mit ihren festen Kennungen.
+
+  Beide am 21.08.2026 gegen azadvertizer.net geprüft und bestätigt.
+  Wer nachrechnen will:
+      az role definition list --name "Storage Table Data Contributor" \
+        --query "[].name" -o tsv
+*/
+var rolleTabellenSchreiben = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'  // Storage Table Data Contributor
+var rolleTabellenLesen     = '76199698-9eea-4c19-bc75-cec21354c6b6'  // Storage Table Data Reader
+
+resource app 'Microsoft.App/containerApps@2024-03-01' existing = {
+  name: anwendung
+}
+
+/*
+  Die Anwendung darf Zeilen schreiben.
+
+  `guid(...)` erzeugt einen stabilen Namen aus Bereich, Empfänger und Rolle.
+  Stabil heißt: Ein zweites Ausrollen ändert dieselbe Zuweisung, statt eine
+  zweite anzulegen — sonst sammeln sich Karteileichen an, die niemand mehr
+  zuordnen kann.
+*/
+resource appDarfSchreiben 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: speicher
+  name: guid(speicher.id, app.id, rolleTabellenSchreiben)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', rolleTabellenSchreiben)
+    principalId: app.identity.principalId
+    // Ohne diese Zeile scheitert die Zuweisung sporadisch: Eine gerade erst
+    // angelegte Identität ist im Verzeichnis noch nicht überall sichtbar,
+    // und Azure prüft sonst, ob der Empfänger ein Mensch ist.
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Nur wenn die Rollenkennung nachgeschlagen und eingetragen wurde — siehe
+// den Vorbehalt oben bei `acsRolleId`.
+resource appDarfSenden 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(acsRolleId)) {
+  scope: kommunikation
+  name: guid(kommunikation.id, app.id, acsRolleId)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acsRolleId)
+    principalId: app.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+/*
+  Die Verwalter dürfen LESEN, nicht schreiben.
+
+  Bewusst „Reader" und nicht „Contributor", obwohl Contributor bequemer wäre
+  — dann könnte man im Portal eine Zeile löschen. Aber:
+
+  - Kontolöschung gehört in die App (DELETE /api/konto), damit der Nutzer sie
+    selbst auslösen kann und ALLE Zeilen mitgehen: Merkliste, Verlauf,
+    Sitzungen, Kennungen UND der Eintrag in `verweise`. Von Hand im Portal
+    löscht man die eine Zeile, die man sieht, und übersieht den Rest.
+  - Wer schreiben darf, kann fremde Merklisten verändern. Für das, wofür die
+    beiden das Recht brauchen — nachsehen, ob ein gemeldetes Problem echt
+    ist — reicht Lesen.
+
+  ZU BEDENKEN, und es gehört ins Verzeichnis der Verarbeitungstätigkeiten:
+  Auch Lesen heißt, jede Merkliste, jede Adresse und jeden Hörverlauf
+  einsehen zu können. Das ist kein technischer Mangel, sondern eine
+  Befugnis, die benannt gehört — und ein Grund, sie nur zwei Personen zu
+  geben und nicht dreien.
+*/
+resource verwalterDuerfenLesen 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for id in verwalter: {
+  scope: speicher
+  name: guid(speicher.id, id, rolleTabellenLesen)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', rolleTabellenLesen)
+    principalId: id
+    principalType: 'User'
+  }
+}]
+
+// ── Ausgaben ────────────────────────────────────────────────────────
+
+@description('Tabellenendpunkt. Kommt als Umgebungsvariable in den Anmeldedienst.')
+output tabellenEndpunkt string = speicher.properties.primaryEndpoints.table
+
+@description('Speicherkontoname, für az-Befehle.')
+output speicherName string = speicher.name
+
+@description('ACS-Endpunkt. Kommt als Umgebungsvariable in den Anmeldedienst.')
+output acsEndpunkt string = kommunikation.properties.hostName
+
+@description('Vollständige Absenderadresse.')
+output absenderAdresse string = 'konto@${mailDomaene}'
+
+/*
+  Die DNS-Einträge, die bei Cloudflare gesetzt werden müssen — direkt aus der
+  Ressource, damit niemand sie abtippt.
+
+  Reihenfolge zwingend, wie bei den eigenen Domänen in main.bicep: erst DNS,
+  dann prüfen lassen. Azure prüft in Abständen von 15 bis 30 Minuten; das ist
+  Azures Takt, nicht Cloudflares Trägheit. Zwei Runden: erst der
+  Domain-Eintrag, dann SPF und die beiden DKIM-Einträge.
+
+  Alle Einträge DNS only — graue Wolke. Das ist dieselbe Regel wie beim
+  Zertifikat der Container App, aus einem anderen Grund: Ein Proxy vor einem
+  TXT- oder DKIM-Eintrag gibt es nicht, aber wer die Zone einmal umstellt,
+  stellt sie gern ganz um.
+
+  Zusätzlich empfohlen, aber nicht in dieser Ausgabe enthalten, weil Azure
+  sie nicht vorgibt:
+    MX   auf `mail`   — Microsoft nennt einen fehlenden MX-Eintrag
+                        ausdrücklich als Spam-Risiko und macht ihn zur
+                        Voraussetzung für eine Kontingenterhöhung
+    TXT  auf `_dmarc.mail` — Ziel `p=reject`, Start `p=none` mit `rua`,
+                        damit man erst sieht, was passiert
+*/
+output dnsEintraege object = maildomaene.properties.verificationRecords
+
+@description('Wie lange Grabsteine liegen bleiben. Der Dienst liest das als Umgebungsvariable.')
+output grabsteinTage int = grabsteinTage
+
+// ════════════════════════════════════════════════════════════════════
+//  NOCH ZU TUN — was NICHT in dieser Datei stehen kann
+// ════════════════════════════════════════════════════════════════════
+/*
+  Bicep kann eine bestehende Ressource nicht ergänzen, nur ganz beschreiben.
+  Die folgenden Blöcke gehören deshalb per Hand in main.bicep, in
+  deploy/nginx.conf und in sw.js. Sie stehen hier als Kommentar, damit sie an
+  einer Stelle liegen und nicht in einer Besprechungsnotiz verschwinden.
+
+  ─────────────────────────────────────────────────────────────────────
+  (1) In main.bicep, in `seite.properties.template.containers`, NEBEN den
+      bestehenden Container `web` — nicht statt seiner:
+
+        {
+          name: 'konto'
+          image: 'ghcr.io/michaelfricke-sudo/iyambae-konto:<commit-kurz-sha>'
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+          env: [
+            { name: 'TABELLEN_ENDPUNKT', value: '<Ausgabe tabellenEndpunkt>' }
+            { name: 'ACS_ENDPUNKT',      value: '<Ausgabe acsEndpunkt>' }
+            { name: 'ABSENDER',          value: '<Ausgabe absenderAdresse>' }
+            // Die RP-ID MUSS die registrierbare Domain sein, nicht der
+            // Hostname. 'iyambae.fm' gilt auch für www.iyambae.fm;
+            // 'www.iyambae.fm' gälte NICHT für iyambae.fm. Wer das
+            // verwechselt, merkt es erst, wenn ein Passkey vom Apex auf der
+            // www-Adresse nicht angenommen wird.
+            { name: 'WEBAUTHN_RP_ID',    value: 'iyambae.fm' }
+            { name: 'WEBAUTHN_RP_NAME',  value: 'IYAMBAE FM' }
+            // Beide Ursprünge, sonst schlägt die Prüfung auf einem davon fehl.
+            { name: 'ERLAUBTE_URSPRUENGE', value: 'https://iyambae.fm,https://www.iyambae.fm' }
+            { name: 'GRABSTEIN_TAGE',    value: '<Ausgabe grabsteinTage>' }
+            { name: 'PORT',              value: '8081' }
+          ]
+          /*
+            KEINE Liveness- und KEINE Readiness-Probe auf diesem Container.
+            Absicht, und der wichtigste Satz in diesem Block.
+
+            Beide Container teilen sich eine Replik. Eine Liveness-Probe, die
+            hier anschlägt, kann die ganze Replik neu starten — und dann ist
+            wegen eines kaputten Anmeldedienstes auch das Radio weg. Eine
+            Readiness-Probe wäre noch schlimmer: Sie markierte die Replik als
+            „nicht bereit" und schnitte den gesamten Verkehr ab.
+
+            Ohne Probe startet die Plattform nur diesen einen Container neu,
+            nginx liefert weiter aus, und /api/ antwortet ein paar Sekunden
+            lang mit 503. Das ist der bessere Ausfall: Wer Musik hört,
+            merkt nichts.
+          */
+        }
+
+      Und `mindestExemplare` von 0 auf 1 setzen — siehe die Begründung im
+      Bericht: Sobald ein Konto Pflicht ist, führt der Weg über einen
+      Bestätigungslink aus einer E-Mail, und der trifft einen schlafenden
+      Container. 8,2 s Kaltstart an genau der Stelle, an der jemand zum
+      ersten Mal Vertrauen fasst, ist der teuerste Ort im ganzen Ablauf.
+
+  ─────────────────────────────────────────────────────────────────────
+  (2) In deploy/nginx.conf, im server-Block für iyambae.fm:
+
+        # Drosselung getrennt vom Fehlerbericht: dort geht es um Fluten,
+        # hier um Erraten. Fünf Anmeldeversuche je Minute und Adresse.
+        limit_req_zone $binary_remote_addr zone=anmeldung:1m rate=5r/m;
+
+        location /api/ {
+            # KEIN `add_header Cache-Control $cache_regel` erben lassen.
+            # Die Karte oben liefert für application/json den Vorgabewert
+            # "public, max-age=3600" — eine Merkliste mit `public` im
+            # Zwischenspeicher eines Firmenproxys ist genau der Unfall, den
+            # man nicht wieder einsammelt.
+            add_header Cache-Control "no-store" always;
+            add_header X-Content-Type-Options "nosniff" always;
+            # Der Anmeldedienst antwortet, nicht nginx. Er läuft im selben
+            # Pod, deshalb 127.0.0.1 — dasselbe Muster wie bei /fehler.
+            proxy_pass http://127.0.0.1:8081;
+            proxy_set_header Host $host;
+            # Ohne diese Zeile sieht der Dienst die Proxy-Adresse
+            # (100.100.x.x) und kann nicht drosseln. Gekürzt wird erst beim
+            # Protokollieren, siehe die Karte `$besucher` weiter oben.
+            proxy_set_header X-Forwarded-For $http_x_forwarded_for;
+            client_max_body_size 32k;   # eine Merkliste, kein Datenstrom
+            # Der Sidecar kann neu starten. Dann soll die Seite eine ehrliche
+            # Fehlermeldung bekommen, keine nginx-Standardseite in HTML — die
+            # JavaScript-Seite versuchte sonst, HTML als JSON zu lesen, und
+            # meldete einen Syntaxfehler statt „Dienst schläft".
+            proxy_intercept_errors on;
+            error_page 502 503 504 = @api_schlaeft;
+        }
+
+        location = /api/anmelden {
+            limit_req zone=anmeldung burst=2 nodelay;
+            proxy_pass http://127.0.0.1:8081;
+        }
+
+        location @api_schlaeft {
+            add_header Content-Type "application/json" always;
+            add_header Cache-Control "no-store" always;
+            return 503 '{"fehler":"dienst_schlaeft"}';
+        }
+
+      Und: In dieser Datei steht heute KEINE Content-Security-Policy. Mit
+      Anmeldung gehört eine hin — sonst kann ein eingeschleustes Skript den
+      Anmeldezustand mitlesen. Das ist ein eigener Arbeitsschritt, weil die
+      Seite Google Fonts nachlädt und die Regel das aushalten muss.
+
+  ─────────────────────────────────────────────────────────────────────
+  (3) In sw.js, ganz oben im fetch-Behandler, VOR allem anderen:
+
+        // /api/ NIEMALS abfangen und NIEMALS zwischenspeichern.
+        //
+        // Der Behandler unten legt jede erfolgreiche Antwort eigener
+        // Herkunft in den Zwischenspeicher. Eine Antwort von /api/platten
+        // gehört einem angemeldeten Menschen — läge sie im Speicher, bekäme
+        // sie der nächste, der an diesem Gerät die Seite öffnet, auch nach
+        // dem Abmelden. Auf einem Familien-Tablett ist das kein
+        // Schönheitsfehler, sondern eine Datenpanne.
+        if (url.pathname.startsWith('/api/')) return;
+
+      Und `/api/` gehört NICHT in SHELL_FILES.
+      Scripts/pruefe-shell-dateien.py sollte künftig meckern, wenn doch.
+*/

@@ -1,0 +1,30 @@
+# An diesem Projekt arbeiten mehrere Rechner: ein Mac, ein Windows-Rechner,
+# gelegentlich ein Linux-Laptop. Ohne diese Datei tauscht Git auf Windows beim
+# Auschecken alle Zeilenenden auf CRLF und auf dem Mac wieder zurueck. Das
+# Ergebnis sind Diffs, in denen jede Zeile geaendert aussieht, obwohl niemand
+# etwas geaendert hat — und Konflikte, die keine sind.
+#
+# Regel: im Repository immer LF, im Arbeitsordner ebenfalls LF, auf jedem
+# System. Browser und Editoren kommen damit ueberall zurecht.
+
+* text=auto eol=lf
+
+*.html text eol=lf
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.css  text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.svg  text eol=lf
+*.webmanifest text eol=lf
+
+# Bilder nie anfassen — eine Zeilenenden-Umschreibung zerstoert sie.
+*.webp binary
+*.png  binary
+*.jpg  binary
+*.ico  binary
+
+# Die .roh sind Rohdownloads gemischten Typs: teils Icons, teils Targa, in
+# zwei Faellen sogar HTML-Fehlerseiten, die beim Holen des Logos anfielen.
+# Als binaer behandeln, sonst schreibt Git die echten Bilder darunter kaputt.
+*.roh binary

@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════
-   432Hz Radio — Aussehen
-   Dunkler Grund, Pink als Akzent, Orbitron fürs Logo.
+   IYAMBAE Radio — Aussehen
+   Dunkler Grund, Gold als Akzent, Orbitron fürs Logo.
+   (Die Variable heißt aus historischen Gründen noch --pink.)
    ═══════════════════════════════════════════════════════════════════ */
 
 :root {
@@ -22,7 +23,24 @@
     --schrift:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --mono:         'JetBrains Mono', ui-monospace, monospace;
     --anzeige:      'Orbitron', var(--schrift);
-    --rund:         14px;
+    /* Kein Ersatzschriftschnitt mit size-adjust.
+       Versucht und wieder entfernt: Angeglichene Massen fuer Inter, Orbitron
+       und JetBrains Mono gegen Arial haben den Layoutsprung auf dem Handy
+       von 0,122 auf 0,217 VERSCHLECHTERT. Die Werte waren aus
+       veroeffentlichten Metriken uebernommen, nicht an dieser Seite
+       gemessen — und offenbar passen sie zu den hier gesetzten Groessen
+       nicht. Wer es erneut versucht, misst zuerst die echten Massen beider
+       Schriften bei den hier verwendeten Groessen. Geraten macht es
+       schlimmer. */
+    /* 2 px, ueberall wo Text steht: Chip, Karte, Knopf, Suchfeld, Panel.
+       Vierzehn Pixel sind die Rundung, an der man Software erkennt, und in
+       einem Plattenladen war sie schlicht falsch.
+
+       AUSGENOMMEN und das ist kein Bruch, sondern die Regel dahinter: Was
+       einen echten Drehknopf oder eine Lampe abbildet, bleibt rund —
+       .knopf-rund am Spieler, .status-punkt, .schalter__punkt. Karten sind
+       eckig, Knoepfe sind rund. Zwei Formen, eine Begruendung. */
+    --rund:         2px;
     --schatten:     0 8px 28px rgba(0, 0, 0, 0.45);
     --glut:         0 0 0 1px rgba(242, 183, 5, 0.55), 0 0 22px rgba(242, 183, 5, 0.30);
 }
@@ -87,7 +105,7 @@ a { color: var(--pink-hell); }
     flex: 1 1 14rem;
     display: flex; align-items: center; gap: 0.5rem;
     padding: 0.45rem 0.85rem;
-    background: var(--karte); border: 1px solid var(--rand); border-radius: 999px;
+    background: var(--karte); border: 1px solid var(--rand); border-radius: var(--rund);
 }
 .kopf__suche input {
     flex: 1; min-width: 0;
@@ -97,11 +115,14 @@ a { color: var(--pink-hell); }
 .kopf__suche input::placeholder { color: var(--text-leise); }
 
 .kopf__schalter { display: flex; align-items: center; gap: 0.5rem; }
+/* Die gemessene Stimmung ist eine Klangangabe — blauer Reiter wie die
+   Klanggrade auf der Huelle und in der Filterleiste. */
 .messung {
+    border-inline-start: 3px solid var(--blau-hell);
     padding: 0.35rem 0.7rem;
     background: rgba(42, 124, 199, 0.16);
     border: 1px solid rgba(62, 146, 214, 0.4);
-    border-radius: 999px;
+    border-radius: var(--rund);
     font-family: var(--mono); font-size: 0.7rem; color: var(--blau-hell);
     white-space: nowrap;
 }
@@ -110,370 +131,174 @@ a { color: var(--pink-hell); }
     display: inline-flex; align-items: center; gap: 0.45rem;
     padding: 0.45rem 0.8rem;
     background: var(--karte); color: var(--text-leise);
-    border: 1px solid var(--rand); border-radius: 999px;
+    border: 1px solid var(--rand); border-radius: var(--rund);
     font-family: var(--mono); font-size: 0.72rem; cursor: pointer;
     transition: all 0.2s ease; white-space: nowrap;
 }
 .schalter:hover:not(:disabled) { border-color: var(--rand-hell); color: var(--text); }
 .schalter:disabled { opacity: 0.5; cursor: not-allowed; }
 .schalter__punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--text-leise); transition: all 0.2s ease; }
-.schalter.ist-an { color: var(--text); border-color: rgba(242, 183, 5, 0.5); }
+/* Laeuft die Umstimmung, traegt der Schalter denselben goldenen Reiter wie
+   alles andere, was zur Marke gehoert. */
+.schalter.ist-an {
+    color: var(--text);
+    border-color: rgba(242, 183, 5, 0.5);
+    border-inline-start: 3px solid var(--pink);
+}
 .schalter.ist-an .schalter__punkt { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
 
-/* ── Kopfbereich ─────────────────────────────────────────────────
-   Links der Plattenspieler, rechts steht, was gerade läuft. */
+/* Hinweis auf die App — die Voreinstellung für alle, die MyRetuner nicht
+   haben, und das sind die allermeisten Besucher. Deshalb sichtbar, aber
+   nicht laut: dieselbe Pillenform wie die Schalter daneben, nur mit einem
+   Anflug Gold. Wer die App hat, sieht sie nach dem ersten Mal nie wieder. */
+.schalter--werbung {
+    text-decoration: none;
+    color: var(--text);
+    border-color: rgba(242, 183, 5, 0.35);
+    background: linear-gradient(180deg, rgba(242, 183, 5, 0.10), rgba(242, 183, 5, 0.03));
+}
+.schalter--werbung:hover {
+    border-color: rgba(242, 183, 5, 0.6);
+    background: linear-gradient(180deg, rgba(242, 183, 5, 0.16), rgba(242, 183, 5, 0.06));
+}
+
+/* ── Plattenspieler ──────────────────────────────────────────────── */
 .hero {
-    display: grid;
-    gap: clamp(1.2rem, 4vw, 2.5rem);
-    align-items: center;
+    display: grid; gap: clamp(1.2rem, 4vw, 2.5rem); align-items: center;
     padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem);
 }
 @media (min-width: 800px) { .hero { grid-template-columns: auto 1fr; } }
 
-.hero__guete {
-    font-family: var(--mono); font-size: 0.72rem; color: var(--gold);
-    text-transform: uppercase; letter-spacing: 0.1em;
-}
-.hero__name {
-    font-family: var(--anzeige);
-    font-size: clamp(1.6rem, 5vw, 2.6rem);
-    font-weight: 900; line-height: 1.15;
-    margin: 0.3rem 0;
-}
-.hero__ort { font-size: 0.9rem; color: var(--text-leise); }
-.hero__kaertchen { margin-top: 0.8rem; max-width: 46rem; color: #d8cfe6; }
-.hero__knoepfe { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
-
 /* ── Plattenspieler ──────────────────────────────────────────────
-   Gebaut wie ein DJ-Deck: Zarge, Teller mit Stroboskoprand, Slipmat,
-   darauf die Platte. Was einen Plattenspieler echt aussehen lässt, sind
-   die Teile, die man erst vermisst, wenn sie fehlen — die glatte
-   Einlaufrille vor der Musik, der Filz unter dem Vinyl, das Lichtband,
-   das über die Rillen wandert. */
+   Der Teller trägt die Platte, die Platte trägt das Label. Gedreht wird
+   nur die Platte — Tonarm und Balkenkranz bleiben ruhig stehen. */
 .plattenspieler {
     position: relative;
     justify-self: center;
-    width: clamp(230px, 44vw, 350px);
+    width: clamp(210px, 42vw, 320px);
     aspect-ratio: 1;
 }
 
-/* Die Zarge: das Gehäuse. Gebürstetes Metall mit weichem Lichtverlauf. */
-.zarge {
-    position: absolute; inset: 0;
-    border-radius: 4.5%;
-    background:
-        url('textur/metall.webp') center / 60% auto,
-        linear-gradient(152deg, #35304180 0%, #211c2e 42%, #14111b 100%),
-        linear-gradient(152deg, #3b3349 0%, #211c2e 42%, #14111b 100%);
-    /* Graues Korn als soft-light: sichtbar als Struktur, nicht als Farbe.
-       Ein farbiges oder kontrastreiches Bild lässt Metall wie Plastik
-       aussehen — das Auge liest Buntheit als billiges Material. */
-    background-blend-mode: soft-light, normal, normal;
-    box-shadow:
-        /* Der Schlagschatten des Geräts auf der Unterlage */
-        0 26px 50px rgba(0, 0, 0, 0.66),
-        0 6px 16px rgba(0, 0, 0, 0.5),
-        /* Die Oberkante fängt Licht, die Unterkante liegt im Schatten —
-           daran erkennt das Auge, dass etwas eine Höhe hat */
-        inset 0 1px 0 rgba(255, 255, 255, 0.13),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.65),
-        inset 1px 0 0 rgba(255, 255, 255, 0.045),
-        inset -1px 0 0 rgba(0, 0, 0, 0.42);
-    padding: 7%;
-}
-/* Die feine Struktur des gebürsteten Metalls */
-.zarge__flaeche {
-    position: absolute; inset: 0;
-    border-radius: 4.5%;
-    background: repeating-linear-gradient(96deg,
-        rgba(255, 255, 255, 0.018) 0px,
-        rgba(255, 255, 255, 0.018) 1px,
-        transparent 1px, transparent 3px);
-    pointer-events: none;
-}
-
-/* Der Teller */
 .teller {
-    position: absolute; inset: 7%;
+    position: absolute; inset: 0;
     border-radius: 50%;
-    /* Der Teller sitzt in einer Vertiefung, nicht auf der Fläche */
-    background: radial-gradient(circle at 50% 50%, #232032 0%, #16131f 72%, #0d0b13 100%);
+    background:
+        radial-gradient(circle at 50% 50%, #1c1226 0%, #120b1c 62%, #0a0612 100%);
     box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-        inset 0 8px 18px rgba(0, 0, 0, 0.7),
-        inset 0 -3px 8px rgba(255, 255, 255, 0.035),
-        0 0 0 1px rgba(0, 0, 0, 0.55),
-        0 2px 6px rgba(0, 0, 0, 0.4);
+        0 18px 40px rgba(0, 0, 0, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06);
     display: grid; place-items: center;
 }
+.teller canvas { position: absolute; width: 100%; height: 100%; pointer-events: none; }
 
-/* Die Stroboskoppunkte am Tellerrand — das Erkennungszeichen jedes
-   DJ-Decks. Sie stehen beim richtigen Tempo scheinbar still. */
-.teller__strobo {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background: repeating-conic-gradient(from 0deg at 50% 50%,
-        rgba(255, 220, 150, 0.85) 0deg 1.4deg,
-        transparent 1.4deg 4.2deg);
-    mask: radial-gradient(circle at 50% 50%, transparent 90%, #000 91.5%, #000 97%, transparent 98.5%);
-    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 90%, #000 91.5%, #000 97%, transparent 98.5%);
-    pointer-events: none;
-    z-index: 2;
-}
-.teller__rand {
-    position: absolute; inset: 3.5%;
-    border-radius: 50%;
-    box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-        inset 0 0 12px rgba(0, 0, 0, 0.5);
-    pointer-events: none;
-}
-
-/* Die Slipmat: Filz zwischen Teller und Platte */
-.slipmat {
-    position: absolute; inset: 5.5%;
-    border-radius: 50%;
-    background:
-        url('textur/filz.webp') center / 120% 120%,
-        radial-gradient(circle at 42% 36%, #2e2a3d 0%, #201d2c 60%, #17141f 100%);
-    background-blend-mode: soft-light, normal;
-    pointer-events: none;
-}
-
-/* Die Platte */
 .platte {
-    position: absolute; inset: 9%;
+    position: absolute; inset: 6%;
     border-radius: 50%;
-    /* Erzeugte Textur statt Farbverlauf: 131 Rillen mit schwankendem
-       Abstand, 340 Staubkörner, sieben feine Kratzer. Glatte Verläufe
-       sehen immer nach Zeichnung aus — Unregelmäßigkeit macht den
-       Unterschied. Siehe tools/textur-bauen.mjs */
-    background:
-        url('textur/vinyl.webp') center / 100% 100% no-repeat,
-        radial-gradient(circle at 50% 50%, #14111c 0%, #0a0810 62%, #060509 100%);
+    background: radial-gradient(circle at 50% 50%, #14101c 0%, #0b0810 70%, #070509 100%);
     display: grid; place-items: center;
     will-change: transform;
-    z-index: 1;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
 }
 
-/* Die Rillen — enger gestaffelt als zuvor, damit sie nach Vinyl aussehen
-   und nicht nach Zielscheibe. Ausgespart bleiben Label, Einlauf und
-   Auslauf, so wie bei einer echten Platte. */
+/* Die Rillen: viele feine Ringe, nach außen enger werdend */
 .platte__rillen {
     position: absolute; inset: 0;
     border-radius: 50%;
-    /* Ein feiner Zusatzschimmer über der Textur — nur so viel, dass die
-       Rillen bei kleiner Darstellung nicht verschwinden */
     background: repeating-radial-gradient(circle at 50% 50%,
-        rgba(255, 255, 255, 0.045) 0px,
-        rgba(255, 255, 255, 0.045) 0.5px,
-        transparent 0.5px,
-        transparent 3px);
-    mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 33%, #000 92%, transparent 95%);
-    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 33%, #000 92%, transparent 95%);
-    pointer-events: none;
-}
-/* Einlaufrille: der glatte Ring außen, wo die Nadel aufsetzt */
-.platte__einlauf {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%,
-        transparent 92%, rgba(255, 255, 255, 0.045) 93.5%, transparent 96%);
-    pointer-events: none;
-}
-/* Auslaufrille: der glatte Ring innen, kurz vor dem Label */
-.platte__auslauf {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%,
-        transparent 29%, rgba(255, 255, 255, 0.05) 31%, transparent 33%);
-    pointer-events: none;
-    z-index: 2;
+        rgba(255, 255, 255, 0.055) 0px,
+        rgba(255, 255, 255, 0.055) 1px,
+        transparent 1px,
+        transparent 4px);
+    mask: radial-gradient(circle at 50% 50%, transparent 27%, #000 29%, #000 99%, transparent 100%);
+    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 27%, #000 29%, #000 99%, transparent 100%);
 }
 
-/* Das Lichtband, das über die Rillen wandert — der eine Effekt, an dem
-   man Vinyl sofort erkennt. Zwei gegenüberliegende Bögen, weil Licht
-   sich in der Rille zweimal bricht. */
+/* Der Lichtreflex, der über die Platte wandert */
 .platte__glanz {
-    position: absolute; inset: 9%;
+    position: absolute; inset: 0;
     border-radius: 50%;
-    background: conic-gradient(from 202deg at 50% 50%,
+    background: conic-gradient(from 210deg at 50% 50%,
         transparent 0deg,
-        rgba(255, 246, 220, 0.20) 13deg,
-        rgba(255, 252, 242, 0.34) 25deg,
-        rgba(255, 246, 220, 0.13) 39deg,
-        transparent 62deg,
-        transparent 170deg,
-        rgba(255, 246, 220, 0.14) 188deg,
-        rgba(255, 252, 242, 0.24) 203deg,
-        rgba(255, 246, 220, 0.09) 217deg,
-        transparent 240deg);
-    mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 34%, #000 93%, transparent 96%);
-    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 34%, #000 93%, transparent 96%);
-    pointer-events: none;
-    z-index: 3;
+        rgba(255, 255, 255, 0.07) 22deg,
+        rgba(255, 255, 255, 0.02) 48deg,
+        transparent 78deg,
+        transparent 180deg,
+        rgba(255, 255, 255, 0.05) 205deg,
+        transparent 250deg);
 }
 
-/* Der Balkenkranz liegt als Lichtschein UM die Platte, nicht darauf. */
-.teller canvas {
-    position: absolute;
-    left: 50%; top: 50%;
-    width: 142%; height: 142%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Das Label — hier liegt das Logo des Senders, sonst die IYAMBAE-Marke */
+/* Das Label — hier sitzt das Logo des Senders, sonst die IYAMBAE-Marke */
 .label {
     position: relative;
-    width: 36%; aspect-ratio: 1;
+    width: 40%; aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 38% 32%, #fffdf6 0%, #f6efdd 58%, #e6daba 100%);
-    box-shadow:
-        0 1px 4px rgba(0, 0, 0, 0.5),
-        inset 0 0 0 1px rgba(0, 0, 0, 0.12),
-        inset 0 -2px 5px rgba(0, 0, 0, 0.12);
+    background: radial-gradient(circle at 38% 32%, #fffdf6 0%, #f6efdd 58%, #e9dec4 100%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.10);
     display: grid; place-items: center;
     overflow: hidden;
-    z-index: 4;
 }
-.label__bild { width: 84%; height: 84%; object-fit: contain; }
-.label.traegt-marke .label__bild { width: 100%; height: 100%; }
-
-/* Die Spindel.
-   Sāmi-Ras Beobachtung: Der blaue Punkt im Wirbel der Spirale sitzt genau
-   dort, wo bei einem Plattenspieler der Dorn durch das Loch der Platte geht.
-   Bei der Hausmarke ist er selbst die Spindel und bekommt nur ein
-   Glanzlicht; fremde Logos haben keinen solchen Punkt, dort wird sie
-   gezeichnet — in derselben Farbe, damit es dasselbe Ding bleibt. */
-.spindel {
+.label__bild {
+    width: 84%; height: 84%;
+    object-fit: contain;
+    /* Sender-Logos kommen in allen Formaten; das hält sie ruhig */
+    filter: saturate(1.05);
+}
+.label__loch {
     position: absolute;
-    left: 50%; top: 50%;
-    width: 4.2%; aspect-ratio: 1;
-    transform: translate(-50%, -50%);
+    width: 7%; aspect-ratio: 1;
     border-radius: 50%;
-    background:
-        radial-gradient(circle at 34% 28%,
-            rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 26%, transparent 54%),
-        radial-gradient(circle at 50% 50%, #3E92D6 0%, #1C68AE 70%, #123f6d 100%);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 -1px 2px rgba(0, 0, 0, 0.4);
-    pointer-events: none;
-    z-index: 6;
-}
-.label.traegt-marke ~ .spindel {
-    width: 3.4%;
-    background: radial-gradient(circle at 34% 28%,
-        rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.2) 32%, transparent 60%);
-    box-shadow: none;
-}
-.label::after {
-    content: '';
-    position: absolute; left: 50%; top: 50%;
-    width: 15%; aspect-ratio: 1;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.2);
-    pointer-events: none;
+    background: #0a0610;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
-/* ── Tonarm ──────────────────────────────────────────────────────
-   Gekröpftes Rohr mit Gegengewicht, Headshell und Nadel. In Ruhe liegt er
-   auf der Stütze, beim Abspielen senkt er sich auf die Einlaufrille.
-   Der Winkel wird aus app.js gesetzt: Ein klassenbasierter Wechsel auf
-   einem SVG-<g> kommt im Renderer nicht an. */
+/* Tonarm: liegt in Ruhe neben der Platte, setzt beim Abspielen auf.
+   Der Schwenk ist bewusst träge — ein Tonarm fällt nicht, er senkt sich. */
 .tonarm {
     position: absolute;
-    inset: 5% 4% auto auto;
-    width: 66%; height: 66%;
+    inset: -4% -6% auto auto;
+    width: 62%; height: 62%;
     overflow: visible;
     pointer-events: none;
-    z-index: 5;
-    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.55));
 }
 .tonarm__schwenk {
     transform-origin: 88px 16px;
     transform: rotate(-30deg);
-    transition: transform 1.6s cubic-bezier(0.35, 1.0, 0.4, 1);
+    transition: transform 1.4s cubic-bezier(0.33, 1.0, 0.4, 1);
 }
-.tonarm__rohr        { fill: none; stroke: url(#rohrMetall); stroke-width: 3.8; stroke-linecap: round; }
-.tonarm__gewicht     { fill: url(#gewichtMetall); stroke: rgba(255,255,255,0.14); stroke-width: 0.5; }
-.tonarm__gewichtring { fill: rgba(255, 255, 255, 0.13); }
-.tonarm__shell       { fill: #d8d3e2; stroke: #9c96ab; stroke-width: 0.4; }
-.tonarm__system      { fill: #2a2534; }
-.tonarm__nadel       { stroke: var(--gold); stroke-width: 1.1; stroke-linecap: round; opacity: 0.6; }
-.tonarm__lager       { fill: url(#lagerMetall); stroke: rgba(255,255,255,0.16); stroke-width: 0.8; }
-.tonarm__lagerkern   { fill: #8f8899; }
-.tonarm__stuetze rect { fill: #241f2f; stroke: rgba(255,255,255,0.1); stroke-width: 0.4; }
+/* Der Winkel wird aus app.js gesetzt, nicht über eine Klasse: ein
+   klassenbasierter Wechsel auf einem SVG-<g> kommt im Renderer nicht an,
+   ein direkt gesetzter Wert schon. */
+
+.tonarm__rohr    { stroke: #6b6379; stroke-width: 2.6; stroke-linecap: round; }
+.tonarm__gewicht { fill: #3a3446; stroke: #55506a; stroke-width: 0.8; }
+.tonarm__kopf rect { fill: #59526b; stroke: #7d7592; stroke-width: 0.6; }
+.tonarm__nadel   { stroke: var(--gold); stroke-width: 1.4; stroke-linecap: round; opacity: 0.75; }
+.tonarm__lager   { fill: #2a2534; stroke: #4a4358; stroke-width: 1.2; }
+.tonarm__lagerkern { fill: #6b6379; }
+
+/* Wenn die Nadel liegt, glimmt sie leicht — der einzige Moment, in dem
+   der Arm etwas tut. */
 body.spielt .tonarm__nadel { opacity: 1; filter: drop-shadow(0 0 2px var(--gold)); }
 
-/* ── Bedienelemente an der Zarge ─────────────────────────────────── */
-.zarge__regler {
-    position: absolute; left: 4.5%; bottom: 6%;
-    display: flex; align-items: flex-end; gap: 12%;
-    width: 21%;
-    pointer-events: none;
-}
-/* Die eingelassene Mulde, in der der Schieber läuft */
-.pitch {
-    position: relative;
-    width: 26%; height: 0; padding-bottom: 92%;
-    border-radius: 2px;
-    background: linear-gradient(180deg, #0b0910, #17141f);
-    box-shadow:
-        inset 0 0 0 1px rgba(0, 0, 0, 0.7),
-        inset 0 2px 5px rgba(0, 0, 0, 0.8),
-        0 1px 0 rgba(255, 255, 255, 0.05);
-    overflow: visible;
-}
-/* Die Mittelrasterung, die jeder Pitch-Fader hat */
-.pitch::before {
-    content: '';
-    position: absolute; left: -55%; right: -55%; top: 50%;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.16);
-}
-.pitch__schieber {
-    position: absolute;
-    left: -60%; right: -60%;
-    top: 44%;
-    height: 9%;
-    border-radius: 1.5px;
-    background: linear-gradient(180deg, #8d8699 0%, #5c5570 46%, #2c2738 100%);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    transition: top 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-}
-body.spielt .pitch__schieber { top: 58%; }
-
-.startknopf {
-    width: 34%; aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(circle at 36% 30%, #322c3d, #16131e);
-    box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.09),
-        inset 0 -1px 2px rgba(0, 0, 0, 0.6),
-        0 1px 3px rgba(0, 0, 0, 0.7);
-    align-self: flex-end;
-    transition: box-shadow 0.4s ease, background 0.4s ease;
-}
-body.spielt .startknopf {
-    background: radial-gradient(circle at 36% 30%, #4a4030, #2a2318);
-    box-shadow: inset 0 0 0 1px rgba(242, 183, 5, 0.4), 0 0 10px rgba(242, 183, 5, 0.35);
-}
-
-/* Gedreht wird nur, wenn Ton läuft. 33⅓ Umdrehungen je Minute wären
-   1,8 Sekunden — hier langsamer, sonst flimmert das Label. */
+/* Gedreht wird nur, wenn Ton läuft. 33⅓ Umdrehungen pro Minute
+   sind 1,8 Sekunden je Umdrehung — hier bewusst langsamer, sonst
+   flimmert das Label. */
+body.spielt .platte { animation: dreht 3.6s linear infinite; }
 .platte { animation: dreht 3.6s linear infinite; animation-play-state: paused; }
 body.spielt .platte { animation-play-state: running; }
 @keyframes dreht { to { transform: rotate(360deg); } }
+
+.hero__guete { font-family: var(--mono); font-size: 0.72rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; }
+.hero__name { font-family: var(--anzeige); font-size: clamp(1.6rem, 5vw, 2.6rem); font-weight: 900; line-height: 1.15; margin: 0.3rem 0; }
+.hero__ort { font-size: 0.9rem; color: var(--text-leise); }
+.hero__kaertchen { margin-top: 0.8rem; max-width: 46rem; color: #d8cfe6; }
+.hero__knoepfe { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
 
 /* ── Knöpfe ──────────────────────────────────────────────────────── */
 .knopf {
     display: inline-flex; align-items: center; gap: 0.45rem;
     padding: 0.6rem 1.1rem;
     background: var(--karte-hoch); color: var(--text);
-    border: 1px solid var(--rand); border-radius: 999px;
+    border: 1px solid var(--rand); border-radius: var(--rund);
     font-family: inherit; font-size: 0.88rem; font-weight: 500;
     cursor: pointer; text-decoration: none;
     transition: all 0.2s ease;
@@ -504,7 +329,7 @@ body.spielt .platte { animation-play-state: running; }
     padding: 1rem 1.2rem;
     background: var(--karte); color: var(--text);
     border: 1px solid var(--rand); border-radius: var(--rund);
-    font-family: inherit; text-align: left; cursor: pointer;
+    font-family: inherit; text-align: start; cursor: pointer;
     transition: all 0.2s ease;
 }
 .griff:hover { transform: translateY(-2px); border-color: var(--rand-hell); box-shadow: var(--schatten); }
@@ -512,7 +337,11 @@ body.spielt .platte { animation-play-state: running; }
 .griff--zufall:hover  { border-color: rgba(242, 183, 5, 0.55); box-shadow: var(--glut); }
 .griff__icon  { font-size: 1.5rem; }
 .griff__titel { font-weight: 600; font-size: 1rem; }
-.griff__unter { font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise); }
+.griff__unter {
+    font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise);
+    /* Der Zaehler wird nachgetragen — Hoehe vorher festhalten. */
+    min-height: 1.1em; display: block;
+}
 
 /* ── Sender der Woche ────────────────────────────────────────────
    Die redaktionelle Empfehlung: liegt für alle Besucher einer Woche fest,
@@ -546,216 +375,888 @@ body.spielt .platte { animation-play-state: running; }
     padding: 0.5rem 0.7rem;
     background: rgba(255, 255, 255, 0.04); color: var(--text);
     border: 1px solid var(--rand); border-radius: 0.6rem;
-    font-family: inherit; font-size: 0.82rem; text-align: left; cursor: pointer;
+    font-family: inherit; font-size: 0.82rem; text-align: start; cursor: pointer;
     transition: all 0.15s ease;
 }
 .tipp__dazuKnopf:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--rand-hell); }
 .tipp__dazuKnopf span { font-family: var(--mono); font-size: 0.62rem; color: var(--text-leise); }
 
 /* ── Auslage ─────────────────────────────────────────────────────── */
-.auslage { padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0; }
-.auslage__kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+.auslage { padding: clamp(1.5rem, 4vw, 2.5rem) 0 0; min-width: 0; }
+.auslage__kopf {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    margin-bottom: 0.9rem;
+}
 .auslage__titel { font-family: var(--anzeige); font-size: 1.15rem; font-weight: 600; }
+
+/* Das Raster. Bis sechs Spalten auf breiten Schirmen — hundertneunundzwanzig
+   Hüllen in vier Spalten sind zweiunddreißig Reihen Scrollweg. */
+/* minmax(0, 1fr) statt 1fr, und das ist kein Feinschliff.
+
+   1fr bedeutet minmax(auto, 1fr). Das Auto-Minimum einer Rasterspalte ist
+   die Min-Content-Breite ihres Inhalts — hier 171 px, weil Name und
+   Klangangabe in einer Zeile stehen, die nicht umbricht. Bei 320 px
+   Fensterbreite rechnete das Raster daraus 388 px, und 51 px Karte lagen
+   ausserhalb des Bildes. Erreichbar waren sie nicht: body versteckt
+   waagerechtes Scrollen, es gab also nicht einmal einen Rollbalken.
+
+   Gemessen nach der Aenderung: Spalten 136,8 px, rechte Kante bei 304,
+   nichts abgeschnitten. */
 .auslage__raster, .regal__raster {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem;
 }
-@media (min-width: 720px)  { .auslage__raster, .regal__raster { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 1100px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 720px)  { .auslage__raster, .regal__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; } }
+@media (min-width: 1100px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1500px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 1900px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 
-/* ── Etiketten ───────────────────────────────────────────────────── */
-.filter {
-    display: grid; gap: 0.6rem;
-    padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0;
-}
-.filter__guete { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
-.filter__titel {
-    font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise);
-    text-transform: uppercase; letter-spacing: 0.12em; margin-right: 0.2rem;
-}
-.guete-knopf {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    padding: 0.3rem 0.75rem;
-    background: rgba(62, 146, 214, 0.12); color: var(--blau-hell);
-    border: 1px solid rgba(62, 146, 214, 0.32); border-radius: 999px;
-    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
-    transition: all 0.15s ease;
-}
-.guete-knopf span { opacity: 0.6; font-size: 0.65rem; }
-.guete-knopf:hover { background: rgba(62, 146, 214, 0.22); }
-.guete-knopf.ist-aktiv { background: var(--blau); border-color: var(--blau); color: #fff; }
-.guete-knopf.ist-aktiv span { opacity: 0.85; }
+/* ── Regalwand ───────────────────────────────────────────────────
+   Die Kategorieübersicht.
 
-.etiketten { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.etikett {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    padding: 0.3rem 0.7rem;
-    background: var(--karte); color: var(--text-leise);
-    border: 1px solid var(--rand); border-radius: 999px;
-    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
-    transition: all 0.15s ease;
-}
-.etikett span { opacity: 0.55; font-size: 0.65rem; }
-.etikett:hover { color: var(--text); border-color: var(--rand-hell); }
-.etikett.ist-aktiv { background: var(--pink); border-color: var(--pink); color: #fff; }
-.etikett.ist-aktiv span { opacity: 0.8; }
+   Bisher gab es die Regale nur als Überschriften mitten im Fluss — man musste
+   an ihnen vorbeiscrollen, um zu erfahren, dass es sie gibt. Neun Fächer, neun
+   Bilder, ein Blick.
 
-/* ── Regale ──────────────────────────────────────────────────────── */
-.regale { padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 4vw, 2.5rem); display: grid; gap: 2.5rem; }
-.regal__kopf { display: flex; align-items: baseline; gap: 0.7rem; }
-.regal__titel { font-family: var(--anzeige); font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 600; }
-.regal__icon { margin-right: 0.2rem; }
-.regal__zahl { font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
-.regal__beschreibung { font-size: 0.85rem; color: var(--text-leise); margin: 0.1rem 0 0.9rem; }
+   Zu den Bildern: Erzeugt, aber nicht erfunden. Jedes Fach zeigt vier echte
+   Cover aus seinem Bestand als Mosaik — genau der Griff, mit dem Spotify und
+   Apple Music ihre Sammlungen bebildern. Ein gemaltes Fantasiebild wäre
+   hübscher und würde lügen: Es zeigte nicht, was im Fach steht. Das Mosaik
+   zeigt es, und es bleibt richtig, wenn morgen ein Sender dazukommt. */
+.regalwand { padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0.5rem; }
+.regalwand__kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+.regalwand__titel { font-family: var(--anzeige); font-size: 1.15rem; font-weight: 600; }
+.regalwand__zahl { font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise); }
+.regalwand__raster {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem;
+}
+@media (min-width: 560px)  { .regalwand__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 900px)  { .regalwand__raster { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; } }
+@media (min-width: 1200px) { .regalwand__raster { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 
-/* ── Zäsur vor dem letzten Regal ──────────────────────────────────
-   Der Laden ordnet sich vom Eigenwilligsten zum Vertrautesten. Wer bis
-   hierher gescrollt ist, hat acht Regale Unbekanntes hinter sich — was
-   jetzt kommt, ist die Tür, durch die manche überhaupt erst hereinkommen.
-   Deshalb ein Hinweisschild statt einer Hintertür. */
-.zaesur {
-    display: flex; align-items: center; gap: 1rem;
-    margin: 1.5rem 0 -0.5rem;
-}
-.zaesur__strich {
-    flex: 1; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--rand-hell), transparent);
-}
-.zaesur__text {
-    font-family: var(--mono); font-size: 0.68rem;
-    color: var(--text-leise);
-    letter-spacing: 0.08em;
-    white-space: nowrap;
-}
-@media (max-width: 560px) {
-    .zaesur__text { white-space: normal; text-align: center; font-size: 0.63rem; }
-}
-
-/* Das zurückgenommene Regal: da, aber nicht drängend. Kein goldener
-   Akzent, gedämpfte Farben, etwas kleinere Schrift im Kopf. */
-.regal.nimmt-sich-zurueck .regal__titel { font-size: clamp(1rem, 2.6vw, 1.25rem); color: var(--text-leise); }
-.regal.nimmt-sich-zurueck .regal__icon  { opacity: 0.6; }
-.regal.nimmt-sich-zurueck .karte        { background: #0f0c17; }
-.regal.nimmt-sich-zurueck .karte__bild  { filter: saturate(0.72) brightness(0.88); }
-.regal.nimmt-sich-zurueck .karte:hover .karte__bild { filter: saturate(1) brightness(1); }
-.regal.nimmt-sich-zurueck .marke--gut   { background: rgba(255,255,255,0.06); color: var(--text-leise); }
-
-/* ── Karte ───────────────────────────────────────────────────────── */
-.karte {
+.regalfach {
     position: relative;
-    display: flex; flex-direction: column; gap: 0.5rem;
-    padding: 0.9rem;
+    display: flex; flex-direction: column;
+    width: 100%; padding: 0;
     background: var(--karte);
+    border: 1px solid var(--rand);
+    color: var(--text);
+    font-family: inherit; text-align: start; cursor: pointer;
+    transition: border-color 0.18s ease, transform 0.18s ease,
+                box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.regalfach:hover {
+    transform: translateY(-3px);
+    background: var(--karte-hoch);
+    border-color: color-mix(in srgb, var(--regalton) 60%, transparent);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+}
+.regalfach.ist-aktiv {
+    border-color: var(--regalton);
+    box-shadow: 0 0 0 1px var(--regalton),
+                0 0 20px color-mix(in srgb, var(--regalton) 35%, transparent);
+}
+
+.regalfach__mosaik {
+    position: relative;
+    aspect-ratio: 1;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    background: #0d0916;
+    overflow: hidden;
+    /* Sonst mischt sich der Regalton mit dem Seitenhintergrund statt mit dem
+       Mosaik darunter. */
+    isolation: isolate;
+}
+.regalfach__mosaik img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.4s ease;
+}
+.regalfach:hover .regalfach__mosaik img { transform: scale(1.05); }
+
+/* Der Regalton faerbt das Mosaik ein — die Helligkeit der Cover bleibt, die
+   Farbe wird die des Fachs. Ohne das sind neun Faecher nebeneinander ein
+   Flickenteppich aus sechsunddreissig Logos statt neun unterscheidbarer
+   Faecher. Mit ihm liest man die Wand wie farbige Trennkarten im Regal. */
+.regalfach__mosaik::after {
+    content: '';
+    position: absolute; inset: 0; z-index: 1;
+    background: var(--regalton);
+    mix-blend-mode: color;
+    opacity: 0.9;
+    pointer-events: none;
+}
+/* Und darueber etwas Tiefe, damit die Kachel nicht flach leuchtet. */
+.regalfach__mosaik::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(155deg,
+        rgba(5, 2, 10, 0.10), rgba(5, 2, 10, 0.62));
+    pointer-events: none;
+}
+
+/* Der Name steht UNTER dem Bild, nicht darin. Im Bild lag er auf mal hellen,
+   mal dunklen Covern und stiess bei zwei Zeilen ueber die Kante. */
+.regalfach__text {
+    display: grid; gap: 0.1rem;
+    padding: 0.6rem 0.7rem 0.7rem;
+    border-top: 1px solid var(--rand);
+}
+.regalfach__name {
+    font-family: var(--anzeige); font-weight: 700;
+    font-size: 0.85rem; line-height: 1.2;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+    /* Zwei Zeilen fest: "Japan" braucht eine, "Jazz & Verwandtes" zwei. Ohne
+       feste Hoehe sind die neun Faecher unterschiedlich hoch, und der
+       Platzhalter kann die Hoehe nicht vorher reservieren. */
+    min-height: 2.4em;
+}
+.regalfach__zahl {
+    font-family: var(--mono); font-size: 0.62rem;
+    color: color-mix(in srgb, var(--regalton) 75%, #ffffff);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DER REITER — das eine Prinzip, das alles zusammenhält
+
+   Vorher hatte diese Seite drei Formensprachen nebeneinander: Pillen mit
+   999 px Rundung für die Filter, scharfkantige Quadrate für die Hüllen,
+   gerundete Kästen für alles andere. Ich hatte das einmal damit begründet,
+   ein Aufkleber sei nun mal rund. Das war eine Ausrede dafür, die Arbeit
+   nicht zu machen — drei Sprachen in einem Bild sind keine Absicht, sondern
+   ein Versäumnis, und genau daran erkennt man erzeugte Oberflächen.
+
+   Was einen echten Plattenladen lesbar macht, ist die TRENNKARTE: ein
+   Stück Karton in der Kiste, hochkant, mit einer farbigen Kante. Die Farbe
+   sagt, in welchem Abschnitt man gerade wühlt. Nichts daran ist rund.
+
+   Also trägt hier jedes Element, das eine Kategorie bezeichnet, dieselbe
+   3-px-Kante am Zeilenanfang — und die Farbe sagt, welche Art:
+
+     Gold   Marke, Merkliste, das eigene Regal
+     Blau   Klang — dieselbe Farbe wie die Güteangabe auf der Hülle
+     Weiß   Wofür, die Anlässe
+     Grau   Wo, die Weltregion
+
+   Die Kante gibt es schon an zwei Stellen: an der Klangangabe im Etikett
+   und am Regalkopf. Sie war der Ansatz, dem der Rest jetzt folgt.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.chip {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.34rem 0.7rem;
+    border: 1px solid var(--rand);
+    border-inline-start: 3px solid var(--reiter, var(--rand-hell));
+    border-radius: var(--rund);
+    background: var(--karte);
+    color: var(--text-leise);
+    font-family: var(--mono); font-size: 0.72rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease,
+                border-color 0.18s ease, opacity 0.18s ease;
+}
+.chip span {
+    font-size: 0.65rem;
+    opacity: 0.55;
+    font-variant-numeric: tabular-nums;
+}
+.chip:hover:not(:disabled) { color: var(--text); background: var(--karte-hoch); }
+
+/* Aktiv heißt: die Reiterfarbe füllt den ganzen Chip. Ein Zustand, eine
+   Farbe — nicht Farbe plus Rahmen plus Fettung plus Haken. */
+.chip.ist-aktiv {
+    background: var(--reiter);
+    border-color: var(--reiter);
+    color: var(--grund);
+    font-weight: 700;
+}
+.chip.ist-aktiv span { opacity: 0.65; }
+
+/* Ein Chip, der zu null Treffern führte, bleibt stehen und wird stumpf.
+   Ihn zu verstecken wäre schlimmer: Dann wüsste niemand, dass es diesen
+   Filter gibt, und die Leiste spränge bei jedem Klick um. */
+.chip.ist-stumpf, .chip:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+}
+
+.chip--klang  { --reiter: var(--blau-hell); }
+.chip--wofuer { --reiter: rgba(255, 255, 255, 0.55); }
+.chip--wo     { --reiter: var(--text-leise); }
+.chip--meine  { --reiter: var(--pink); }
+
+/* Der aktive Filter in der Leiste. Trägt sein Kreuz nach, weil sein Klick
+   entfernt statt hinzufügt — dasselbe Aussehen wäre bei umgekehrter Wirkung
+   eine Falle. */
+.chip--aktiv {
+    --reiter: var(--pink);
+    background: var(--pink);
+    border-color: var(--pink);
+    color: var(--grund);
+    font-weight: 700;
+}
+.chip--aktiv span {
+    opacity: 0.7; font-size: 0.85rem; line-height: 1;
+    margin-inline-start: 0.05rem;
+}
+.chip--aktiv:hover { background: var(--pink-hell); color: var(--grund); }
+
+/* ── Filterleiste ────────────────────────────────────────────────
+   Klebt unter dem Kopf. Sie zeigt bewusst wenig: den Knopf zum Panel, drei
+   häufige Fragen, und was gerade greift.
+
+   Sechzehn Chips hineinzuquetschen hieße, sie abzuschneiden — und was
+   abgeschnitten ist, findet niemand. Deshalb bricht diese Leiste um statt
+   zu scrollen, und was nicht hineinpasst, steht vollständig im Panel. */
+.filter {
+    position: sticky; top: var(--kopf-hoehe, 3.6rem); z-index: 40;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;
+    padding: 0.55rem clamp(1rem, 4vw, 2.5rem);
+    background: rgba(5, 2, 10, 0.93);
+    backdrop-filter: blur(16px);
+    border-block: 1px solid var(--rand);
+}
+
+.filter__knopf {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.4rem 0.8rem;
+    background: var(--karte-hoch);
+    border: 1px solid var(--rand-hell);
+    border-inline-start: 3px solid var(--pink);
+    border-radius: var(--rund);
+    color: var(--text);
+    font-family: var(--mono); font-size: 0.74rem;
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+.filter__knopf:hover { background: #241636; }
+.filter__anzahl {
+    font-size: 0.64rem; color: var(--text-leise);
+    font-variant-numeric: tabular-nums;
+}
+/* Greift ein Filter, steht die Zahl der aktiven Achsen im Knopf — golden,
+   damit man von jeder Stelle der Seite sieht, dass gefiltert wird. */
+.filter__knopf[data-aktiv]:not([data-aktiv=""]) {
+    background: rgba(242, 183, 5, 0.14);
+    border-color: var(--pink);
+}
+.filter__knopf[data-aktiv]:not([data-aktiv=""]) .filter__anzahl { display: none; }
+.filter__knopf[data-aktiv]:not([data-aktiv=""])::after {
+    content: attr(data-aktiv);
+    display: grid; place-items: center;
+    min-width: 1.15rem; height: 1.15rem;
+    padding: 0 0.25rem;
+    background: var(--pink); color: var(--grund);
+    font-size: 0.64rem; font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.filter__schnell,
+.filter__aktive { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.filter__stand {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+    margin-inline-start: auto;
+}
+.filter__stand[hidden] { display: none; }
+.filter__zahl {
+    font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise);
+    font-variant-numeric: tabular-nums;
+}
+.filter__zuruecksetzen {
+    padding: 0.3rem 0.7rem;
+    background: none; color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: var(--rund);
+    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease;
+}
+.filter__zuruecksetzen:hover { color: var(--text); border-color: var(--rand-hell); }
+
+/* ── Filterpanel ─────────────────────────────────────────────────
+   Ein natives <dialog>. Es bringt Fokusfang, Escape und den Verdunkler mit —
+   drei Dinge, die man von Hand nachbaut und dabei falsch macht. */
+.filter-panel {
+    width: min(38rem, 100vw);
+    max-height: 85dvh;
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--rand-hell);
+    border-radius: var(--rund);
+    background: var(--grund-hoch);
+    color: var(--text);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+.filter-panel::backdrop { background: rgba(5, 2, 10, 0.72); backdrop-filter: blur(3px); }
+.filter-panel__kopf {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.1rem 0.8rem;
+    border-block-end: 1px solid var(--rand);
+}
+.filter-panel__titel { font-family: var(--anzeige); font-size: 1.05rem; font-weight: 600; }
+.filter-panel__zu {
+    display: grid; place-items: center;
+    width: 2.5rem; height: 2.5rem;
+    background: none; border: 0; border-radius: var(--rund);
+    color: var(--text-leise); cursor: pointer;
+    transition: color 0.18s ease, background-color 0.18s ease;
+}
+.filter-panel__zu:hover { color: var(--text); background: rgba(255, 255, 255, 0.07); }
+.filter-panel__inhalt {
+    display: grid; gap: 1.3rem;
+    padding: 1.1rem;
+    overflow-y: auto;
+    max-height: calc(85dvh - 8.5rem);
+    overscroll-behavior: contain;
+}
+.filter-panel__fuss {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.8rem 1.1rem;
+    border-block-start: 1px solid var(--rand);
+    background: var(--karte);
+}
+.filter-panel__stand {
+    margin-inline-end: auto;
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise);
+    font-variant-numeric: tabular-nums;
+}
+
+.filter__gruppe { display: grid; gap: 0.5rem; }
+.filter__titel {
+    font-family: var(--mono); font-size: 0.64rem; color: var(--text-leise);
+    text-transform: uppercase; letter-spacing: 0.12em;
+}
+/* Hier darf umbrechen — das ist der ganze Sinn des Panels. */
+.filter__chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.filter__chips .chip { white-space: normal; }
+
+/* ── Regalreihen ─────────────────────────────────────────────────
+   Ungefiltert waagerecht, gefiltert als Raster. Zwei Handlungen, zwei
+   Formen: Beim Stöbern geht man die Reihe entlang und zieht Hüllen halb
+   heraus; beim Suchen will man alle Treffer nebeneinander vergleichen.
+
+   content-visibility spart dem Browser Layout und Malen für alles, was
+   gerade nicht im Bild ist — bei 129 Hüllen ist das der Unterschied
+   zwischen flüssigem und zähem Scrollen. contain-intrinsic-size MUSS
+   dabeistehen: Ohne sie fällt der Abschnitt auf null Höhe zusammen, und die
+   Bildlaufleiste springt bei jedem Scrollen. */
+.regale { padding: clamp(1rem, 3vw, 2rem) 0 0; display: grid; gap: 2.2rem; }
+.regal {
+    /* min-width: 0 ist hier nicht Feinschliff, sondern die Bedingung dafuer,
+       dass die Reihe ueberhaupt scrollt. Ein Rasterfeld ist von Haus aus
+       mindestens so breit wie sein Inhalt (min-width: auto); ohne diese
+       Zeile waechst das Feld auf 24 Huellen Breite, die Reihe laeuft nie
+       ueber, und der ganze Seitenkoerper scrollt stattdessen quer.
+       Gemessen: scrollWidth == clientWidth, 24 von 24 Huellen "sichtbar". */
+    min-width: 0;
+    content-visibility: auto;
+    contain-intrinsic-size: auto none auto 380px;
+}
+.regal__kopf {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
+.regal__titel { font-family: var(--anzeige); font-size: clamp(1.05rem, 3vw, 1.4rem); font-weight: 600; }
+.regal__titel::before {
+    content: '';
+    display: inline-block; vertical-align: 0.08em;
+    width: 0.32rem; height: 1em;
+    margin-inline-end: 0.5rem;
+    background: var(--regalton, var(--pink));
+}
+.regal__zahl {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise);
+    font-variant-numeric: tabular-nums;
+}
+.regal__beschreibung {
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    font-size: 0.84rem; color: var(--text-leise); margin: 0.15rem 0 0.8rem;
+}
+
+.regal__blaettern { display: none; margin-inline-start: auto; gap: 0.3rem; }
+.regal__pfeil {
+    display: grid; place-items: center;
+    width: 2rem; height: 2rem;
+    background: var(--karte); color: var(--text-leise);
     border: 1px solid var(--rand); border-radius: var(--rund);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
 }
-.karte:hover { background: var(--karte-hoch); border-color: var(--rand-hell); transform: translateY(-2px); }
+.regal__pfeil:hover:not(:disabled) { color: var(--text); border-color: var(--rand-hell); }
+.regal__pfeil:disabled { opacity: 0.25; cursor: default; }
+/* Nur wo es einen Zeiger gibt. Auf dem Handy wischt man. */
+@media (hover: hover) and (pointer: fine) {
+    .regal__blaettern { display: flex; }
+}
+
+.regal__reihe {
+    display: flex; gap: 0.9rem;
+    overflow-x: auto; overflow-y: hidden;
+    /* proximity statt mandatory: Bei mandatory reisst der Browser eine
+       angefangene Bewegung zum naechsten Fach — auf dem Handy fuehlt sich
+       das an, als wehre sich die Seite. */
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    /* Damit die erste Huelle nicht unter der Kante klebt, wenn man
+       zurueckblaettert oder die Tastatur den Fokus hineinschiebt. */
+    scroll-padding-inline: clamp(1rem, 4vw, 2.5rem);
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    padding-block-end: 0.4rem;
+}
+.regal__reihe::-webkit-scrollbar { display: none; }
+
+/* Der Zeiger sagt, dass man hineingreifen darf. `grab` ist die Geste, die
+   jeder aus Karten und Bildbetrachtern kennt — und sie steht nur da, wo es
+   einen Zeiger gibt und wirklich etwas zu schieben ist. */
+@media (hover: hover) and (pointer: fine) {
+    .regal__reihe { cursor: grab; }
+    .regal__reihe.wird-gezogen { cursor: grabbing; }
+    /*
+     Waehrend des Zuges rastet nichts ein.
+
+     scroll-snap und Ziehen arbeiten sonst gegeneinander: Der Zug schiebt,
+     das Einrasten zieht auf die naechste Huellenkante zurueck. Gemessen kam
+     dabei immer exakt EINE Huellenbreite heraus — 214 px bei 200 px Karte
+     und 14 px Luecke — egal wie weit man zog. Es fuehlte sich an, als sei
+     die Reihe verklemmt.
+
+     Die Klasse bleibt bis zum Stillstand des Nachlaufs; danach rastet die
+     Reihe wieder ein, und die Pfeilknoepfe treffen weiter die Kanten.
+    */
+    .regal__reihe.wird-gezogen,
+    .regal__reihe.rollt-aus { scroll-snap-type: none; }
+    /* Waehrend des Zuges nichts auswaehlen und nichts als Bild wegziehen.
+       Ohne das markiert die Maus Text und schleift Cover hinter sich her —
+       beides sieht aus wie ein Fehler. */
+    .regal__reihe.wird-gezogen,
+    .regal__reihe.wird-gezogen * {
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+    /* Der Zeiger bleibt ein Zeiger, wo etwas anderes gemeint ist. */
+    .regal__reihe :is(button, a) { cursor: pointer; }
+}
+.regal__reihe > .karte {
+    flex: 0 0 clamp(9.2rem, 40vw, 12.5rem);
+    scroll-snap-align: start;
+    height: auto;
+}
+.regal__reihe { align-items: stretch; }
+/* In einer Reihe ist die Huelle rund 156 px breit; zwei Stichwoerter passen
+   dort nicht nebeneinander und brechen um. Dadurch ist die eine Karte
+   22 px hoeher als die andere, und kein Platzhalter kann die Hoehe vorher
+   treffen — gemessen fehlten der Auslage 36 px. Im Raster ist mehr Platz,
+   dort bleiben beide stehen. */
+.regal__reihe .karte__fuss .marke:nth-child(n+2) { display: none; }
+
+/* Gefiltert: Raster statt Reihe. */
+.regale.ist-gefiltert { gap: 2.5rem; }
+.regal__raster {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
+@media (min-width: 720px)  { .regal__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; } }
+@media (min-width: 1100px) { .regal__raster { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1500px) { .regal__raster { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 1900px) { .regal__raster { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+/* ── Reihen-Block (Verlauf) ──────────────────────────────────────
+   Dieselbe Reihe wie ein Regal, aber ohne Regalfarbe — der Verlauf ist kein
+   Fach, sondern eine Spur. */
+.reihe-block { padding-block: clamp(1.2rem, 3vw, 2rem) 0; min-width: 0; }
+.reihe-block[hidden] { display: none; }
+.reihe-block__kopf {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    margin-block-end: 0.8rem;
+}
+.reihe-block__titel {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-family: var(--anzeige); font-size: 1.1rem; font-weight: 600;
+}
+.reihe-block__zeichen { display: grid; place-items: center; color: var(--text-leise); }
+.reihe-block__zahl {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Skelett ─────────────────────────────────────────────────────
+   Die Vorschau, die vor dem Programmcode steht.
+
+   Kein grauer Schimmerblock, sondern eine leere Hülle: quadratisches Feld
+   in Regalfarbe-Grau, darunter zwei Textbalken — exakt die Maße der echten
+   Karte, damit beim Austausch nichts springt. Ein Platzhalter, der andere
+   Maße hat als das, was er ersetzt, ist die Ursache von Layoutsprüngen und
+   damit schlimmer als gar keiner.
+
+   Die Bewegung ist ein einzelner, langsamer Streifen. Ein schnelles Pulsen
+   liest sich als Fehler, nicht als Ladevorgang. */
+.skelett {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(148deg, #1a1228 0%, #140e20 100%);
+}
+.skelett::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(100deg,
+        transparent 30%, rgba(255, 255, 255, 0.045) 48%, transparent 66%);
+    transform: translateX(-100%);
+    animation: streift 1.9s ease-in-out infinite;
+}
+@keyframes streift { to { transform: translateX(100%); } }
+
+.karte--skelett { pointer-events: none; }
+.karte--skelett .karte__bild { aspect-ratio: 1; }
+.karte--skelett .karte__etikett { display: grid; gap: 0.45rem; }
+/* Die Platzhalterteile haben die Masse der Bauteile, die sie vertreten —
+   sonst reservieren sie die falsche Hoehe und verursachen genau den
+   Layoutsprung, den sie verhindern sollen. Gemessen war die Auslage
+   77 px zu kurz, die Regalwand 21 px. */
+.skelett--zeile { height: 0.85rem; width: 78%; }
+.skelett--kurz  { height: 0.62rem; width: 46%; }
+.skelett--titel { display: block; height: 1.1rem; width: 8.5rem; }
+/* Vertritt den Sendernamen: zwei Zeilen bei 0,92 rem und Zeilenhoehe 1,3. */
+.skelett--name  { height: 2.6em; font-size: 0.92rem; width: 82%; }
+/* Vertritt die Stichwortzeile, unten sitzend wie das Original. */
+.skelett--marken { height: 0.85rem; width: 64%; margin-top: auto; }
+.karte--skelett .karte__etikett > .skelett { flex: none; }
+.regal--skelett .regal__kopf { padding-block-end: 0.9rem; }
+.regalfach--skelett { pointer-events: none; }
+.regalfach--skelett .regalfach__mosaik::before,
+.regalfach--skelett .regalfach__mosaik::after { display: none; }
+.regalfach--skelett .regalfach__text { display: grid; gap: 0.4rem; }
+
+/* Der Wochentipp erscheint erst, wenn der Katalog da ist. Frueher stand er
+   auf hidden und schob beim Auftauchen alles darunter um rund 300 px nach
+   unten — der groesste Einzelsprung der Seite. Jetzt haelt er seinen Platz
+   von Anfang an frei. Gemessen: CLS von 0,9 auf … siehe Commit. */
+.tipp[hidden] {
+    display: block;
+    visibility: hidden;
+    min-height: 15rem;
+}
+@media (max-width: 719px) { .tipp[hidden] { min-height: 20rem; } }
+
+/* ── Ein Fokusring für alles ─────────────────────────────────────
+   Vorher hatte jedes Element den Ring, den der Browser gerade vorsah. Ein
+   sichtbarer, überall gleicher Ring ist Teil davon, dass die Oberfläche wie
+   aus einem Guss wirkt — und er ist die Bedingung dafür, dass man die Seite
+   ohne Maus bedienen kann. */
+:where(a, button, input, select, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--pink);
+    outline-offset: 2px;
+    border-radius: var(--rund);
+}
+
+/* ── Antippbare Flächen ──────────────────────────────────────────
+   Auf Geräten ohne Zeiger misst ein Finger rund 9 mm. Alles, was man
+   antippen soll, ist deshalb mindestens 44 px hoch — die Zahl kommt nicht
+   aus dem Gefühl, sondern aus den Richtlinien von Apple und Google. */
+@media (pointer: coarse) {
+    .chip, .filter__knopf, .filter__zuruecksetzen { min-height: 2.75rem; }
+    .karte__favorit, .karte__spielen { width: 2.75rem; height: 2.75rem; }
+    .sprachwahl__knopf { min-height: 2.75rem; }
+}
+
+/* ── Karte ───────────────────────────────────────────────────────
+   Eine Plattenhülle, keine Kachel — aber eine, die man bedienen kann.
+
+   Der erste Anlauf war randlos gedacht und dabei polsterlos geworden: Das
+   Cover ging bis zur Kante, und der Text darunter auch. Beides zugleich ist
+   falsch. Eine echte Hülle ist randlos bedruckt und trägt darunter ein
+   Etikett — und ein Etikett hat immer einen Rand, sonst rutscht die Schrift
+   in die Schnittkante.
+
+   Drei Dinge liegen jetzt auf dem Cover, drei darunter:
+
+     Cover:    Herz oben rechts · Abspielknopf unten rechts · Ladenkärtchen
+     Etikett:  Name mit Klangangabe · Ort · Stichwörter
+
+   Die Klangangabe ist vom Cover ins Etikett gewandert. Auf dem Bild war sie
+   9,6 px klein und über hellen Covern schlicht unlesbar. Tidal und Qobuz —
+   die beiden Anbieter, die von Klangqualität leben — setzen sie ebenfalls in
+   die Metazeile, nicht aufs Bild. Prominent heißt lesbar, nicht obendrauf. */
+.karte {
+    position: relative;
+    display: flex; flex-direction: column;
+    background: var(--karte);
+    border: 1px solid var(--rand);
+    cursor: pointer;
+    transition: border-color 0.18s ease, transform 0.18s ease,
+                box-shadow 0.18s ease, background-color 0.18s ease;
+}
+/* Beim Überfahren hebt sich die Hülle einen Millimeter aus dem Fach — die
+   Geste, mit der man im Regal blättert. */
+.karte:hover,
+.karte:focus-within {
+    border-color: var(--rand-hell);
+    background: var(--karte-hoch);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+}
 .karte.ist-aktiv { border-color: var(--pink); box-shadow: var(--glut); }
-.karte.ist-stumm { opacity: 0.5; }
+.karte.ist-stumm { opacity: 0.45; }
 .karte.ans-regalende { order: 99; }
 
-.karte__favorit {
-    position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
-    width: 1.8rem; height: 1.8rem;
-    display: grid; place-items: center;
-    background: rgba(0, 0, 0, 0.35); color: var(--text-leise);
-    border: 0; border-radius: 50%;
-    font-size: 0.9rem; cursor: pointer; transition: all 0.15s ease;
-}
-.karte__favorit:hover { color: var(--pink-hell); background: rgba(0, 0, 0, 0.6); }
-.karte__favorit.ist-favorit { color: var(--pink); }
-
-/* Das Senderbild: der Eyecatcher, der aus einem Textkasten eine Hülle macht */
+/* ── Das Cover ───────────────────────────────────────────────── */
 .karte__bild {
     position: relative;
     aspect-ratio: 1;
-    margin: -0.9rem -0.9rem 0;
-    border-radius: var(--rund) var(--rund) 0 0;
     overflow: hidden;
     background: #100c1a;
 }
-.karte__bild img {
+.karte__bild > img {
     width: 100%; height: 100%;
     object-fit: cover;
     display: block;
     transition: transform 0.35s ease;
 }
-.karte:hover .karte__bild img { transform: scale(1.04); }
+.karte:hover .karte__bild > img { transform: scale(1.045); }
 
-/* Häuser wie NTS oder Hirschmilch betreiben mehrere Kanäle unter einem
-   Logo. Ohne Kennzeichnung sähe die Wand aus, als stünde derselbe Sender
-   siebenmal da. Also bekommt jede Karte den Aufdruck ihres Kanals — wie
-   Platten einer Serie: gleiches Label, anderer Aufdruck. */
-.karte__kanal {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    padding: 0.75rem 0.6rem 0.4rem;
-    background: linear-gradient(to top, rgba(6, 4, 10, 0.94) 38%, transparent);
-    color: #fff;
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-align: center;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
-    line-height: 1.2;
+/* Ein Verlauf über dem oberen Fünftel. Ohne ihn steht das Herz mal auf
+   Schwarz, mal auf Weiß — und ist dann mal da, mal weg. */
+.karte__schleier {
+    position: absolute; inset: 0 0 auto 0; height: 38%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent);
     pointer-events: none;
 }
 
-/* Sender ohne eigenes Logo tragen die Hausmarke. Damit 33 davon
-   nebeneinander nicht wie eine Kachelwand wirken, bekommt jede den
-   Farbton ihres Regals hinterlegt. */
-.karte__bild.ist-hausmarke {
-    background:
-        radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--regalton) 26%, transparent), transparent 68%),
-        #100c1a;
+/* Herz und Abspielknopf: gleiche Kantenlänge, gleiche Kraft. */
+.karte__favorit,
+.karte__spielen {
+    position: absolute; z-index: 3;
+    width: 2.5rem; height: 2.5rem;
+    display: grid; place-items: center;
+    border: 0; cursor: pointer;
+    transition: color 0.15s ease, opacity 0.2s ease,
+                transform 0.2s ease, background-color 0.15s ease;
 }
-.karte__bild.ist-hausmarke img {
-    object-fit: contain;
-    padding: 16%;
-    opacity: 0.92;
+.karte__favorit {
+    inset-block-start: 0.35rem; inset-inline-end: 0.35rem;
+    background: none;
+    color: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
 }
+.karte__favorit:hover { color: var(--pink-hell); transform: scale(1.12); }
+.karte__favorit.ist-favorit { color: var(--pink); }
+.karte__favorit .symbol { display: block; }
 
-.karte__name { font-size: 0.95rem; font-weight: 600; line-height: 1.25; padding-right: 2rem; }
-.karte__ort  { font-family: var(--mono); font-size: 0.68rem; color: var(--text-leise); margin-top: 0.15rem; }
+/* Der Abspielknopf steigt beim Überfahren aus der Hülle auf — die Geste, mit
+   der Spotify und Apple Music arbeiten, weil sie die Hauptsache ohne ein
+   einziges Wort erklärt. Auf Geräten ohne Zeiger steht er dauerhaft, sonst
+   wäre er dort unerreichbar. */
+.karte__spielen {
+    inset-inline-end: 0.5rem; inset-block-end: 0.5rem;
+    background: var(--pink);
+    color: #120a02;
+    opacity: 0; transform: translateY(0.6rem);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+.karte:hover .karte__spielen,
+.karte:focus-within .karte__spielen,
+.karte.ist-aktiv .karte__spielen { opacity: 1; transform: translateY(0); }
+.karte__spielen:hover { background: var(--pink-hell); transform: scale(1.08); }
+.karte__spielen .symbol { display: block; }
+/* Ein Knopf, zwei Zeichen. Die Karten werden beim Umschalten nicht neu
+   gezeichnet — nur .ist-aktiv wird gesetzt. Das Zeichen muss deshalb aus dem
+   Stylesheet kommen, sonst zeigt die laufende Huelle weiter ein Dreieck. */
+.karte__ikon--aus { display: none; }
+body.spielt .karte.ist-aktiv .karte__ikon--an  { display: none; }
+body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
+
+/* Das Ladenkärtchen liegt in der Hülle und kommt heraus, wenn man sie
+   anfasst. Vorher stand es dauerhaft unter jeder Karte — drei Zeilen mal
+   hundertneunundzwanzig, und das Raster war nicht mehr zu überfliegen. */
 .karte__kaertchen {
-    font-size: 0.78rem; line-height: 1.45; color: #b9aecb;
-    flex: 1;
-    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; align-items: flex-end;
+    padding: 0.85rem 0.85rem 3.1rem;
+    background: linear-gradient(to top,
+        rgba(5, 2, 10, 0.95) 35%, rgba(5, 2, 10, 0.82));
+    color: #ded5ea;
+    font-size: 0.78rem; line-height: 1.45;
+    opacity: 0;
+    transition: opacity 0.22s ease;
+    pointer-events: none;
 }
-.karte__fuss { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.karte__kaertchen span {
+    display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.karte:hover .karte__kaertchen,
+.karte:focus-within .karte__kaertchen { opacity: 1; }
+/* Ohne Zeiger gibt es kein Überfahren — dort bleibt es weg, statt nie
+   erreichbar zu sein. Der Text steht dann im Kopfbereich, sobald gespielt
+   wird. */
+@media (hover: none) {
+    .karte__kaertchen { display: none; }
+    /*
+     Der Abspielknopf bleibt auch hier verborgen — anders als zuerst gebaut.
 
-.marke {
-    padding: 0.12rem 0.45rem;
+     Auf einem Zeigergeraet ist er die Antwort auf "was passiert, wenn ich
+     hier klicke". Auf einem Handy gibt es diese Frage nicht: Man tippt die
+     Huelle an, und sie spielt. Neunundzwanzig goldene Knoepfe gleichzeitig
+     im Bild beantworten nichts und schreien nur. Netflix und Spotify zeigen
+     auf dem Handy ebenfalls keinen Knopf je Kachel.
+
+     Bei Tastaturbedienung kommt er zurueck, siehe :focus-within oben.
+    */
+    .karte__spielen:not(:focus-visible) { opacity: 0; }
+    .karte.ist-aktiv .karte__spielen { opacity: 1; transform: none; }
+}
+
+/* Läuft gerade: drei Balken unten links auf dem Cover. */
+.karte__laeuft {
+    position: absolute; inset-inline-start: 0.6rem; inset-block-end: 0.65rem; z-index: 3;
+    display: none; gap: 3px; height: 14px; align-items: flex-end;
+}
+.karte.ist-aktiv .karte__laeuft { display: flex; }
+.karte__laeuft span {
+    width: 3px; background: var(--pink);
+    box-shadow: 0 0 6px rgba(242, 183, 5, 0.7);
+    animation: huepft 0.9s ease-in-out infinite;
+}
+.karte__laeuft span:nth-child(2) { animation-delay: 0.2s; }
+.karte__laeuft span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes huepft { 0%, 100% { height: 4px; } 50% { height: 14px; } }
+
+/* ── Die gestaltete Hülle für Sender ohne Cover ───────────────── */
+.huelle {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    padding: 12%;
+    background:
+        linear-gradient(148deg,
+            color-mix(in srgb, var(--regalton) 30%, #0d0916) 0%,
+            color-mix(in srgb, var(--regalton) 12%, #0d0916) 52%,
+            #0a0712 100%);
+}
+.huelle::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(148deg,
+        rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 7px);
+    pointer-events: none;
+}
+.huelle__name {
+    font-family: var(--anzeige);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    line-height: 1.08;
+    text-align: center;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--regalton) 62%, #ffffff);
+    text-wrap: balance;
+}
+.huelle--gross  .huelle__name { font-size: clamp(1.1rem, 3.6vw, 1.6rem); }
+.huelle--mittel .huelle__name { font-size: clamp(0.85rem, 2.7vw, 1.15rem); }
+.huelle--klein  .huelle__name { font-size: clamp(0.68rem, 2.1vw, 0.88rem); letter-spacing: 0.02em; }
+.huelle__marke { position: absolute; inset-inline-end: 0.55rem; inset-block-end: 0.5rem; opacity: 0.28; }
+
+/* ── Das Etikett ─────────────────────────────────────────────── */
+/* Das Etikett ist eine Spalte, kein Raster — und der Name bekommt seine
+   zwei Zeilen fest zugeteilt, ob er sie braucht oder nicht.
+
+   Ohne das tanzen Ort und Stichwoerter: "dublab" braucht eine Zeile,
+   "dublab Barcelona" zwei, und in einer Reihe nebeneinander sitzen die
+   Angaben dann auf verschiedenen Hoehen. Das liest sich unruhig, obwohl
+   jede Karte fuer sich richtig ist. Zwei Zeilen reichen fuer 127 der 129
+   Namen; die zwei laengeren werden abgeschnitten und stehen vollstaendig im
+   Titel des Elements. */
+.karte__etikett {
+    display: flex; flex-direction: column; gap: 0.2rem;
+    flex: 1;
+    padding: 0.7rem 0.8rem 0.8rem;
+    border-top: 1px solid var(--rand);
+}
+.karte__zeile {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 0.5rem;
+}
+.karte__name {
+    font-size: 0.92rem; font-weight: 600; line-height: 1.3;
+    min-width: 0;
+    min-height: 2.6em;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+/* Das Haus über dem Kanal.
+
+   Zwölf Marken führen mehrere Kanäle, SomaFM allein zweiundzwanzig. Auf einer
+   Reihe stand damit zweiundzwanzigmal fett „SomaFM" — und das Wort, das die
+   Hüllen unterscheidet, lief als Anhängsel hinterher. Das Haus ist der
+   Zusammenhang, der Kanal ist die Sache; also steht das Haus klein darüber
+   und der Kanal groß. Wie auf einer Plattenhülle das Label klein oben und der
+   Titel groß in der Mitte steht. */
+.karte__haus {
+    display: block;
+    font-family: var(--mono); font-size: 0.62rem; font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--text-leise);
+    margin-bottom: 0.05rem;
+}
+
+.karte__ort {
+    font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Was die Leitung dauerhaft hergeben muss — nur bei verlustfrei, wo das
+   Abzeichen keine Zahl trägt. Für audiophile Hörer die Frage vor dem Klick:
+   Reicht meine Verbindung? */
+.karte__leitung {
+    font-family: var(--mono); font-size: 0.62rem;
+    color: var(--gruen);
+    opacity: 0.8;
+    white-space: nowrap;
+}
+/* Die Klangangabe. Der farbige Balken links macht die vier Stufen im Raster
+   als Spalte lesbar, ohne dass vier Farben um Aufmerksamkeit streiten. */
+.karte__guete {
+    flex: none;
+    padding: 0.14rem 0.42rem;
+    border-inline-start: 3px solid currentColor;
     background: rgba(255, 255, 255, 0.06);
-    border-radius: 0.35rem;
-    font-family: var(--mono); font-size: 0.62rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    cursor: help;
+    white-space: nowrap;
+}
+.karte__guete--verlustfrei {
+    color: var(--gruen);
+    background: rgba(53, 224, 138, 0.16);
+}
+.karte__guete--gut        { color: var(--gruen); background: rgba(53, 224, 138, 0.10); }
+.karte__guete--ordentlich { color: rgba(255, 255, 255, 0.82); }
+.karte__guete--einfach    { color: rgba(255, 255, 255, 0.42); }
+
+/* Die Stichwoerter sitzen unten, nicht direkt unter dem Ort — dadurch
+   liegen sie ueber alle Karten einer Reihe auf einer Linie. */
+.karte__fuss {
+    display: flex; flex-wrap: wrap; gap: 0.28rem;
+    margin-top: auto; padding-top: 0.4rem;
+}
+.marke {
+    padding: 0.1rem 0.4rem;
+    background: rgba(255, 255, 255, 0.06);
+    font-family: var(--mono); font-size: 0.6rem; color: var(--text-leise);
 }
 .marke--gut { background: rgba(53, 224, 138, 0.14); color: var(--gruen); }
 .marke--etikett { background: rgba(255, 255, 255, 0.04); }
-/* Die nötige Verbindung, wo sie ins Gewicht fällt. Sāmi-Ras Einwand gegen
-   Klassik war die Bandbreite; ein Tester hielt dagegen, dass ein Hinweis
-   genügt statt Weglassen — die Seite ist international und darf nicht auf
-   die Verbindungen einer Gegend zugeschnitten sein. */
-.marke--bedarf {
-    background: rgba(62, 146, 214, 0.13);
-    color: var(--blau-hell);
-    border: 1px solid rgba(62, 146, 214, 0.26);
-}
 
 .karte__stumm {
-    position: absolute; left: 0.6rem; bottom: 0.6rem;
+    position: absolute; inset-inline-start: 0.6rem; inset-block-start: 0.6rem; z-index: 3;
     padding: 0.12rem 0.45rem;
-    background: rgba(0, 0, 0, 0.6); border-radius: 0.35rem;
+    background: rgba(0, 0, 0, 0.75);
     font-family: var(--mono); font-size: 0.62rem; color: var(--rot);
 }
-
-.karte__laeuft { display: none; gap: 2px; height: 10px; align-items: flex-end; }
-.karte.ist-aktiv .karte__laeuft { display: flex; }
-.karte__laeuft span { width: 2px; background: var(--pink); animation: huepft 0.9s ease-in-out infinite; }
-.karte__laeuft span:nth-child(2) { animation-delay: 0.2s; }
-.karte__laeuft span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes huepft { 0%, 100% { height: 3px; } 50% { height: 10px; } }
 
 /* ── Ausfall-Vorschlag ───────────────────────────────────────────── */
 .ausfall {
@@ -785,8 +1286,28 @@ body.spielt .platte { animation-play-state: running; }
 .fuss__hinweis { max-width: 42rem; font-size: 0.85rem; color: var(--text-leise); }
 .fuss__hinweis strong { color: var(--text); }
 .fuss__powered { margin-top: 0.9rem; font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
+/* Rechtsverweise und der Widerruf. Leise gesetzt, aber auffindbar —
+   ein Impressum, das man suchen muss, erfuellt seinen Zweck nicht. */
+.fuss__recht {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
+    margin-top: 1rem;
+    font-family: var(--mono); font-size: 0.72rem;
+}
+.fuss__recht a { color: var(--text-leise); text-decoration: none; }
+.fuss__recht a:hover { color: var(--text); text-decoration: underline; }
+.fuss__widerruf {
+    padding: 0.3rem 0.7rem;
+    background: none; color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: var(--rund);
+    border-inline-start: 3px solid var(--rand-hell);
+    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease;
+}
+.fuss__widerruf[hidden] { display: none; }
+.fuss__widerruf:hover { color: var(--text); border-color: var(--rand-hell); }
+
 .fuss__test {
-    margin-left: 0.5rem; padding: 0.1rem 0.45rem;
+    margin-inline-start: 0.5rem; padding: 0.1rem 0.45rem;
     background: rgba(255, 200, 87, 0.14); color: var(--gold);
     border-radius: 0.35rem; font-size: 0.65rem;
 }
@@ -816,7 +1337,7 @@ body.spielt .platte { animation-play-state: running; }
 #lautstaerke { width: 5.5rem; accent-color: var(--pink); }
 
 /* ── Meldungen ───────────────────────────────────────────────────── */
-.meldungen { position: fixed; right: 1rem; bottom: 5.5rem; z-index: 90; display: grid; gap: 0.5rem; }
+.meldungen { position: fixed; inset-inline-end: 1rem; bottom: 5.5rem; z-index: 90; display: grid; gap: 0.5rem; }
 .meldung {
     padding: 0.6rem 1rem;
     background: var(--karte-hoch); border: 1px solid var(--rand-hell); border-radius: var(--rund);
@@ -825,29 +1346,60 @@ body.spielt .platte { animation-play-state: running; }
 }
 .meldung.geht { opacity: 0; transform: translateX(1rem); transition: all 0.3s ease; }
 .meldung--fehler { border-color: rgba(255, 92, 92, 0.5); }
+.meldung--warnung { border-color: rgba(242, 183, 5, 0.5); }
 @keyframes kommt { from { opacity: 0; transform: translateX(1rem); } }
+
+/* Bleibt stehen, bis der Besucher entscheidet. Wer Musik hört, wählt selbst,
+   wann der Faden reißt. */
+.meldung--bleibt {
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+    border-color: rgba(242, 183, 5, 0.45);
+}
+.meldung__knopf {
+    font-family: var(--mono); font-size: 0.74rem;
+    padding: 0.3rem 0.7rem; border-radius: var(--rund); cursor: pointer;
+    border: 1px solid transparent; color: var(--grund); font-weight: 700;
+    background: linear-gradient(180deg, var(--pink-hell), var(--pink));
+    transition: filter 0.2s ease;
+}
+.meldung__knopf:hover { filter: brightness(1.08); }
+.meldung__knopf--leise {
+    background: none; color: var(--text-leise);
+    border-color: var(--rand); font-weight: 400;
+}
+.meldung__knopf--leise:hover { color: var(--text); border-color: var(--rand-hell); filter: none; }
 
 /* ── Handy ───────────────────────────────────────────────────────── */
 .handy-leiste { display: none; }
 
 @media (max-width: 719px) {
-    .kopf { gap: 0.6rem; padding: 0.6rem 1rem; }
+    /* Auf dem Handy waeren Kopf UND Filterleiste zusammen fast ein Drittel
+       des Schirms. Der Kopf gibt nach: er scrollt weg, die Filterleiste
+       bleibt. Zur Suche kommt man ueber die untere Leiste zurueck. */
+    .kopf { position: static; gap: 0.6rem; padding: 0.6rem 1rem; }
+    .filter { top: 0; padding: 0.5rem 1rem; }
+    /* Auf sehr schmalen Geraeten brachen drei Schnellchips auf drei Zeilen
+       um — 118 px, ein Fuenftel des Bildschirms, dauerhaft klebend. Dort
+       traegt nur noch der Filterknopf; im Panel steht ohnehin alles. */
+    @media (max-width: 374px) {
+        .filter__schnell { display: none; }
+    }
+    .regalwand { padding-top: 1.2rem; }
 
     /* Solange nichts läuft, soll der Teller nicht den halben Bildschirm
        belegen — auf dem Handy zählt jeder Zentimeter bis zu den Regalen. */
-    /* Auf dem Handy zählt jeder Zentimeter bis zu den Regalen. Solange
-       nichts läuft, bleibt das Deck klein. */
-    .plattenspieler { width: 56vw; max-width: 240px; }
-    body.spielt .plattenspieler { width: 70vw; max-width: 300px; }
-    /* Die Stroboskoppunkte werden bei dieser Größe zu Matsch */
-    .teller__strobo { display: none; }
-    .zarge__regler { display: none; }
+    .plattenspieler { width: 52vw; max-width: 230px; }
+    body.spielt .plattenspieler { width: 64vw; max-width: 270px; }
     .hero { gap: 1rem; padding-bottom: 1rem; }
     .hero__name { font-size: 1.75rem; }
     .hero__knoepfe { gap: 0.5rem; }
     .hero__knoepfe .knopf { padding: 0.5rem 0.9rem; font-size: 0.82rem; }
     .kopf__suche { order: 3; flex-basis: 100%; }
-    .kopf__schalter { flex: 1; justify-content: flex-end; }
+    /* Der CTA-Text ist allein 217 px breit. Neben Logo und 432-Schalter lief
+       er auf 390 px Breite um 100 px ueber den Rand — sichtbar abgeschnitten,
+       weil body overflow-x versteckt. Eigene Zeile statt Kuerzung: Der Satz
+       ist das Angebot, ein Kuerzel waere keins. */
+    .kopf__schalter { order: 4; flex: 1 1 100%; justify-content: flex-start; flex-wrap: wrap; }
     .schalter { font-size: 0.66rem; padding: 0.35rem 0.6rem; }
 
     .hero { padding-top: 1rem; }
@@ -855,13 +1407,18 @@ body.spielt .platte { animation-play-state: running; }
     .griff { padding: 0.85rem; }
     .griff__titel { font-size: 0.88rem; }
 
-    .spieler { bottom: 3.9rem; padding: 0.5rem 0.9rem; }
+    /* Frueher fest 3,9 rem = 62,4 px. Die Navigationsleiste ist aber
+       inhaltsgetrieben hoch: 65 px in de/en/es/it, 72 px in ja, 73 px in ar
+       und 86 px in fr, weil "Mes disques" umbricht. Die Spielerleiste lag
+       dadurch je nach Sprache 3 bis 24 px darueber. Jetzt wird gemessen —
+       dieselbe Loesung wie beim Kopf. */
+    .spieler { bottom: var(--leiste-hoehe, 3.9rem); padding: 0.5rem 0.9rem; }
     .spieler__rechts canvas { display: none; }
     #lautstaerke { width: 4rem; }
-    .meldungen { right: 0.7rem; left: 0.7rem; bottom: 9rem; }
+    .meldungen { inset-inline: 0.7rem; bottom: 9rem; }
 
     .handy-leiste {
-        display: grid; grid-template-columns: repeat(4, 1fr);
+        display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
         position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
         background: rgba(10, 4, 18, 0.96);
         backdrop-filter: blur(14px);
@@ -875,6 +1432,13 @@ body.spielt .platte { animation-play-state: running; }
         font-family: inherit; font-size: 0.65rem; cursor: pointer;
     }
     .handy-leiste button span { font-size: 1.1rem; }
+    /* Und die Beschriftung bricht nicht mehr um. Ein zweizeiliger Eintrag
+       neben drei einzeiligen sieht aus wie ein Fehler, und er war die
+       Ursache der Ueberlappung. */
+    .handy-leiste button span:not([data-symbol]) {
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        max-width: 100%;
+    }
     .handy-leiste button:active { color: var(--pink); }
 
     body { padding-bottom: 8.5rem; }
@@ -882,4 +1446,149 @@ body.spielt .platte { animation-play-state: running; }
 
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ── Sprachumschalter ────────────────────────────────────────────
+   Ein <details> statt einer Auswahlliste: Die Einträge sind echte Verweise
+   auf /de/, /en/, /fr/ … Damit sind sie für eine Suchmaschine die Brücke
+   zwischen den sieben Fassungen, sie lassen sich mit der mittleren Maustaste
+   in einem neuen Reiter öffnen, und sie stehen auch dann da, wenn der
+   Programmcode ausfällt. Jede Sprache steht in sich selbst — wer kein Deutsch
+   kann, findet „Deutsch" nicht unter „German". */
+/* Breite und Hoehe von Anfang an reservieren: Der Inhalt entsteht erst
+   durch Programmcode, und ohne Reservierung ruckte der ganze Kopf, sobald er
+   erschien — messbar als Layoutverschiebung. */
+.sprachwahl { position: relative; flex: none; min-width: 4.1rem; min-height: 2rem; }
+.sprachwahl__knopf {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--karte); border: 1px solid var(--rand); border-radius: var(--rund);
+    color: var(--text-leise);
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em;
+    cursor: pointer; list-style: none;
+    transition: all 0.15s ease;
+}
+.sprachwahl__knopf::-webkit-details-marker { display: none; }
+.sprachwahl__knopf::after {
+    content: '';
+    width: 0.32rem; height: 0.32rem;
+    /* Physisch, nicht logisch: Ein Pfeil nach UNTEN hat keine Leserichtung.
+       Mit logischen Kanten kippte er in der arabischen Fassung zur Seite. */
+    border-right: 1.4px solid currentColor;
+    border-bottom: 1.4px solid currentColor;
+    transform: rotate(45deg) translate(-1px, -1px);
+}
+.sprachwahl__knopf:hover { color: var(--text); border-color: var(--rand-hell); }
+.sprachwahl[open] .sprachwahl__knopf { color: var(--text); border-color: var(--pink); }
+
+.sprachwahl__liste {
+    position: absolute; z-index: 60;
+    inset-block-start: calc(100% + 0.35rem); inset-inline-end: 0;
+    min-width: 9rem;
+    margin: 0; padding: 0.3rem;
+    list-style: none;
+    background: var(--grund-hoch);
+    border: 1px solid var(--rand-hell);
+    box-shadow: var(--schatten);
+}
+.sprachwahl__liste a {
+    display: block;
+    padding: 0.4rem 0.65rem;
+    color: var(--text-leise); text-decoration: none;
+    font-size: 0.85rem;
+}
+.sprachwahl__liste a:hover { background: rgba(255, 255, 255, 0.07); color: var(--text); }
+.sprachwahl__liste a[aria-current] { color: var(--pink); font-weight: 600; }
+
+/* ── Rechts nach links ───────────────────────────────────────────
+   Arabisch. Was sich mit logischen Eigenschaften ausdrücken lässt, steht
+   oben im Bestand und gilt in beide Richtungen. Hier steht nur, wofür CSS
+   keine logische Entsprechung hat.
+
+   Ausdrücklich NICHT gespiegelt, und das ist kein Versehen:
+
+     Der Tonarm. Ein Plattenspieler hat den Tonarm rechts, in jedem Land.
+     Die Drehrichtung der Platte und der Lichtreflex darauf, aus demselben
+     Grund. Das Abspieldreieck — Medienbedienelemente stehen auch in
+     arabischen Oberflächen von YouTube und Spotify unverändert.
+
+   Ein gespiegelter Plattenspieler wäre kein Zugeständnis an die Leserichtung,
+   sondern ein falsches Gerät. */
+
+/* Die drei Hausschriften haben keine arabischen Glyphen. Ohne eigene Schrift
+   fiele Arabisch auf irgendeine Systemschrift zurück und risse das
+   Schriftbild auseinander — sichtbar an jeder Überschrift und an jedem
+   Abzeichen, denn --anzeige und --mono tragen fast alle davon. */
+:root[dir="rtl"] {
+    --schrift:  'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Segoe UI', sans-serif;
+    --mono:     'IBM Plex Sans Arabic', 'Noto Sans Arabic', ui-monospace, monospace;
+    --anzeige:  'Noto Kufi Arabic', 'IBM Plex Sans Arabic', sans-serif;
+}
+
+/* Sperrung zerlegt arabische Ligaturen: Die Buchstaben verbinden sich nicht
+   mehr, und das Wort zerfällt sichtbar in Einzelzeichen. Das ist der Fund mit
+   der größten optischen Wirkung — betroffen sind lauter Stellen, die im
+   Arabischen Text tragen. Die Wortmarke im Kopf bleibt gesperrt, sie ist
+   lateinisch. */
+[dir="rtl"] :is(.hero__guete, .tipp__marke, .tipp__dazuTitel, .regalfach__name,
+                .filter__titel, .huelle__name, .karte__guete, .auslage__titel,
+                .regalwand__titel, .sprachwahl__knopf) {
+    letter-spacing: normal;
+}
+
+/* Verläufe: gespiegelt wird über 360 − Winkel. Die schräge Rillenstruktur der
+   Ersatzhülle neigte sich sonst gegen den Textfluss. */
+[dir="rtl"] .tipp {
+    background:
+        linear-gradient(225deg, rgba(242, 183, 5, 0.07), rgba(42, 124, 199, 0.05)),
+        var(--karte);
+}
+[dir="rtl"] .regalfach__mosaik::before {
+    background: linear-gradient(205deg, rgba(5, 2, 10, 0.10), rgba(5, 2, 10, 0.62));
+}
+[dir="rtl"] .huelle {
+    background: linear-gradient(212deg,
+        color-mix(in srgb, var(--regalton) 30%, #0d0916) 0%,
+        color-mix(in srgb, var(--regalton) 12%, #0d0916) 52%,
+        #0a0712 100%);
+}
+[dir="rtl"] .huelle::after {
+    background: repeating-linear-gradient(212deg,
+        rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 7px);
+}
+/* Der Farbschimmer im Hintergrund sitzt am Kopf. Prozentangaben sind
+   physisch, nicht logisch — ungespiegelt läge das Gold auf der leeren Seite. */
+[dir="rtl"] body::before {
+    background:
+        radial-gradient(60rem 40rem at 85% -10%, rgba(242, 183, 5, 0.10), transparent 60%),
+        radial-gradient(50rem 35rem at 5% 5%, rgba(42, 124, 199, 0.12), transparent 60%);
+}
+
+/* Meldungen fliegen von der Seite herein, an der sie stehen. transform kennt
+   keine logische Achse, und Keyframes lassen sich nicht per Attributselektor
+   umkehren — deshalb ein eigener Satz. */
+[dir="rtl"] .meldung.geht { transform: translateX(-1rem); }
+[dir="rtl"] .meldung { animation-name: kommt-rtl; }
+@keyframes kommt-rtl {
+    from { opacity: 0; transform: translateX(-1rem); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* „Öffnet woanders" zeigt in einer RTL-Oberfläche nach oben links. */
+[dir="rtl"] [data-symbol="extern"] svg { transform: scaleX(-1); }
+
+/* Der Tonarm ragt 6 % ueber den Plattenspieler hinaus — richtig so, ein
+   Tonarm sitzt am Rand. In der arabischen Fassung steht der Teller ab
+   800 px aber in der RECHTEN Rasterspalte (erste Spalte = rechts), und der
+   Ueberstand fiel aus dem Fenster: gemessen 33 bis 41 px, abgeschnitten von
+   body overflow-x.
+
+   Nicht der Tonarm wandert — der bleibt rechts, in jedem Land. Der Teller
+   rueckt vom Rand ab. */
+@media (min-width: 800px) {
+    /* margin-inline-START, nicht -end. In RTL ist inline-start die RECHTE
+       Seite — und rechts steht der Teller. Mein erster Versuch schob ihn
+       nach links, also in die falsche Richtung; gemessen blieben 33 bis
+       41 px Ueberstand unveraendert stehen. */
+    [dir="rtl"] .plattenspieler { margin-inline-start: 3rem; }
 }

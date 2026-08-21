@@ -8,8 +8,23 @@
 export const ANSCHLUSS = 'http://127.0.0.1:47432/status';
 const ZEITLIMIT_MS = 500;   // die Seite darf daran nicht hängen
 
+// Drei Zustände, mehr kann die Seite über den Besucher nicht wissen. Ob die
+// App da ist, lässt sich ohne Fragen nicht herausfinden — und genau das ist
+// Absicht, sonst wäre es ein Ausspähkanal.
+export const ZUSTAND = {
+  unbekannt: 'unbekannt',
+  erlaubt:   'erlaubt',
+  abgelehnt: 'abgelehnt',
+};
+
 export async function frageMyRetuner(adresse = ANSCHLUSS) {
   try {
+    /*
+     Keine eigenen Kopfzeilen mitgeben. Ein GET ohne solche ist eine einfache
+     Anfrage und löst keinen Vorabflug aus; mit eigenen Kopfzeilen erzwingt
+     der Browser ein OPTIONS, und das beantwortet die App nicht mehr.
+     `cache` ist eine Fetch-Option, keine Kopfzeile — unbedenklich.
+    */
     const antwort = await fetch(adresse, {
       cache: 'no-store',
       signal: AbortSignal.timeout(ZEITLIMIT_MS),
@@ -50,4 +65,23 @@ export function anzeigeQuelle(daten) {
     return { wert: String(Math.round(daten.quellstimmung)), sicher: false };
   }
   return null;   // darunter ist es geraten, und Geratenes zeigt man nicht
+}
+
+/*
+ Nach dem Klick: Die App fragt jetzt ihren Nutzer, und das dauert. Solange
+ nachfragen, bis eine Antwort kommt oder die Zeit abgelaufen ist.
+
+ Dieselben 60 Sekunden, die der Dialog in der App lebt. Wären sie
+ verschieden, gäbe es ein Fenster, in dem der Nutzer zustimmt und die Seite
+ schon aufgegeben hat — er hätte alles richtig gemacht und trotzdem nichts
+ erreicht.
+*/
+export async function wartAufEinwilligung(adresse = ANSCHLUSS, dauerMs = 60000) {
+  const ende = Date.now() + dauerMs;
+  while (Date.now() < ende) {
+    const daten = await frageMyRetuner(adresse);
+    if (daten) return daten;
+    await new Promise((weiter) => setTimeout(weiter, 1000));
+  }
+  return null;
 }

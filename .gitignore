@@ -1,0 +1,22 @@
+
+# Python-Zwischenstaende der Pruefskripte
+__pycache__/
+*.pyc
+
+# Die Sprachseiten erzeugt Scripts/baue-sprachen.py aus index.html und
+# assets/lang/*.json — beim Bauen des Containers, nicht von Hand. Im
+# Repository waeren sie eine zweite Wahrheit, die beim naechsten Textwechsel
+# still veraltet.
+/de/
+/en/
+/fr/
+/es/
+/it/
+/ja/
+/ar/
+
+# Die Rechtsseiten erzeugt Scripts/baue-recht.py aus docs/recht/*.md.
+# Die Markdown-Quellen sind der Bestand, das HTML ist Ergebnis.
+/recht/
+
+dienst/node_modules/

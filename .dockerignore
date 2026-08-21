@@ -1,0 +1,44 @@
+# Was nicht ins Image gehört. Alles hier Gelistete landet nicht einmal im
+# Build-Kontext — das hält das Image klein und verhindert, dass interne
+# Unterlagen versehentlich ausgeliefert werden.
+
+.git
+.github
+.gitignore
+.gitattributes
+.dockerignore
+Dockerfile
+
+# Unterlagen, nicht Teil der Seite.
+README.md
+STATIONS_AUDIT.md
+
+# `docs/` bleibt bewusst im Kontext: Scripts/baue-recht.py macht aus
+# docs/recht/*.md die ausgelieferten Seiten unter /recht/. Ein Impressum,
+# das nur im Repository liegt, ist kein Impressum. Aus dem ausgelieferten
+# Wurzelverzeichnis wird der Ordner danach entfernt, siehe Dockerfile.
+
+# `Scripts/` bleibt bewusst im Kontext: Die erste Bau-Stufe erzeugt damit die
+# sieben Sprachseiten (baue-sprachen.py) und prueft den Service Worker
+# (pruefe-shell-dateien.py). Aus dem ausgelieferten Wurzelverzeichnis wird der
+# Ordner danach entfernt, siehe Dockerfile — genauso wie deploy/.
+
+# infra/ ist die Bicep-Vorlage — sie beschreibt den Container, gehört aber
+# nicht hinein.
+infra
+
+# `deploy/` bleibt bewusst im Kontext: Das Dockerfile kopiert daraus die
+# nginx-Konfiguration. Aus dem ausgelieferten Wurzelverzeichnis wird der
+# Ordner erst danach entfernt, siehe Dockerfile.
+
+# Rohdownloads der Senderlogos: teils Windows-Icons, teils Targa, in zwei
+# Fällen HTML-Fehlerseiten. Nichts davon wird ausgeliefert.
+**/*.roh
+
+# `dienst/` ist der Anmeldedienst. Er ist gebaut und getestet, aber noch
+# nicht ausgerollt: Es fehlen die Zugangsdaten fuer Google und Apple, die
+# ACS-Absenderdomaene und der Sidecar-Eintrag in main.bicep. Solange er nicht
+# mitlaeuft, hat er im Abbild nichts verloren — assets/lib/konto.mjs merkt
+# von selbst, dass unter /api/ niemand antwortet, und die Seite verhaelt sich
+# wie bisher.
+dienst

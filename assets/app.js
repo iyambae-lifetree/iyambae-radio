@@ -8,19 +8,41 @@
 
 import { waehleUeberraschung } from './lib/gewichtung.mjs';
 import { findeVerwandten } from './lib/verwandt.mjs';
-import { frageMyRetuner, anzeigeStimmung, anzeigeQuelle } from './lib/myretuner.mjs';
+import { frageMyRetuner, wartAufEinwilligung, anzeigeStimmung, anzeigeQuelle, ZUSTAND }
+  from './lib/myretuner.mjs';
 import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
-import { senderbild, labelbild, hatEigenesLogo, regalton, MARKE, LABEL_MARKE } from './lib/senderbild.mjs';
+import { senderbild, hatEigenesLogo, regalton, REGALTON, MARKE, huellenzeilen,
+         huellengroesse, regalmosaik, zerlegeName, haeuserMitMehreren, bandbreite }
+  from './lib/senderbild.mjs';
+import { symbol, setzeSymbole } from './lib/symbole.mjs';
+import { leererFilter, istGefiltert, anzahlAktiv, wendeAn, vorschau,
+         regionVon, etikettName, regionName, SCHNELL } from './lib/achsen.mjs';
+import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
+import { beobachteFehler, einwilligungsstand, widerrufeEinwilligung }
+  from './lib/fehlerbericht.mjs';
+import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t }
+  from './lib/sprache.mjs';
+
+// ── Sprache ────────────────────────────────────────────────────────
+// Zuerst, denn alles darunter schlaegt seine Texte hier nach. Die festen
+// Texte im Dokument werden in einem Zug ersetzt, bevor der Ladeschirm faellt.
+await ladeSprache();
+uebersetzeDokument();
+/*
+ Der Umschalter wird gebaut, nicht ausgeliefert: Seine Verweise haengen von
+ der Adresse ab, auf der man gerade steht — wer /fr/?los=meine liest, soll
+ beim Wechsel auf /ja/?los=meine landen und nicht auf der Startseite.
+*/
+baueSprachumschalter(document.getElementById('sprachwahl'));
 
 // ── Katalog laden ──────────────────────────────────────────────────
-// 'no-cache' heißt nicht 'nicht zwischenspeichern', sondern 'vor dem
-// Benutzen beim Server rückfragen'. Ohne das bekommen Besucher einen
-// erweiterten Katalog erst, wenn ihr Browser den alten von sich aus
-// vergisst — beobachtet am 21.08.2026: 117 statt 128 Sender.
-const antwort = await fetch('./data/sender.json', { cache: 'no-cache' });
+const antwort = await fetch('/data/sender.json');
 if (!antwort.ok) throw new Error('Katalog nicht ladbar: ' + antwort.status);
 const KATALOG = await antwort.json();
 const REGALE = KATALOG.regale;
+// Fuer die Zuordnung von Fehlerberichten. Der Katalog traegt ohnehin eine
+// Fassung, und sie steigt mit jeder Auslieferung.
+const FASSUNG = KATALOG._version ?? 'unbekannt';
 const SENDER = KATALOG.sender.filter(s => s.status !== 'tot');
 
 // ── Örtlicher Speicher ─────────────────────────────────────────────
@@ -32,6 +54,9 @@ const SCHLUESSEL = {
   lautstaerke:'hz_lautstaerke',
   pitch432:   'hz_pitch432',
   myretuner:  'hz_myretuner',
+  // Welcher der drei Zustaende aus ZUSTAND zuletzt galt. Mehr wird nicht
+  // gemerkt — die Einwilligung selbst liegt in der App, nicht hier.
+  mrZustand:  'hz_mr_zustand',
 };
 
 const speicher = {
@@ -116,6 +141,12 @@ class AudioEngine {
     this._frequenzDaten = null;
     this.analyseEcht = false;
 
+    // MyRetuners Signalkern als WebAssembly. Steht erst zur Verfügung, wenn
+    // der Graph aufgebaut ist und das Modul geladen wurde — bis dahin und
+    // bei jedem Fehlschlag bleibt es beim Weg über playbackRate.
+    this._retuner = null;
+    this.retunerBereit = false;
+
     this.setzeLautstaerke(this.lautstaerke, false);
   }
 
@@ -147,9 +178,65 @@ class AudioEngine {
       this._quelle.connect(this._analyse);
       this._analyse.connect(this._audioCtx.destination);
       this._frequenzDaten = new Uint8Array(this._analyse.frequencyBinCount);
+
+      // Nebenläufig, ohne den Start zu verzögern: Schlägt es fehl, bleibt
+      // es beim bisherigen Weg über playbackRate.
+      this._richteRetunerEin();
       return true;
     } catch {
       this._analyse = null;
+      return false;
+    }
+  }
+
+  /*
+   MyRetuners Signalkern als WebAssembly in den Graphen hängen.
+
+   Der Unterschied zum bisherigen Weg ist nicht kosmetisch: `playbackRate`
+   ändert Tonhöhe *und* Tempo — ein Stück läuft dabei 1,8 % langsamer. Der
+   Signalkern ändert nur die Tonhöhe, so wie MyRetuner auf dem Rechner.
+
+   Gilt nur für Sender mit CORS-Freigabe: Ohne sie kommt der Strom gar nicht
+   erst in den Graphen (siehe Kommentar im Konstruktor), und es bleibt beim
+   Raten über playbackRate.
+  */
+  async _richteRetunerEin() {
+    if (this._retuner || !this._audioCtx?.audioWorklet) return false;
+    try {
+      const [, antwort] = await Promise.all([
+        this._audioCtx.audioWorklet.addModule('/assets/lib/retuner-worklet.js'),
+        fetch('/assets/wasm/retuner.wasm'),
+      ]);
+      if (!antwort.ok) throw new Error('wasm ' + antwort.status);
+      const bytes = await antwort.arrayBuffer();
+
+      const knoten = new AudioWorkletNode(this._audioCtx, 'retuner', {
+        numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2],
+      });
+
+      await new Promise((fertig, fehler) => {
+        const zeit = setTimeout(() => fehler(new Error('Zeitüberschreitung')), 5000);
+        knoten.port.onmessage = (e) => {
+          clearTimeout(zeit);
+          if (e.data?.art === 'bereit') fertig(e.data);
+          else fehler(new Error(e.data?.text || 'unbekannt'));
+        };
+        knoten.port.postMessage({ art: 'wasm', bytes, frames: 2048 }, [bytes]);
+      });
+
+      // Zwischen Quelle und Analyse einhängen — so zeigt der Visualizer,
+      // was auch zu hören ist.
+      this._quelle.disconnect(this._analyse);
+      this._quelle.connect(knoten);
+      knoten.connect(this._analyse);
+
+      this._retuner = knoten;
+      this.retunerBereit = true;
+      this.wendePitchAn();
+      return true;
+    } catch {
+      this._retuner = null;
+      this.retunerBereit = false;
       return false;
     }
   }
@@ -196,11 +283,33 @@ class AudioEngine {
 
   // Beide Elemente gleich einstellen, damit ein Wechsel nichts verstellt.
   wendePitchAn() {
+    /*
+     Zwei Wege, je nachdem welches Element gerade spielt:
+
+     Sender MIT CORS laufen durch den Graphen — dort macht MyRetuners
+     Signalkern die Arbeit, exakt und ohne Tempoänderung. `playbackRate`
+     bleibt auf 1.
+
+     Sender OHNE CORS erreichen den Graphen nicht (siehe Konstruktor). Für sie
+     bleibt es beim bisherigen Weg: `playbackRate` zieht Tonhöhe und Tempo
+     gemeinsam herunter, das Stück läuft also 1,8 % langsamer. Hörbar
+     schlechter, aber besser als nichts.
+    */
     for (const el of [this.audioDirekt, this.audioAnalyse]) {
-      el.playbackRate = this.ist432An ? this.pitchFaktor : 1.0;
+      const uebernimmtKern = (el === this.audioAnalyse) && this.retunerBereit;
+      el.playbackRate = (this.ist432An && !uebernimmtKern) ? this.pitchFaktor : 1.0;
       el.preservesPitch = false;
       el.webkitPreservesPitch = false;
     }
+    if (this._retuner) {
+      this._retuner.parameters.get('faktor').value =
+        this.ist432An ? this.pitchFaktor : 1.0;
+    }
+  }
+
+  /// Stimmt der Signalkern gerade um — oder raet die Seite noch?
+  kernUebernimmt() {
+    return !!(this.retunerBereit && this.audio === this.audioAnalyse && this.ist432An);
   }
 
   setze432(an) {
@@ -209,7 +318,10 @@ class AudioEngine {
     speicher.schreib(SCHLUESSEL.pitch432, this.ist432An);
   }
 
-  statusText() { return this.ist432An ? 'Live — 432Hz' : 'Live — 440Hz'; }
+  statusText() {
+    if (!this.ist432An) return t('status.live440');
+    return this.kernUebernimmt() ? t('status.live432Gemessen') : t('status.live432');
+  }
 
   setzeLautstaerke(wert, merken = true) {
     this.lautstaerke = Math.max(0, Math.min(1, wert));
@@ -292,12 +404,7 @@ class Visualizer {
     const ctx = this.heroCtx;
     if (!ctx) return;
     const w = this.heroCanvas.width, h = this.heroCanvas.height;
-    const cx = w / 2, cy = h / 2, balken = 72;
-    // Der Kranz beginnt am Plattenrand und strahlt nach außen. Die Zahlen
-    // folgen dem Aufbau: Der Zeichenbereich ist 142 % des Tellers, die Platte
-    // sitzt 6 % innerhalb davon — der Rand liegt also bei 33 % des Radius.
-    const radius = w * 0.335;
-    const maxLen = w * 0.115;
+    const cx = w / 2, cy = h / 2, radius = 68, maxLen = 72, balken = 72;
     ctx.clearRect(0, 0, w, h);
 
     const daten = this._geglaettet;
@@ -318,15 +425,13 @@ class Visualizer {
       ctx.stroke();
     }
 
-    // Der Schein sitzt jetzt außen am Plattenrand, nicht mehr in der Mitte
-    const glut = radius * (1 + bass * 0.04);
-    const verlauf = ctx.createRadialGradient(cx, cy, radius * 0.92, cx, cy, glut + maxLen * 0.8);
-    verlauf.addColorStop(0, `rgba(242, 183, 5, ${0.09 + bass * 0.09})`);
-    verlauf.addColorStop(1, 'rgba(242, 183, 5, 0)');
+    const glut = radius * (1 + bass * 0.05);
+    const verlauf = ctx.createRadialGradient(cx, cy, glut * 0.5, cx, cy, glut);
+    verlauf.addColorStop(0, 'rgba(242, 183, 5, 0)');
+    verlauf.addColorStop(1, `rgba(242, 183, 5, ${0.10 + bass * 0.10})`);
     ctx.fillStyle = verlauf;
     ctx.beginPath();
-    ctx.arc(cx, cy, glut + maxLen * 0.8, 0, Math.PI * 2);
-    ctx.arc(cx, cy, radius * 0.92, 0, Math.PI * 2, true);   // Mitte aussparen
+    ctx.arc(cx, cy, glut, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -352,7 +457,15 @@ class UI {
     this.sender = SENDER;
     this.regale = REGALE;
     this.aktuelleId = null;
-    this.aktivesEtikett = null;
+    /*
+     EIN Filterzustand fuer alle vier Dimensionen.
+
+     Vorher hatte jede ihren eigenen, und beide loeschten sich gegenseitig:
+     Wer "verlustfrei" waehlte und dann "ohne Werbung", verlor die erste Wahl
+     wieder. Die Suche verwarf ohnehin alles. Das fuehlte sich kaputt an, ohne
+     dass ein Fehler vorlag — die Filter waren einfach nicht kombinierbar.
+    */
+    this.filter = leererFilter();
     this.favoriten = new Set(speicher.lies(SCHLUESSEL.favoriten, []));
   }
 
@@ -373,40 +486,104 @@ class UI {
     const aktiv = this.aktuelleId === sender.id ? ' ist-aktiv' : '';
     const wackelig = istWackelig(sender.id) ? ' ans-regalende' : '';
     const favorit = this.istFavorit(sender.id);
+    /*
+     Klangqualitaet in vier Stufen, nicht in zwei.
+
+     Fuer audiophile Hoerer ist FLAC etwas anderes als 256 kbit/s, und Opus
+     bei 128 klingt besser als MP3 bei 192. Die Abstufung steht deshalb im
+     Abzeichen selbst — sie ist die Information, nicht Schmuck.
+
+     Sie steht jetzt in der Namenszeile statt auf dem Cover. Auf dem Bild war
+     sie ueber hellen Covern unlesbar; genau darauf zielte die Beschwerde.
+    */
     const guete = sender.codec === 'flac' ? 'FLAC'
                 : ['opus', 'vorbis'].includes(sender.codec) ? sender.codec.toUpperCase()
                 : sender.bitrate ? sender.bitrate + 'k' : '';
-    // Was die Verbindung dauerhaft hergeben muss. Nicht als Warnung, sondern
-    // als Angabe — wer weiß, dass er 2 Mbit/s braucht, kann selbst
-    // entscheiden. Klassik verliert beim Komprimieren am meisten, deshalb
-    // steht die Zahl gerade dort.
-    const bedarf = sender.codec === 'flac' ? 'braucht ~1,4 Mbit/s'
-                 : ['opus', 'vorbis'].includes(sender.codec) && !sender.bitrate ? 'braucht ~0,3 Mbit/s'
-                 : (sender.bitrate ?? 0) >= 256 ? `braucht ~${Math.ceil(sender.bitrate / 100) / 10} Mbit/s`
-                 : null;
-    const hochwertig = sender.codec === 'flac' || ['opus','vorbis'].includes(sender.codec) || (sender.bitrate ?? 0) >= 192;
+    const stufe = sender.codec === 'flac' ? 'verlustfrei'
+                : ['opus', 'vorbis'].includes(sender.codec) ? 'gut'
+                : (sender.bitrate ?? 0) >= 256 ? 'gut'
+                : (sender.bitrate ?? 0) >= 192 ? 'ordentlich' : 'einfach';
+    /*
+     Was die Leitung dauerhaft hergeben muss — nur bei verlustfrei.
 
+     Bei 320k steht die Zahl schon im Abzeichen. Bei FLAC steht dort nur
+     "FLAC", und der Katalog hat fuer die vier verlustfreien Sender keine
+     gemessene Datenrate. Ausgerechnet als Obergrenze ist ehrlicher als
+     erfunden — siehe bandbreite() in senderbild.mjs.
+    */
+    const breite = bandbreite(sender);
+    const guetetitel = sender.codec === 'flac'
+        ? t('karte.guete.verlustfrei') + (breite ? ' — ' + t('karte.bandbreite', { wert: breite }) : '')
+        : ['opus', 'vorbis'].includes(sender.codec)
+          ? t('karte.guete.opus', { codec: sender.codec.toUpperCase(), bitrate: sender.bitrate })
+          : t('karte.guete.mp3', { bitrate: sender.bitrate });
+
+    /*
+     Das Feld `kanal` wird bewusst NICHT gezeigt.
+
+     Saemi-Ra hat es angelegt und bei allen 146 Sendern gefuellt, und ich
+     hatte es als Reiter vor den Ort gesetzt. Live sah man dann
+     "Gamesboro Radio · Gamesboro Radio".
+
+     Nachgezaehlt: Bei 93 Sendern ist `kanal` woertlich der Name, bei 53
+     steckt er darin ("NTS 1" -> "1", "NTS Slow Focus" -> "Slow Focus").
+     Bei NULL Sendern steht dort etwas, das der Name nicht schon sagt.
+
+     `kanal` ist also keine Zusatzangabe, sondern eine ZERLEGUNG des Namens:
+     Betreiber plus Kanal. Nuetzlich waere sie, um mehrere Kanaele desselben
+     Senders zusammenzufassen — "NTS" einmal mit drei Kanaelen darunter,
+     statt dreimal "NTS" nebeneinander. Das ist ein eigener Umbau, nicht ein
+     Abzeichen. Bis dahin waere jede Anzeige eine Wiederholung.
+    */
     const eigenes = hatEigenesLogo(sender);
     return `
       <article class="karte${aktiv}${wackelig}" data-sender-id="${sender.id}"
                style="--regalton:${regalton(sender)}">
-        <button class="karte__favorit${favorit ? ' ist-favorit' : ''}"
-                aria-label="${favorit ? 'Aus Meine Platten entfernen' : 'Zu Meine Platten'}">${favorit ? '♥' : '♡'}</button>
-        <div class="karte__bild${eigenes ? '' : ' ist-hausmarke'}">
-          <img src="${senderbild(sender)}" alt="" loading="lazy" width="256" height="256">
-          ${sender.kanal ? `<span class="karte__kanal">${sender.kanal}</span>` : ''}
+        <div class="karte__bild">
+          ${eigenes
+            ? `<img src="${senderbild(sender)}" alt="" loading="lazy" width="512" height="512">`
+            /*
+              Keine Huelle ohne Cover ist ein Fehler — in jedem Plattenladen
+              stehen Testpressungen mit gesetztem Namen. Deshalb wird der Name
+              gesetzt statt eine Hausmarke wiederholt.
+            */
+            : `<div class="huelle huelle--${huellengroesse(sender)}">
+                 <span class="huelle__name">${huellenzeilen(sender).join('<br>')}</span>
+                 <img class="huelle__marke" src="${MARKE}" alt="" width="28" height="20">
+               </div>`}
+          <div class="karte__schleier"></div>
+          <p class="karte__kaertchen"><span>${sender.kaertchen}</span></p>
+          <button class="karte__favorit${favorit ? ' ist-favorit' : ''}"
+                  aria-label="${favorit ? t('karte.favorit.entfernen') : t('karte.favorit.hinzu')}">${symbol(favorit ? 'gemerkt' : 'merken', 20)}</button>
+          <button class="karte__spielen" aria-label="${t('karte.spielen')}">
+            <span class="karte__ikon--an">${symbol('abspielen', 20)}</span><span class="karte__ikon--aus">${symbol('pause', 20)}</span>
+          </button>
+          <div class="karte__laeuft"><span></span><span></span><span></span></div>
         </div>
-        <div class="karte__kopf">
-          <h3 class="karte__name">${sender.name}</h3>
+        <div class="karte__etikett">
+          <div class="karte__zeile">
+            ${(() => {
+              /*
+               Haus klein, Kanal gross — aber nur, wenn das Haus mehrere
+               Kanaele fuehrt. Bei einem einzelnen Sender waere die Zerlegung
+               eine Erfindung: "Kiosk" ueber "Radio" zu setzen macht aus
+               einem Namen zwei.
+              */
+              const { haus, kanal } = zerlegeName(sender);
+              const mehrkanalig = haus && this._haeuser?.has(haus);
+              return mehrkanalig
+                ? `<h3 class="karte__name" title="${sender.name}">`
+                  + `<span class="karte__haus">${haus}</span>${kanal}</h3>`
+                : `<h3 class="karte__name" title="${sender.name}">${sender.name}</h3>`;
+            })()}
+            ${guete ? `<span class="karte__guete karte__guete--${stufe}" title="${guetetitel}">${guete}</span>` : ''}
+          </div>
           <p class="karte__ort">${sender.ort} · ${sender.land}</p>
+          ${breite ? `<p class="karte__leitung">${t('karte.bandbreite', { wert: breite })}</p>` : ''}
+          <div class="karte__fuss">
+            ${(sender.etiketten ?? []).slice(0, 2).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
+          </div>
         </div>
-        <p class="karte__kaertchen">${sender.kaertchen}</p>
-        <div class="karte__fuss">
-          ${guete ? `<span class="marke${hochwertig ? ' marke--gut' : ''}"${bedarf ? ` title="${bedarf}"` : ''}>${guete}</span>` : ''}
-          ${bedarf ? `<span class="marke marke--bedarf">${bedarf}</span>` : ''}
-          ${(sender.etiketten ?? []).slice(0, 2).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
-        </div>
-        <div class="karte__laeuft"><span></span><span></span><span></span></div>
       </article>`;
   }
 
@@ -415,6 +592,7 @@ class UI {
       const id = karte.dataset.senderId;
       karte.addEventListener('click', (e) => {
         if (e.target.closest('.karte__favorit')) return;
+        if (e.target.closest('.karte__spielen')) return;
         const sender = this.senderMitId(id);
         if (sender) window.app.spieleSender(sender);
       });
@@ -422,100 +600,573 @@ class UI {
         e.stopPropagation();
         this.toggleFavorit(id);
       });
+      /*
+       Der Abspielknopf haelt an, wenn der Sender schon laeuft — sonst wuerde
+       ein Klick auf ein sichtbares Pausenzeichen den Strom neu aufbauen.
+      */
+      karte.querySelector('.karte__spielen')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (this.aktuelleId === id) return window.app.wechselSpiel();
+        const sender = this.senderMitId(id);
+        if (sender) window.app.spieleSender(sender);
+      });
     });
   }
 
-  // ── Regale ───────────────────────────────────────────────────────
-  zeichneRegale(auswahl = null) {
-    const behaelter = document.getElementById('regale');
-    behaelter.innerHTML = '';
-    const daten = auswahl ?? this.sender;
+  /*
+   Die Regalwand — neun Faecher mit Bild.
 
-    if (!daten.length) {
-      behaelter.innerHTML = `
-        <div class="leer">
-          <p class="leer__titel">Nichts gefunden</p>
-          <p class="leer__hinweis">Anderer Suchbegriff, oder Filter wieder ausschalten.</p>
-        </div>`;
-      return;
+   Bisher gab es die Regale nur als Ueberschriften mitten im Fluss. Wer wissen
+   wollte, was der Laden fuehrt, musste an allem vorbeiscrollen.
+
+   Die Bilder sind erzeugt, aber nicht erfunden: vier echte Cover aus dem Fach
+   als Mosaik, getoent im Regalton. Ein gemaltes Fantasiebild waere huebscher
+   und wuerde zeigen, was NICHT im Fach steht.
+  */
+  zeichneRegalwand() {
+    const raster = document.getElementById('regalwandRaster');
+    if (!raster) return;
+
+    const proRegal = new Map();
+    for (const s of this.sender) {
+      if (!proRegal.has(s.regal)) proRegal.set(s.regal, []);
+      proRegal.get(s.regal).push(s);
     }
 
-    let zaesurGesetzt = false;
-    for (const regal of this.regale) {
-      const drin = daten.filter(s => s.regal === regal.id);
-      if (!drin.length) continue;
+    const faecher = this.regale.filter(r => (proRegal.get(r.id) ?? []).length);
+    raster.innerHTML = faecher.map(r => {
+      const drin = proRegal.get(r.id);
+      const bilder = regalmosaik(drin);
+      return `
+        <button class="regalfach" data-regal="${r.id}" style="--regalton:${REGALTON[r.id] ?? REGALTON.grenzgaenger}"
+                title="${r.beschreibung ?? ''}">
+          <div class="regalfach__mosaik">
+            ${bilder.map(b => `<img src="${b}" alt="" loading="lazy" width="256" height="256">`).join('')}
+          </div>
+          <div class="regalfach__text">
+            <span class="regalfach__name">${r.name}</span>
+            <span class="regalfach__zahl">${t('regalwand.sender', { anzahl: drin.length })}</span>
+          </div>
+        </button>`;
+    }).join('');
 
-      // Vor dem ersten zurückgenommenen Regal eine Zäsur. Kein Wegsperren,
-      // sondern ein Hinweisschild. „Wühlkiste" statt „Ramsch": In einem
-      // Plattenladen ist die Kiste keine Abwertung — dort wühlt man, und
-      // dort findet man Sachen. Genau das soll hier passieren.
-      if (regal.zurueckgenommen && !zaesurGesetzt) {
-        zaesurGesetzt = true;
-        const zaesur = document.createElement('div');
-        zaesur.className = 'zaesur';
-        zaesur.innerHTML = `
-          <span class="zaesur__strich"></span>
-          <span class="zaesur__text">Die Wühlkiste — ab hier wird es vertraut</span>
-          <span class="zaesur__strich"></span>`;
-        behaelter.appendChild(zaesur);
-      }
+    const zahl = document.getElementById('regalwandZahl');
+    if (zahl) zahl.textContent = t('regalwand.zahl', { faecher: faecher.length, sender: this.sender.length });
 
-      const el = document.createElement('section');
-      el.className = 'regal' + (regal.zurueckgenommen ? ' nimmt-sich-zurueck' : '');
-      el.dataset.regal = regal.id;
-      el.innerHTML = `
-        <div class="regal__kopf">
-          <h2 class="regal__titel"><span class="regal__icon">${regal.icon}</span> ${regal.name}</h2>
-          <span class="regal__zahl">${drin.length}</span>
-        </div>
-        <p class="regal__beschreibung">${regal.beschreibung}</p>
-        <div class="regal__raster">${drin.map(s => this._karteHTML(s)).join('')}</div>`;
-      behaelter.appendChild(el);
-    }
-    this._verdrahteKarten(behaelter);
+    raster.onclick = (e) => {
+      const fach = e.target.closest('.regalfach');
+      if (!fach) return;
+      this.setzeRegalFilter(fach.dataset.regal);
+      // Zum Ergebnis fuehren, aber unter die klebende Leiste — sonst steht
+      // die erste Reihe Huellen dahinter.
+      document.getElementById('regale')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
   }
 
-  // ── Etiketten ────────────────────────────────────────────────────
-  zeichneEtiketten() {
+  // ── Regale ───────────────────────────────────────────────────────
+  /*
+   Ungefiltert eine waagerechte Reihe je Regal, gefiltert ein Raster.
+
+   Warum der Unterschied: Das sind zwei verschiedene Handlungen. Ungefiltert
+   STOEBERT man — man weiss noch nicht, was man sucht, und blaettert quer
+   durch die Kiste. Genau das tun Netflix, Spotify und Apple Music auf ihrer
+   Startseite, und im Plattenladen tut man es auch: Man geht die Reihe
+   entlang und zieht Huellen halb heraus. Neun Regale untereinander als
+   Raster waeren zweiunddreissig Bildschirmhoehen Scrollweg.
+
+   Gefiltert SUCHT man. Dann will man alle Treffer auf einmal sehen und
+   vergleichen — dafuer ist ein Raster richtig, und seitwaerts blaettern
+   waere Arbeit. Dieselbe Trennung hat Spotify zwischen Startseite und
+   Suchergebnis.
+  */
+  zeichneRegale(auswahl = null) {
+    const behaelter = document.getElementById('regale');
+    const gefiltert = auswahl !== null;
+    const daten = auswahl ?? this.sender;
+
+    const zeichne = () => {
+      behaelter.innerHTML = '';
+      behaelter.classList.toggle('ist-gefiltert', gefiltert);
+
+      if (!daten.length) {
+        behaelter.innerHTML = `
+          <div class="leer">
+            <p class="leer__titel">${t('leer.titel')}</p>
+            <p class="leer__hinweis">${t('leer.hinweis')}</p>
+            <button class="knopf" id="leerZuruecksetzen">${t('filter.knopf.alle')}</button>
+          </div>`;
+        behaelter.querySelector('#leerZuruecksetzen')
+          ?.addEventListener('click', () => this.filterZuruecksetzen());
+        return;
+      }
+
+      for (const regal of this.regale) {
+        const drin = daten.filter(s => s.regal === regal.id);
+        if (!drin.length) continue;
+        behaelter.appendChild(this._regalHTML(regal, drin, gefiltert));
+      }
+      this._verdrahteKarten(behaelter);
+      this._verdrahteReihen(behaelter);
+    };
+
+    /*
+     View Transitions: Beim Filterwechsel verschwinden und erscheinen Karten.
+     Ohne Uebergang springt das Bild, und man verliert die Stelle, an der man
+     war. Mit Uebergang blendet der Browser den alten in den neuen Zustand.
+
+     Nur wenn der Besucher keine reduzierte Bewegung verlangt hat — sonst ist
+     ein Uebergang genau das, was er abbestellt hat.
+    */
+    const magBewegung = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (document.startViewTransition && magBewegung && this._schonGezeichnet) {
+      document.startViewTransition(zeichne);
+    } else {
+      zeichne();
+    }
+    this._schonGezeichnet = true;
+  }
+
+  _regalHTML(regal, drin, alsRaster) {
+    const el = document.createElement('section');
+    el.className = 'regal';
+    el.dataset.regal = regal.id;
+    el.style.setProperty('--regalton', REGALTON[regal.id] ?? REGALTON.grenzgaenger);
+
+    const reihe = alsRaster ? 'regal__raster' : 'regal__reihe';
+    /*
+     Die Blaetterknoepfe stehen nur da, wo es einen Zeiger gibt. Auf einem
+     Handy wischt man; ein Pfeilknopf waere dort ein Knopf, den niemand
+     drueckt und der Platz kostet.
+    */
+    const blaettern = alsRaster ? '' : `
+        <div class="regal__blaettern" aria-hidden="true">
+          <button class="regal__pfeil" data-richtung="-1" tabindex="-1">${symbol('zurueck', 16)}</button>
+          <button class="regal__pfeil" data-richtung="1"  tabindex="-1">${symbol('weiter', 16)}</button>
+        </div>`;
+
+    el.innerHTML = `
+      <div class="regal__kopf">
+        <h2 class="regal__titel">${regal.name}</h2>
+        <span class="regal__zahl">${drin.length}</span>
+        ${blaettern}
+      </div>
+      <p class="regal__beschreibung">${regal.beschreibung}</p>
+      <div class="${reihe}" role="group" aria-label="${regal.name}">
+        ${drin.map(s => this._karteHTML(s)).join('')}
+      </div>`;
+    return el;
+  }
+
+  /*
+   Die Blaetterknoepfe.
+
+   Sie stehen auf aria-hidden und tabindex -1, und das ist Absicht: Mit der
+   Tastatur kommt man ohnehin durch die Karten, und der Browser scrollt die
+   Reihe dabei von selbst mit. Zwei zusaetzliche Tabstopps je Regal — bei
+   neun Regalen achtzehn — waeren reine Wegstrecke ohne Gewinn.
+
+   Geblaettert wird um fast eine volle Reihenbreite, nicht um genau eine:
+   Die angeschnittene Huelle am Rand bleibt sichtbar und sagt, dass es
+   weitergeht.
+  */
+  /*
+   Mit der Maus durch eine Reihe ziehen.
+
+   Auf dem Handy wischt man, und der Browser scrollt. Mit der Maus gab es
+   bisher nur die beiden Pfeilknoepfe — und wer eine Kiste vor sich hat,
+   greift hinein und schiebt. Genau das fehlte.
+
+   DREI DINGE MACHEN DEN UNTERSCHIED ZWISCHEN "GEHT" UND "FUEHLT SICH RICHTIG
+   AN", und alle drei sind hier gemeint:
+
+   1. Ein Zug darf nicht als Klick enden. Wer 200 Pixel schiebt und loslaesst,
+      hat NICHT auf die Huelle unter dem Zeiger getippt — sonst spielt beim
+      Blaettern staendig ein Sender an. Deshalb faengt ein Zug ueber der
+      Schwelle den naechsten Klick ab, einmal, in der Erfassungsphase.
+
+   2. Es muss nachlaufen. Ein Zug, der beim Loslassen sofort steht, fuehlt
+      sich an, als klemmte etwas. Aus der Geschwindigkeit der letzten
+      Bewegungen wird ein Schwung berechnet, der ausrollt — dieselbe Sache,
+      die ein Handy von selbst tut.
+
+   3. Waagerecht ja, senkrecht nein. Wer die Seite herunterscrollen will und
+      dabei ueber einer Reihe startet, darf nicht in ihr haengenbleiben. Die
+      Richtung wird aus den ersten Pixeln bestimmt und dann festgehalten.
+
+   Pointer Events statt mousedown/touchstart: Ein Satz Ereignisse fuer Maus,
+   Finger und Stift. setPointerCapture sorgt dafuer, dass der Zug auch dann
+   weiterlaeuft, wenn der Zeiger die Reihe verlaesst — ohne das reisst die
+   Bewegung am Rand ab, und genau am Rand zieht man am haeufigsten.
+  */
+  _machZiehbar(reihe) {
+    if (reihe.dataset.ziehbar) return;
+    reihe.dataset.ziehbar = '1';
+
+    const SCHWELLE = 6;        // Pixel, ab denen aus einem Klick ein Zug wird
+    const REIBUNG = 0.94;      // je Bild; darunter wirkt es schmierig
+    const MINDESTSCHWUNG = 0.4;
+
+    let zieht = false, entschieden = false, achse = null;
+    let startX = 0, startY = 0, startScroll = 0;
+    let letzteZeit = 0, letztesX = 0, schwung = 0, lauf = 0;
+    let gezogen = 0;
+
+    const halt = () => {
+      cancelAnimationFrame(lauf); lauf = 0;
+      reihe.classList.remove('rollt-aus');
+    };
+
+    const rollAus = () => {
+      if (Math.abs(schwung) < MINDESTSCHWUNG) {
+        halt();
+        reihe.classList.remove('rollt-aus');
+        // Erst JETZT das weiche Scrollen zurueckgeben — es gehoert den
+        // Pfeilknoepfen. Gab man es schon beim Loslassen zurueck, animierte
+        // der Browser jede einzelne Zuweisung dieser Schleife und arbeitete
+        // gegen sie: Gemessen kam null Nachlauf heraus, obwohl der Schwung
+        // stimmte.
+        reihe.style.scrollBehavior = '';
+        return;
+      }
+      reihe.scrollLeft -= schwung;
+      schwung *= REIBUNG;
+      lauf = requestAnimationFrame(rollAus);
+    };
+
+    reihe.addEventListener('pointerdown', (e) => {
+      /*
+       Nur die Hauptzeigertaste. ABER: auch ueber einem Knopf.
+
+       Zuerst hatte ich Knoepfe ausgenommen — wer aufs Herz zielt, will
+       merken. Gemessen hat sich das als schlechter erwiesen: Der
+       Abspielknopf erscheint beim Ueberfahren mitten auf dem Cover, und ein
+       Zug, der zufaellig dort beginnt, tat gar nichts. Die Reihe fuehlte
+       sich stellenweise kaputt an, ohne erkennbare Regel.
+
+       Wer eine Kiste greift, greift DIE KISTE, nicht den Knopf darunter.
+       Deshalb faengt der Zug ueberall an; ob es ein Klick oder ein Zug war,
+       entscheidet erst die Bewegung. Der Knopf bleibt bedienbar, weil ein
+       Druck ohne Bewegung nie zum Zug wird und der Klick dann normal
+       durchgeht — und ein Zug seinen Klick verschluckt.
+      */
+      if (e.button !== 0) return;
+      // Finger und Stift scrollen nativ besser, als wir es nachbauen koennen.
+      if (e.pointerType !== 'mouse') return;
+
+      halt();
+      zieht = true; entschieden = false; achse = null; gezogen = 0;
+      startX = e.clientX; startY = e.clientY;
+      startScroll = reihe.scrollLeft;
+      letzteZeit = performance.now(); letztesX = e.clientX; schwung = 0;
+    });
+
+    reihe.addEventListener('pointermove', (e) => {
+      if (!zieht) return;
+      const dx = e.clientX - startX, dy = e.clientY - startY;
+
+      if (!entschieden) {
+        if (Math.abs(dx) < SCHWELLE && Math.abs(dy) < SCHWELLE) return;
+        // Einmal festgelegt, bleibt es dabei — sonst kippt die Bewegung
+        // mitten im Zug von waagerecht auf senkrecht.
+        achse = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+        entschieden = true;
+        if (achse === 'y') { zieht = false; return; }
+        reihe.setPointerCapture(e.pointerId);
+        reihe.classList.add('wird-gezogen');
+        // Waehrend des Zuges kein weiches Scrollen: Das ist fuer die
+        // Pfeilknoepfe gedacht und macht den Zug traege.
+        reihe.style.scrollBehavior = 'auto';
+      }
+
+      gezogen = Math.abs(dx);
+      reihe.scrollLeft = startScroll - dx;
+
+      const jetzt = performance.now();
+      const spanne = jetzt - letzteZeit;
+      if (spanne > 0) {
+        // Geglaettet, damit ein einzelnes ruckeliges Ereignis den Schwung
+        // nicht verreisst.
+        const roh = (e.clientX - letztesX) / spanne * 16;
+        schwung = schwung * 0.7 + roh * 0.3;
+        letzteZeit = jetzt; letztesX = e.clientX;
+      }
+      e.preventDefault();
+    });
+
+    const loslassen = (e) => {
+      if (!zieht) return;
+      zieht = false;
+      reihe.classList.remove('wird-gezogen');
+      if (reihe.hasPointerCapture?.(e.pointerId)) reihe.releasePointerCapture(e.pointerId);
+
+      if (gezogen > SCHWELLE) {
+        /*
+         Den naechsten Klick verschlucken — aber nur diesen einen, und nur
+         wenn wirklich gezogen wurde. In der Erfassungsphase, weil der Klick
+         sonst zuerst bei der Karte ankommt und ein Sender anspielt.
+        */
+        const schluck = (k) => { k.stopPropagation(); k.preventDefault(); };
+        reihe.addEventListener('click', schluck, { capture: true, once: true });
+        // Kam gar kein Klick (Zug endete ausserhalb), muss der Horcher wieder
+        // weg — sonst frisst er irgendwann einen echten.
+        setTimeout(() => reihe.removeEventListener('click', schluck, true), 0);
+        // Das Einrasten bleibt aus, bis der Nachlauf steht — sonst zieht es
+        // die Reihe schon im ersten Bild wieder auf die Kartenkante.
+        reihe.classList.add('rollt-aus');
+        rollAus();
+      } else {
+        // Kein Zug, also auch kein Nachlauf — dann gehoert das weiche
+        // Scrollen sofort zurueck.
+        reihe.style.scrollBehavior = '';
+      }
+      gezogen = 0;
+    };
+
+    reihe.addEventListener('pointerup', loslassen);
+    reihe.addEventListener('pointercancel', loslassen);
+    // Ein neuer Zug hebt das Nachlaufen auf — sonst zieht man gegen den
+    // eigenen Schwung.
+    reihe.addEventListener('wheel', halt, { passive: true });
+  }
+
+  _verdrahteReihen(behaelter) {
+    for (const reihe of behaelter.querySelectorAll('.regal__reihe')) {
+      // Ziehen gilt fuer JEDE Reihe, auch fuer die ohne Pfeilknoepfe —
+      // Verlauf und Auslage haben keine, ziehen soll man dort trotzdem.
+      this._machZiehbar(reihe);
+
+      const kopf = reihe.closest('.regal')?.querySelector('.regal__blaettern');
+      if (!kopf) continue;
+
+      const stand = () => {
+        const platz = reihe.scrollWidth - reihe.clientWidth;
+        // In RTL ist scrollLeft negativ oder rueckwaerts gezaehlt, je nach
+        // Browser. Der Betrag stimmt in beiden Faellen.
+        const wo = Math.abs(reihe.scrollLeft);
+        kopf.hidden = platz < 8;
+        kopf.querySelector('[data-richtung="-1"]').disabled = wo < 8;
+        kopf.querySelector('[data-richtung="1"]').disabled = wo > platz - 8;
+      };
+      stand();
+      reihe.addEventListener('scroll', stand, { passive: true });
+      new ResizeObserver(stand).observe(reihe);
+
+      kopf.addEventListener('click', (e) => {
+        const knopf = e.target.closest('[data-richtung]');
+        if (!knopf) return;
+        const richtung = Number(knopf.dataset.richtung)
+                       * (getComputedStyle(reihe).direction === 'rtl' ? -1 : 1);
+        reihe.scrollBy({ left: richtung * reihe.clientWidth * 0.85, behavior: 'smooth' });
+      });
+    }
+  }
+
+  // ── Verlauf ──────────────────────────────────────────────────────
+  /*
+   Zuletzt gehoert.
+
+   Die Daten lagen schon da — merkeZuletzt() schreibt sie seit jeher, aber
+   gezeigt wurden sie nur als Gewicht fuer den Zufallsgriff. Wer gestern
+   etwas Gutes gehoert und den Namen vergessen hat, konnte es nicht
+   wiederfinden. Das ist die haeufigste verlorene Handlung eines Radios.
+
+   Neueste zuerst, jeder Sender einmal, hoechstens zwoelf. Laenger waere
+   kein Verlauf mehr, sondern ein zweiter Katalog.
+  */
+  zeichneVerlauf() {
+    const abschnitt = document.getElementById('verlauf');
+    const reihe = document.getElementById('verlaufReihe');
+    if (!abschnitt || !reihe) return;
+
+    const ids = [...new Set(ladeZuletzt().slice().reverse())];
+    const sender = ids.map(id => this.senderMitId(id)).filter(Boolean).slice(0, 12);
+
+    abschnitt.hidden = sender.length < 2;
+    if (abschnitt.hidden) return;
+
+    reihe.innerHTML = sender.map(s => this._karteHTML(s)).join('');
+    document.getElementById('verlaufZahl').textContent = sender.length;
+    this._verdrahteKarten(abschnitt);
+    this._verdrahteReihen(abschnitt);
+  }
+
+  // ── Filter ───────────────────────────────────────────────────────
+  /*
+   Die Leiste zeigt wenig, das Panel zeigt alles.
+
+   Sechzehn Chips in eine klebende Leiste zu quetschen hiesse, sie entweder
+   abzuschneiden oder die halbe Seite damit zu belegen. Beides ist falsch;
+   abgeschnittene Filterchips sind ein bekannter Fehler, weil man nicht sehen
+   kann, was man nicht sieht.
+
+   Also: In der Leiste stehen die drei Fragen, die am haeufigsten gestellt
+   werden, dazu die gerade aktiven Filter als abwaehlbare Chips und die
+   Trefferzahl. Alles Weitere haengt hinter einem Knopf, der sagt, wie viele
+   Filter es gibt.
+  */
+  zeichneFilter() {
+    // Einmal bestimmen, welche Marken mehrere Kanaele fuehren — davon haengt
+    // ab, wie der Name auf der Huelle gesetzt wird.
+    this._haeuser = haeuserMitMehreren(this.sender);
+
     const zaehler = new Map();
     for (const s of this.sender) {
       for (const e of s.etiketten ?? []) zaehler.set(e, (zaehler.get(e) ?? 0) + 1);
     }
-    document.getElementById('etiketten').innerHTML = [...zaehler.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .map(([e, n]) => `<button class="etikett" data-etikett="${e}">${e}<span>${n}</span></button>`)
-      .join('');
+    this._etikettenNachHaeufigkeit = [...zaehler.entries()].sort((a, b) => b[1] - a[1]);
+
+    const proRegion = new Map();
+    for (const s of this.sender) {
+      const r = regionVon(s);
+      if (r) proRegion.set(r, (proRegion.get(r) ?? 0) + 1);
+    }
+    this._regionen = [...proRegion.entries()].sort((a, b) => b[1] - a[1]);
+
+    this.zeichneFilterPanel();
+    this.wendeFilterAn();
   }
 
-  // Klangqualität ist der häufigste Grund zu filtern — beim ersten Tester
-  // war sie die erste Frage. Sie steckte bisher nur im Etikett 'lossless'
-  // versteckt, das man kennen musste.
-  setzeGueteFilter(stufe) {
-    this.aktiveGuete = this.aktiveGuete === stufe ? null : stufe;
-    this.aktivesEtikett = null;
-    document.querySelectorAll('.guete-knopf').forEach(k =>
-      k.classList.toggle('ist-aktiv', k.dataset.guete === this.aktiveGuete));
-    document.querySelectorAll('.etikett').forEach(k => k.classList.remove('ist-aktiv'));
-
-    const passt = {
-      // Verlustfrei oder ein Format, das bei gleicher Datenrate deutlich
-      // besser klingt als MP3
-      verlustfrei: s => ['flac', 'opus', 'vorbis'].includes(s.codec),
-      hoch:        s => s.codec === 'flac' || ['opus', 'vorbis'].includes(s.codec) || (s.bitrate ?? 0) >= 256,
-    }[this.aktiveGuete];
-
-    this.zeichneRegale(passt ? this.sender.filter(passt) : null);
+  _chip(art, achse, wert, beschriftung, zahl) {
+    const aktiv = achse === 'etikett' ? this.filter.etiketten.has(wert)
+                : achse === 'region'  ? this.filter.regionen.has(wert)
+                : achse === 'guete'   ? this.filter.guete === wert
+                : achse === 'gemerkte' ? this.filter.nurGemerkte
+                : false;
+    // Wie viele Sender bleiben, wenn man DIESEN Chip zusaetzlich waehlt.
+    // Bei einem bereits aktiven Chip ist die Zahl der Ist-Zustand.
+    const rest = aktiv ? null
+      : vorschau(this.sender, this.filter, (id) => this.istFavorit(id), achse, wert);
+    const stumpf = rest === 0 ? ' ist-stumpf' : '';
+    return `<button class="chip chip--${art}${aktiv ? ' ist-aktiv' : ''}${stumpf}"
+              data-achse="${achse}" data-wert="${wert}"
+              ${rest === 0 ? 'disabled' : ''}
+              aria-pressed="${aktiv}">${beschriftung}<span>${rest ?? zahl}</span></button>`;
   }
 
-  setzeEtikettFilter(etikett) {
-    this.aktivesEtikett = this.aktivesEtikett === etikett ? null : etikett;
-    this.aktiveGuete = null;
-    document.querySelectorAll('.guete-knopf').forEach(k => k.classList.remove('ist-aktiv'));
-    document.querySelectorAll('.etikett').forEach(k =>
-      k.classList.toggle('ist-aktiv', k.dataset.etikett === this.aktivesEtikett));
-    this.zeichneRegale(this.aktivesEtikett
-      ? this.sender.filter(s => (s.etiketten ?? []).includes(this.aktivesEtikett))
-      : null);
+  zeichneFilterPanel() {
+    const kasten = document.getElementById('filterPanelInhalt');
+    if (!kasten) return;
+    const F = this.filter;
+
+    const gruppe = (titel, chips) => !chips ? '' : `
+      <div class="filter__gruppe">
+        <p class="filter__titel">${titel}</p>
+        <div class="filter__chips">${chips}</div>
+      </div>`;
+
+    kasten.innerHTML =
+      gruppe(t('filter.guete.titel'),
+        this._chip('klang', 'guete', 'verlustfrei', t('filter.guete.verlustfrei'), 0)
+      + this._chip('klang', 'guete', 'hoch', t('filter.guete.hoch'), 0))
+    + gruppe(t('filter.wofuer.titel'),
+        this._etikettenNachHaeufigkeit
+          .map(([e, n]) => this._chip('wofuer', 'etikett', e, etikettName(e), n)).join(''))
+    + gruppe(t('filter.wo.titel'),
+        this._regionen
+          .map(([r, n]) => this._chip('wo', 'region', r, regionName(r), n)).join(''))
+    + (this.favoriten.size ? gruppe(t('filter.meine.titel'),
+        this._chip('meine', 'gemerkte', 'ja', t('filter.meine.knopf'), this.favoriten.size)) : '');
+
+    document.getElementById('filterAnzahl').textContent =
+      2 + this._etikettenNachHaeufigkeit.length + this._regionen.length
+      + (this.favoriten.size ? 1 : 0);
+  }
+
+  zeichneSchnellchips() {
+    const kasten = document.getElementById('filterSchnell');
+    if (!kasten) return;
+    const vorhanden = new Set(this._etikettenNachHaeufigkeit.map(([e]) => e));
+    const chips = SCHNELL.filter(e => vorhanden.has(e))
+      .map(e => this._chip('wofuer', 'etikett', e, etikettName(e),
+                           this._etikettenNachHaeufigkeit.find(([k]) => k === e)?.[1] ?? 0));
+    if (this.favoriten.size) {
+      chips.unshift(this._chip('meine', 'gemerkte', 'ja', t('filter.meine.knopf'), this.favoriten.size));
+    }
+    kasten.innerHTML = chips.join('');
+  }
+
+  schalteFilter(achse, wert) {
+    const f = this.filter;
+    if (achse === 'etikett') f.etiketten.has(wert) ? f.etiketten.delete(wert) : f.etiketten.add(wert);
+    else if (achse === 'region') f.regionen.has(wert) ? f.regionen.delete(wert) : f.regionen.add(wert);
+    else if (achse === 'guete') f.guete = f.guete === wert ? null : wert;
+    else if (achse === 'gemerkte') f.nurGemerkte = !f.nurGemerkte;
+    else if (achse === 'regal') f.regal = f.regal === wert ? null : wert;
+    this.wendeFilterAn();
+  }
+
+  setzeRegalFilter(regal) { this.schalteFilter('regal', regal); }
+
+  setzeSuche(text) {
+    this.filter.suche = text ?? '';
+    this.wendeFilterAn();
+  }
+
+  filterZuruecksetzen() {
+    this.filter = leererFilter();
+    const feld = document.getElementById('suche');
+    if (feld) feld.value = '';
+    this.wendeFilterAn();
+  }
+
+  istGefiltert() { return istGefiltert(this.filter); }
+
+  wendeFilterAn() {
+    const treffer = wendeAn(this.sender, this.filter, (id) => this.istFavorit(id));
+
+    this.zeichneSchnellchips();
+    this.zeichneFilterPanel();
+
+    document.querySelectorAll('.regalfach').forEach(k =>
+      k.classList.toggle('ist-aktiv', k.dataset.regal === this.filter.regal));
+
+    this.zeigeFilterstand(treffer.length);
+    this.zeichneRegale(this.istGefiltert() ? treffer : null);
+  }
+
+  /*
+   Der Filterstand: was greift, und wie viel bleibt.
+
+   Jeder aktive Filter steht als eigener Chip mit einem Kreuz da. Eine
+   Sammelmeldung "3 Filter aktiv" waere kuerzer und schlechter — man muesste
+   das Panel oeffnen, um zu sehen, welche drei, und einzeln abwaehlen ginge
+   gar nicht.
+  */
+  zeigeFilterstand(anzahl) {
+    const kasten = document.getElementById('filterStand');
+    const aktive = document.getElementById('filterAktive');
+    const knopf  = document.getElementById('filterKnopf');
+    if (!kasten || !aktive) return;
+
+    const f = this.filter;
+    const teile = [];
+    if (f.nurGemerkte) teile.push(['gemerkte', 'ja', t('filter.meine.knopf')]);
+    if (f.guete) teile.push(['guete', f.guete, t('filter.guete.' + f.guete)]);
+    if (f.regal) teile.push(['regal', f.regal,
+                             this.regale.find(r => r.id === f.regal)?.name ?? f.regal]);
+    for (const e of f.etiketten) teile.push(['etikett', e, etikettName(e)]);
+    for (const r of f.regionen) teile.push(['region', r, regionName(r)]);
+
+    aktive.innerHTML = teile.map(([achse, wert, text]) =>
+      `<button class="chip chip--aktiv" data-achse="${achse}" data-wert="${wert}"
+               aria-label="${t('filter.entfernen', { name: text })}">${text}<span>&times;</span></button>`
+    ).join('');
+
+    kasten.hidden = !this.istGefiltert();
+    document.getElementById('filterStandText').textContent = anzahl === 1
+      ? t('filter.stand.eins')
+      : t('filter.stand.mehrere', { anzahl, gesamt: this.sender.length });
+    if (knopf) knopf.dataset.aktiv = anzahlAktiv(this.filter) || '';
+
+    // Dieselbe Zahl noch einmal im Panel: Wer dort Chips waehlt, sieht die
+    // Leiste dahinter nicht.
+    const imPanel = document.getElementById('filterPanelStand');
+    if (imPanel) {
+      imPanel.textContent = anzahl === 1
+        ? t('filter.stand.eins')
+        : t('filter.stand.mehrere', { anzahl, gesamt: this.sender.length });
+    }
   }
 
   // ── Anzeigen aktualisieren ───────────────────────────────────────
@@ -523,11 +1174,28 @@ class UI {
     document.querySelectorAll('.karte').forEach(karte => {
       const favorit = this.istFavorit(karte.dataset.senderId);
       const knopf = karte.querySelector('.karte__favorit');
-      if (knopf) { knopf.textContent = favorit ? '♥' : '♡'; knopf.classList.toggle('ist-favorit', favorit); }
+      if (knopf) { knopf.innerHTML = symbol(favorit ? 'gemerkt' : 'merken', 18); knopf.classList.toggle('ist-favorit', favorit); }
     });
+    /*
+     Nur das Wort tauschen, nicht den ganzen Knopfinhalt.
+
+     Vorher stand hier heroKnopf.textContent = ... — das loescht ALLE
+     Kindelemente, also auch das SVG-Herz daneben. Nach dem ersten Merken war
+     das Zeichen weg und kam bis zum Neuladen nicht wieder.
+    */
     const heroKnopf = document.getElementById('heroFavorit');
     if (heroKnopf && this.aktuelleId) {
-      heroKnopf.textContent = this.istFavorit(this.aktuelleId) ? '♥ Gemerkt' : '♡ Merken';
+      const ist = this.istFavorit(this.aktuelleId);
+      const schluessel = ist ? 'hero.knopf.gemerkt' : 'hero.knopf.merken';
+      const zeichen = heroKnopf.querySelector('[data-symbol]');
+      const wort = heroKnopf.querySelector('[data-text]');
+      if (zeichen) {
+        zeichen.dataset.symbol = ist ? 'gemerkt' : 'merken';
+        zeichen.innerHTML = symbol(zeichen.dataset.symbol,
+                                   Number(zeichen.dataset.symbolGroesse) || 17);
+      }
+      if (wort) { wort.dataset.text = schluessel; wort.textContent = t(schluessel); }
+      heroKnopf.classList.toggle('ist-favorit', ist);
     }
   }
 
@@ -541,28 +1209,25 @@ class UI {
     const label = document.getElementById('labelBild');
     if (label && label.dataset.senderId !== sender.id) {
       label.dataset.senderId = sender.id;
-      const bild = labelbild(sender);
-      // Traegt der Sender kein eigenes Logo, liegt die Hausmarke auf dem
-      // Teller — und ihr blauer Punkt sitzt dann genau auf der Spindel.
-      label.closest('.label')?.classList.toggle('traegt-marke', bild === LABEL_MARKE);
-      if (bild === LABEL_MARKE) {
-        label.src = LABEL_MARKE;
+      const bild = senderbild(sender);
+      if (bild === MARKE) {
+        label.src = MARKE;
       } else {
         // Erst laden, dann tauschen — sonst blitzt kurz ein leeres Label auf
         const probe = new Image();
         probe.onload  = () => { label.src = bild; };
-        probe.onerror = () => { label.src = LABEL_MARKE; label.closest('.label')?.classList.add('traegt-marke'); };
+        probe.onerror = () => { label.src = MARKE; };
         probe.src = bild;
       }
     }
     document.getElementById('heroName').textContent = sender.name;
     document.getElementById('heroOrt').textContent  = `${sender.betreiber} · ${sender.ort}, ${sender.land}`;
     document.getElementById('heroKaertchen').textContent = sender.kaertchen;
-    const guete = sender.codec === 'flac' ? 'verlustfrei FLAC'
+    const guete = sender.codec === 'flac' ? t('hero.guete.flac')
                 : ['opus','vorbis'].includes(sender.codec) ? sender.codec.toUpperCase()
-                : `${sender.codec.toUpperCase()} ${sender.bitrate ?? '?'} kbit/s`;
+                : t('hero.guete.bitrate', { codec: sender.codec.toUpperCase(), bitrate: sender.bitrate ?? '?' });
     // Ehrlich benennen, ob der Balkenkranz das echte Signal zeigt.
-    const pegel = sender.cors ? ' · Pegel live' : ' · Pegel nachempfunden';
+    const pegel = sender.cors ? t('hero.pegel.live') : t('hero.pegel.simuliert');
     document.getElementById('heroGuete').textContent = guete + pegel;
     document.getElementById('heroLink').href = sender.homepage;
     document.getElementById('barName').textContent = sender.name;
@@ -581,7 +1246,7 @@ class UI {
   zeigeSpielzustand(laeuft) {
     for (const id of ['heroPlayIcon', 'barPlayIcon']) {
       const el = document.getElementById(id);
-      if (el) el.textContent = laeuft ? '⏸' : '▶';
+      if (el) el.innerHTML = symbol(laeuft ? 'pause' : 'abspielen', 20);
     }
     document.body.classList.toggle('spielt', laeuft);
     this.setzeTonarm(laeuft);
@@ -613,7 +1278,7 @@ class UI {
     if (!karte.querySelector('.karte__stumm')) {
       const hinweis = document.createElement('span');
       hinweis.className = 'karte__stumm';
-      hinweis.textContent = 'antwortet gerade nicht';
+      hinweis.textContent = t('karte.stumm');
       karte.appendChild(hinweis);
     }
     if (istWackelig(senderId)) karte.classList.add('ans-regalende');
@@ -623,8 +1288,8 @@ class UI {
     document.querySelector('.ausfall')?.remove();
     const kasten = document.createElement('div');
     kasten.className = 'ausfall';
-    kasten.innerHTML = `<span>${gescheitert.name} antwortet gerade nicht.</span>
-                        <button type="button">Stattdessen ${ersatz.name}</button>`;
+    kasten.innerHTML = `<span>${t('ausfall.text', { name: gescheitert.name })}</span>
+                        <button type="button">${t('ausfall.knopf', { name: ersatz.name })}</button>`;
     kasten.querySelector('button').addEventListener('click', () => {
       kasten.remove();
       window.app.spieleSender(ersatz);
@@ -638,6 +1303,37 @@ class UI {
       k.classList.remove('ist-stumm');
       k.querySelector('.karte__stumm')?.remove();
     });
+  }
+
+  /*
+   Eine Ruecksicht, die stehen bleibt, bis der Besucher entscheidet.
+
+   Anders als `meldung()`: kein Zeitablauf. Fuer Fragen, die eine Antwort
+   brauchen — Fehlerbericht senden, neue Fassung laden. Wer nicht antwortet,
+   hat damit auch geantwortet: Es passiert nichts.
+  */
+  frage(text, aktionen) {
+    const behaelter = document.getElementById('meldungen');
+    if (!behaelter) return;
+
+    const kasten = document.createElement('div');
+    kasten.className = 'meldung meldung--info meldung--bleibt';
+    kasten.setAttribute('role', 'status');
+
+    const zeile = document.createElement('span');
+    zeile.textContent = text;
+    kasten.append(zeile);
+
+    for (const a of aktionen) {
+      const knopf = document.createElement('button');
+      knopf.type = 'button';
+      knopf.className = 'meldung__knopf' + (a.haupt ? '' : ' meldung__knopf--leise');
+      knopf.textContent = a.text;
+      knopf.addEventListener('click', () => { kasten.remove(); a.tun?.(); });
+      kasten.append(knopf);
+    }
+
+    behaelter.appendChild(kasten);
   }
 
   meldung(text, art = 'info') {
@@ -664,9 +1360,10 @@ class App {
     if (typeof lautstaerke === 'number') this.engine.setzeLautstaerke(lautstaerke, false);
     this.engine.setze432(speicher.lies(SCHLUESSEL.pitch432, true));
 
-    this.zeigeWillkommen();
-    this.ui.zeichneEtiketten();
-    this.ui.zeichneRegale();
+    this.ui.zeichneFilter();
+    this.ui.zeichneRegalwand();
+    this.ui.zeichneVerlauf();
+    this.misstKopf();
     this.zeichneWochentipp();
     this.zeichneAuslage();
     this.aktualisiereGriff();
@@ -681,8 +1378,8 @@ class App {
       this._setzeMediaSession(this.engine.aktuellerSender);
     });
 
-    this.engine.bei('laden',   () => this.ui.zeigeStatus('laden', 'Verbinden …'));
-    this.engine.bei('puffern', () => this.ui.zeigeStatus('laden', 'Puffert …'));
+    this.engine.bei('laden',   () => this.ui.zeigeStatus('laden', t('status.verbinden')));
+    this.engine.bei('puffern', () => this.ui.zeigeStatus('laden', t('status.puffern')));
 
     // Kein automatisches Weiterspringen mehr. Früher wechselte die App alle
     // 2,5 s zum nächsten Sender und warf jedes Mal eine rote Meldung — bei
@@ -691,7 +1388,7 @@ class App {
       const sender = this.engine.aktuellerSender;
       if (!sender) return;
       this.ui.zeigeSpielzustand(false);
-      this.ui.zeigeStatus('fehler', 'antwortet gerade nicht');
+      this.ui.zeigeStatus('fehler', t('karte.stumm'));
       this.ui.markiereStumm(sender.id);
       zaehleFehlschlag(sender.id);
       const ersatz = findeVerwandten(sender, this.ui.sender.filter(s => !istWackelig(s.id)), new Set([sender.id]));
@@ -701,6 +1398,49 @@ class App {
     this.setzeMyRetuner(speicher.lies(SCHLUESSEL.myretuner, false), 'nutzer');
     this.starteMyRetunerErkennung();
     document.getElementById('ladeschirm')?.classList.add('weg');
+
+    // Symbole einsetzen, bevor der Ladeschirm weggeht — sonst blitzen leere
+    // Flaechen auf, wo Symbole hingehoeren.
+    setzeSymbole();
+
+    this.folgeAdressZiel();
+
+    /*
+     Aktualisierung ueberwachen. Spielt gerade Musik, wird nicht von selbst
+     neu geladen — der Besucher entscheidet. Siehe lib/aktualisierung.mjs.
+    */
+    beobachteAktualisierung({
+      spieltGerade: () => this.engine.laeuft,
+      melde: (text, art) => this.ui.meldung(text, art),
+    });
+
+    /*
+     Fehlerberichte. Gefragt wird erst, wenn wirklich ein Fehler auftritt —
+     eine Einwilligungsfrage beim ersten Besuch betraefe etwas, das
+     vielleicht nie passiert, und staende zwischen Besucher und Musik.
+    */
+    beobachteFehler({ fassung: FASSUNG, melde: this.ui });
+  }
+
+  /*
+   Ein Ziel aus der Adresse ausführen: ?los=nadel oder ?los=meine.
+
+   Dafür gedacht sind die Sprungziele der installierten App — Rechtsklick
+   aufs Symbol in der Taskleiste. Sie stehen als `shortcuts` im Manifest und
+   brauchen eine Adresse, die etwas tut.
+
+   Danach wird der Parameter aus der Adresszeile entfernt: Sonst zeigt ein
+   Neuladen wieder dasselbe, und ein geteilter Link trägt eine Absicht mit
+   sich, die dem Empfänger nichts sagt.
+  */
+  folgeAdressZiel() {
+    const ziel = new URLSearchParams(location.search).get('los');
+    if (!ziel) return;
+
+    history.replaceState(null, '', location.pathname);
+
+    if (ziel === 'nadel') this.nadelFallenLassen();
+    else if (ziel === 'meine') this.zeigeMeinePlatten();
   }
 
   // ── Wiedergabe ───────────────────────────────────────────────────
@@ -709,13 +1449,14 @@ class App {
     this.engine.aktuellerSender = sender;
     this.ui.zeigeSender(sender);
     this.ui.markiereAktiv();
-    this.ui.zeigeStatus('laden', 'Verbinden …');
+    this.ui.zeigeStatus('laden', t('status.verbinden'));
     this.ui.raeumeAusfallAuf();
 
     if (!optionen.still) {
       zaehleGehoert(sender.id);
       merkeZuletzt(sender.id);
       this.aktualisiereGriff();
+      this.ui.zeichneVerlauf();
     }
     await this.engine.spiele(sender);
   }
@@ -727,50 +1468,25 @@ class App {
     this.engine.wechsle();
     this.ui.zeigeSpielzustand(this.engine.laeuft);
     this.ui.zeigeStatus(this.engine.laeuft ? 'live' : 'pause',
-                        this.engine.laeuft ? this.engine.statusText() : 'Pausiert');
+                        this.engine.laeuft ? this.engine.statusText() : t('status.pausiert'));
     if (!this.engine.laeuft) this.visualizer.stopp();
   }
 
   // ── Die drei Zugänge ─────────────────────────────────────────────
-  // Was gezogen werden darf, wenn der Zufall entscheidet.
-  //
-  // Zurückgenommene Regale sind ausgenommen — die Wühlkiste ist da, um
-  // Besucher abzuholen, die etwas Vertrautes suchen. Wer das will, legt
-  // selbst auf. Der Zufall ist für die Besonderheiten da, sonst verfehlt
-  // er seinen Zweck.
   _ziehbareSender() {
-    const zurueckgenommen = new Set(
-      this.ui.regale.filter(r => r.zurueckgenommen).map(r => r.id));
-    return this.ui.sender.filter(s => !istWackelig(s.id) && !zurueckgenommen.has(s.regal));
-  }
-
-  // Die Begrüßung nennt den tatsächlichen Umfang. Fest verdrahtete Zahlen
-  // stimmen spätestens beim nächsten Sender nicht mehr.
-  zeigeWillkommen() {
-    const laender = new Set(this.ui.sender.map(s => s.land)).size;
-    const feld = document.getElementById('heroOrt');
-    if (feld) {
-      feld.textContent =
-        `${this.ui.sender.length} Sender aus ${laender} Ländern, in ${this.ui.regale.length} Regalen`;
-    }
-    const nadel = document.getElementById('griffNadelUnter');
-    if (nadel) {
-      const offen = this.ui.regale.filter(r => !r.zurueckgenommen).length;
-      nadel.textContent = `Zufall aus ${offen} Regalen`;
-    }
+    return this.ui.sender.filter(s => !istWackelig(s.id));
   }
 
   // Der Sender der Woche. Erfindet nichts: er kommt aus dem eigenen,
   // geprueften Katalog und steht fuer alle Besucher derselben Woche fest.
   zeichneWochentipp() {
-    // Auch die Empfehlung der Woche kommt nicht aus der Wühlkiste.
-    const tipp = tippDerWoche(this._ziehbareSender());
+    const tipp = tippDerWoche(this.ui.sender);
     const abschnitt = document.getElementById('tipp');
     if (!tipp || !abschnitt) return;
     const s = tipp.sender;
 
     document.getElementById('tippWoche').textContent =
-      `Sender der Woche · KW ${tipp.woche} / ${tipp.jahr}`;
+      t('tipp.woche', { woche: tipp.woche, jahr: tipp.jahr });
     document.getElementById('tippName').textContent = s.name;
     document.getElementById('tippOrt').textContent =
       `${s.betreiber} · ${s.ort}, ${s.land} · ${this.ui.regale.find(r => r.id === s.regal)?.name ?? ''}`;
@@ -791,10 +1507,46 @@ class App {
     abschnitt.hidden = false;
   }
 
+  /*
+   Misst den Kopf und gibt seine Hoehe als --kopf-hoehe weiter, damit die
+   Filterleiste genau darunter klebt.
+
+   Fest verdrahten geht nicht: Der Kopf ist je nach Fensterbreite ein- oder
+   zweizeilig, weil das Suchfeld umbricht. Ein fester Wert waere auf der
+   einen Breite eine Luecke und auf der anderen eine Ueberdeckung.
+  */
+  misstKopf() {
+    this._misst('kopf', '--kopf-hoehe', true);
+    // Dieselbe Messung fuer die untere Navigationsleiste. Ihre Hoehe haengt
+    // an der Sprache: 65 px in de/en/es/it, 72 px in ja, 73 px in ar und
+    // 86 px in fr. Die Spielerleiste stand darueber fest auf 62,4 px und
+    // ueberlappte sie je nach Sprache um 3 bis 24 px.
+    this._misst('handyLeiste', '--leiste-hoehe', false);
+  }
+
+  _misst(kennung, variable, nurWennKlebend) {
+    const el = document.getElementById(kennung);
+    if (!el) return;
+    const setze = () => {
+      const stil = getComputedStyle(el);
+      // Auf dem Handy scrollt der Kopf weg, dort klebt die Leiste bei 0.
+      // Die Navigationsleiste ist auf dem Rechner gar nicht da (display: none)
+      // — dann gilt ebenfalls null.
+      const zaehlt = stil.display !== 'none'
+                  && (!nurWennKlebend || stil.position === 'sticky');
+      document.documentElement.style.setProperty(
+        variable, zaehlt ? Math.round(el.offsetHeight) + 'px' : '0px');
+    };
+    setze();
+    if (window.ResizeObserver) new ResizeObserver(setze).observe(el);
+    window.addEventListener('resize', setze, { passive: true });
+  }
+
   zeichneAuslage() {
     const auswahl = waehleUeberraschung(this._ziehbareSender(), ladeGehoert(), 6, ladeZuletzt());
     const raster = document.getElementById('auslageRaster');
     raster.innerHTML = auswahl.map(s => this.ui._karteHTML(s)).join('');
+    this.ui._verdrahteReihen(raster.parentElement);
     this.ui._verdrahteKarten(raster);
   }
 
@@ -802,7 +1554,7 @@ class App {
     const [treffer] = waehleUeberraschung(this._ziehbareSender(), ladeGehoert(), 1, ladeZuletzt());
     if (treffer) {
       this.spieleSender(treffer);
-      this.ui.meldung('Nadel gefallen: ' + treffer.name, 'info');
+      this.ui.meldung(t('meldung.nadel', { name: treffer.name }), 'info');
     }
   }
 
@@ -815,7 +1567,7 @@ class App {
     const meine = [...favoriten, ...zuletzt];
 
     if (!meine.length) {
-      this.ui.meldung('Noch nichts im Fach — spiel einen Sender oder setz ein Herz.', 'info');
+      this.ui.meldung(t('meldung.meineLeer'), 'info');
       return;
     }
     this.ui.zeichneRegale(meine);
@@ -825,21 +1577,14 @@ class App {
   aktualisiereGriff() {
     const anzahl = this.ui.favoriten.size + ladeZuletzt().length;
     const el = document.getElementById('griffMeineZahl');
-    if (el) el.textContent = anzahl ? anzahl + ' Sender' : 'noch leer';
+    if (el) el.textContent = anzahl ? t('griff.meine.zahl', { anzahl }) : t('griff.meine.leer');
   }
 
   // ── Suche ────────────────────────────────────────────────────────
   suche(eingabe) {
-    const s = eingabe.toLowerCase().trim();
-    if (!s) return this.ui.zeichneRegale();
-    const passt = (x) =>
-      x.name.toLowerCase().includes(s) ||
-      (x.betreiber ?? '').toLowerCase().includes(s) ||
-      (x.ort ?? '').toLowerCase().includes(s) ||
-      (x.land ?? '').toLowerCase().includes(s) ||
-      (x.kaertchen ?? '').toLowerCase().includes(s) ||
-      (x.etiketten ?? []).some(e => e.toLowerCase().includes(s));
-    this.ui.zeichneRegale(this.ui.sender.filter(passt));
+    // Fuettert denselben Filterzustand wie die Knoepfe. Vorher zeichnete die
+    // Suche direkt und verwarf dabei jede aktive Auswahl.
+    this.ui.setzeSuche(eingabe);
   }
 
   // ── MyRetuner ────────────────────────────────────────────────────
@@ -857,15 +1602,17 @@ class App {
     if (knopf432) {
       knopf432.disabled = this.myRetunerAktiv;
       knopf432.querySelector('span:last-child').textContent =
-        this.myRetunerAktiv ? 'MyRetuner übernimmt' : (this.engine.ist432An ? '432 Hz an' : '432 Hz aus');
+        this.myRetunerAktiv ? t('kopf.432.myretuner')
+                            : t(this.engine.ist432An ? 'kopf.432.an' : 'kopf.432.aus');
       knopf432.classList.toggle('ist-an', this.engine.ist432An && !this.myRetunerAktiv);
     }
-    const knopfMR = document.getElementById('knopfMyRetuner');
-    if (knopfMR) {
-      knopfMR.classList.toggle('ist-an', this.myRetunerAktiv);
-      knopfMR.querySelector('span:last-child').textContent =
-        this.myRetunerAktiv ? (quelle === 'erkannt' ? 'MyRetuner erkannt' : 'MyRetuner an') : 'MyRetuner aus';
-    }
+    /*
+     Frueher stand hier die Beschriftung des zweiten Knopfes. Der ist kein
+     Umschalter mehr, sondern heisst „Ich habe MyRetuner" und ist nur im
+     Zustand `unbekannt` ueberhaupt sichtbar — siehe `_zeigeZugang`. Wuerde
+     hier weiterhin geschrieben, ueberschriebe der Aufruf beim Start die
+     neue Beschriftung mit „MyRetuner aus".
+    */
   }
 
   // ── MyRetuner Stufe 2: Erkennung ─────────────────────────────────
@@ -873,12 +1620,70 @@ class App {
   // Schlaegt die Abfrage fehl, faellt alles still auf den Handschalter
   // zurueck — der Besucher merkt nichts.
   starteMyRetunerErkennung() {
+    const zustand = speicher.lies(SCHLUESSEL.mrZustand, ZUSTAND.unbekannt);
+    this._zeigeZugang(zustand);
+
+    if (zustand !== ZUSTAND.erlaubt) return;
+
+    /*
+     Der einzige Fall, in dem ungefragt abgefragt wird — und er ist
+     unbedenklich: Browser-Berechtigung und Einwilligung der App liegen beide
+     vor, es erscheint kein Dialog. Nachgeprueft wird trotzdem bei jedem
+     Besuch, denn die App koennte deinstalliert oder die Einwilligung dort
+     widerrufen worden sein.
+    */
     const abfragen = async () => {
       const daten = await frageMyRetuner();
       this._zeigeMyRetuner(daten);
     };
     abfragen();
     setInterval(() => { if (this.engine.laeuft || this.myRetunerErkannt) abfragen(); }, 5000);
+  }
+
+  /*
+   Auf Klick: Der Browser fragt den Nutzer um Erlaubnis fuer den lokalen
+   Zugriff, danach fragt die App ihn um Einwilligung fuer diese Herkunft.
+   Beides dauert, also wird gewartet statt einmal zu probieren.
+  */
+  async frageMyRetunerAn() {
+    const knopf = document.getElementById('knopfMyRetuner');
+    const feld  = document.getElementById('myRetunerMessung');
+    if (knopf) knopf.disabled = true;
+    if (feld) {
+      feld.textContent = t('myretuner.warte');
+      feld.hidden = false;
+    }
+
+    const daten = await wartAufEinwilligung();
+    if (knopf) knopf.disabled = false;
+
+    if (daten) {
+      speicher.schreib(SCHLUESSEL.mrZustand, ZUSTAND.erlaubt);
+      this._zeigeZugang(ZUSTAND.erlaubt);
+      this._zeigeMyRetuner(daten);
+      this.starteMyRetunerErkennung();
+      return;
+    }
+
+    // Abgelehnt, weggeklickt, nicht installiert, Berechtigung verweigert —
+    // alles dasselbe. Kein Fehler des Nutzers, also auch keine Fehlermeldung.
+    speicher.schreib(SCHLUESSEL.mrZustand, ZUSTAND.abgelehnt);
+    if (feld) feld.hidden = true;
+    this._zeigeZugang(ZUSTAND.abgelehnt);
+  }
+
+  /*
+   Welche der beiden Schaltflaechen sichtbar ist, haengt allein am Zustand:
+
+     unbekannt   Knopf ja,   Hinweis ja    erster Besuch
+     erlaubt     Knopf nein, Hinweis nein  die Messung spricht fuer sich
+     abgelehnt   Knopf nein, Hinweis ja    nicht noch einmal fragen
+  */
+  _zeigeZugang(zustand) {
+    const knopf   = document.getElementById('knopfMyRetuner');
+    const werbung = document.getElementById('knopfMyRetunerHolen');
+    if (knopf)   knopf.hidden   = (zustand !== ZUSTAND.unbekannt);
+    if (werbung) werbung.hidden = (zustand === ZUSTAND.erlaubt);
   }
 
   _zeigeMyRetuner(daten) {
@@ -891,18 +1696,30 @@ class App {
       const quelle = anzeigeQuelle(daten);
       // Der eigentliche Moment: die Seite raet 440, die App hat gemessen.
       const text = quelle
-        ? (quelle.sicher
-            ? `Quelle ${quelle.wert} Hz → ${ziel} Hz`
-            : `Quelle etwa ${quelle.wert} Hz → ${ziel} Hz`)
-        : `MyRetuner erkannt · ${ziel} Hz`;
+        ? t(quelle.sicher ? 'myretuner.quelle' : 'myretuner.quelleUnsicher',
+            { wert: quelle.wert, ziel })
+        : t('myretuner.erkannt', { ziel });
       const feld = document.getElementById('myRetunerMessung');
       if (feld) { feld.textContent = text; feld.hidden = false; }
+      // Sie antwortet wieder — der Hinweis hat sich erledigt.
+      const werbung = document.getElementById('knopfMyRetunerHolen');
+      if (werbung) werbung.hidden = true;
     } else {
       const feld = document.getElementById('myRetunerMessung');
       if (feld) feld.hidden = true;
       // Nur zuruecksetzen, wenn die Erkennung ihn vorher gesetzt hatte —
       // ein von Hand gesetzter Schalter bleibt, wie der Nutzer ihn ließ.
       if (lief) this.setzeMyRetuner(speicher.lies(SCHLUESSEL.myretuner, false), 'nutzer');
+
+      /*
+       Eingewilligt, aber niemand antwortet: Die App kann deinstalliert oder
+       die Einwilligung dort widerrufen worden sein. Dann faellt die Seite
+       still auf den Hinweis zurueck — aber ohne erneut zu fragen, denn die
+       Einwilligung wurde ja einmal gegeben. Der gespeicherte Zustand bleibt
+       deshalb unangetastet.
+      */
+      const werbung = document.getElementById('knopfMyRetunerHolen');
+      if (werbung) werbung.hidden = false;
     }
   }
 
@@ -911,7 +1728,7 @@ class App {
     this.engine.setze432(!this.engine.ist432An);
     this.setzeMyRetuner(false, 'anzeige');
     this.ui.zeigeStatus(this.engine.laeuft ? 'live' : 'pause',
-                        this.engine.laeuft ? this.engine.statusText() : 'Pausiert');
+                        this.engine.laeuft ? this.engine.statusText() : t('status.pausiert'));
   }
 
   // ── Verdrahtung ──────────────────────────────────────────────────
@@ -923,16 +1740,64 @@ class App {
     anKlick('heroPlay',          () => this.wechselSpiel());
     anKlick('barPlay',           () => this.wechselSpiel());
     anKlick('knopf432',          () => this.wechsle432());
-    anKlick('knopfMyRetuner',    () => this.setzeMyRetuner(!this.myRetunerAktiv, 'nutzer'));
+    anKlick('knopfMyRetuner',    () => this.frageMyRetunerAn());
     anKlick('auslageNeu',        () => this.zeichneAuslage());
+    anKlick('filterZuruecksetzen', () => this.ui.filterZuruecksetzen());
+    anKlick('filterPanelLeeren',   () => this.ui.filterZuruecksetzen());
+
+    /*
+     Der Widerruf der Fehlerbericht-Einwilligung.
+
+     Er steht nur da, wenn eingewilligt wurde. Ein Widerrufsknopf fuer etwas,
+     das niemand gegeben hat, waere eine Frage ohne Anlass — und wuerde
+     obendrein verraten, dass es diese Sammlung gibt, bevor sie je stattfand.
+    */
+    const widerruf = document.getElementById('widerrufFehler');
+    if (widerruf) {
+      const zeige = () => { widerruf.hidden = einwilligungsstand() !== 'erlaubt'; };
+      zeige();
+      widerruf.addEventListener('click', () => {
+        widerrufeEinwilligung();
+        zeige();
+        this.ui.meldung(t('fuss.widerrufen'));
+      });
+    }
+
+    /*
+     Das Filterpanel ist ein natives <dialog>.
+
+     showModal() bringt mit, was man sonst von Hand nachbaut und dabei falsch
+     macht: Der Fokus bleibt gefangen, Escape schliesst, der Rest der Seite
+     wird fuer Vorlesestimmen unsichtbar, und der Verdunkler kommt aus dem
+     Browser statt aus einem eigenen Element mit geratenem z-index.
+    */
+    const panel = document.getElementById('filterPanel');
+    const filterKnopf = document.getElementById('filterKnopf');
+    if (panel && filterKnopf) {
+      const auf = () => { panel.showModal(); filterKnopf.setAttribute('aria-expanded', 'true'); };
+      const zu = () => panel.close();
+      filterKnopf.addEventListener('click', auf);
+      anKlick('filterPanelZu', zu);
+      anKlick('filterPanelFertig', zu);
+      panel.addEventListener('close', () => filterKnopf.setAttribute('aria-expanded', 'false'));
+      // Klick auf den Verdunkler schliesst. Der Verdunkler IST der Dialog —
+      // ein Treffer ausserhalb des Inhalts landet auf ihm selbst.
+      panel.addEventListener('click', (e) => { if (e.target === panel) zu(); });
+    }
     anKlick('heroFavorit',       () => { if (this.ui.aktuelleId) this.ui.toggleFavorit(this.ui.aktuelleId); });
 
-    document.getElementById('etiketten')?.addEventListener('click', (e) => {
-      const knopf = e.target.closest('.etikett');
-      if (knopf) this.ui.setzeEtikettFilter(knopf.dataset.etikett);
+    /*
+     Ein Zuhoerer fuer alle Chips, egal wo sie stehen.
+
+     Die Chips entstehen bei jedem Filterwechsel neu — in der Leiste, im
+     Panel und in der Standanzeige. Sie einzeln zu verdrahten hiesse, bei
+     jedem Klick Dutzende Zuhoerer wegzuwerfen und neu anzulegen. Der Klick
+     steigt ohnehin bis zum Dokument auf; hier wird er einmal abgefangen.
+    */
+    document.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip[data-achse]');
+      if (chip && !chip.disabled) this.ui.schalteFilter(chip.dataset.achse, chip.dataset.wert);
     });
-    document.querySelectorAll('.guete-knopf').forEach(k =>
-      k.addEventListener('click', () => this.ui.setzeGueteFilter(k.dataset.guete)));
 
     const suchfeld = document.getElementById('suche');
     suchfeld?.addEventListener('input', (e) => this.suche(e.target.value));

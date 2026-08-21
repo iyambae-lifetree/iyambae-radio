@@ -1,0 +1,20 @@
+{
+  "name": "iyambae-konto",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@azure/communication-email": "^1.0.0",
+    "@azure/data-tables": "^13.3.1",
+    "@azure/identity": "^4.5.0",
+    "@node-rs/argon2": "^2.0.2",
+    "@simplewebauthn/server": "^13.3.2"
+  }
+}
