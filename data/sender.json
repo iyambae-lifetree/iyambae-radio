@@ -165,7 +165,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "dublab"
     },
     {
       "id": "dublab-bcn",
@@ -186,7 +187,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": false
+      "cors": false,
+      "kanal": "Barcelona"
     },
     {
       "id": "dublab-de",
@@ -210,7 +212,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/dublab-de.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Deutschland"
     },
     {
       "id": "cashmere",
@@ -234,7 +237,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/cashmere.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Cashmere Radio"
     },
     {
       "id": "kiosk-radio",
@@ -257,7 +261,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/kiosk-radio.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Kiosk Radio"
     },
     {
       "id": "refuge-worldwide",
@@ -281,7 +286,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/refuge-worldwide.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Refuge Worldwide"
     },
     {
       "id": "rinse-uk",
@@ -304,7 +310,8 @@
       "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/rinse-uk.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Rinse FM"
     },
     {
       "id": "rinse-france",
@@ -324,7 +331,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": false
+      "cors": false,
+      "kanal": "Rinse France"
     },
     {
       "id": "kool-fm",
@@ -347,7 +355,8 @@
       "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/kool-fm.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Kool FM"
     },
     {
       "id": "wfmu",
@@ -371,7 +380,8 @@
       "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/wfmu.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "WFMU"
     },
     {
       "id": "yammat-fm",
@@ -394,7 +404,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/yammat-fm.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Yammat FM"
     },
     {
       "id": "neu-radio",
@@ -417,7 +428,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/neu-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "NEU Radio"
     },
     {
       "id": "radio-nova",
@@ -440,7 +452,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/radio-nova.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Radio Nova"
     },
     {
       "id": "fip",
@@ -463,7 +476,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/fip.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "FIP"
     },
     {
       "id": "rp-main-flac",
@@ -534,7 +548,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/worldwide-fm.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Worldwide FM"
     },
     {
       "id": "hirschmilch-techno",
@@ -655,7 +670,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/bassdrive.webp",
-      "logoQuelle": "direkt"
+      "logoQuelle": "direkt",
+      "kanal": "Bassdrive"
     },
     {
       "id": "brokenbeats",
@@ -678,7 +694,8 @@
       "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/brokenbeats.webp",
-      "logoQuelle": "direkt"
+      "logoQuelle": "direkt",
+      "kanal": "Brokenbeats"
     },
     {
       "id": "frisky",
@@ -698,7 +715,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Frisky Radio"
     },
     {
       "id": "uzic-techno",
@@ -721,7 +739,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/uzic-techno.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "UZIC Techno & Minimal"
     },
     {
       "id": "fm4",
@@ -744,7 +763,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/fm4.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "FM4"
     },
     {
       "id": "ukbass",
@@ -766,7 +786,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/ukbass.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "UK Bass Radio"
     },
     {
       "id": "atmospheric-dnb",
@@ -789,7 +810,8 @@
       "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/atmospheric-dnb.webp",
-      "logoQuelle": "direkt"
+      "logoQuelle": "direkt",
+      "kanal": "Atmospheric DnB Source"
     },
     {
       "id": "res-radio",
@@ -812,7 +834,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/res-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "RES"
     },
     {
       "id": "isekoi-chill",
@@ -835,7 +858,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/isekoi-chill.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Isekoi Chill Zone"
     },
     {
       "id": "dnbfm",
@@ -858,7 +882,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/dnbfm.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "DNB FM"
     },
     {
       "id": "soma-dronezone",
@@ -882,7 +907,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-dronezone.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Drone Zone"
     },
     {
       "id": "soma-deepspace",
@@ -906,7 +932,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-deepspace.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Deep Space One"
     },
     {
       "id": "soma-groovesalad",
@@ -929,7 +956,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-groovesalad.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Groove Salad"
     },
     {
       "id": "etx-fm",
@@ -952,7 +980,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/etx-fm.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "ETX.FM"
     },
     {
       "id": "camp-radio",
@@ -975,7 +1004,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/camp-radio.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "CAMP Radio"
     },
     {
       "id": "substrate-radio",
@@ -998,7 +1028,8 @@
       "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/substrate-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Substrate Radio"
     },
     {
       "id": "deep-in-space",
@@ -1021,7 +1052,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/deep-in-space.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Deep In Space"
     },
     {
       "id": "newage-flac",
@@ -1044,7 +1076,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/newage-flac.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "1st Greek New Age Radio"
     },
     {
       "id": "ambi-nature",
@@ -1068,7 +1101,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/ambi-nature.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "Ambi Nature Radio"
     },
     {
       "id": "spokoynoe",
@@ -1091,7 +1125,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/spokoynoe.webp",
-      "logoQuelle": "direkt"
+      "logoQuelle": "direkt",
+      "kanal": "Spokoynoe Radio"
     },
     {
       "id": "cafedelmar-calm",
@@ -1113,7 +1148,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/cafedelmar-calm.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Café del Mar CALM"
     },
     {
       "id": "nature-sleep",
@@ -1135,7 +1171,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Nature Radio Sleep"
     },
     {
       "id": "adroit-jazz",
@@ -1156,7 +1193,8 @@
       "samplerate": 48000,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Adroit Jazz Underground"
     },
     {
       "id": "classic-vinyl",
@@ -1176,7 +1214,8 @@
       "samplerate": 48000,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Classic Vinyl HD"
     },
     {
       "id": "jazz24",
@@ -1199,7 +1238,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/jazz24.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Jazz24"
     },
     {
       "id": "wbgo",
@@ -1222,7 +1262,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/wbgo.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "WBGO Jazz 88.3"
     },
     {
       "id": "kjazz-bebop",
@@ -1243,7 +1284,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "KJazz Bebop Channel"
     },
     {
       "id": "ella-bebop",
@@ -1266,7 +1308,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/ella-bebop.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Ella Radio Bebop"
     },
     {
       "id": "ashiya-radio",
@@ -1287,7 +1330,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Ashiya Radio"
     },
     {
       "id": "japan-citypop",
@@ -1307,7 +1351,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "BOX Japan City Pop"
     },
     {
       "id": "listen-moe-jpop",
@@ -1377,7 +1422,8 @@
       "samplerate": 48000,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": false
+      "cors": false,
+      "kanal": "Chifuru"
     },
     {
       "id": "gensokyo",
@@ -1399,7 +1445,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Gensokyo Radio"
     },
     {
       "id": "r-a-d-io",
@@ -1423,7 +1470,8 @@
       "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/r-a-d-io.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "R/a/dio"
     },
     {
       "id": "fm-setagaya",
@@ -1444,7 +1492,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "FM Setagaya 83.4"
     },
     {
       "id": "gotanno-fm",
@@ -1465,7 +1514,8 @@
       "samplerate": 48000,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Gotanno FM 89.2"
     },
     {
       "id": "jazz-sakura",
@@ -1486,7 +1536,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Jazz Sakura"
     },
     {
       "id": "stereo-anime",
@@ -1508,7 +1559,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/stereo-anime.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Stereo Anime"
     },
     {
       "id": "yumico-radio",
@@ -1531,7 +1583,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/yumico-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Yumi Co. Radio"
     },
     {
       "id": "sound-up-nfrs",
@@ -1552,7 +1605,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Sound Up Station NFRS"
     },
     {
       "id": "anime-para-ti",
@@ -1572,7 +1626,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Anime Para Ti"
     },
     {
       "id": "gladys-coleccion",
@@ -1643,7 +1698,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/ibero-909.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Ibero 90.9"
     },
     {
       "id": "colombia-salsadura",
@@ -1663,7 +1719,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": false
+      "cors": false,
+      "kanal": "Colombia Salsa Dura"
     },
     {
       "id": "cumbias-inmortales",
@@ -1683,7 +1740,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Cumbias Inmortales"
     },
     {
       "id": "salsa-maestra",
@@ -1703,7 +1761,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "La Salsa Maestra"
     },
     {
       "id": "salsa-brava-ccs",
@@ -1723,7 +1782,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Caracas Salsa Brava"
     },
     {
       "id": "cumbia-90s",
@@ -1743,7 +1803,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": false
+      "cors": false,
+      "kanal": "Radio Cumbia 90s"
     },
     {
       "id": "panamericana-salsa",
@@ -1765,7 +1826,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/panamericana-salsa.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Panamericana Salsa Power"
     },
     {
       "id": "bytefm",
@@ -1789,7 +1851,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/bytefm.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "ByteFM"
     },
     {
       "id": "wdr-cosmo",
@@ -1812,7 +1875,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/wdr-cosmo.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "WDR Cosmo"
     },
     {
       "id": "radio-mega",
@@ -1834,7 +1898,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Radio Méga"
     },
     {
       "id": "ancient-fm",
@@ -1855,7 +1920,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": false
+      "cors": false,
+      "kanal": "Ancient FM"
     },
     {
       "id": "nhyira-fm",
@@ -1878,7 +1944,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/nhyira-fm.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Nhyira FM 104.5"
     },
     {
       "id": "lagosjump",
@@ -1901,7 +1968,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/lagosjump.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "LagosJump Radio"
     },
     {
       "id": "yabiladi-chaabi",
@@ -1923,7 +1991,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/yabiladi-chaabi.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Yabiladi Chaabi"
     },
     {
       "id": "yurd-fm",
@@ -1946,7 +2015,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/yurd-fm.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "Yurd FM"
     },
     {
       "id": "radyo-siran",
@@ -1969,7 +2039,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/radyo-siran.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Radyo Şiran"
     },
     {
       "id": "bamtaare-fm",
@@ -1990,7 +2061,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Bamtaare FM 103.4"
     },
     {
       "id": "radio-armisa",
@@ -2013,7 +2085,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/radio-armisa.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Radio Armisa"
     },
     {
       "id": "nts-field-recordings",
@@ -2060,7 +2133,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/bootie-mashup.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Bootie Mashup"
     },
     {
       "id": "nightwave-plaza",
@@ -2084,7 +2158,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/nightwave-plaza.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Nightwave Plaza"
     },
     {
       "id": "soma-vaporwaves",
@@ -2107,7 +2182,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-vaporwaves.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Vaporwaves"
     },
     {
       "id": "kohina",
@@ -2131,7 +2207,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/kohina.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Kohina"
     },
     {
       "id": "keygen-fm",
@@ -2152,7 +2229,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Keygen FM"
     },
     {
       "id": "vapor-funk",
@@ -2223,7 +2301,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/nolife-radio.webp",
-      "logoQuelle": "icon"
+      "logoQuelle": "icon",
+      "kanal": "NoLife Radio"
     },
     {
       "id": "shmup-radio",
@@ -2246,7 +2325,8 @@
       "geprueft_am": "2026-08-21",
       "cors": false,
       "logo": "assets/logos/shmup-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Shoot em Up Radio"
     },
     {
       "id": "gamesboro",
@@ -2267,7 +2347,8 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Gamesboro Radio"
     },
     {
       "id": "soma-sf1033",
@@ -2290,7 +2371,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-sf1033.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "SF 10-33"
     },
     {
       "id": "soma-missioncontrol",
@@ -2314,7 +2396,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-missioncontrol.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Mission Control"
     },
     {
       "id": "soma-sonicuniverse",
@@ -2337,7 +2420,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-sonicuniverse.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Sonic Universe"
     },
     {
       "id": "soma-suburbsofgoa",
@@ -2360,7 +2444,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-suburbsofgoa.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Suburbs of Goa"
     },
     {
       "id": "soma-illstreet",
@@ -2383,7 +2468,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-illstreet.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Illinois Street Lounge"
     },
     {
       "id": "soma-tikitime",
@@ -2405,7 +2491,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-tikitime.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Tiki Time"
     },
     {
       "id": "soma-7soul",
@@ -2427,7 +2514,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-7soul.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Seven Inch Soul"
     },
     {
       "id": "soma-bootliquor",
@@ -2450,7 +2538,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-bootliquor.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Boot Liquor"
     },
     {
       "id": "soma-thistle",
@@ -2472,7 +2561,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-thistle.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "ThistleRadio"
     },
     {
       "id": "soma-doomed",
@@ -2496,7 +2586,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-doomed.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Doomed"
     },
     {
       "id": "soma-cliqhop",
@@ -2519,7 +2610,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-cliqhop.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "cliqhop idm"
     },
     {
       "id": "soma-thetrip",
@@ -2543,7 +2635,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-thetrip.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "The Trip"
     },
     {
       "id": "soma-covers",
@@ -2565,7 +2658,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-covers.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Covers"
     },
     {
       "id": "soma-insound",
@@ -2587,7 +2681,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-insound.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "The In-Sound"
     },
     {
       "id": "soma-bossa",
@@ -2609,7 +2704,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-bossa.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Bossa Beyond"
     },
     {
       "id": "soma-brfm",
@@ -2632,7 +2728,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/soma-brfm.webp",
-      "logoQuelle": "somafm"
+      "logoQuelle": "somafm",
+      "kanal": "Black Rock FM"
     },
     {
       "id": "nts-poolside",
@@ -2727,7 +2824,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/somafm-u80s.webp",
-      "logoQuelle": "og:image"
+      "logoQuelle": "og:image",
+      "kanal": "Underground 80s"
     },
     {
       "id": "new-wave-radio",
@@ -2749,7 +2847,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/new-wave-radio.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "New Wave Radio"
     },
     {
       "id": "italopower",
@@ -2772,7 +2871,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logo": "assets/logos/italopower.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "Radio ITALOPOWER!"
     },
     {
       "id": "rautemusik-80s",
@@ -2793,7 +2893,8 @@
       "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "80s"
     },
     {
       "id": "rautemusik-90s",
@@ -2814,7 +2915,8 @@
       "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "90s"
     },
     {
       "id": "rautemusik-trance",
@@ -2836,7 +2938,8 @@
       "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "Trance"
     },
     {
       "id": "181fm-oldschool",
@@ -2903,7 +3006,8 @@
       "regal": "wuehlkiste",
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true
+      "cors": true,
+      "kanal": "1.FM 90s Best"
     },
     {
       "id": "90s90s-eurodance",
@@ -2996,7 +3100,8 @@
       "samplerate": 44100,
       "bitrate": 320,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "Left Coast 70s"
     },
     {
       "id": "cowabunga",
@@ -3019,7 +3124,8 @@
       "samplerate": 44100,
       "bitrate": 128,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "Radio Cowabunga"
     },
     {
       "id": "xraydio-jukebox",
@@ -3086,7 +3192,8 @@
       "samplerate": 44100,
       "bitrate": 128,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "Wraith Vision"
     },
     {
       "id": "rsa-ostrock",
@@ -3108,7 +3215,8 @@
       "samplerate": 44100,
       "bitrate": 192,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "R.SA Ostrock"
     },
     {
       "id": "france-musique",
@@ -3131,7 +3239,8 @@
       "samplerate": 48000,
       "bitrate": 194,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "France Musique"
     },
     {
       "id": "swiss-classic",
@@ -3154,7 +3263,8 @@
       "samplerate": 48000,
       "bitrate": 192,
       "cors": false,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "Radio Swiss Classic"
     },
     {
       "id": "czro-ddur",
@@ -3176,7 +3286,8 @@
       "samplerate": 48000,
       "bitrate": 128,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "ČRo D-dur"
     },
     {
       "id": "br-klassik",
@@ -3199,7 +3310,8 @@
       "samplerate": 48000,
       "bitrate": 256,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "BR-Klassik"
     },
     {
       "id": "ndr-kultur",
@@ -3220,7 +3332,8 @@
       "samplerate": 48000,
       "bitrate": 128,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "NDR Kultur"
     },
     {
       "id": "oe1",
@@ -3241,7 +3354,8 @@
       "samplerate": 48000,
       "bitrate": 192,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "Ö1"
     },
     {
       "id": "kusc",
@@ -3264,7 +3378,8 @@
       "samplerate": 44100,
       "bitrate": 128,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "KUSC"
     },
     {
       "id": "wqxr",
@@ -3285,7 +3400,8 @@
       "samplerate": 48000,
       "bitrate": 128,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "WQXR"
     },
     {
       "id": "venice-classic",
@@ -3308,7 +3424,8 @@
       "samplerate": 44100,
       "bitrate": 128,
       "cors": false,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "Venice Classic Radio"
     },
     {
       "id": "early-music",
@@ -3331,7 +3448,8 @@
       "samplerate": 44100,
       "bitrate": 128,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "Early Music"
     },
     {
       "id": "walm2-opus",
@@ -3351,7 +3469,8 @@
       "codec": "opus",
       "samplerate": 48000,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "WALM 2 HD"
     },
     {
       "id": "flowstate-classical",
@@ -3374,7 +3493,8 @@
       "samplerate": 48000,
       "bitrate": 320,
       "cors": true,
-      "geprueft_am": "2026-08-21"
+      "geprueft_am": "2026-08-21",
+      "kanal": "Flowstate Classical"
     }
   ]
 }
