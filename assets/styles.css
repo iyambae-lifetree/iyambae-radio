@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════
-   432Hz Radio — Aussehen
-   Dunkler Grund, Pink als Akzent, Orbitron fürs Logo.
+   IYAMBAE Radio — Aussehen
+   Dunkler Grund, Gold als Akzent, Orbitron fürs Logo.
+   (Die Variable heißt aus historischen Gründen noch --pink.)
    ═══════════════════════════════════════════════════════════════════ */
 
 :root {
@@ -365,7 +366,9 @@ body.spielt .platte { animation-play-state: running; }
     display: grid; gap: 0.6rem;
     padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0;
 }
-.filter__guete { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.filter__guete,
+.filter__regale,
+.filter__stichwort { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
 .filter__titel {
     font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise);
     text-transform: uppercase; letter-spacing: 0.12em; margin-right: 0.2rem;
@@ -383,10 +386,8 @@ body.spielt .platte { animation-play-state: running; }
 .guete-knopf.ist-aktiv { background: var(--blau); border-color: var(--blau); color: #fff; }
 .guete-knopf.ist-aktiv span { opacity: 0.85; }
 
-/* Regale sind die Genres dieses Ladens. Eigene Farbe, damit auf einen Blick
-   erkennbar ist, welche Art Filter gerade aktiv ist: Klang blau, Regal gold,
-   Stichwort neutral. */
-.filter__regale { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+/* Regale sind die Genres dieses Ladens. Gold, damit auf einen Blick zu sehen
+   ist, welche Art Filter greift: Klang blau, Regal gold, Stichwort neutral. */
 .regal-knopf {
     display: inline-flex; align-items: center; gap: 0.35rem;
     padding: 0.3rem 0.75rem;
@@ -400,8 +401,8 @@ body.spielt .platte { animation-play-state: running; }
 .regal-knopf.ist-aktiv { background: var(--pink); border-color: var(--pink); color: var(--grund); font-weight: 700; }
 .regal-knopf.ist-aktiv span { opacity: 0.75; }
 
-/* Der Filterstand. Ohne ihn weiß niemand, warum plötzlich wenig zu sehen ist —
-   das ist der häufigste Grund, warum Filter als kaputt empfunden werden. */
+/* Sagt, wie viele Sender übrig sind. Ohne das wirkt ein Filter kaputt, sobald
+   er greift. */
 .filter__stand {
     display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
     font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise);
@@ -463,10 +464,9 @@ body.spielt .platte { animation-play-state: running; }
 .karte__favorit:hover { color: var(--pink-hell); background: rgba(0, 0, 0, 0.6); }
 .karte__favorit.ist-favorit { color: var(--pink); }
 
-/* Klangqualität — gegenüber vom Herzen, auf derselben Höhe.
-   Die beiden gehören zusammen: wie es klingt, und ob ich es behalte.
-   Vier Stufen statt zwei, weil FLAC für audiophile Hörer etwas anderes ist
-   als 256 kbit/s — und Opus bei 128 besser klingt als MP3 bei 192. */
+/* Klangqualität — gegenüber vom Herzen. Die beiden gehören zusammen: wie es
+   klingt, und ob ich es behalte. Vier Stufen, weil FLAC etwas anderes ist als
+   256 kbit/s. */
 .karte__guete {
     position: absolute; top: 0.6rem; left: 0.6rem; z-index: 2;
     padding: 0.16rem 0.5rem;
@@ -478,8 +478,7 @@ body.spielt .platte { animation-play-state: running; }
     backdrop-filter: blur(3px);
     cursor: help;
 }
-/* Verlustfrei ist der einzige Fall, der wirklich heraussticht — sonst wäre
-   die Abstufung wertlos. */
+/* Nur verlustfrei sticht heraus. Stäche alles heraus, wäre nichts abgestuft. */
 .karte__guete--verlustfrei {
     color: var(--gruen);
     border-color: rgba(53, 224, 138, 0.55);
@@ -623,9 +622,8 @@ body.spielt .platte { animation-play-state: running; }
 .meldung--warnung { border-color: rgba(242, 183, 5, 0.5); }
 @keyframes kommt { from { opacity: 0; transform: translateX(1rem); } }
 
-/* Der Hinweis auf eine neue Fassung bleibt stehen, bis der Besucher
-   entscheidet — wer gerade Musik hört, soll selbst wählen, wann der Faden
-   reißt. Deshalb zwei Knöpfe statt eines Zeitablaufs. */
+/* Bleibt stehen, bis der Besucher entscheidet. Wer Musik hört, wählt selbst,
+   wann der Faden reißt. */
 .meldung--bleibt {
     display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
     border-color: rgba(242, 183, 5, 0.45);

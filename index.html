@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>IYAMBAE Radio — ein Plattenladen zum Zuhören</title>
-    <meta name="description" content="IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 117 Sender aus 29 Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz, Japan, Barrio, Fundstücke, Freakshow.">
+    <meta name="description" content="IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 129 Sender aus 29 Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Fundstücke, Freakshow, Rückspiegel.">
     <meta name="theme-color" content="#F2B705">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -78,7 +78,7 @@
     <div class="hero__text">
         <p class="hero__guete" id="heroGuete">bereit</p>
         <h1 class="hero__name" id="heroName">Willkommen</h1>
-        <p class="hero__ort" id="heroOrt">117 Sender aus 29 Ländern, in acht Regalen</p>
+        <p class="hero__ort" id="heroOrt">129 Sender aus 29 Ländern, in neun Regalen</p>
         <p class="hero__kaertchen" id="heroKaertchen">Leg eine Platte auf — oder lass die Nadel fallen und sieh, wo sie landet.</p>
         <div class="hero__knoepfe">
             <button class="knopf knopf--gross" id="heroPlay"><span id="heroPlayIcon">▶</span> Abspielen</button>
@@ -97,7 +97,7 @@
     <button class="griff griff--zufall" id="griffNadel">
         <span class="griff__icon" aria-hidden="true">💿</span>
         <span class="griff__titel">Nadel fallen lassen</span>
-        <span class="griff__unter">Zufall aus acht Regalen</span>
+        <span class="griff__unter">Zufall aus neun Regalen</span>
     </button>
 </section>
 
@@ -137,16 +137,15 @@
         <button class="guete-knopf" data-guete="verlustfrei">verlustfrei &amp; Opus <span>11</span></button>
         <button class="guete-knopf" data-guete="hoch">ab 256 kbit/s <span>45</span></button>
     </div>
-    <!-- Die acht Regale sind die Genres dieses Ladens. Sie werden aus
-         data/sender.json erzeugt, damit ein neuntes Regal hier nichts kostet. -->
+    <!-- Regale kommen aus data/sender.json, damit ein neues hier nichts kostet. -->
     <div class="filter__regale" role="group" aria-label="Nach Regal filtern">
         <span class="filter__titel">Regal</span>
         <span id="regalFilter"></span>
     </div>
-    <div class="etiketten" id="etiketten" role="group" aria-label="Nach Stichwort filtern"></div>
-    <!-- Zeigt, wie viele Sender die aktive Auswahl übrig lässt, und macht sie
-         mit einem Klick rückgängig. Ohne das weiß niemand, warum plötzlich
-         wenig zu sehen ist. -->
+    <div class="filter__stichwort" role="group" aria-label="Nach Stichwort filtern">
+        <span class="filter__titel">Stichwort</span>
+        <span class="etiketten" id="etiketten"></span>
+    </div>
     <div class="filter__stand" id="filterStand" hidden></div>
 </div>
 
