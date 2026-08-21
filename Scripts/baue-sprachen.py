@@ -99,6 +99,7 @@ class Zerleger(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=False)
         self.stuecke = []          # [{art, roh, tag, attr}]
+        self._namen = []           # Stapel der echten Tag-Schreibweisen
 
     def _leg_ab(self, art, roh, tag=None, attr=None):
         self.stuecke.append({"art": art, "roh": roh, "tag": tag, "attr": attr or {}})
@@ -106,6 +107,20 @@ class Zerleger(HTMLParser):
     def handle_starttag(self, tag, attrs):
         art = "leer" if tag in LEER else "start"
         self._leg_ab(art, self.get_starttag_text(), tag, dict(attrs))
+        # Die ECHTE Schreibweise merken, fuer den Schlusstag.
+        #
+        # html.parser schreibt Tagnamen klein. Fuer HTML ist das richtig, fuer
+        # eingebettetes SVG nicht: Dort heisst es <linearGradient> und
+        # </linearGradient>, und XML unterscheidet Gross und Klein.
+        # get_starttag_text() rettet den OEFFNENDEN Tag woertlich; der
+        # schliessende wird unten neu gebaut und war damit zwangslaeufig
+        # klein. Ergebnis: </lineargradient>, die Vorlage verformt, und
+        # pruefe_treue() bricht den ganzen Lauf ab — keine einzige
+        # Sprachseite. Gemessen am 21.08.2026.
+        if art == "start":
+            roh = self.get_starttag_text() or ""
+            echt = roh[1:len(tag) + 1]
+            self._namen.append(echt if echt.lower() == tag else tag)
         if art == "start":
             # Ein leerer Platzhalter fuer den Fall, dass das Element gar keinen
             # Text hat — ein Symbol-span etwa. Beim Zusammensetzen traegt er
@@ -123,7 +138,9 @@ class Zerleger(HTMLParser):
         # vor; taeuchte er auf, wuerde er die Tiefe verschieben.
         if tag in LEER:
             return
-        self._leg_ab("ende", f"</{tag}>", tag)
+        # Die Schreibweise vom passenden Starttag zurueckholen. Siehe dort.
+        echt = self._namen.pop() if self._namen else tag
+        self._leg_ab("ende", f"</{echt}>", tag)
 
     def handle_data(self, daten):        self._leg_ab("text", daten)
     def handle_entityref(self, name):    self._leg_ab("text", f"&{name};")
