@@ -378,6 +378,47 @@ Speichern, dann **erneut öffnen** → *Sign in with Apple* → **Configure**:
 > Das ist bei `scope=name email` Pflicht und der Grund, warum die Route in
 > `dienst/src/apple.mjs` als POST registriert ist.
 
+#### Der Domainnachweis — hier bricht es ab, wenn man ihn übergeht
+
+Sobald `iyambae.fm` unter *Domains and Subdomains* steht, erscheint neben der
+Domain ein **Download**-Knopf. Dahinter liegt eine Datei:
+
+```
+apple-developer-domain-association.txt
+```
+
+Apple holt sie unter genau dieser Adresse ab:
+
+```
+https://iyambae.fm/.well-known/apple-developer-domain-association.txt
+```
+
+**Die Reihenfolge ist zwingend, und sie ist nicht die, die der Knopf nahelegt:**
+
+1. Datei bei Apple herunterladen
+2. Datei nach `.well-known/` im Repository legen
+3. Abbild neu bauen, hochschieben, **ausrollen**
+4. Selbst nachsehen, dass sie wirklich ankommt:
+   ```bash
+   curl -i https://iyambae.fm/.well-known/apple-developer-domain-association.txt
+   ```
+   Erwartet: **200** und der blanke Inhalt.
+5. **Erst jetzt** bei Apple auf *Verify* drücken
+
+Wer in Schritt 5 drückt, bevor 3 durch ist, bekommt eine Fehlermeldung, die
+nicht sagt, was fehlt.
+
+> **Warum das eine eigene Weiche in nginx brauchte:** Ohne sie fiele
+> `/.well-known/…` in `location /`, von dort in die Sprachweiche — und Apple
+> bekäme eine **302 auf `/de/`** statt der Datei. Der Block steht seit dem
+> 21.08.2026 in `deploy/nginx.conf` (`location ^~ /.well-known/`) und
+> antwortet auf eine fehlende Datei mit **404**, nicht mit einer Umleitung:
+> Eine Umleitung sähe nach Erfolg aus.
+>
+> Nachprüfen lässt sich das schon jetzt, ohne Apple — `curl` auf denselben
+> Pfad muss **404** liefern, nicht 302. Kommt 302, ist ein alter Stand
+> ausgerollt.
+
 ### 5.3 Key mit „Sign in with Apple"
 
 **Keys** → **+**
@@ -438,6 +479,11 @@ funktionieren, ohne dass jemand etwas geändert hat.
 > biegt sie beim Lesen zurück.
 
 ---
+
+> **Achtung bei der Etappenfolge:** Etappe 5 verlangt mittendrin ein
+> Ausrollen — Apples Domainnachweis muss ausgeliefert werden, bevor die
+> Prüfung bei Apple gedrückt wird (5.2). Das ist das einzige Ausrollen vor
+> Etappe 6, und es geht ohne `mitAnmeldung`; es liefert nur eine Datei aus.
 
 ## Etappe 6 — Den Sidecar einschalten
 
