@@ -42,9 +42,24 @@ const SHELL_FILES = [
     '/assets/logo/iyambae-label.svg',
     // Die Texturen des Plattenspielers: Vinyl, Filz, gebuerstetes
     // Metall. Ohne sie faellt der Teller auf Farbverlaeufe zurueck.
-    '/assets/textur/vinyl.webp',
-    '/assets/textur/filz.webp',
-    '/assets/textur/metall.webp',
+    /*
+      Die drei Texturen stehen BEWUSST NICHT hier — gemessen, nicht gemutmasst.
+
+      Zusammen 162 KiB (vinyl 54,5 / metall 93,2 / filz 14,5), und der Vorrat
+      waechst dadurch um 19,3 Prozent. Der schaerfere Punkt steht unten im
+      Einbau: der Neuladen-Schalter am Request geht am HTTP-Zwischenspeicher
+      vorbei (siehe install-Behandler weiter unten). Das CSS
+      holt die Texturen ohnehin beim ersten Anstrich, der Teller steht ueber
+      der Falz — sie kaemen also ZWEIMAL ueber die Leitung, rund 324 KiB auf
+      einem kalten Erstbesuch.
+
+      Im Laufzeit-Zwischenspeicher landen sie trotzdem, sobald das CSS sie
+      geholt hat. Die Offlinedeckung ab dem zweiten Besuch bleibt damit
+      gleich; nur der blockierende Einbau wird um 162 KiB leichter.
+
+      iyambae-label.svg steht dagegen weiter im Vorrat: Das wird offline
+      gebraucht, bevor das CSS ueberhaupt laeuft.
+    */
     '/assets/styles.css',
     '/assets/schrift/schriften.css',
     // Die SIL OFL verlangt, dass der Lizenztext die Schriften begleitet.
