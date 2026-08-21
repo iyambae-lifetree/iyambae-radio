@@ -80,6 +80,16 @@ param hoechstExemplare int = 3
 
   Der Weg in vier Schritten steht in docs/anmeldung-einrichten.md.
 */
+@description('Die eigenen Domains am Ingress, mit dem von Azure verwalteten Zertifikat. Vorgaben entsprechen dem Stand vom 21.08.2026.')
+param eigeneDomains array = [
+  { name: 'iyambae.fm',      zertifikat: 'mc-cae-iyambae-iyambae-fm-1994' }
+  { name: 'www.iyambae.fm',  zertifikat: 'mc-cae-iyambae-www-iyambae-fm-6973' }
+  { name: 'apps.iyambae.fm', zertifikat: 'mc-cae-iyambae-apps-iyambae-fm-8964' }
+]
+
+@description('Erst auf true, wenn die DNS-Prüfung der Absenderdomäne durch ist (Status Verified). Vorher lehnt Azure die Verknüpfung ab.')
+param mailBereit bool = false
+
 @description('Erst einschalten, wenn Speicher, Absenderdomäne UND das Konto-Abbild stehen. Siehe docs/anmeldung-einrichten.md.')
 param mitAnmeldung bool = false
 
@@ -568,7 +578,30 @@ resource maildomaene 'Microsoft.Communication/emailServices/domains@2023-04-01' 
   einem Menschen klingt — und im Text steht dann, wohin er sich stattdessen
   wenden kann.
 */
-resource absender 'Microsoft.Communication/emailServices/domains/senderUsernames@2023-04-01' = {
+/*
+  DIESE BEIDEN WARTEN AUF DIE DNS-PRÜFUNG.
+
+  Gemessen, nicht vermutet: Der erste Lauf am 21.08.2026 brach ab mit
+  „Requested domain is not in a valid state for linking to
+  CommunicationServices resource". Die Domäne war angelegt — aber unbestätigt,
+  und bestätigt werden kann sie erst, wenn die vier DNS-Einträge stehen.
+
+  Das ist keine Schwäche der Vorlage, sondern eine Reihenfolge, die außerhalb
+  von Azure liegt: Der Prüfeintrag muss bei Cloudflare stehen, Azure fragt im
+  Takt von 15 bis 30 Minuten nach. Solange läuft nichts.
+
+  Deshalb ein Schalter statt eines Abbruchs. Mit `mailBereit=false` legt der
+  Lauf alles an, was ohne DNS geht, und hört genau dort auf. Danach:
+
+      az communication email domain show \
+        --domain-name mail.iyambae.fm \
+        --email-service-name acs-iyambae-mail -g iyambae \
+        --query "properties.verificationStates.Domain.status" -o tsv
+
+  Steht dort `Verified`, läuft derselbe Befehl noch einmal mit
+  `mailBereit=true` — und erst dann entsteht die Verknüpfung.
+*/
+resource absender 'Microsoft.Communication/emailServices/domains/senderUsernames@2023-04-01' = if (mailBereit) {
   parent: maildomaene
   name: 'konto'
   properties: {
@@ -584,10 +617,9 @@ resource kommunikation 'Microsoft.Communication/communicationServices@2023-04-01
   properties: {
     dataLocation: datenOrt
     // Ohne diese Verknüpfung kennt der Dienst die Domäne nicht und lehnt
-    // jeden Sendeversuch als nicht autorisierten Absender ab.
-    linkedDomains: [
-      maildomaene.id
-    ]
+    // jeden Sendeversuch als nicht autorisierten Absender ab. Vor der
+    // DNS-Prüfung lässt Azure sie nicht zu — siehe oben.
+    linkedDomains: mailBereit ? [ maildomaene.id ] : []
   }
 }
 
@@ -824,6 +856,36 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
           {
             latestRevision: true
             weight: 100
+          }
+        ]
+
+        /*
+          DIE DREI EIGENEN DOMAINS — und warum sie hier stehen müssen.
+
+          Sie waren von Hand über das Portal angelegt und standen in dieser
+          Vorlage nicht. Das ist keine Schönheitsfrage: ARM ersetzt bei einer
+          erklärten Ressource die Eigenschaften VOLLSTÄNDIG. Ein Lauf ohne
+          diesen Block hätte alle drei Domains vom Ingress genommen, und
+          iyambae.fm, www.iyambae.fm und apps.iyambae.fm wären in dem Moment
+          nicht mehr erreichbar gewesen.
+
+          Aufgefallen ist es nur, weil vor dem Ausrollen ein
+          `az deployment group what-if` lief und
+          `ingress.customDomains` als Änderung auswies. Ohne diesen Zwischen-
+          schritt wäre es beim ersten Anlegen des Anmeldedienstes passiert —
+          also genau dann, wenn niemand mit einem Ausfall des Radios rechnet.
+
+          Die Zertifikate verwaltet Azure selbst; sie werden hier nur
+          referenziert, nicht erzeugt. Deshalb `existing` — die Vorlage legt
+          sie nicht an und fasst sie nicht an, sie zeigt nur darauf.
+        */
+        customDomains: [
+          for d in eigeneDomains: {
+            name: d.name
+            bindingType: 'SniEnabled'
+            certificateId: resourceId(
+              'Microsoft.App/managedEnvironments/managedCertificates',
+              umgebung.name, d.zertifikat)
           }
         ]
       }
