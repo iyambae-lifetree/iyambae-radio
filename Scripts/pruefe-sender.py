@@ -112,6 +112,28 @@ def format_aus(kopf, rumpf=b""):
     return typ or "?"
 
 
+def abtastrate_aus_mp3(rumpf):
+    """
+    Abtastrate aus dem ersten MP3-Rahmen lesen.
+
+    Viele Icecast-Server senden `icy-br`, aber kein `icy-sr`. Die Rate steht
+    aber im Rahmenkopf selbst — elf Sync-Bits, dann Fassung, Lage und zwei
+    Bits für die Rate. Das ist eindeutig und muss nicht geraten werden.
+    """
+    raten = {
+        3: [44100, 48000, 32000],   # MPEG 1
+        2: [22050, 24000, 16000],   # MPEG 2
+        0: [11025, 12000, 8000],    # MPEG 2.5
+    }
+    for i in range(len(rumpf) - 3):
+        if rumpf[i] == 0xFF and (rumpf[i + 1] & 0xE0) == 0xE0:
+            fassung = (rumpf[i + 1] >> 3) & 0x03
+            index = (rumpf[i + 2] >> 2) & 0x03
+            if fassung in raten and index < 3:
+                return raten[fassung][index]
+    return None
+
+
 def pruefe(name, url):
     ergebnis = {"name": name, "url": url, "ok": False}
 
@@ -141,7 +163,8 @@ def pruefe(name, url):
         "status": status,
         "codec": format_aus(kopf, rumpf),
         "bitrate": int(kopf.get("icy-br") or 0) or None,
-        "samplerate": int(kopf.get("icy-sr") or 0) or None,
+        # icy-sr fehlt bei vielen Servern; dann aus dem MP3-Rahmen lesen.
+        "samplerate": int(kopf.get("icy-sr") or 0) or abtastrate_aus_mp3(rumpf),
         "sendername": kopf.get("icy-name"),
         # Nur wer hier antwortet, kann umgestimmt werden.
         "cors": (kopf.get("Access-Control-Allow-Origin") or "") in ("*", "https://iyambae.fm"),

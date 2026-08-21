@@ -1,6 +1,6 @@
 {
-  "_version": "2.0.0",
-  "_geprueft_am": "2026-08-20",
+  "_version": "2.1.0",
+  "_geprueft_am": "2026-08-21",
   "regale": [
     {
       "id": "grenzgaenger",
@@ -49,6 +49,12 @@
       "name": "Freakshow",
       "icon": "🎪",
       "beschreibung": "Mashups, Vaporwave, Genre-Unfälle mit Ansage."
+    },
+    {
+      "id": "rueckspiegel",
+      "name": "Rückspiegel",
+      "icon": "⟲",
+      "beschreibung": "Achtziger und Neunziger. Von Italo bis Grunge."
     }
   ],
   "sender": [
@@ -2676,6 +2682,255 @@
       "cors": false,
       "logo": "assets/logos/nts-otaku.webp",
       "logoQuelle": "apple-touch-icon"
+    },
+    {
+      "id": "somafm-u80s",
+      "name": "SomaFM Underground 80s",
+      "betreiber": "SomaFM",
+      "ort": "San Francisco",
+      "land": "US",
+      "etiketten": [
+        "ohne-werbung",
+        "achtziger",
+        "community"
+      ],
+      "stream": "https://ice6.somafm.com/u80s-256-mp3",
+      "homepage": "https://somafm.com/u80s/",
+      "kaertchen": "Früher UK-Synthpop und New Wave abseits der Rotation — Soft Cell, Human League, und vieles, das damals schon niemand spielte. SomaFM finanziert sich seit über zwanzig Jahren aus Spenden und sendet deshalb ohne eine Sekunde Werbung.",
+      "codec": "mp3",
+      "bitrate": 256,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "new-wave-radio",
+      "name": "New Wave Radio",
+      "betreiber": "New Wave Radio",
+      "ort": "unbekannt",
+      "land": "US",
+      "etiketten": [
+        "achtziger"
+      ],
+      "stream": "https://digitalaudiobroadcasting.net:1085/stream",
+      "homepage": "https://newwave.radio/",
+      "kaertchen": "Die zugänglichere Seite von New Wave: Cure, Kate Bush, Duran Duran statt Raritäten. Wer bei Underground 80s zu viel Unbekanntes findet, ist hier richtig. Die Webseite trägt Anzeigen; ob im Strom selbst Werbung läuft, ließ sich nicht feststellen.",
+      "codec": "mp3",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "italopower",
+      "name": "Radio ITALOPOWER!",
+      "betreiber": "Radio Italopower",
+      "ort": "unbekannt",
+      "land": "IT",
+      "etiketten": [
+        "achtziger",
+        "nur-instrumental"
+      ],
+      "stream": "https://stream.deevaradio.net/radio/italopower",
+      "homepage": "https://radioitalopower.com/",
+      "kaertchen": "Italo Disco, Hi-NRG und Spacesynth — die Nische, die sonst niemand im Laden bedient. Dazwischen Neuproduktionen im selben Stil, die man kaum vom Original unterscheidet. Die Webseite finanziert sich über Anzeigen.",
+      "codec": "mp3",
+      "bitrate": 192,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "rautemusik-80s",
+      "name": "RauteMusik 80s",
+      "betreiber": "RauteMusik GmbH",
+      "ort": "Köln",
+      "land": "DE",
+      "etiketten": [
+        "ohne-werbung",
+        "achtziger"
+      ],
+      "stream": "https://rautemusik.stream43.radiohost.de/rm-80s_mp3-192",
+      "homepage": "https://www.rm.fm/80s",
+      "kaertchen": "Die breiten Hits des Jahrzehnts, ohne Anspruch auf Entdeckung — der Gegenpol zu Underground 80s und Italopower. RauteMusik sendet seit 2003 aus Köln, die Einzelkanäle laufen ohne Werbeunterbrechung.",
+      "codec": "mp3",
+      "bitrate": 192,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "rautemusik-90s",
+      "name": "RauteMusik 90s",
+      "betreiber": "RauteMusik GmbH",
+      "ort": "Köln",
+      "land": "DE",
+      "etiketten": [
+        "ohne-werbung",
+        "neunziger"
+      ],
+      "stream": "https://rautemusik.stream38.radiohost.de/90s",
+      "homepage": "https://www.rm.fm/90s",
+      "kaertchen": "Dasselbe Prinzip, ein Jahrzehnt später: Pop und Charts der Neunziger, breit statt kuratiert. Deckt die Lücke, die zwischen Eurodance und Grunge sonst offenbliebe.",
+      "codec": "mp3",
+      "bitrate": 192,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "rautemusik-trance",
+      "name": "RauteMusik Trance",
+      "betreiber": "RauteMusik GmbH",
+      "ort": "Köln",
+      "land": "DE",
+      "etiketten": [
+        "ohne-werbung",
+        "neunziger",
+        "nur-instrumental"
+      ],
+      "stream": "https://rautemusik.stream39.radiohost.de/trance",
+      "homepage": "https://www.rm.fm/trance",
+      "kaertchen": "Trance von den Neunzigern bis heute — also nicht nur Rückspiegel. Für Robert Miles, Paul van Dyk und Cosmic Gate trotzdem eine der saubersten frei zugänglichen Quellen, und ohne Werbeunterbrechung.",
+      "codec": "mp3",
+      "bitrate": 192,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "181fm-oldschool",
+      "name": "181.FM Old School HipHop",
+      "betreiber": "181.FM",
+      "ort": "Waynesboro",
+      "land": "US",
+      "etiketten": [
+        "neunziger",
+        "mensch-am-mikro"
+      ],
+      "stream": "https://listen.181fm.com/181-oldschool_128k.mp3",
+      "homepage": "https://www.181.fm/",
+      "kaertchen": "Wu-Tang, A Tribe Called Quest, TLC, Boyz II Men — die Hip-Hop- und R&B-Seite der Neunziger, die im Laden bisher ganz fehlte. Statt Werbeblöcken nur kurze Senderkennungen.",
+      "codec": "mp3",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "181fm-90salt",
+      "name": "181.FM 90s Alternative",
+      "betreiber": "181.FM",
+      "ort": "Waynesboro",
+      "land": "US",
+      "etiketten": [
+        "neunziger"
+      ],
+      "stream": "https://listen.181fm.com/181-90salt_128k.mp3",
+      "homepage": "https://www.181.fm/",
+      "kaertchen": "Nirvana, Pearl Jam, Soundgarden, Stone Temple Pilots. Gitarren als Gegengewicht zu einem Regal, das sonst stark elektronisch schlagseite hätte.",
+      "codec": "mp3",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "1fm-90s-best",
+      "name": "1.FM 90s Best",
+      "betreiber": "1.FM AG",
+      "ort": "Baar",
+      "land": "CH",
+      "etiketten": [
+        "neunziger"
+      ],
+      "stream": "https://strm112.1.fm/90s_mobile_mp3",
+      "homepage": "https://1.fm/",
+      "kaertchen": "Breite Neunziger-Popmusik aus der Schweiz, und mit 256 kbit/s der klanglich beste Eintrag dieses Regals. 1.FM sendet seit den Anfängen des Webradios.",
+      "codec": "mp3",
+      "bitrate": 256,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "90s90s-eurodance",
+      "name": "90s90s Eurodance",
+      "betreiber": "REGIOCAST",
+      "ort": "Kiel",
+      "land": "DE",
+      "etiketten": [
+        "neunziger"
+      ],
+      "stream": "https://streams.90s90s.de/eurodance/mp3-192/",
+      "homepage": "https://www.90s90s.de/",
+      "kaertchen": "2 Unlimited, Snap!, Culture Beat, Dr. Alban — Eurodance ohne Entschuldigung. Genau das Genre, an dem sich die Geister scheiden und das im Laden bisher nicht vorkam.",
+      "codec": "mp3",
+      "bitrate": 192,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "90s90s-grunge",
+      "name": "90s90s Grunge",
+      "betreiber": "REGIOCAST",
+      "ort": "Kiel",
+      "land": "DE",
+      "etiketten": [
+        "neunziger"
+      ],
+      "stream": "https://streams.90s90s.de/grunge/mp3-192/",
+      "homepage": "https://www.90s90s.de/",
+      "kaertchen": "Dieselbe Musikrichtung wie 181.FM 90s Alternative, aber aus deutscher Sicht und mit anderer Rotation. Wer beide nebeneinander hört, merkt schnell, wie verschieden dasselbe Jahrzehnt erinnert wird.",
+      "codec": "mp3",
+      "bitrate": 192,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
+    },
+    {
+      "id": "90s90s-rave",
+      "name": "90s90s RAVE",
+      "betreiber": "REGIOCAST",
+      "ort": "Kiel",
+      "land": "DE",
+      "etiketten": [
+        "neunziger",
+        "nur-instrumental"
+      ],
+      "stream": "https://streams.90s90s.de/RAVE/mp3-192/",
+      "homepage": "https://www.90s90s.de/",
+      "kaertchen": "Die frühen Neunziger, als Rave noch nach Lagerhalle klang und nicht nach Festivalbühne. Acid House und Hardcore vor Eurodance und lange vor Trance.",
+      "codec": "mp3",
+      "bitrate": 192,
+      "samplerate": 44100,
+      "regal": "rueckspiegel",
+      "status": "ok",
+      "geprueft_am": "2026-08-21",
+      "cors": true
     }
   ]
 }
