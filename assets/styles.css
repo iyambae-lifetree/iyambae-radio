@@ -1,0 +1,885 @@
+/* ═══════════════════════════════════════════════════════════════════
+   432Hz Radio — Aussehen
+   Dunkler Grund, Pink als Akzent, Orbitron fürs Logo.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    --grund:        #05020a;
+    --grund-hoch:   #0d0616;
+    --karte:        #120a1e;
+    --karte-hoch:   #1a0f2b;
+    --rand:         rgba(255, 255, 255, 0.08);
+    --rand-hell:    rgba(255, 255, 255, 0.16);
+    --text:         #f2edf7;
+    --text-leise:   #a294b8;
+    --pink:         #F2B705;   /* Logo-Gelb, trägt jetzt die Marke */
+    --pink-hell:    #FFD34D;
+    --gold:         #F2B705;
+    --blau:         #2A7CC7;   /* Logo-Blau */
+    --blau-hell:    #3E92D6;
+    --gruen:        #35e08a;
+    --rot:          #ff5c5c;
+    --schrift:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono:         'JetBrains Mono', ui-monospace, monospace;
+    --anzeige:      'Orbitron', var(--schrift);
+    --rund:         14px;
+    --schatten:     0 8px 28px rgba(0, 0, 0, 0.45);
+    --glut:         0 0 0 1px rgba(242, 183, 5, 0.55), 0 0 22px rgba(242, 183, 5, 0.30);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: var(--grund);
+    color: var(--text);
+    font-family: var(--schrift);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 7rem;
+    overflow-x: hidden;
+}
+
+/* Sanfter Farbschimmer im Hintergrund */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(60rem 40rem at 15% -10%, rgba(242, 183, 5, 0.10), transparent 60%),
+        radial-gradient(50rem 35rem at 95% 5%, rgba(42, 124, 199, 0.12), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+
+a { color: var(--pink-hell); }
+
+/* ── Ladeschirm ──────────────────────────────────────────────────── */
+.ladeschirm {
+    position: fixed; inset: 0; z-index: 200;
+    display: grid; place-content: center; justify-items: center; gap: 0.6rem;
+    background: var(--grund);
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+.ladeschirm.weg { opacity: 0; visibility: hidden; }
+.ladeschirm__marke { width: 150px; height: auto; animation: dreht 6s linear infinite; }
+.ladeschirm__unter { font-family: var(--mono); font-size: 0.78rem; color: var(--text-leise); }
+
+/* ── Kopf ────────────────────────────────────────────────────────── */
+.kopf {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+    background: rgba(5, 2, 10, 0.82);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--rand);
+}
+.logo { display: flex; align-items: center; gap: 0.55rem; text-decoration: none; }
+.logo img { display: block; }
+.logo__wort {
+    display: flex; flex-direction: column; line-height: 1.05;
+    font-family: var(--anzeige); font-weight: 900; font-size: 0.95rem;
+    letter-spacing: 0.14em; color: var(--gold);
+}
+.logo__wort span { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.3em; color: var(--blau-hell); }
+
+.kopf__suche {
+    flex: 1 1 14rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.45rem 0.85rem;
+    background: var(--karte); border: 1px solid var(--rand); border-radius: 999px;
+}
+.kopf__suche input {
+    flex: 1; min-width: 0;
+    background: none; border: 0; outline: none;
+    color: var(--text); font-family: inherit; font-size: 0.9rem;
+}
+.kopf__suche input::placeholder { color: var(--text-leise); }
+
+.kopf__schalter { display: flex; align-items: center; gap: 0.5rem; }
+.messung {
+    padding: 0.35rem 0.7rem;
+    background: rgba(42, 124, 199, 0.16);
+    border: 1px solid rgba(62, 146, 214, 0.4);
+    border-radius: 999px;
+    font-family: var(--mono); font-size: 0.7rem; color: var(--blau-hell);
+    white-space: nowrap;
+}
+.messung[hidden] { display: none; }
+.schalter {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.45rem 0.8rem;
+    background: var(--karte); color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: 999px;
+    font-family: var(--mono); font-size: 0.72rem; cursor: pointer;
+    transition: all 0.2s ease; white-space: nowrap;
+}
+.schalter:hover:not(:disabled) { border-color: var(--rand-hell); color: var(--text); }
+.schalter:disabled { opacity: 0.5; cursor: not-allowed; }
+.schalter__punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--text-leise); transition: all 0.2s ease; }
+.schalter.ist-an { color: var(--text); border-color: rgba(242, 183, 5, 0.5); }
+.schalter.ist-an .schalter__punkt { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
+
+/* ── Kopfbereich ─────────────────────────────────────────────────
+   Links der Plattenspieler, rechts steht, was gerade läuft. */
+.hero {
+    display: grid;
+    gap: clamp(1.2rem, 4vw, 2.5rem);
+    align-items: center;
+    padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+}
+@media (min-width: 800px) { .hero { grid-template-columns: auto 1fr; } }
+
+.hero__guete {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--gold);
+    text-transform: uppercase; letter-spacing: 0.1em;
+}
+.hero__name {
+    font-family: var(--anzeige);
+    font-size: clamp(1.6rem, 5vw, 2.6rem);
+    font-weight: 900; line-height: 1.15;
+    margin: 0.3rem 0;
+}
+.hero__ort { font-size: 0.9rem; color: var(--text-leise); }
+.hero__kaertchen { margin-top: 0.8rem; max-width: 46rem; color: #d8cfe6; }
+.hero__knoepfe { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
+
+/* ── Plattenspieler ──────────────────────────────────────────────
+   Gebaut wie ein DJ-Deck: Zarge, Teller mit Stroboskoprand, Slipmat,
+   darauf die Platte. Was einen Plattenspieler echt aussehen lässt, sind
+   die Teile, die man erst vermisst, wenn sie fehlen — die glatte
+   Einlaufrille vor der Musik, der Filz unter dem Vinyl, das Lichtband,
+   das über die Rillen wandert. */
+.plattenspieler {
+    position: relative;
+    justify-self: center;
+    width: clamp(230px, 44vw, 350px);
+    aspect-ratio: 1;
+}
+
+/* Die Zarge: das Gehäuse. Gebürstetes Metall mit weichem Lichtverlauf. */
+.zarge {
+    position: absolute; inset: 0;
+    border-radius: 4.5%;
+    background:
+        url('textur/metall.webp') center / 60% auto,
+        linear-gradient(152deg, #35304180 0%, #211c2e 42%, #14111b 100%),
+        linear-gradient(152deg, #3b3349 0%, #211c2e 42%, #14111b 100%);
+    /* Graues Korn als soft-light: sichtbar als Struktur, nicht als Farbe.
+       Ein farbiges oder kontrastreiches Bild lässt Metall wie Plastik
+       aussehen — das Auge liest Buntheit als billiges Material. */
+    background-blend-mode: soft-light, normal, normal;
+    box-shadow:
+        /* Der Schlagschatten des Geräts auf der Unterlage */
+        0 26px 50px rgba(0, 0, 0, 0.66),
+        0 6px 16px rgba(0, 0, 0, 0.5),
+        /* Die Oberkante fängt Licht, die Unterkante liegt im Schatten —
+           daran erkennt das Auge, dass etwas eine Höhe hat */
+        inset 0 1px 0 rgba(255, 255, 255, 0.13),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.65),
+        inset 1px 0 0 rgba(255, 255, 255, 0.045),
+        inset -1px 0 0 rgba(0, 0, 0, 0.42);
+    padding: 7%;
+}
+/* Die feine Struktur des gebürsteten Metalls */
+.zarge__flaeche {
+    position: absolute; inset: 0;
+    border-radius: 4.5%;
+    background: repeating-linear-gradient(96deg,
+        rgba(255, 255, 255, 0.018) 0px,
+        rgba(255, 255, 255, 0.018) 1px,
+        transparent 1px, transparent 3px);
+    pointer-events: none;
+}
+
+/* Der Teller */
+.teller {
+    position: absolute; inset: 7%;
+    border-radius: 50%;
+    /* Der Teller sitzt in einer Vertiefung, nicht auf der Fläche */
+    background: radial-gradient(circle at 50% 50%, #232032 0%, #16131f 72%, #0d0b13 100%);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        inset 0 8px 18px rgba(0, 0, 0, 0.7),
+        inset 0 -3px 8px rgba(255, 255, 255, 0.035),
+        0 0 0 1px rgba(0, 0, 0, 0.55),
+        0 2px 6px rgba(0, 0, 0, 0.4);
+    display: grid; place-items: center;
+}
+
+/* Die Stroboskoppunkte am Tellerrand — das Erkennungszeichen jedes
+   DJ-Decks. Sie stehen beim richtigen Tempo scheinbar still. */
+.teller__strobo {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: repeating-conic-gradient(from 0deg at 50% 50%,
+        rgba(255, 220, 150, 0.85) 0deg 1.4deg,
+        transparent 1.4deg 4.2deg);
+    mask: radial-gradient(circle at 50% 50%, transparent 90%, #000 91.5%, #000 97%, transparent 98.5%);
+    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 90%, #000 91.5%, #000 97%, transparent 98.5%);
+    pointer-events: none;
+    z-index: 2;
+}
+.teller__rand {
+    position: absolute; inset: 3.5%;
+    border-radius: 50%;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        inset 0 0 12px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+/* Die Slipmat: Filz zwischen Teller und Platte */
+.slipmat {
+    position: absolute; inset: 5.5%;
+    border-radius: 50%;
+    background:
+        url('textur/filz.webp') center / 120% 120%,
+        radial-gradient(circle at 42% 36%, #2e2a3d 0%, #201d2c 60%, #17141f 100%);
+    background-blend-mode: soft-light, normal;
+    pointer-events: none;
+}
+
+/* Die Platte */
+.platte {
+    position: absolute; inset: 9%;
+    border-radius: 50%;
+    /* Erzeugte Textur statt Farbverlauf: 131 Rillen mit schwankendem
+       Abstand, 340 Staubkörner, sieben feine Kratzer. Glatte Verläufe
+       sehen immer nach Zeichnung aus — Unregelmäßigkeit macht den
+       Unterschied. Siehe tools/textur-bauen.mjs */
+    background:
+        url('textur/vinyl.webp') center / 100% 100% no-repeat,
+        radial-gradient(circle at 50% 50%, #14111c 0%, #0a0810 62%, #060509 100%);
+    display: grid; place-items: center;
+    will-change: transform;
+    z-index: 1;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Die Rillen — enger gestaffelt als zuvor, damit sie nach Vinyl aussehen
+   und nicht nach Zielscheibe. Ausgespart bleiben Label, Einlauf und
+   Auslauf, so wie bei einer echten Platte. */
+.platte__rillen {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    /* Ein feiner Zusatzschimmer über der Textur — nur so viel, dass die
+       Rillen bei kleiner Darstellung nicht verschwinden */
+    background: repeating-radial-gradient(circle at 50% 50%,
+        rgba(255, 255, 255, 0.045) 0px,
+        rgba(255, 255, 255, 0.045) 0.5px,
+        transparent 0.5px,
+        transparent 3px);
+    mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 33%, #000 92%, transparent 95%);
+    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 33%, #000 92%, transparent 95%);
+    pointer-events: none;
+}
+/* Einlaufrille: der glatte Ring außen, wo die Nadel aufsetzt */
+.platte__einlauf {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%,
+        transparent 92%, rgba(255, 255, 255, 0.045) 93.5%, transparent 96%);
+    pointer-events: none;
+}
+/* Auslaufrille: der glatte Ring innen, kurz vor dem Label */
+.platte__auslauf {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%,
+        transparent 29%, rgba(255, 255, 255, 0.05) 31%, transparent 33%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Das Lichtband, das über die Rillen wandert — der eine Effekt, an dem
+   man Vinyl sofort erkennt. Zwei gegenüberliegende Bögen, weil Licht
+   sich in der Rille zweimal bricht. */
+.platte__glanz {
+    position: absolute; inset: 9%;
+    border-radius: 50%;
+    background: conic-gradient(from 202deg at 50% 50%,
+        transparent 0deg,
+        rgba(255, 246, 220, 0.20) 13deg,
+        rgba(255, 252, 242, 0.34) 25deg,
+        rgba(255, 246, 220, 0.13) 39deg,
+        transparent 62deg,
+        transparent 170deg,
+        rgba(255, 246, 220, 0.14) 188deg,
+        rgba(255, 252, 242, 0.24) 203deg,
+        rgba(255, 246, 220, 0.09) 217deg,
+        transparent 240deg);
+    mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 34%, #000 93%, transparent 96%);
+    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 34%, #000 93%, transparent 96%);
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* Der Balkenkranz liegt als Lichtschein UM die Platte, nicht darauf. */
+.teller canvas {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 142%; height: 142%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Das Label — hier liegt das Logo des Senders, sonst die IYAMBAE-Marke */
+.label {
+    position: relative;
+    width: 36%; aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #fffdf6 0%, #f6efdd 58%, #e6daba 100%);
+    box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.12),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.12);
+    display: grid; place-items: center;
+    overflow: hidden;
+    z-index: 4;
+}
+.label__bild { width: 84%; height: 84%; object-fit: contain; }
+.label.traegt-marke .label__bild { width: 100%; height: 100%; }
+
+/* Die Spindel.
+   Sāmi-Ras Beobachtung: Der blaue Punkt im Wirbel der Spirale sitzt genau
+   dort, wo bei einem Plattenspieler der Dorn durch das Loch der Platte geht.
+   Bei der Hausmarke ist er selbst die Spindel und bekommt nur ein
+   Glanzlicht; fremde Logos haben keinen solchen Punkt, dort wird sie
+   gezeichnet — in derselben Farbe, damit es dasselbe Ding bleibt. */
+.spindel {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 4.2%; aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 34% 28%,
+            rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 26%, transparent 54%),
+        radial-gradient(circle at 50% 50%, #3E92D6 0%, #1C68AE 70%, #123f6d 100%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 -1px 2px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    z-index: 6;
+}
+.label.traegt-marke ~ .spindel {
+    width: 3.4%;
+    background: radial-gradient(circle at 34% 28%,
+        rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.2) 32%, transparent 60%);
+    box-shadow: none;
+}
+.label::after {
+    content: '';
+    position: absolute; left: 50%; top: 50%;
+    width: 15%; aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+/* ── Tonarm ──────────────────────────────────────────────────────
+   Gekröpftes Rohr mit Gegengewicht, Headshell und Nadel. In Ruhe liegt er
+   auf der Stütze, beim Abspielen senkt er sich auf die Einlaufrille.
+   Der Winkel wird aus app.js gesetzt: Ein klassenbasierter Wechsel auf
+   einem SVG-<g> kommt im Renderer nicht an. */
+.tonarm {
+    position: absolute;
+    inset: 5% 4% auto auto;
+    width: 66%; height: 66%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 5;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.55));
+}
+.tonarm__schwenk {
+    transform-origin: 88px 16px;
+    transform: rotate(-30deg);
+    transition: transform 1.6s cubic-bezier(0.35, 1.0, 0.4, 1);
+}
+.tonarm__rohr        { fill: none; stroke: url(#rohrMetall); stroke-width: 3.8; stroke-linecap: round; }
+.tonarm__gewicht     { fill: url(#gewichtMetall); stroke: rgba(255,255,255,0.14); stroke-width: 0.5; }
+.tonarm__gewichtring { fill: rgba(255, 255, 255, 0.13); }
+.tonarm__shell       { fill: #d8d3e2; stroke: #9c96ab; stroke-width: 0.4; }
+.tonarm__system      { fill: #2a2534; }
+.tonarm__nadel       { stroke: var(--gold); stroke-width: 1.1; stroke-linecap: round; opacity: 0.6; }
+.tonarm__lager       { fill: url(#lagerMetall); stroke: rgba(255,255,255,0.16); stroke-width: 0.8; }
+.tonarm__lagerkern   { fill: #8f8899; }
+.tonarm__stuetze rect { fill: #241f2f; stroke: rgba(255,255,255,0.1); stroke-width: 0.4; }
+body.spielt .tonarm__nadel { opacity: 1; filter: drop-shadow(0 0 2px var(--gold)); }
+
+/* ── Bedienelemente an der Zarge ─────────────────────────────────── */
+.zarge__regler {
+    position: absolute; left: 4.5%; bottom: 6%;
+    display: flex; align-items: flex-end; gap: 12%;
+    width: 21%;
+    pointer-events: none;
+}
+/* Die eingelassene Mulde, in der der Schieber läuft */
+.pitch {
+    position: relative;
+    width: 26%; height: 0; padding-bottom: 92%;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #0b0910, #17141f);
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.7),
+        inset 0 2px 5px rgba(0, 0, 0, 0.8),
+        0 1px 0 rgba(255, 255, 255, 0.05);
+    overflow: visible;
+}
+/* Die Mittelrasterung, die jeder Pitch-Fader hat */
+.pitch::before {
+    content: '';
+    position: absolute; left: -55%; right: -55%; top: 50%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.16);
+}
+.pitch__schieber {
+    position: absolute;
+    left: -60%; right: -60%;
+    top: 44%;
+    height: 9%;
+    border-radius: 1.5px;
+    background: linear-gradient(180deg, #8d8699 0%, #5c5570 46%, #2c2738 100%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: top 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+body.spielt .pitch__schieber { top: 58%; }
+
+.startknopf {
+    width: 34%; aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 36% 30%, #322c3d, #16131e);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.09),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.6),
+        0 1px 3px rgba(0, 0, 0, 0.7);
+    align-self: flex-end;
+    transition: box-shadow 0.4s ease, background 0.4s ease;
+}
+body.spielt .startknopf {
+    background: radial-gradient(circle at 36% 30%, #4a4030, #2a2318);
+    box-shadow: inset 0 0 0 1px rgba(242, 183, 5, 0.4), 0 0 10px rgba(242, 183, 5, 0.35);
+}
+
+/* Gedreht wird nur, wenn Ton läuft. 33⅓ Umdrehungen je Minute wären
+   1,8 Sekunden — hier langsamer, sonst flimmert das Label. */
+.platte { animation: dreht 3.6s linear infinite; animation-play-state: paused; }
+body.spielt .platte { animation-play-state: running; }
+@keyframes dreht { to { transform: rotate(360deg); } }
+
+/* ── Knöpfe ──────────────────────────────────────────────────────── */
+.knopf {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.6rem 1.1rem;
+    background: var(--karte-hoch); color: var(--text);
+    border: 1px solid var(--rand); border-radius: 999px;
+    font-family: inherit; font-size: 0.88rem; font-weight: 500;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s ease;
+}
+.knopf:hover { border-color: var(--rand-hell); transform: translateY(-1px); }
+.knopf--gross { background: var(--pink); border-color: var(--pink); font-weight: 600; padding: 0.7rem 1.5rem; }
+.knopf--gross:hover { background: var(--pink-hell); box-shadow: var(--glut); }
+.knopf--leise { background: none; color: var(--text-leise); font-size: 0.8rem; }
+
+.knopf-rund {
+    display: grid; place-items: center;
+    width: 2.6rem; height: 2.6rem;
+    background: var(--pink); color: #fff;
+    border: 0; border-radius: 50%;
+    font-size: 1rem; cursor: pointer;
+    transition: all 0.2s ease;
+}
+.knopf-rund:hover { background: var(--pink-hell); box-shadow: var(--glut); }
+
+/* ── Die zwei Griffe ─────────────────────────────────────────────── */
+.griffe {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+    max-width: 60rem;
+}
+.griff {
+    display: grid; gap: 0.15rem; justify-items: start;
+    padding: 1rem 1.2rem;
+    background: var(--karte); color: var(--text);
+    border: 1px solid var(--rand); border-radius: var(--rund);
+    font-family: inherit; text-align: left; cursor: pointer;
+    transition: all 0.2s ease;
+}
+.griff:hover { transform: translateY(-2px); border-color: var(--rand-hell); box-shadow: var(--schatten); }
+.griff--vertraut:hover { border-color: rgba(255, 200, 87, 0.5); }
+.griff--zufall:hover  { border-color: rgba(242, 183, 5, 0.55); box-shadow: var(--glut); }
+.griff__icon  { font-size: 1.5rem; }
+.griff__titel { font-weight: 600; font-size: 1rem; }
+.griff__unter { font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise); }
+
+/* ── Sender der Woche ────────────────────────────────────────────
+   Die redaktionelle Empfehlung: liegt für alle Besucher einer Woche fest,
+   im Gegensatz zur Auslage, die bei jedem Besuch wechselt. */
+.tipp {
+    margin: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0;
+    padding: clamp(1.1rem, 3vw, 1.8rem);
+    border: 1px solid rgba(242, 183, 5, 0.28);
+    border-radius: var(--rund);
+    background:
+        linear-gradient(135deg, rgba(242, 183, 5, 0.07), rgba(42, 124, 199, 0.05)),
+        var(--karte);
+}
+.tipp[hidden] { display: none; }
+.tipp__marke {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--mono); font-size: 0.68rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);
+}
+.tipp__stern { font-size: 0.8rem; }
+.tipp__inhalt { display: grid; gap: 1.2rem; margin-top: 0.7rem; }
+@media (min-width: 860px) { .tipp__inhalt { grid-template-columns: 1fr 15rem; } }
+.tipp__name { font-family: var(--anzeige); font-size: clamp(1.3rem, 3.5vw, 1.9rem); font-weight: 600; }
+.tipp__ort { font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise); margin-top: 0.2rem; }
+.tipp__kaertchen { margin-top: 0.7rem; max-width: 44rem; color: #d3c9e2; }
+.tipp__knoepfe { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1rem; }
+.tipp__dazuTitel { font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise); text-transform: uppercase; letter-spacing: 0.1em; }
+.tipp__dazuListe { display: grid; gap: 0.4rem; margin-top: 0.5rem; }
+.tipp__dazuKnopf {
+    display: grid; justify-items: start; gap: 0.05rem;
+    padding: 0.5rem 0.7rem;
+    background: rgba(255, 255, 255, 0.04); color: var(--text);
+    border: 1px solid var(--rand); border-radius: 0.6rem;
+    font-family: inherit; font-size: 0.82rem; text-align: left; cursor: pointer;
+    transition: all 0.15s ease;
+}
+.tipp__dazuKnopf:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--rand-hell); }
+.tipp__dazuKnopf span { font-family: var(--mono); font-size: 0.62rem; color: var(--text-leise); }
+
+/* ── Auslage ─────────────────────────────────────────────────────── */
+.auslage { padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0; }
+.auslage__kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+.auslage__titel { font-family: var(--anzeige); font-size: 1.15rem; font-weight: 600; }
+.auslage__raster, .regal__raster {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem;
+}
+@media (min-width: 720px)  { .auslage__raster, .regal__raster { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1100px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(4, 1fr); } }
+
+/* ── Etiketten ───────────────────────────────────────────────────── */
+.filter {
+    display: grid; gap: 0.6rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0;
+}
+.filter__guete { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.filter__titel {
+    font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise);
+    text-transform: uppercase; letter-spacing: 0.12em; margin-right: 0.2rem;
+}
+.guete-knopf {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    background: rgba(62, 146, 214, 0.12); color: var(--blau-hell);
+    border: 1px solid rgba(62, 146, 214, 0.32); border-radius: 999px;
+    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+    transition: all 0.15s ease;
+}
+.guete-knopf span { opacity: 0.6; font-size: 0.65rem; }
+.guete-knopf:hover { background: rgba(62, 146, 214, 0.22); }
+.guete-knopf.ist-aktiv { background: var(--blau); border-color: var(--blau); color: #fff; }
+.guete-knopf.ist-aktiv span { opacity: 0.85; }
+
+.etiketten { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.etikett {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--karte); color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: 999px;
+    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+    transition: all 0.15s ease;
+}
+.etikett span { opacity: 0.55; font-size: 0.65rem; }
+.etikett:hover { color: var(--text); border-color: var(--rand-hell); }
+.etikett.ist-aktiv { background: var(--pink); border-color: var(--pink); color: #fff; }
+.etikett.ist-aktiv span { opacity: 0.8; }
+
+/* ── Regale ──────────────────────────────────────────────────────── */
+.regale { padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 4vw, 2.5rem); display: grid; gap: 2.5rem; }
+.regal__kopf { display: flex; align-items: baseline; gap: 0.7rem; }
+.regal__titel { font-family: var(--anzeige); font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 600; }
+.regal__icon { margin-right: 0.2rem; }
+.regal__zahl { font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
+.regal__beschreibung { font-size: 0.85rem; color: var(--text-leise); margin: 0.1rem 0 0.9rem; }
+
+/* ── Zäsur vor dem letzten Regal ──────────────────────────────────
+   Der Laden ordnet sich vom Eigenwilligsten zum Vertrautesten. Wer bis
+   hierher gescrollt ist, hat acht Regale Unbekanntes hinter sich — was
+   jetzt kommt, ist die Tür, durch die manche überhaupt erst hereinkommen.
+   Deshalb ein Hinweisschild statt einer Hintertür. */
+.zaesur {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 1.5rem 0 -0.5rem;
+}
+.zaesur__strich {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rand-hell), transparent);
+}
+.zaesur__text {
+    font-family: var(--mono); font-size: 0.68rem;
+    color: var(--text-leise);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+@media (max-width: 560px) {
+    .zaesur__text { white-space: normal; text-align: center; font-size: 0.63rem; }
+}
+
+/* Das zurückgenommene Regal: da, aber nicht drängend. Kein goldener
+   Akzent, gedämpfte Farben, etwas kleinere Schrift im Kopf. */
+.regal.nimmt-sich-zurueck .regal__titel { font-size: clamp(1rem, 2.6vw, 1.25rem); color: var(--text-leise); }
+.regal.nimmt-sich-zurueck .regal__icon  { opacity: 0.6; }
+.regal.nimmt-sich-zurueck .karte        { background: #0f0c17; }
+.regal.nimmt-sich-zurueck .karte__bild  { filter: saturate(0.72) brightness(0.88); }
+.regal.nimmt-sich-zurueck .karte:hover .karte__bild { filter: saturate(1) brightness(1); }
+.regal.nimmt-sich-zurueck .marke--gut   { background: rgba(255,255,255,0.06); color: var(--text-leise); }
+
+/* ── Karte ───────────────────────────────────────────────────────── */
+.karte {
+    position: relative;
+    display: flex; flex-direction: column; gap: 0.5rem;
+    padding: 0.9rem;
+    background: var(--karte);
+    border: 1px solid var(--rand); border-radius: var(--rund);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.karte:hover { background: var(--karte-hoch); border-color: var(--rand-hell); transform: translateY(-2px); }
+.karte.ist-aktiv { border-color: var(--pink); box-shadow: var(--glut); }
+.karte.ist-stumm { opacity: 0.5; }
+.karte.ans-regalende { order: 99; }
+
+.karte__favorit {
+    position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
+    width: 1.8rem; height: 1.8rem;
+    display: grid; place-items: center;
+    background: rgba(0, 0, 0, 0.35); color: var(--text-leise);
+    border: 0; border-radius: 50%;
+    font-size: 0.9rem; cursor: pointer; transition: all 0.15s ease;
+}
+.karte__favorit:hover { color: var(--pink-hell); background: rgba(0, 0, 0, 0.6); }
+.karte__favorit.ist-favorit { color: var(--pink); }
+
+/* Das Senderbild: der Eyecatcher, der aus einem Textkasten eine Hülle macht */
+.karte__bild {
+    position: relative;
+    aspect-ratio: 1;
+    margin: -0.9rem -0.9rem 0;
+    border-radius: var(--rund) var(--rund) 0 0;
+    overflow: hidden;
+    background: #100c1a;
+}
+.karte__bild img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+}
+.karte:hover .karte__bild img { transform: scale(1.04); }
+
+/* Häuser wie NTS oder Hirschmilch betreiben mehrere Kanäle unter einem
+   Logo. Ohne Kennzeichnung sähe die Wand aus, als stünde derselbe Sender
+   siebenmal da. Also bekommt jede Karte den Aufdruck ihres Kanals — wie
+   Platten einer Serie: gleiches Label, anderer Aufdruck. */
+.karte__kanal {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 0.75rem 0.6rem 0.4rem;
+    background: linear-gradient(to top, rgba(6, 4, 10, 0.94) 38%, transparent);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+    line-height: 1.2;
+    pointer-events: none;
+}
+
+/* Sender ohne eigenes Logo tragen die Hausmarke. Damit 33 davon
+   nebeneinander nicht wie eine Kachelwand wirken, bekommt jede den
+   Farbton ihres Regals hinterlegt. */
+.karte__bild.ist-hausmarke {
+    background:
+        radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--regalton) 26%, transparent), transparent 68%),
+        #100c1a;
+}
+.karte__bild.ist-hausmarke img {
+    object-fit: contain;
+    padding: 16%;
+    opacity: 0.92;
+}
+
+.karte__name { font-size: 0.95rem; font-weight: 600; line-height: 1.25; padding-right: 2rem; }
+.karte__ort  { font-family: var(--mono); font-size: 0.68rem; color: var(--text-leise); margin-top: 0.15rem; }
+.karte__kaertchen {
+    font-size: 0.78rem; line-height: 1.45; color: #b9aecb;
+    flex: 1;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.karte__fuss { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+.marke {
+    padding: 0.12rem 0.45rem;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 0.35rem;
+    font-family: var(--mono); font-size: 0.62rem; color: var(--text-leise);
+}
+.marke--gut { background: rgba(53, 224, 138, 0.14); color: var(--gruen); }
+.marke--etikett { background: rgba(255, 255, 255, 0.04); }
+/* Die nötige Verbindung, wo sie ins Gewicht fällt. Sāmi-Ras Einwand gegen
+   Klassik war die Bandbreite; ein Tester hielt dagegen, dass ein Hinweis
+   genügt statt Weglassen — die Seite ist international und darf nicht auf
+   die Verbindungen einer Gegend zugeschnitten sein. */
+.marke--bedarf {
+    background: rgba(62, 146, 214, 0.13);
+    color: var(--blau-hell);
+    border: 1px solid rgba(62, 146, 214, 0.26);
+}
+
+.karte__stumm {
+    position: absolute; left: 0.6rem; bottom: 0.6rem;
+    padding: 0.12rem 0.45rem;
+    background: rgba(0, 0, 0, 0.6); border-radius: 0.35rem;
+    font-family: var(--mono); font-size: 0.62rem; color: var(--rot);
+}
+
+.karte__laeuft { display: none; gap: 2px; height: 10px; align-items: flex-end; }
+.karte.ist-aktiv .karte__laeuft { display: flex; }
+.karte__laeuft span { width: 2px; background: var(--pink); animation: huepft 0.9s ease-in-out infinite; }
+.karte__laeuft span:nth-child(2) { animation-delay: 0.2s; }
+.karte__laeuft span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes huepft { 0%, 100% { height: 3px; } 50% { height: 10px; } }
+
+/* ── Ausfall-Vorschlag ───────────────────────────────────────────── */
+.ausfall {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem;
+    margin-top: 1rem; padding: 0.65rem 0.9rem;
+    border: 1px solid rgba(255, 92, 92, 0.35); border-radius: var(--rund);
+    background: rgba(255, 92, 92, 0.06);
+    font-size: 0.85rem; color: var(--text-leise);
+}
+.ausfall button {
+    padding: 0.32rem 0.75rem;
+    background: var(--pink); color: #fff; border: 0; border-radius: 0.4rem;
+    font-family: inherit; font-size: 0.8rem; cursor: pointer;
+}
+
+/* ── Leerzustand ─────────────────────────────────────────────────── */
+.leer { padding: 3rem 1rem; text-align: center; }
+.leer__titel { font-size: 1.1rem; font-weight: 600; }
+.leer__hinweis { color: var(--text-leise); font-size: 0.88rem; margin-top: 0.3rem; }
+
+/* ── Fuß ─────────────────────────────────────────────────────────── */
+.fuss {
+    padding: 2.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
+    border-top: 1px solid var(--rand);
+    margin-top: 2rem;
+}
+.fuss__hinweis { max-width: 42rem; font-size: 0.85rem; color: var(--text-leise); }
+.fuss__hinweis strong { color: var(--text); }
+.fuss__powered { margin-top: 0.9rem; font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
+.fuss__test {
+    margin-left: 0.5rem; padding: 0.1rem 0.45rem;
+    background: rgba(255, 200, 87, 0.14); color: var(--gold);
+    border-radius: 0.35rem; font-size: 0.65rem;
+}
+
+/* ── Spielerleiste ───────────────────────────────────────────────── */
+.spieler {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 55;
+    display: none; align-items: center; gap: 1rem;
+    padding: 0.6rem clamp(1rem, 4vw, 2rem);
+    background: rgba(10, 5, 18, 0.94);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--rand);
+}
+.spieler.ist-sichtbar { display: flex; }
+.spieler__info { flex: 1 1 8rem; min-width: 0; }
+.spieler__name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spieler__regal { font-family: var(--mono); font-size: 0.67rem; color: var(--text-leise); }
+.spieler__mitte { display: flex; align-items: center; gap: 0.8rem; }
+.spieler__status { display: flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.68rem; color: var(--text-leise); }
+.status-punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--text-leise); }
+.status-punkt--live   { background: var(--gruen); box-shadow: 0 0 8px var(--gruen); }
+.status-punkt--laden  { background: var(--gold); animation: pulst 1s ease-in-out infinite; }
+.status-punkt--fehler { background: var(--rot); }
+@keyframes pulst { 50% { opacity: 0.3; } }
+.spieler__rechts { display: flex; align-items: center; gap: 0.8rem; }
+.spieler__rechts canvas { width: 110px; height: 34px; }
+#lautstaerke { width: 5.5rem; accent-color: var(--pink); }
+
+/* ── Meldungen ───────────────────────────────────────────────────── */
+.meldungen { position: fixed; right: 1rem; bottom: 5.5rem; z-index: 90; display: grid; gap: 0.5rem; }
+.meldung {
+    padding: 0.6rem 1rem;
+    background: var(--karte-hoch); border: 1px solid var(--rand-hell); border-radius: var(--rund);
+    font-size: 0.84rem; box-shadow: var(--schatten);
+    animation: kommt 0.25s ease;
+}
+.meldung.geht { opacity: 0; transform: translateX(1rem); transition: all 0.3s ease; }
+.meldung--fehler { border-color: rgba(255, 92, 92, 0.5); }
+@keyframes kommt { from { opacity: 0; transform: translateX(1rem); } }
+
+/* ── Handy ───────────────────────────────────────────────────────── */
+.handy-leiste { display: none; }
+
+@media (max-width: 719px) {
+    .kopf { gap: 0.6rem; padding: 0.6rem 1rem; }
+
+    /* Solange nichts läuft, soll der Teller nicht den halben Bildschirm
+       belegen — auf dem Handy zählt jeder Zentimeter bis zu den Regalen. */
+    /* Auf dem Handy zählt jeder Zentimeter bis zu den Regalen. Solange
+       nichts läuft, bleibt das Deck klein. */
+    .plattenspieler { width: 56vw; max-width: 240px; }
+    body.spielt .plattenspieler { width: 70vw; max-width: 300px; }
+    /* Die Stroboskoppunkte werden bei dieser Größe zu Matsch */
+    .teller__strobo { display: none; }
+    .zarge__regler { display: none; }
+    .hero { gap: 1rem; padding-bottom: 1rem; }
+    .hero__name { font-size: 1.75rem; }
+    .hero__knoepfe { gap: 0.5rem; }
+    .hero__knoepfe .knopf { padding: 0.5rem 0.9rem; font-size: 0.82rem; }
+    .kopf__suche { order: 3; flex-basis: 100%; }
+    .kopf__schalter { flex: 1; justify-content: flex-end; }
+    .schalter { font-size: 0.66rem; padding: 0.35rem 0.6rem; }
+
+    .hero { padding-top: 1rem; }
+    .griffe { grid-template-columns: 1fr 1fr; }
+    .griff { padding: 0.85rem; }
+    .griff__titel { font-size: 0.88rem; }
+
+    .spieler { bottom: 3.9rem; padding: 0.5rem 0.9rem; }
+    .spieler__rechts canvas { display: none; }
+    #lautstaerke { width: 4rem; }
+    .meldungen { right: 0.7rem; left: 0.7rem; bottom: 9rem; }
+
+    .handy-leiste {
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+        background: rgba(10, 4, 18, 0.96);
+        backdrop-filter: blur(14px);
+        border-top: 1px solid var(--rand);
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .handy-leiste button {
+        display: flex; flex-direction: column; align-items: center; gap: 0.12rem;
+        padding: 0.5rem 0 0.45rem;
+        background: none; border: 0; color: var(--text-leise);
+        font-family: inherit; font-size: 0.65rem; cursor: pointer;
+    }
+    .handy-leiste button span { font-size: 1.1rem; }
+    .handy-leiste button:active { color: var(--pink); }
+
+    body { padding-bottom: 8.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
