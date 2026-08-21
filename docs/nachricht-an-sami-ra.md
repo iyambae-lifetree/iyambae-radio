@@ -28,8 +28,14 @@ und dann kann die Seite nicht wirklich umstimmen, sondern nur über
 | Radio Cowabunga | aac | 128 kbit/s | ja |
 | Wraith Vision | mp3 | 128 kbit/s | ja |
 
-Alle sechs erreichbar, alle mit Freigabe. Gute Auswahl — damit sind jetzt
-89 von 134 Sendern im Browser umstimmbar.
+Alle sechs erreichbar, alle mit Freigabe.
+
+**Nachtrag, drei Stunden später:** Du hast inzwischen noch einmal nachgelegt —
+das Regal **Klassik** mit zwölf Sendern, und vor allem: Du hast den ganzen
+Katalog neu vermessen. Damit sind jetzt **128 von 146 Sendern im Browser
+umstimmbar**, vorher waren es 89 von 134. Bei 32 Sendern hast du CORS neu als
+vorhanden gemessen, bei dreien als fehlend. Deine Messung ist von heute,
+meine war von gestern — deine gilt. Klassik hat ein kühles Blaugrau bekommen.
 
 Zwei Logos hatte dein Stand nicht: **Caracas Salsa Brava** und
 **Bamtaare FM 103.4**. Ich hatte sie geholt, nachdem du deinen Stand gezogen
@@ -125,6 +131,10 @@ Micha
 
 ## Anhang: was auf iyambae.fm gerade steht
 
-134 Sender in 10 Regalen, 104 mit eigenem Bild, 30 mit gestalteter Hülle.
-89 im Browser umstimmbar. Sieben Sprachen. Kein Sender ungeprüft, kein
+146 Sender in 11 Regalen, 110 mit eigenem Bild, 36 mit gestalteter Hülle.
+128 im Browser umstimmbar. Sieben Sprachen. Kein Sender ungeprüft, kein
 verwaistes Logo, keine fehlende Datei.
+
+Neu seit heute Mittag: Die waagerechten Reihen lassen sich jetzt mit der Maus
+ziehen — mit Nachlauf, und ohne dass ein Zug versehentlich einen Sender
+startet.
