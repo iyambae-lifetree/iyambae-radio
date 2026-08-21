@@ -7,7 +7,7 @@
 // Diese Fassung erfindet nichts. Sie wählt aus dem eigenen, geprüften
 // Katalog — deterministisch aus Jahr und Kalenderwoche, damit derselbe
 // Sender für alle Besucher derselben Woche erscheint und nicht bei jedem
-// Neuladen wechselt. Bei 117 Sendern wiederholt sich nichts über zwei Jahre.
+// Neuladen wechselt. Bei 129 Sendern wiederholt sich nichts über zwei Jahre.
 
 export function kalenderwoche(datum) {
   // ISO-8601: Woche 1 ist die mit dem ersten Donnerstag des Jahres.

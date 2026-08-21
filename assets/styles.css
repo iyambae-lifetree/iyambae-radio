@@ -1229,6 +1229,26 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .fuss__hinweis { max-width: 42rem; font-size: 0.85rem; color: var(--text-leise); }
 .fuss__hinweis strong { color: var(--text); }
 .fuss__powered { margin-top: 0.9rem; font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
+/* Rechtsverweise und der Widerruf. Leise gesetzt, aber auffindbar —
+   ein Impressum, das man suchen muss, erfuellt seinen Zweck nicht. */
+.fuss__recht {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
+    margin-top: 1rem;
+    font-family: var(--mono); font-size: 0.72rem;
+}
+.fuss__recht a { color: var(--text-leise); text-decoration: none; }
+.fuss__recht a:hover { color: var(--text); text-decoration: underline; }
+.fuss__widerruf {
+    padding: 0.3rem 0.7rem;
+    background: none; color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: var(--rund);
+    border-inline-start: 3px solid var(--rand-hell);
+    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease;
+}
+.fuss__widerruf[hidden] { display: none; }
+.fuss__widerruf:hover { color: var(--text); border-color: var(--rand-hell); }
+
 .fuss__test {
     margin-inline-start: 0.5rem; padding: 0.1rem 0.45rem;
     background: rgba(255, 200, 87, 0.14); color: var(--gold);

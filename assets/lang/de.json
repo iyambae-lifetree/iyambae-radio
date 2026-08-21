@@ -126,5 +126,10 @@
   "filter.entfernen": "{name} nicht mehr filtern",
   "verlauf.titel": "Zuletzt gehört",
   "verlauf.bereich": "Zuletzt gehört",
-  "regale.bereich": "Regale"
+  "regale.bereich": "Regale",
+  "fuss.recht.bereich": "Rechtliches",
+  "fuss.impressum": "Impressum",
+  "fuss.datenschutz": "Datenschutz",
+  "fuss.widerruf": "Fehlerberichte nicht mehr senden",
+  "fuss.widerrufen": "Es werden keine Fehlerberichte mehr gesendet."
 }

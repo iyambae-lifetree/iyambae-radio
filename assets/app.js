@@ -17,7 +17,8 @@ import { symbol, setzeSymbole } from './lib/symbole.mjs';
 import { leererFilter, istGefiltert, anzahlAktiv, wendeAn, vorschau,
          regionVon, etikettName, regionName, SCHNELL } from './lib/achsen.mjs';
 import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
-import { beobachteFehler } from './lib/fehlerbericht.mjs';
+import { beobachteFehler, einwilligungsstand, widerrufeEinwilligung }
+  from './lib/fehlerbericht.mjs';
 import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t }
   from './lib/sprache.mjs';
 
@@ -1534,6 +1535,24 @@ class App {
     anKlick('auslageNeu',        () => this.zeichneAuslage());
     anKlick('filterZuruecksetzen', () => this.ui.filterZuruecksetzen());
     anKlick('filterPanelLeeren',   () => this.ui.filterZuruecksetzen());
+
+    /*
+     Der Widerruf der Fehlerbericht-Einwilligung.
+
+     Er steht nur da, wenn eingewilligt wurde. Ein Widerrufsknopf fuer etwas,
+     das niemand gegeben hat, waere eine Frage ohne Anlass — und wuerde
+     obendrein verraten, dass es diese Sammlung gibt, bevor sie je stattfand.
+    */
+    const widerruf = document.getElementById('widerrufFehler');
+    if (widerruf) {
+      const zeige = () => { widerruf.hidden = einwilligungsstand() !== 'erlaubt'; };
+      zeige();
+      widerruf.addEventListener('click', () => {
+        widerrufeEinwilligung();
+        zeige();
+        this.ui.meldung(t('fuss.widerrufen'));
+      });
+    }
 
     /*
      Das Filterpanel ist ein natives <dialog>.

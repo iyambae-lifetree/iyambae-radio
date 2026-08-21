@@ -259,12 +259,12 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, alle_kuerzel):
     seite = zusammen(stuecke)
     seite = RELATIV.sub(r"\1/", seite)
 
-    # Die arabischen Schriften nur auf der arabischen Seite. Sie kosten sonst
-    # jedem anderen Besucher eine Verbindung und zwei Schriftdateien fuer
-    # Zeichen, die auf seiner Seite nie vorkommen.
-    if kuerzel != "ar":
-        seite = re.sub(r"\n\s*<!-- Arabisch\..*?-->", "", seite, flags=re.S)
-        seite = re.sub(r'\n\s*<link id="schriftArabisch"[^>]*>', "", seite)
+    # Die arabischen Schriften brauchen hier keine Sonderbehandlung mehr.
+    # Frueher stand ein eigener <link> auf Google Fonts im Kopf, und diese
+    # Stelle schnitt ihn aus sechs von sieben Seiten. Seit die Schriften im
+    # eigenen Haus liegen, traegt jede @font-face-Regel ihre unicode-range —
+    # der Browser laedt von selbst nur, was die Zeichen auf der Seite
+    # verlangen. Eine Weiche im Erzeuger waere jetzt doppelt gemoppelt.
 
     # hreflang: sagt der Suchmaschine, dass dies sieben Fassungen EINER Seite
     # sind und nicht sieben duenne Seiten. Ohne das konkurrieren sie

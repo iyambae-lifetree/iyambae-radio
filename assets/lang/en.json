@@ -126,5 +126,10 @@
   "filter.entfernen": "Stop filtering by {name}",
   "verlauf.titel": "Played recently",
   "verlauf.bereich": "Played recently",
-  "regale.bereich": "Shelves"
+  "regale.bereich": "Shelves",
+  "fuss.recht.bereich": "Legal",
+  "fuss.impressum": "Legal notice",
+  "fuss.datenschutz": "Privacy",
+  "fuss.widerruf": "Stop sending error reports",
+  "fuss.widerrufen": "No more error reports will be sent."
 }

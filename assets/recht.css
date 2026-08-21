@@ -1,0 +1,118 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Rechtsseiten — dieselbe Sprache, andere Aufgabe
+
+   Impressum, Datenschutzerklärung und Verarbeitungsverzeichnis sind
+   Lesetexte, keine Bedienoberfläche. Sie erben Farben, Schriften und die
+   2-Pixel-Kante vom Laden, brauchen aber das, was ein Fließtext braucht und
+   eine Kachelwand nicht: eine begrenzte Zeilenlänge, Luft zwischen den
+   Absätzen, und Überschriften, an denen man sich beim Überfliegen festhält.
+
+   Art. 12 Abs. 1 DSGVO verlangt »präzise, transparente, verständliche und
+   leicht zugängliche Form«. Das ist auch eine Gestaltungsanforderung: Ein
+   Datenschutzhinweis in 11 px Grau auf Schwarz, 120 Zeichen je Zeile, ist
+   nicht leicht zugänglich, egal was darin steht.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.rechtsseite { padding-bottom: 3rem; }
+.rechtsseite .kopf { position: static; }
+
+.rechtstext {
+    /* 68 Zeichen je Zeile. Darüber verliert das Auge beim Zeilenwechsel den
+       Anschluss — bei einem Text, den man ohnehin ungern liest, ist das der
+       Unterschied zwischen lesen und aufgeben. */
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #d6cee2;
+}
+
+.rechtstext h1 {
+    font-family: var(--anzeige);
+    font-size: clamp(1.5rem, 5vw, 2.1rem);
+    font-weight: 900;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+}
+.rechtstext h2 {
+    font-family: var(--anzeige);
+    font-size: clamp(1.1rem, 3.5vw, 1.35rem);
+    font-weight: 600;
+    color: var(--text);
+    margin: 2.5rem 0 0.8rem;
+    padding-inline-start: 0.75rem;
+    /* Derselbe Reiter wie im Laden — hier trennt er Abschnitte statt
+       Kategorien, aber es ist dieselbe Geste. */
+    border-inline-start: 3px solid var(--pink);
+}
+.rechtstext h3 {
+    font-size: 1.02rem; font-weight: 700; color: var(--text);
+    margin: 1.8rem 0 0.5rem;
+}
+.rechtstext h4, .rechtstext h5, .rechtstext h6 {
+    font-family: var(--mono); font-size: 0.82rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-leise);
+    margin: 1.4rem 0 0.4rem;
+}
+
+.rechtstext p { margin-bottom: 1rem; }
+.rechtstext strong { color: var(--text); }
+.rechtstext a { color: var(--pink-hell); }
+
+.rechtstext ul, .rechtstext ol { margin: 0 0 1.2rem 1.3rem; }
+.rechtstext li { margin-bottom: 0.45rem; }
+
+.rechtstext code {
+    font-family: var(--mono); font-size: 0.86em;
+    padding: 0.1rem 0.35rem;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: var(--rund);
+}
+
+/* Ein hervorgehobener Absatz — im Markdown ein Zitat, hier ein Hinweis. */
+.rechtstext blockquote {
+    margin: 1.2rem 0;
+    padding: 0.9rem 1.1rem;
+    background: var(--karte);
+    border: 1px solid var(--rand);
+    border-inline-start: 3px solid var(--blau-hell);
+    color: var(--text);
+}
+
+.rechtstext hr {
+    border: 0; height: 1px; background: var(--rand);
+    margin: 2.5rem 0;
+}
+
+/* Das Verarbeitungsverzeichnis hat breite Tabellen. Scrollen soll der
+   Kasten, nicht die Seite — ein waagerecht scrollender Seitenkörper ist auf
+   dem Handy unbedienbar, und man findet nicht zurück. */
+.tabellenkasten {
+    overflow-x: auto;
+    margin: 1.2rem 0;
+    border: 1px solid var(--rand);
+}
+.rechtstext table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+}
+.rechtstext th, .rechtstext td {
+    padding: 0.5rem 0.7rem;
+    text-align: start;
+    vertical-align: top;
+    border-bottom: 1px solid var(--rand);
+}
+.rechtstext th {
+    background: var(--karte-hoch);
+    font-family: var(--mono); font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-leise);
+    white-space: nowrap;
+}
+.rechtstext tbody tr:last-child td { border-bottom: 0; }
+
+.rechtsseite .fuss { padding-inline: clamp(1rem, 4vw, 2rem); }

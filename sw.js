@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v17';
+const SW_VERSION = 'iyambae-v18';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -38,6 +38,7 @@ const SHELL_FILES = [
     // offline mit einer leeren Flaeche.
     '/assets/logo/iyambae-marke.svg',
     '/assets/styles.css',
+    '/assets/schrift/schriften.css',
     '/assets/app.js',
     // Jedes Modul, das app.js importiert, muss hier stehen. Fehlt eines,
     // bricht offline der ganze Start ab — ein fehlendes ES-Modul reisst das
@@ -112,9 +113,11 @@ self.addEventListener('fetch', (event) => {
     // Dateiendung (…/groovesalad-128-mp3), deshalb reicht ein Endungstest nicht —
     // genau daran ist die alte Regel gescheitert. Alles, was nicht ausdrücklich
     // zur App gehört, wird jetzt durchgereicht.
-    const istAppEigen = url.origin === self.location.origin;
-    const istSchriftart = /^https:\/\/fonts\.(googleapis|gstatic)\.com$/.test(url.origin);
-    if (!istAppEigen && !istSchriftart) return;
+    // Alles Fremde wird durchgereicht. Frueher gab es hier eine Ausnahme
+    // fuer fonts.googleapis.com und fonts.gstatic.com — die ist weg, seit
+    // die Schriften im eigenen Haus liegen. Damit faellt auch der
+    // stale-while-revalidate-Zweig ganz unten weg.
+    if (url.origin !== self.location.origin) return;
 
     // Eigene Dateien: erst das Netz, dann der Zwischenspeicher.
     //
@@ -126,7 +129,8 @@ self.addEventListener('fetch', (event) => {
     // Ausnahme sind Logos: die ändern sich so gut wie nie, und 84 Bilder bei
     // jedem Aufruf neu zu holen wäre Verschwendung.
     if (url.origin === self.location.origin) {
-        const istBild = /\/assets\/logos?\//.test(url.pathname);
+        // Logos und Schriften aendern sich praktisch nie.
+        const istBild = /\/assets\/(logos?|schrift)\//.test(url.pathname);
 
         if (istBild) {
             event.respondWith(
@@ -167,18 +171,6 @@ self.addEventListener('fetch', (event) => {
         );
         return;
     }
-
-    // Cross-origin (e.g. Google Fonts): stale-while-revalidate.
-    event.respondWith(
-        caches.open(RUNTIME_CACHE).then(async (cache) => {
-            const cached = await cache.match(req);
-            const network = fetch(req).then((res) => {
-                if (res && res.status === 200) cache.put(req, res.clone());
-                return res;
-            }).catch(() => cached);
-            return cached || network;
-        })
-    );
 });
 
 // Failsafe: when the page becomes available again, ping clients to refetch.

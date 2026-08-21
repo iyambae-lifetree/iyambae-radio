@@ -14,3 +14,7 @@ __pycache__/
 /it/
 /ja/
 /ar/
+
+# Die Rechtsseiten erzeugt Scripts/baue-recht.py aus docs/recht/*.md.
+# Die Markdown-Quellen sind der Bestand, das HTML ist Ergebnis.
+/recht/

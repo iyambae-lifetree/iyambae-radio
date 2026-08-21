@@ -8,16 +8,23 @@
     <meta name="theme-color" content="#F2B705">
     <link rel="manifest" href="/de/manifest.webmanifest">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Arabisch. Inter, Orbitron und JetBrains Mono haben keine arabischen
-         Glyphen; ohne diese beiden fiele /ar/ auf eine Systemschrift zurueck
-         und risse das Schriftbild auseinander. Geladen wird nur, was die
-         arabische Fassung braucht — media="..." greift hier nicht, deshalb
-         entscheidet der Erzeuger: Scripts/baue-sprachen.py entfernt die Zeile
-         aus allen Seiten ausser /ar/. -->
-    <link id="schriftArabisch" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Noto+Kufi+Arabic:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Die Schriften kommen aus dem eigenen Haus, nicht von Google.
+
+         Vorher standen hier zwei preconnect und zwei Stylesheet-Verweise auf
+         fonts.googleapis.com. Damit ging die volle IP jedes Besuchers beim
+         Seitenaufbau an Google in die USA, bevor er irgendetwas anklicken
+         konnte — dazu gibt es ein Urteil des LG Muenchen I vom 20.01.2022
+         (Az. 3 O 17493/20).
+
+         Die unicode-range-Angaben stehen in der Datei. Deshalb laedt ein
+         deutscher Browser keine arabische Schriftdatei, obwohl beide hier
+         verzeichnet sind — der Browser entscheidet das anhand der Zeichen,
+         die auf der Seite wirklich vorkommen. Das ist zugleich sauberer als
+         der bisherige Behelf, bei dem der Erzeuger die arabische Zeile aus
+         sechs von sieben Seiten geschnitten hat.
+
+         Erzeugt von Scripts/hole-schriften.py. -->
+    <link rel="stylesheet" href="/assets/schrift/schriften.css">
     <link rel="stylesheet" href="/assets/styles.css">
 </head>
 <body>
@@ -260,6 +267,22 @@
         powered by <a href="https://apps.iyambae.fm" rel="noopener">MyRetuner</a>
         <span class="fuss__test" data-text="fuss.test">im offenen Test</span>
     </p>
+
+    <!-- Rechtsverweise und der Widerruf.
+
+         Der Widerrufsknopf steht nur da, wenn tatsaechlich eingewilligt
+         wurde — sonst waere er ein Angebot, etwas zurueckzunehmen, das
+         niemand gegeben hat. Artikel 7 Absatz 3 Satz 4 DSGVO verlangt, dass
+         der Widerruf so einfach ist wie die Erteilung. Die Funktion dafuer
+         gab es seit jeher in fehlerbericht.mjs — sie war nur nirgends
+         angeschlossen, und damit blieb als einziger Weg, saemtliche
+         Websitedaten zu loeschen. Das ist nicht "so einfach wie". -->
+    <nav class="fuss__recht" data-aria="fuss.recht.bereich" aria-label="Rechtliches">
+        <a href="/recht/impressum/" hreflang="de" data-text="fuss.impressum">Impressum</a>
+        <a href="/recht/datenschutz/" hreflang="de" data-text="fuss.datenschutz">Datenschutz</a>
+        <button class="fuss__widerruf" id="widerrufFehler" hidden
+                data-text="fuss.widerruf">Fehlerberichte nicht mehr senden</button>
+    </nav>
 </footer>
 
 <div class="spieler" id="spieler">
