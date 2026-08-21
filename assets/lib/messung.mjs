@@ -31,8 +31,9 @@
 //   Wer etwas hört. Es gibt keine Kennung, kein Plätzchen, keine Sitzung.
 //   Wie lange jemand hört. Nur der Start wird gemeldet, nie das Ende.
 //   Wonach gesucht wurde. Gezählt wird, DASS gesucht wurde — nie das Wort.
-//   Die volle Adresse. nginx kürzt sie, bevor überhaupt etwas geschrieben
-//   wird (siehe deploy/nginx.conf).
+//   Die Adresse. Überhaupt keine, auch keine gekürzte: Mess- und
+//   Zugriffszeilen liegen in derselben Tabelle, ein gemeinsames Adressfeld
+//   hätte beide verbindbar gemacht (siehe deploy/nginx.conf).
 // ═══════════════════════════════════════════════════════════════════
 
 import { sprache } from './sprache.mjs';
@@ -91,7 +92,19 @@ export function miss(was, felder = {}) {
   if (!ARTEN.has(was) || !liesWahl()) return false;
   if (typeof navigator === 'undefined' || !navigator.sendBeacon) return false;
 
-  const rumpf = { was };
+  /*
+     Die Sprache haengt an JEDEM Ereignis, und sie kommt aus dem Pfad.
+
+     sprache() liest der Reihe nach: data-sprache am <html> (das setzt der
+     Erzeuger aus dem Pfad), den ersten Pfadabschnitt, ?sprache=xx, und erst
+     ganz zuletzt navigator.languages. Keine dieser Quellen ist der
+     Geraetespeicher — hz_sprache wird hier NICHT angefasst.
+
+     Das ist der Unterschied, an dem § 25 TDDDG haengt: Die Adresse, unter
+     der jemand die Seite aufruft, ist keine im Endgeraet gespeicherte
+     Information. Das gleichnamige Cookie waere eine.
+    */
+  const rumpf = { was, sprache: sprache() };
   // Nur die Felder, die zur Art gehoeren. Was hier nicht steht, geht nicht
   // hinaus — auch nicht versehentlich.
   if (was === 'start' && felder.sender) rumpf.sender = String(felder.sender);
@@ -112,7 +125,9 @@ export function miss(was, felder = {}) {
       rumpf.treffer = felder.treffer;
     }
   }
-  if (was === 'sprache') rumpf.wert = sprache();
+  // Beim Wechsel die ZIELsprache — rumpf.sprache traegt zu diesem
+  // Zeitpunkt noch die alte, die Seite laedt ja erst danach neu.
+  if (was === 'sprache' && felder.wert) rumpf.wert = String(felder.wert);
 
   try {
     /*

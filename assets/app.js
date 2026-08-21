@@ -34,7 +34,27 @@ uebersetzeDokument();
  der Adresse ab, auf der man gerade steht — wer /fr/?los=meine liest, soll
  beim Wechsel auf /ja/?los=meine landen und nicht auf der Startseite.
 */
-baueSprachumschalter(document.getElementById('sprachwahl'));
+const sprachwahl = document.getElementById('sprachwahl');
+baueSprachumschalter(sprachwahl);
+/*
+ Der Wechsel wird gemeldet, und zwar von hier aus.
+
+ Der naheliegende Ort waere der Klickbehandler in sprache.mjs gewesen — dann
+ muesste die aber messung.mjs einbinden, und messung.mjs bindet sprache.mjs
+ ein. ES-Module tragen so einen Ring, aber er ist eine Falle fuer den
+ Naechsten; ein zweiter Zuhoerer am selben Element kostet nichts.
+
+ Vor dem Seitenwechsel, nicht danach: location.assign raeumt dieses Fenster
+ ab. sendBeacon ueberlebt das, dafuer ist es gebaut.
+
+ Gemeldet wird nur, DASS gewechselt wurde und wohin. Welche Sprache jemand
+ benutzt, haengt ohnehin an jedem Ereignis; die Frage hier ist, ob der
+ Umschalter ueberhaupt gefunden wird.
+*/
+sprachwahl?.addEventListener('click', (e) => {
+  const verweis = e.target.closest('a[hreflang]');
+  if (verweis) miss('sprache', { wert: verweis.hreflang });
+});
 
 // ── Katalog laden ──────────────────────────────────────────────────
 const antwort = await fetch('/data/sender.json');
@@ -1608,6 +1628,20 @@ class App {
     // Fuettert denselben Filterzustand wie die Knoepfe. Vorher zeichnete die
     // Suche direkt und verwarf dabei jede aktive Auswahl.
     this.ui.setzeSuche(eingabe);
+
+    /*
+     Gemeldet wird, DASS jemand sucht — nie wonach.
+
+     Das Ereignis haengt am ersten Zeichen und nicht an jedem: Bei jedem
+     Tastendruck zu melden hiesse, das Suchwort buchstabenweise zu senden.
+     Aus "j", "ja", "jaz", "jazz" liesse es sich zusammensetzen, auch wenn
+     keine einzelne Zeile es enthaelt. Ein Ereignis je begonnener Suche
+     beantwortet "wird die Suche benutzt?" genauso gut — und laesst sich
+     nicht zusammensetzen.
+    */
+    const leer = !eingabe.trim();
+    if (!leer && !this._suchteSchon) miss('suche');
+    this._suchteSchon = !leer;
   }
 
   // ── MyRetuner ────────────────────────────────────────────────────
