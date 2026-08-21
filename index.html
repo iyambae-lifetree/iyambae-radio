@@ -185,11 +185,12 @@
 
 <div class="meldungen" id="meldungen" role="status" aria-live="polite"></div>
 
+<!--
+  Die Registrierung des Service Workers stand früher hier als Einzeiler mit
+  einem leeren `.catch(() => {})`. Sie liegt jetzt in
+  assets/lib/aktualisierung.mjs — dort wird ihr Fehlschlag auch gemeldet
+  statt verschluckt, und dort steht die Nachfrage nach neuen Fassungen.
+-->
 <script type="module" src="assets/app.js"></script>
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {}));
-    }
-</script>
 </body>
 </html>

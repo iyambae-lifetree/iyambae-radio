@@ -12,6 +12,7 @@ import { frageMyRetuner, wartAufEinwilligung, anzeigeStimmung, anzeigeQuelle, ZU
   from './lib/myretuner.mjs';
 import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
 import { senderbild, hatEigenesLogo, regalton, MARKE } from './lib/senderbild.mjs';
+import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 
 // ── Katalog laden ──────────────────────────────────────────────────
 const antwort = await fetch('./data/sender.json');
@@ -752,6 +753,15 @@ class App {
     document.getElementById('ladeschirm')?.classList.add('weg');
 
     this.folgeAdressZiel();
+
+    /*
+     Aktualisierung ueberwachen. Spielt gerade Musik, wird nicht von selbst
+     neu geladen — der Besucher entscheidet. Siehe lib/aktualisierung.mjs.
+    */
+    beobachteAktualisierung({
+      spieltGerade: () => this.engine.laeuft,
+      melde: (text, art) => this.ui.meldung(text, art),
+    });
   }
 
   /*

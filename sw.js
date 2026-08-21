@@ -4,10 +4,11 @@
 // metadata/stream endpoints, falls back to cache when offline.
 // ============================================================
 
-// Hochgezaehlt, weil SHELL_FILES drei fehlende Module bekommen hat. Ohne
-// neue Fassung behielten bestehende Besucher den alten, unvollstaendigen
-// Zwischenspeicher — und damit den Offline-Fehler.
-const SW_VERSION = 'iyambae-v8';
+// Bei JEDER Änderung an SHELL_FILES hochzählen. Ohne neue Fassung behalten
+// bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
+// darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
+// gelisteten Modulen.
+const SW_VERSION = 'iyambae-v9';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -33,6 +34,7 @@ const SHELL_FILES = [
     './assets/lib/myretuner.mjs',
     './assets/lib/wochentipp.mjs',
     './assets/lib/senderbild.mjs',
+    './assets/lib/aktualisierung.mjs',
     // MyRetuners Signalkern. Der Worklet wird nicht importiert, sondern per
     // addModule geladen, und die .wasm per fetch — beides sieht der
     // import-Ausdruck nicht. Scripts/pruefe-shell-dateien.py prueft deshalb
@@ -68,10 +70,15 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch strategy:
-//   - same-origin app shell  → cache-first (fast + offline)
-//   - cross-origin (fonts/manifest) → stale-while-revalidate
-//   - audio streams + metadata → network-only (don't cache huge/binary)
+// Wie geholt wird:
+//   - eigene Dateien          → erst Netz, dann Zwischenspeicher
+//   - eigene Logos            → erst Zwischenspeicher, dann Netz
+//   - Schriftarten (fremd)    → aus dem Speicher, im Hintergrund erneuern
+//   - Audioströme, Metadaten  → gar nicht abfangen
+//
+// Der Kommentar sagte hier lange „cache-first" für die eigenen Dateien. Das
+// stimmte einmal und war seit der Umstellung falsch — nachgezogen, damit
+// niemand danach sucht.
 self.addEventListener('fetch', (event) => {
     const req = event.request;
     if (req.method !== 'GET') return;

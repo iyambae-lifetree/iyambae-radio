@@ -562,7 +562,29 @@ body.spielt .platte { animation-play-state: running; }
 }
 .meldung.geht { opacity: 0; transform: translateX(1rem); transition: all 0.3s ease; }
 .meldung--fehler { border-color: rgba(255, 92, 92, 0.5); }
+.meldung--warnung { border-color: rgba(242, 183, 5, 0.5); }
 @keyframes kommt { from { opacity: 0; transform: translateX(1rem); } }
+
+/* Der Hinweis auf eine neue Fassung bleibt stehen, bis der Besucher
+   entscheidet — wer gerade Musik hört, soll selbst wählen, wann der Faden
+   reißt. Deshalb zwei Knöpfe statt eines Zeitablaufs. */
+.meldung--bleibt {
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+    border-color: rgba(242, 183, 5, 0.45);
+}
+.meldung__knopf {
+    font-family: var(--mono); font-size: 0.74rem;
+    padding: 0.3rem 0.7rem; border-radius: 999px; cursor: pointer;
+    border: 1px solid transparent; color: var(--grund); font-weight: 700;
+    background: linear-gradient(180deg, var(--pink-hell), var(--pink));
+    transition: filter 0.2s ease;
+}
+.meldung__knopf:hover { filter: brightness(1.08); }
+.meldung__knopf--leise {
+    background: none; color: var(--text-leise);
+    border-color: var(--rand); font-weight: 400;
+}
+.meldung__knopf--leise:hover { color: var(--text); border-color: var(--rand-hell); filter: none; }
 
 /* ── Handy ───────────────────────────────────────────────────────── */
 .handy-leiste { display: none; }
