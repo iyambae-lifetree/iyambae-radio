@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v18';
+const SW_VERSION = 'iyambae-v19';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -39,6 +39,8 @@ const SHELL_FILES = [
     '/assets/logo/iyambae-marke.svg',
     '/assets/styles.css',
     '/assets/schrift/schriften.css',
+    // Die SIL OFL verlangt, dass der Lizenztext die Schriften begleitet.
+    '/assets/schrift/LIZENZEN.txt',
     '/assets/app.js',
     // Jedes Modul, das app.js importiert, muss hier stehen. Fehlt eines,
     // bricht offline der ganze Start ab — ein fehlendes ES-Modul reisst das

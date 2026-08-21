@@ -34,3 +34,11 @@ infra
 # Rohdownloads der Senderlogos: teils Windows-Icons, teils Targa, in zwei
 # Fällen HTML-Fehlerseiten. Nichts davon wird ausgeliefert.
 **/*.roh
+
+# `dienst/` ist der Anmeldedienst. Er ist gebaut und getestet, aber noch
+# nicht ausgerollt: Es fehlen die Zugangsdaten fuer Google und Apple, die
+# ACS-Absenderdomaene und der Sidecar-Eintrag in main.bicep. Solange er nicht
+# mitlaeuft, hat er im Abbild nichts verloren — assets/lib/konto.mjs merkt
+# von selbst, dass unter /api/ niemand antwortet, und die Seite verhaelt sich
+# wie bisher.
+dienst

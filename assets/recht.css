@@ -82,6 +82,21 @@
     color: var(--text);
 }
 
+/* Vorformatierter Text: Anschriften, Protokollzeilen, Befehle. Er behaelt
+   seine Zeilenumbrueche — eine dreizeilige Anschrift in einer Zeile ist
+   keine Anschrift. Bricht auf schmalen Geraeten um, statt den Kasten
+   waagerecht scrollen zu lassen. */
+.rechtstext pre {
+    margin: 1rem 0;
+    padding: 0.85rem 1rem;
+    background: var(--karte);
+    border: 1px solid var(--rand);
+    border-inline-start: 3px solid var(--rand-hell);
+    font-family: var(--mono); font-size: 0.82rem; line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
 .rechtstext hr {
     border: 0; height: 1px; background: var(--rand);
     margin: 2.5rem 0;

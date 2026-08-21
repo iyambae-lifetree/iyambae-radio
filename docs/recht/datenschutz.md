@@ -16,10 +16,11 @@ ob die Seite funktioniert, und wir löschen das nach 30 Tagen. Es gibt keine
 Werbung, kein Tracking, keine Reichweitenmessung durch Dritte und niemanden, an
 den wir etwas verkaufen.
 
-Zwei Dinge musst du trotzdem wissen, und sie stehen unten ausführlich: Die
-Schriftarten der Seite kommen von einem Google-Server, und deine IP-Adresse geht
-dabei an Google (Abschnitt 4). Und wenn du einen Sender startest, verbindet sich
-dein Gerät direkt mit dessen Server — oft außerhalb der EU (Abschnitt 5).
+Eines musst du trotzdem wissen, und es steht unten ausführlich: Wenn du einen
+Sender startest, verbindet sich dein Gerät **direkt** mit dessen Server — oft
+außerhalb der EU (Abschnitt 5). Alles andere, was diese Seite lädt, kommt vom
+eigenen Server, auch die Schriften (Abschnitt 4). Beim Aufbau der Seite geht
+keine einzige Anfrage an Google, an ein Werbenetz oder an einen Analysedienst.
 
 ---
 
@@ -27,10 +28,12 @@ dein Gerät direkt mit dessen Server — oft außerhalb der EU (Abschnitt 5).
 
 Verantwortlicher im Sinne von Art. 4 Nr. 7 DSGVO:
 
-    [Vorname Nachname]
-    [Straße und Hausnummer]
-    [PLZ Ort], Deutschland
-    [adresse@iyambae.fm]
+| Angabe | Wert |
+|---|---|
+| Name | [Vorname Nachname] |
+| Anschrift | [Straße und Hausnummer] |
+| Ort | [PLZ Ort], Deutschland |
+| E-Mail | [adresse@iyambae.fm] |
 
 Diese Seite wird privat betrieben, nicht von einem Unternehmen. Zwei Personen
 haben Verwaltungsrechte.
@@ -49,15 +52,17 @@ Keiner der drei Fälle trifft hier zu.
 **Was passiert.** Jedes Mal, wenn dein Browser eine Datei von iyambae.fm holt,
 schreibt der Webserver eine Zeile ins Protokoll. Sie sieht so aus:
 
-    Zeitpunkt          2026-08-21T14:03:11+00:00
-    Adresse (gekürzt)  93.184.216.0
-    Verfahren          GET
-    Pfad               /de/
-    Status             200
-    Bytes              23887
-    Verweisquelle      https://example.org/blog
-    Browserkennung     Mozilla/5.0 (Macintosh; …) Safari/…
-    Dauer              0.083
+| Feld | Beispiel |
+|---|---|
+| Zeitpunkt | 2026-08-21T14:03:11+00:00 |
+| Adresse (gekürzt) | 93.184.216.0 |
+| Verfahren | GET |
+| Pfad | /de/ |
+| Status | 200 |
+| Bytes | 23887 |
+| Verweisquelle | https://example.org/blog |
+| Browserkennung | Mozilla/5.0 (Macintosh; …) Safari/… |
+| Dauer | 0.083 |
 
 **Deine IP-Adresse wird gekürzt, bevor irgendetwas geschrieben wird.** Bei IPv4
 fällt der letzte Block weg (`93.184.216.34` wird zu `93.184.216.0`), bei IPv6
@@ -70,15 +75,10 @@ entsteht. Nachschauen kannst du das selbst, die Datei ist im Quelltext:
 
 **Was ausdrücklich nicht im Protokoll steht:**
 
-- **Welchen Sender du hörst.** Der Audiostrom läuft direkt vom Sender zu deinem
-  Gerät. Unser Server erfährt davon nichts, also kann er es auch nicht
-  aufschreiben.
-- **Wonach du suchst.** Protokolliert wird nur der Pfad, nicht der Abfrageteil
-  der Adresse. Ein Suchbegriff steht im Abfrageteil.
-- **Deine Merkliste, dein Hörverlauf, deine Einstellungen.** Die liegen auf
-  deinem Gerät und werden nirgendwohin geschickt (Abschnitt 6).
-- **Dein Name, deine Kennungen, ein Cookie-Wert.** Nichts davon ist Teil des
-  Protokollformats.
+- **Welchen Sender du hörst.** Der Audiostrom läuft direkt vom Sender zu deinem Gerät. Unser Server erfährt davon nichts, also kann er es auch nicht aufschreiben.
+- **Wonach du suchst.** Protokolliert wird nur der Pfad, nicht der Abfrageteil der Adresse. Ein Suchbegriff steht im Abfrageteil.
+- **Deine Merkliste, dein Hörverlauf, deine Einstellungen.** Die liegen auf deinem Gerät und werden nirgendwohin geschickt (Abschnitt 6).
+- **Dein Name, deine Kennungen, ein Cookie-Wert.** Nichts davon ist Teil des Protokollformats.
 
 **Zweck.** Die Seite betreiben und betreiben können: Fehler finden (welcher Pfad
 liefert 404, welche Auslieferung ist langsam), Missbrauch erkennen, grob sehen,
@@ -151,11 +151,13 @@ Geräten oder in bestimmten Browsern auftreten.
 durch den Klick im Dialog. Zusätzlich § 25 Abs. 1 TDDG für das Speichern deiner
 Antwort auf deinem Gerät.
 
-**Widerruf.** Du kannst jederzeit widerrufen, mit Wirkung für die Zukunft. Die
-Rechtmäßigkeit der bis dahin erfolgten Verarbeitung bleibt davon unberührt.
-[**HIER MUSS STEHEN, WO DER SCHALTER IST — heute gibt es keinen, siehe
-HINWEISE.md Punkt 5.** Ohne einfach zugänglichen Widerruf ist die Einwilligung
-nach Art. 7 Abs. 3 Satz 4 DSGVO angreifbar.]
+**Widerruf.** Du kannst jederzeit widerrufen, mit Wirkung für die Zukunft. In
+der Fußzeile der Seite steht dafür der Knopf **„Fehlerberichte nicht mehr
+senden"**. Er erscheint nur, wenn du vorher zugestimmt hast — sonst gäbe es
+nichts zurückzunehmen. Ein Klick genügt, genau wie ein Klick genügt hat, um
+zuzustimmen; Art. 7 Abs. 3 Satz 4 DSGVO verlangt das so. Die Rechtmäßigkeit der
+bis dahin erfolgten Verarbeitung bleibt unberührt, und bereits übermittelte
+Berichte laufen nach 30 Tagen von selbst aus.
 
 **Empfänger.** Niemand außer uns. Der Bericht geht an dieselbe Adresse, von der
 die Seite kommt, und von dort ins Protokoll unseres eigenen Containers. Es gibt
@@ -167,104 +169,34 @@ Weitergabe.
 
 ---
 
-## 4. Schriftarten von Google Fonts
+## 4. Die Schriften
 
-**Das ist der Punkt, an dem wir am ehrlichsten sein müssen.**
+Die Seite benutzt fünf Schriftfamilien: Inter, Orbitron und JetBrains Mono, auf
+der arabischen Fassung zusätzlich IBM Plex Sans Arabic und Noto Kufi Arabic.
 
-**Was passiert.** Die Seite lädt ihre Schriften (Inter, Orbitron, JetBrains Mono;
-auf der arabischen Fassung zusätzlich IBM Plex Sans Arabic und Noto Kufi Arabic)
-von den Servern `fonts.googleapis.com` und `fonts.gstatic.com`. Dein Browser
-baut dafür eine Verbindung zu Google auf. Das geschieht automatisch beim
-Aufbauen der Seite, **bevor du irgendetwas anklicken kannst**.
+**Sie liegen auf unserem eigenen Server**, unter `/assets/schrift/`, im selben
+Container wie die Seite selbst. Dein Browser holt sie von dort, so wie jedes
+Bild und jede andere Datei dieser Seite. **Es geht dabei keine Anfrage an Google
+und an keinen anderen Dritten.**
 
-**Was Google dabei erfährt:** deine **vollständige, ungekürzte IP-Adresse**, den
-Zeitpunkt, deine Browserkennung, und über den Referrer-Header die Herkunft der
-Anfrage (`https://iyambae.fm`). Welchen Sender du hörst, erfährt Google nicht.
-Was Google mit diesen Angaben tut, entzieht sich unserer Kenntnis und unserem
-Einfluss.
+Geladen wird außerdem nur, was du wirklich brauchst: In der Schriftdatei steht
+über `unicode-range`, welcher Zeichenbereich in welcher Datei steckt. Eine
+deutsche Seite fasst deshalb keine arabische Schriftdatei an.
 
-**Google LLC sitzt in den USA** — einem Drittland im Sinne von Kapitel V DSGVO.
-Für die USA besteht seit dem 10.07.2023 ein Angemessenheitsbeschluss der
-Europäischen Kommission (EU-US Data Privacy Framework), auf den sich zertifizierte
-Unternehmen berufen können. Dieser Beschluss ist Gegenstand laufender rechtlicher
-Auseinandersetzungen; ob er dauerhaft Bestand hat, ist offen.
+*Warum das hier trotzdem steht, obwohl nichts passiert:* Bis zum 21.08.2026
+kamen diese Schriften von `fonts.googleapis.com`. Damit ging die vollständige
+IP-Adresse jedes Besuchers beim Aufbau der Seite an Google in die USA — bevor
+man irgendetwas anklicken konnte. Das Landgericht München I hat eine solche
+Einbindung ohne Einwilligung mit Urteil vom 20.01.2022 (Az. 3 O 17493/20) für
+rechtswidrig gehalten und dem Kläger 100 Euro Schadensersatz zugesprochen. Wir
+haben die Schriften daraufhin umgezogen, statt dich um Einwilligung für etwas zu
+bitten, das sich vermeiden lässt. Der Absatz bleibt stehen, damit die Frage
+beantwortet ist, bevor sie jemand stellt.
 
-**Die Rechtslage in Deutschland, unverblümt.** Das Landgericht München I hat am
-20.01.2022 entschieden (Az. 3 O 17493/20): Wer Google Fonts dynamisch einbindet,
-also von Googles Servern nachlädt, ohne die Einwilligung des Besuchers
-einzuholen, verletzt dessen Persönlichkeitsrecht. Das Gericht sprach dem Kläger
-100 Euro Schadensersatz zu und verurteilte den Seitenbetreiber zur Unterlassung.
-Das Urteil ist eine erstinstanzliche Einzelfallentscheidung und keine höchstrichterliche
-Klärung — es hat aber eine Welle von Abmahn- und Zahlungsaufforderungsschreiben
-ausgelöst und gilt seither als der Bezugspunkt für diese Frage.
-
-**Auf welche Rechtsgrundlage wir uns heute stützen.** Bis die Schriften örtlich
-ausgeliefert werden (siehe Kasten), lautet die ehrliche Antwort: Art. 6 Abs. 1
-lit. f DSGVO, berechtigtes Interesse an einer einheitlichen Darstellung in sieben
-Sprachen und zwei Schriftsystemen. **Diese Begründung ist angreifbar**, und wir
-schreiben es lieber selbst hin, als so zu tun, als wäre die Frage entschieden:
-Das LG München I hat in einem vergleichbaren Fall gerade nicht auf lit. f
-abgestellt, sondern eine Einwilligung verlangt. Wer das Risiko nicht tragen will,
-hat nur eine saubere Lösung, und die steht hier:
-
-> ### ⚠ EMPFEHLUNG AN DEN BETREIBER
->
-> **Die Schriften selbst ausliefern. Nicht die Einwilligung einholen — die
-> Schriften umziehen.**
->
-> Es gibt drei Wege, und nur einer ist gut:
->
-> 1. **Selbst hosten (empfohlen).** Die fünf Schriftfamilien als `.woff2` nach
->    `assets/fonts/` legen, die `@font-face`-Regeln in `assets/styles.css`
->    schreiben und die drei Zeilen mit `fonts.googleapis.com` aus `index.html`
->    entfernen (Zeilen 11, 12, 13 und 20). Damit ist der Abfluss weg — nicht
->    verringert, nicht rechtfertigbar gemacht, sondern weg. Es gibt dann keinen
->    Drittlandtransfer, keinen Einwilligungsdialog, keinen Absatz in diesem
->    Dokument und keine Angriffsfläche.
->
->    **Was dabei zusätzlich in Ordnung kommt:**
->    - nginx kennt den MIME-Typ `font/woff2` bereits (`deploy/nginx.conf`,
->      `types`-Block) — es ist nichts zu konfigurieren.
->    - Der Service Worker braucht seine Sonderbehandlung für fremde Herkünfte
->      nicht mehr (`sw.js`, `istSchriftart` und der
->      `stale-while-revalidate`-Zweig am Ende). Ein Zweig weniger.
->    - Die Content-Security-Policy, die spätestens mit dem Konto nötig wird
->      (vermerkt in `infra/konto.bicep.entwurf`, „NOCH ZU TUN", Punkt 2), wird
->      deutlich strenger und einfacher: kein `style-src https://fonts.googleapis.com`,
->      kein `font-src https://fonts.gstatic.com`.
->    - Die Seite wird schneller. Zwei DNS-Auflösungen, zwei TLS-Handshakes und
->      zwei Verbindungen zu einem fremden Host fallen weg. Die `preconnect`-Zeilen
->      in `index.html` sind da, weil dieser Umweg Zeit kostet.
->
->    **Der Preis, ehrlich:** Die Schriftdateien liegen dann im Repository und im
->    Container-Abbild und müssen von Hand aktualisiert werden, wenn eine neue
->    Fassung erscheint. Bei den fünf genannten Familien ist das ein Vorgang alle
->    paar Jahre. **Lizenzen prüfen**: Inter, Orbitron, JetBrains Mono, IBM Plex
->    Sans Arabic und Noto Kufi Arabic stehen — nach Angabe ihrer jeweiligen
->    Anbieter — unter der SIL Open Font License bzw. der Apache-Lizenz, die das
->    Selbsthosten ausdrücklich erlauben. Die Lizenzdatei gehört mit ins
->    Repository. Vor dem Umzug je Schrift einmal nachlesen.
->
-> 2. **Einwilligungsdialog vor dem Laden der Schriften.** Rechtlich vertretbar,
->    praktisch schlecht: Es bräuchte ein Banner, das *vor* dem ersten Aufbau der
->    Seite erscheint — genau das, was diese Seite an keiner anderen Stelle tut.
->    Und die Seite müsste ohne die Schriften funktionieren und aussehen, für
->    jeden, der ablehnt. Doppelte Arbeit für ein schlechteres Ergebnis.
->
-> 3. **So lassen und hoffen.** Das ist die Lage von heute. Sie ist beschreibbar,
->    wie hier geschehen, aber sie bleibt ein bekanntes, benanntes, vermeidbares
->    Risiko. Solange sie besteht, muss dieser Abschnitt genau so stehen bleiben,
->    wie er dasteht.
->
-> **Empfehlung: Weg 1, und zwar vor dem Livegang.** Der Aufwand liegt bei einer
-> knappen Stunde. Danach kann dieser ganze Abschnitt aus dem Dokument
-> verschwinden, und das ist der beste Datenschutzhinweis: einer, der kürzer wird.
-
-**Wenn du die Seite installiert hast.** Der Service Worker legt die Schriftdateien
-nach dem ersten Abruf in einem Zwischenspeicher auf deinem Gerät ab und erneuert
-sie im Hintergrund (`sw.js`). Der **erste** Abruf geht in jedem Fall an Google.
-
----
+**Zweck:** die Seite darstellen. **Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO,
+zusammen mit der Auslieferung der Seite selbst (Abschnitt 2). **Empfänger:**
+keine. **Drittland:** keins. **Speicherdauer:** Nach dem ersten Besuch liegen die
+Schriftdateien im Zwischenspeicher deines Browsers (Abschnitt 6).
 
 ## 5. Die Audioströme — dein Gerät spricht direkt mit dem Sender
 
@@ -286,10 +218,7 @@ sein Server:
 - deine **vollständige IP-Adresse** — ungekürzt, wir können daran nichts ändern,
 - deine Browserkennung und die Fähigkeiten deines Geräts,
 - Zeitpunkt und Dauer des Zuhörens,
-- in der Regel, dass du von `https://iyambae.fm` kommst. (Die Seite setzt
-  `Referrer-Policy: strict-origin-when-cross-origin`, siehe `deploy/nginx.conf`:
-  Übermittelt wird nur die Herkunft, nicht die vollständige Adresse mit deinem
-  Suchbegriff.)
+- in der Regel, dass du von `https://iyambae.fm` kommst. (Die Seite setzt `Referrer-Policy: strict-origin-when-cross-origin`, siehe `deploy/nginx.conf`: Übermittelt wird nur die Herkunft, nicht die vollständige Adresse mit deinem Suchbegriff.)
 
 Was der Sender damit macht, richtet sich nach **seinen** Datenschutzhinweisen,
 nicht nach unseren. Manche Sender werten Hörerzahlen aus, manche nicht, manche
@@ -371,8 +300,8 @@ nur zwei Buchstaben. Es dient keiner Analyse und keiner Werbung.
 Wenn du die Seite besuchst, richtet dein Browser einen Service Worker ein
 (`sw.js`). Er legt die Seite selbst auf deinem Gerät ab — Sprachseiten,
 Programmdateien, Symbole, Sendlogos, die Senderliste —, damit sie ohne Netz
-funktioniert und schneller startet. Dazu kommen die Schriftdateien von Google
-(Abschnitt 4).
+funktioniert und schneller startet. Dazu kommen die Schriftdateien — auch die
+vom eigenen Server (Abschnitt 4).
 
 **Die Audioströme fängt er ausdrücklich nicht ab und speichert er nicht.** Es
 liegt keine Musik in diesem Zwischenspeicher, und es liegt nichts darin, was auf
@@ -535,12 +464,16 @@ Zustellbericht; ob sie gewirkt hat, sagt die Anmeldung selbst.
 
 Wenn du diesen Weg wählst, erfährt der jeweilige Anbieter, dass du dich bei
 iyambae.fm anmeldest. Wir erhalten von dort eine dauerhafte Kennung und, je nach
-Verfahren, deine E-Mail-Adresse. Google LLC und Apple Inc. sitzen in den USA;
-es gilt das zu Abschnitt 4 Gesagte zum Angemessenheitsbeschluss vom 10.07.2023.
-Für die Verarbeitung bei diesen Anbietern gelten deren eigene
-Datenschutzhinweise. **Wenn du das nicht willst, nimm E-Mail und Passwort oder
+Verfahren, deine E-Mail-Adresse.
+
+Google LLC und Apple Inc. sitzen in den **USA**, also in einem Drittland im Sinne
+von Kapitel V DSGVO. Für die USA besteht seit dem 10.07.2023 ein
+Angemessenheitsbeschluss der Europäischen Kommission (EU-US Data Privacy
+Framework), auf den sich zertifizierte Unternehmen berufen können; dieser
+Beschluss ist Gegenstand laufender rechtlicher Auseinandersetzungen. Für die
+Verarbeitung bei diesen Anbietern gelten deren eigene Datenschutzhinweise. **Wenn du das nicht willst, nimm E-Mail und Passwort oder
 einen Passkey** — beides funktioniert ohne jeden Dritten. [Vor dem Livegang: die
-Zertifizierung beider Anbieter prüfen und hier verlinken — HINWEISE.md, Punkt 9.]
+Zertifizierung beider Anbieter prüfen und hier verlinken — HINWEISE.md, Teil E Nr. 1.]
 
 ### Wer die Daten sehen kann
 
@@ -555,18 +488,10 @@ benannt. Genau deshalb haben sie zwei Personen und nicht drei.
 
 ### Speicherdauer und Löschung
 
-- **Sitzungen und Einmalcodes** tragen ein Ablaufdatum und werden weggeräumt,
-  sobald sie abgelaufen sind — beim nächsten Zugriff, und zusätzlich durch einen
-  Durchgang alle 24 Stunden, damit auch die Sitzung eines Menschen verschwindet,
-  der nicht wiederkommt.
-- **Das Konto selbst** bleibt, bis du es löschst. Es gibt eine Löschfunktion in
-  der App; sie entfernt in einem Vorgang alles: Merkliste, Verlauf, Sitzungen,
-  Kennungen und den Eintrag in der Zuordnungstabelle. Alle Daten eines Kontos
-  liegen zu diesem Zweck in einer einzigen Partition — damit kein Rest
-  liegenbleibt, den später niemand mehr findet.
+- **Sitzungen und Einmalcodes** tragen ein Ablaufdatum und werden weggeräumt, sobald sie abgelaufen sind — beim nächsten Zugriff, und zusätzlich durch einen Durchgang alle 24 Stunden, damit auch die Sitzung eines Menschen verschwindet, der nicht wiederkommt.
+- **Das Konto selbst** bleibt, bis du es löschst. Es gibt eine Löschfunktion in der App; sie entfernt in einem Vorgang alles: Merkliste, Verlauf, Sitzungen, Kennungen und den Eintrag in der Zuordnungstabelle. Alle Daten eines Kontos liegen zu diesem Zweck in einer einzigen Partition — damit kein Rest liegenbleibt, den später niemand mehr findet.
 - **[Frist für inaktive Konten: noch festzulegen — HINWEISE.md, Punkt 10.]**
-- **[Was nach dem Löschen wie lange als „Grabstein" bestehen bleibt: noch zu
-  klären — HINWEISE.md, Punkt 11.]**
+- **[Was nach dem Löschen wie lange als „Grabstein" bestehen bleibt: noch zu klären — HINWEISE.md, Punkt 11.]**
 
 ---
 
@@ -575,19 +500,13 @@ benannt. Genau deshalb haben sie zwei Personen und nicht drei.
 Damit es einmal in einer Liste steht:
 
 - **Keine Werbung.** Kein Werbenetzwerk, kein Werbeplatz, keine Verkaufsdaten.
-- **Kein Tracking über Seiten hinweg.** Keine Zählpixel, keine Wiedererkennungs-
-  merkmale, kein Fingerprinting.
-- **Keine Reichweitenmessung durch Dritte.** Kein Google Analytics, kein Matomo,
-  kein Plausible, kein sonstiger Dienst.
-- **Kein Profiling und keine automatisierte Entscheidungsfindung** im Sinne von
-  Art. 22 DSGVO. Die Gewichtung, mit der die Auslage Sender vorschlägt, läuft in
-  deinem Browser aus deinen eigenen Daten und hat keine rechtliche Wirkung.
-- **Kein Verkauf und keine Weitergabe** von Daten an Dritte zu deren eigenen
-  Zwecken.
-- **Keine Aufzeichnung, welcher Sender gehört wird** — solange du kein Konto
-  hast. Mit Konto siehe Abschnitt 9.
-- **Kein Cookie-Banner**, weil es nichts gibt, wozu wir dich fragen müssten
-  (Abschnitt 6).
+- **Kein Tracking über Seiten hinweg.** Keine Zählpixel, keine Wiedererkennungs- merkmale, kein Fingerprinting.
+- **Keine Reichweitenmessung durch Dritte.** Kein Google Analytics, kein Matomo, kein Plausible, kein sonstiger Dienst.
+- **Keine Anfrage an einen Google-Server** — auch nicht für Schriften (Abschnitt 4). Beim Aufbau der Seite wird kein einziger fremder Host kontaktiert.
+- **Kein Profiling und keine automatisierte Entscheidungsfindung** im Sinne von Art. 22 DSGVO. Die Gewichtung, mit der die Auslage Sender vorschlägt, läuft in deinem Browser aus deinen eigenen Daten und hat keine rechtliche Wirkung.
+- **Kein Verkauf und keine Weitergabe** von Daten an Dritte zu deren eigenen Zwecken.
+- **Keine Aufzeichnung, welcher Sender gehört wird** — solange du kein Konto hast. Mit Konto siehe Abschnitt 9.
+- **Kein Cookie-Banner**, weil es nichts gibt, wozu wir dich fragen müssten (Abschnitt 6).
 
 ---
 
@@ -596,19 +515,13 @@ Damit es einmal in einer Liste steht:
 Du hast uns gegenüber die folgenden Rechte. Alle kosten nichts, und für alle
 reicht eine formlose Nachricht an [adresse@iyambae.fm].
 
-- **Auskunft** (Art. 15 DSGVO): Wir sagen dir, welche Daten wir über dich
-  gespeichert haben.
+- **Auskunft** (Art. 15 DSGVO): Wir sagen dir, welche Daten wir über dich gespeichert haben.
 - **Berichtigung** (Art. 16 DSGVO): Ist etwas falsch, korrigieren wir es.
 - **Löschung** (Art. 17 DSGVO): Wir löschen, was wir nicht mehr brauchen dürfen.
 - **Einschränkung der Verarbeitung** (Art. 18 DSGVO).
-- **Datenübertragbarkeit** (Art. 20 DSGVO): Deine Kontodaten bekommst du in einem
-  maschinenlesbaren Format.
-- **Widerspruch** (Art. 21 DSGVO): Gegen jede Verarbeitung, die auf Art. 6 Abs. 1
-  lit. f gestützt ist — also Zugriffsprotokolle, Schriftauslieferung, das Starten
-  von Audioströmen — kannst du aus Gründen, die sich aus deiner besonderen
-  Situation ergeben, Widerspruch einlegen.
-- **Widerruf einer Einwilligung** (Art. 7 Abs. 3 DSGVO): jederzeit, mit Wirkung
-  für die Zukunft. Betrifft die Fehlerberichte und die MyRetuner-Abfrage.
+- **Datenübertragbarkeit** (Art. 20 DSGVO): Deine Kontodaten bekommst du in einem maschinenlesbaren Format.
+- **Widerspruch** (Art. 21 DSGVO): Gegen jede Verarbeitung, die auf Art. 6 Abs. 1 lit. f gestützt ist — also Zugriffsprotokolle, Schriftauslieferung, das Starten von Audioströmen — kannst du aus Gründen, die sich aus deiner besonderen Situation ergeben, Widerspruch einlegen.
+- **Widerruf einer Einwilligung** (Art. 7 Abs. 3 DSGVO): jederzeit, mit Wirkung für die Zukunft. Betrifft die Fehlerberichte — dafür steht der Knopf in der Fußzeile — und die MyRetuner-Abfrage.
 
 **Bei den Rechten gibt es eine ehrliche Grenze.** Für die Zugriffsprotokolle
 können wir dir kaum Auskunft geben — wir wissen nicht, welche der gekürzten
@@ -623,7 +536,7 @@ Datenschutz-Aufsichtsbehörde beschweren, insbesondere bei der Behörde deines
 gewöhnlichen Aufenthaltsorts, deines Arbeitsplatzes oder des Orts des
 mutmaßlichen Verstoßes. Für uns zuständig ist:
 
-    [Aufsichtsbehörde des Bundeslandes des Betreibers — Name, Anschrift, Website]
+**[Aufsichtsbehörde des Bundeslandes des Betreibers — Name, Anschrift, Website]**
 
 ---
 

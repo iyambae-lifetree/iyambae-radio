@@ -18,10 +18,8 @@ Gewinnabsicht", sondern „auf Dauer angelegt und planmäßig" — und das wird 
 ausgelegt. Bei iyambae.fm spricht mehreres dafür, dass die Ausnahme *nicht*
 greift:
 
-- eine eigene Domain, sieben Sprachfassungen, eine installierbare Web-App und
-  ein gepflegter Katalog von 129 Sendern — das ist keine Familienseite,
-- die Fußzeile bewirbt mit MyRetuner ein eigenes Produkt („powered by
-  MyRetuner", Verweis auf apps.iyambae.fm),
+- eine eigene Domain, sieben Sprachfassungen, eine installierbare Web-App und ein gepflegter Katalog von 129 Sendern — das ist keine Familienseite,
+- die Fußzeile bewirbt mit MyRetuner ein eigenes Produkt („powered by MyRetuner", Verweis auf apps.iyambae.fm),
 - Konten mit Anmeldung sind geplant.
 
 **Entscheidend ist aber § 18 Abs. 1 MStV**, und der wird meist übersehen: Er
@@ -49,10 +47,12 @@ sondern ein Mangel, der abgemahnt werden kann. Siehe HINWEISE.md, Punkt 2.
 
 ### Anbieter
 
-    [Vorname Nachname]
-    [Straße und Hausnummer]
-    [PLZ Ort]
-    Deutschland
+| Angabe | Wert |
+|---|---|
+| Name | [Vorname Nachname] |
+| Anschrift | [Straße und Hausnummer] |
+| Ort | [PLZ Ort] |
+| Land | Deutschland |
 
 Privater Betreiber. Kein Unternehmen, keine Eintragung in ein Handels-,
 Vereins-, Partnerschafts- oder Genossenschaftsregister, keine
@@ -60,14 +60,18 @@ Umsatzsteuer-Identifikationsnummer, keine berufsrechtliche Aufsicht.
 
 ### Kontakt
 
-    E-Mail:   [adresse@iyambae.fm]
-    [Telefon: [Nummer] — siehe „Was hier bewusst nicht steht"]
+| Weg | Adresse |
+|---|---|
+| E-Mail | [adresse@iyambae.fm] |
+| Telefon | [Nummer] — nur, wenn kein Kontaktformular mit schneller Antwort da ist; siehe „Was hier bewusst nicht steht" |
 
 ### Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
 
-    [Vorname Nachname]
-    [Straße und Hausnummer]
-    [PLZ Ort]
+| Angabe | Wert |
+|---|---|
+| Name | [Vorname Nachname] |
+| Anschrift | [Straße und Hausnummer] |
+| Ort | [PLZ Ort] |
 
 *(Ob diese Angabe nötig ist, steht weiter unten. Kurz: wahrscheinlich nicht —
 aber sie kostet nichts.)*
@@ -97,7 +101,7 @@ schwerer auffindbar machen.
 **Kein Verweis auf die OS-Plattform der EU.** Die
 Online-Streitbeilegungsplattform der Europäischen Kommission wurde zum
 20.07.2025 eingestellt; ein Verweis darauf ginge ins Leere. Vor dem Livegang
-kurz nachprüfen — HINWEISE.md, Punkt 12.
+kurz nachprüfen — HINWEISE.md, Teil E Nr. 2.
 
 **Keine Erklärung nach § 36 VSBG.** Die Pflicht zur Erklärung über
 Verbraucherstreitbeilegung trifft Unternehmer mit einer Website. Solange hier
@@ -132,17 +136,10 @@ Aktualitätsbezug und Bedeutung für die öffentliche Meinungsbildung.
 
 **Meine Einschätzung: eher nein.** Die Gründe, jeder nachprüfbar:
 
-1. **Keine Periodizität des Inhalts.** Der Katalog wird gepflegt, aber nicht nach
-   einem Erscheinungsrhythmus veröffentlicht. Der „Tipp der Woche" sieht nach
-   einer wöchentlichen Rubrik aus, ist aber keine: `assets/lib/wochentipp.mjs`
-   wählt rechnerisch aus dem bestehenden Katalog, deterministisch aus Jahr und
-   Kalenderwoche. Es entsteht kein neuer Text, es rotiert ein vorhandener.
-2. **Kein Aktualitätsbezug.** Die Kärtchen beschreiben, was ein Sender seit
-   Jahren tut. Sie berichten nicht über Ereignisse.
-3. **Keine Wiedergabe von Presseinhalten.** Nichts hier stammt aus einem
-   periodischen Druckerzeugnis.
-4. **Meinungsbildung im politischen Sinn** findet nicht statt. Musikkritik ist
-   kulturelle Wertung; die Vorschrift zielt auf presseähnliche Angebote.
+1. **Keine Periodizität des Inhalts.** Der Katalog wird gepflegt, aber nicht nach einem Erscheinungsrhythmus veröffentlicht. Der „Tipp der Woche" sieht nach einer wöchentlichen Rubrik aus, ist aber keine: `assets/lib/wochentipp.mjs` wählt rechnerisch aus dem bestehenden Katalog, deterministisch aus Jahr und Kalenderwoche. Es entsteht kein neuer Text, es rotiert ein vorhandener.
+2. **Kein Aktualitätsbezug.** Die Kärtchen beschreiben, was ein Sender seit Jahren tut. Sie berichten nicht über Ereignisse.
+3. **Keine Wiedergabe von Presseinhalten.** Nichts hier stammt aus einem periodischen Druckerzeugnis.
+4. **Meinungsbildung im politischen Sinn** findet nicht statt. Musikkritik ist kulturelle Wertung; die Vorschrift zielt auf presseähnliche Angebote.
 
 **Trotzdem empfehle ich, den Verantwortlichen zu nennen.** Die Abwägung ist
 einseitig: Die Angabe kostet drei Zeilen mit Daten, die im Impressum ohnehin
@@ -170,17 +167,18 @@ muss **eine** von beiden benannt werden — nicht „das Team".
 DDG). In der Rechtsprechung heißt das praktisch:
 
 - **Höchstens zwei Klicks** von jeder Seite aus.
-- **Eindeutig benannt.** „Impressum" oder „Kontakt" — nicht „Über uns", nicht
-  „Info", nicht bloß ein Symbol.
-- **In der Fußzeile jeder Seite**, also in `index.html` und damit in allen sieben
-  Sprachfassungen, die `Scripts/baue-sprachen.py` daraus erzeugt.
-- **Auch auf apps.iyambae.fm.** Das ist ein eigener Hostname mit eigenem
-  Dokumentenstamm (`/srv/apps`, siehe `deploy/nginx.conf`) und damit ein eigenes
-  Telemedium. Dort fehlt heute jede Fußzeile mit Rechtsverweisen.
-- **In allen sieben Sprachen erreichbar.** Der Text selbst darf deutsch bleiben —
-  die Pflicht knüpft an die Erreichbarkeit, nicht an die Übersetzung. Ein
-  Zusatz wie „Legal notice (in German)" neben dem Verweis ist trotzdem
-  freundlicher.
+- **Eindeutig benannt.** „Impressum" oder „Kontakt" — nicht „Über uns", nicht „Info", nicht bloß ein Symbol.
+- **In der Fußzeile jeder Seite**, also in `index.html` und damit in allen sieben Sprachfassungen, die `Scripts/baue-sprachen.py` daraus erzeugt.
+- **In allen sieben Sprachen erreichbar.** Der Text selbst darf deutsch bleiben — die Pflicht knüpft an die Erreichbarkeit, nicht an die Übersetzung.
+- **Auch auf apps.iyambae.fm.** Das ist ein eigener Hostname mit eigenem Dokumentenstamm (`/srv/apps`, siehe `deploy/nginx.conf`) und damit ein eigenes Telemedium.
 
-Heute gibt es in der Fußzeile **keinen** solchen Verweis (geprüft in
-`index.html`, Zeilen 249 bis 263). Das ist Punkt 1 in HINWEISE.md.
+**Stand 21.08.2026 — was davon steht:** Dieser Text wird als Seite unter
+`/recht/impressum/` ausgeliefert, erzeugt von `Scripts/baue-recht.py` aus der
+Markdown-Fassung. In der Fußzeile aller sieben Sprachseiten steht ein Verweis
+darauf, ausgezeichnet mit `hreflang="de"`, weil es den Text nur auf Deutsch
+gibt. Die Seiten tragen `noindex, follow`: Ein Impressum soll auffindbar sein,
+wenn man es sucht, aber es ist nicht der Inhalt, über den diese Seite gefunden
+werden will.
+
+**Was noch fehlt:** `apps.iyambae.fm` hat weiterhin keine Rechtsverweise, und
+die Texte gibt es nur auf Deutsch. Beides steht in HINWEISE.md, Punkte 1 und 14.

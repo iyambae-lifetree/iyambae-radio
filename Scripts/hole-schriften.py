@@ -64,6 +64,25 @@ FAMILIEN = [
 
 ADRESSE = re.compile(r"url\((https://fonts\.gstatic\.com/[^)]+)\)")
 
+# Die Lizenzen.
+#
+# Alle fuenf Familien stehen unter der SIL Open Font License. Die verlangt in
+# Abschnitt 2 ausdruecklich, dass Urhebervermerk und Lizenztext die
+# Schriftdateien BEGLEITEN — nicht irgendwo stehen, sondern mitgeliefert
+# werden. Solange sie nur von einem fremden Server kamen, stellte sich die
+# Frage nicht. Seit sie im Repository liegen und an jeden Besucher
+# ausgeliefert werden, ist es eine Pflicht.
+#
+# Geholt wird aus dem Bestand, aus dem auch die Schriften stammen.
+LIZENZEN = {
+    "Inter":                "ofl/inter/OFL.txt",
+    "Orbitron":             "ofl/orbitron/OFL.txt",
+    "JetBrains Mono":       "ofl/jetbrainsmono/OFL.txt",
+    "IBM Plex Sans Arabic": "ofl/ibmplexsansarabic/OFL.txt",
+    "Noto Kufi Arabic":     "ofl/notokufiarabic/OFL.txt",
+}
+LIZENZQUELLE = "https://raw.githubusercontent.com/google/fonts/main/"
+
 
 def hole(url, kopf=None):
     anfrage = urllib.request.Request(url, headers=kopf or {"User-Agent": KENNUNG})
@@ -127,6 +146,31 @@ def main():
 """
     ziel = ZIEL / "schriften.css"
     io.open(ziel, "w", encoding="utf-8", newline="\n").write(kopf + "\n".join(stuecke))
+
+    # Und die Lizenzen dazu, in einer Datei neben den Schriften.
+    teile = ["""SIL OPEN FONT LICENSE — die Schriften dieser Seite
+
+Alle Schriften unter /assets/schrift/ stehen unter der SIL Open Font License
+Version 1.1. Deren Abschnitt 2 verlangt, dass dieser Vermerk und der
+Lizenztext die Schriftdateien begleiten. Genau dafuer gibt es diese Datei.
+
+Geaendert wurde nichts: Es sind die unveraenderten woff2-Dateien, wie Google
+Fonts sie ausliefert. Die Auswahl der Zeichenbereiche uebernimmt der Browser
+anhand der unicode-range-Angaben in schriften.css.
+
+Erzeugt von Scripts/hole-schriften.py.
+"""]
+    for name, pfad in LIZENZEN.items():
+        try:
+            text = hole(LIZENZQUELLE + pfad).decode("utf-8")
+        except Exception as f:
+            print(f"  ! Lizenz fuer {name} nicht erreichbar: {type(f).__name__}")
+            continue
+        strich = "=" * 70
+        teile.append(f"{strich}\n{name}\n{strich}\n\n{text}")
+    io.open(ZIEL / "LIZENZEN.txt", "w", encoding="utf-8",
+            newline="\n").write("\n\n".join(teile))
+    print(f"  {len(teile) - 1} Lizenztexte in LIZENZEN.txt")
 
     gesamt = sum(p.stat().st_size for p in ZIEL.glob("*.woff2"))
     dateien = len(list(ZIEL.glob("*.woff2")))

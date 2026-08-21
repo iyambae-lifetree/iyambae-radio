@@ -120,12 +120,36 @@ def nach_html(text):
                         + kopfzeile + "</tr></thead><tbody>" + rumpf + "</tbody></table></div>")
             continue
 
+        # Ein eingerueckter Block ist vorformatierter Text — eine Anschrift,
+        # eine Protokollzeile, ein Befehl. Ihn zu einem Fliesstextabsatz
+        # zusammenzuziehen macht aus einer dreizeiligen Anschrift eine Zeile.
+        # Genau das ist im ersten Entwurf passiert.
+        if z.startswith(("    ", "	")) and strich:
+            block = []
+            while i < len(zeilen) and (zeilen[i].startswith(("    ", "	"))
+                                       or not zeilen[i].strip()):
+                if not zeilen[i].strip() and not block:
+                    i += 1
+                    continue
+                block.append(re.sub(r"^(?:    |	)", "", zeilen[i]))
+                i += 1
+            while block and not block[-1].strip():
+                block.pop()
+            raus.append("<pre>" + html.escape("\n".join(block), quote=False) + "</pre>")
+            continue
+
         if strich.startswith(">"):
             block = []
             while i < len(zeilen) and zeilen[i].strip().startswith(">"):
                 block.append(zeilen[i].strip().lstrip("> ").strip())
                 i += 1
-            raus.append("<blockquote>" + inline(" ".join(block)) + "</blockquote>")
+            text = " ".join(block)
+            # Ein Kasten, der mit "**Entwurf" beginnt, richtet sich an den
+            # Betreiber, nicht an den Besucher — und verweist auf HINWEISE.md,
+            # die bewusst nicht ausgeliefert wird. Auf der Seite stuende sonst
+            # "Platzhalter ausfuellen" und darunter ein Verweis ins Leere.
+            if not text.lstrip().startswith("**Entwurf"):
+                raus.append("<blockquote>" + inline(text) + "</blockquote>")
             continue
 
         if re.match(r"^\s*(?:[-*+]\s|\d+[.)]\s)", z):
@@ -134,6 +158,22 @@ def nach_html(text):
             while i < len(zeilen) and re.match(r"^\s*(?:[-*+]\s|\d+[.)]\s)", zeilen[i]):
                 punkte.append(re.sub(r"^\s*(?:[-*+]\s|\d+[.)]\s)", "", zeilen[i]))
                 i += 1
+                # Fortsetzungszeilen gehoeren zum Punkt davor.
+                #
+                # Ohne das reisst jeder umgebrochene Listenpunkt ab: Der
+                # Rest faellt als eigener Absatz HINTER die Liste, und aus
+                # einer Aufzaehlung mit drei Punkten werden drei
+                # Einpunkt-Listen mit Text dazwischen. Gemessen: 15 mal
+                # allein in datenschutz.md.
+                #
+                # Eingerueckt heisst Fortsetzung — eine Zeile am
+                # Zeilenanfang beginnt etwas Neues.
+                while (i < len(zeilen) and zeilen[i].strip()
+                       and not re.match(r"^\s*(?:[-*+]\s|\d+[.)]\s)", zeilen[i])
+                       and not zeilen[i].strip().startswith(("#", "|", ">"))
+                       and zeilen[i].startswith((" ", "	"))):
+                    punkte[-1] += " " + zeilen[i].strip()
+                    i += 1
             marke = "ol" if geordnet else "ul"
             raus.append(f"<{marke}>" + "".join(f"<li>{inline(p)}</li>" for p in punkte)
                         + f"</{marke}>")
