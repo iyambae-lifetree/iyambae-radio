@@ -137,7 +137,17 @@
         <button class="guete-knopf" data-guete="verlustfrei">verlustfrei &amp; Opus <span>11</span></button>
         <button class="guete-knopf" data-guete="hoch">ab 256 kbit/s <span>45</span></button>
     </div>
+    <!-- Die acht Regale sind die Genres dieses Ladens. Sie werden aus
+         data/sender.json erzeugt, damit ein neuntes Regal hier nichts kostet. -->
+    <div class="filter__regale" role="group" aria-label="Nach Regal filtern">
+        <span class="filter__titel">Regal</span>
+        <span id="regalFilter"></span>
+    </div>
     <div class="etiketten" id="etiketten" role="group" aria-label="Nach Stichwort filtern"></div>
+    <!-- Zeigt, wie viele Sender die aktive Auswahl übrig lässt, und macht sie
+         mit einem Klick rückgängig. Ohne das weiß niemand, warum plötzlich
+         wenig zu sehen ist. -->
+    <div class="filter__stand" id="filterStand" hidden></div>
 </div>
 
 <main class="regale" id="regale"></main>

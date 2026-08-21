@@ -433,7 +433,15 @@ class UI {
     this.sender = SENDER;
     this.regale = REGALE;
     this.aktuelleId = null;
-    this.aktivesEtikett = null;
+    /*
+     EIN Filterzustand fuer alle vier Dimensionen.
+
+     Vorher hatte jede ihren eigenen, und beide loeschten sich gegenseitig:
+     Wer "verlustfrei" waehlte und dann "ohne Werbung", verlor die erste Wahl
+     wieder. Die Suche verwarf ohnehin alles. Das fuehlte sich kaputt an, ohne
+     dass ein Fehler vorlag — die Filter waren einfach nicht kombinierbar.
+    */
+    this.filter = { guete: null, regal: null, etikett: null, suche: '' };
     this.favoriten = new Set(speicher.lies(SCHLUESSEL.favoriten, []));
   }
 
@@ -454,10 +462,25 @@ class UI {
     const aktiv = this.aktuelleId === sender.id ? ' ist-aktiv' : '';
     const wackelig = istWackelig(sender.id) ? ' ans-regalende' : '';
     const favorit = this.istFavorit(sender.id);
+    /*
+     Klangqualitaet in drei Stufen, nicht in zwei.
+
+     Fuer audiophile Hoerer ist FLAC etwas anderes als 256 kbit/s, und Opus
+     bei 128 klingt besser als MP3 bei 192. Die Abstufung steht deshalb im
+     Abzeichen selbst — sie ist die Information, nicht Schmuck.
+    */
     const guete = sender.codec === 'flac' ? 'FLAC'
                 : ['opus', 'vorbis'].includes(sender.codec) ? sender.codec.toUpperCase()
                 : sender.bitrate ? sender.bitrate + 'k' : '';
-    const hochwertig = sender.codec === 'flac' || ['opus','vorbis'].includes(sender.codec) || (sender.bitrate ?? 0) >= 192;
+    const stufe = sender.codec === 'flac' ? 'verlustfrei'
+                : ['opus', 'vorbis'].includes(sender.codec) ? 'gut'
+                : (sender.bitrate ?? 0) >= 256 ? 'gut'
+                : (sender.bitrate ?? 0) >= 192 ? 'ordentlich' : 'einfach';
+    const guetetitel = sender.codec === 'flac'
+        ? 'Verlustfrei — nichts geht verloren'
+        : ['opus', 'vorbis'].includes(sender.codec)
+          ? `${sender.codec.toUpperCase()} bei ${sender.bitrate} kbit/s — klingt besser als MP3 bei gleicher Datenrate`
+          : `MP3, ${sender.bitrate} kbit/s`;
 
     const eigenes = hatEigenesLogo(sender);
     return `
@@ -465,6 +488,7 @@ class UI {
                style="--regalton:${regalton(sender)}">
         <button class="karte__favorit${favorit ? ' ist-favorit' : ''}"
                 aria-label="${favorit ? 'Aus Meine Platten entfernen' : 'Zu Meine Platten'}">${favorit ? '♥' : '♡'}</button>
+        ${guete ? `<span class="karte__guete karte__guete--${stufe}" title="${guetetitel}">${guete}</span>` : ''}
         <div class="karte__bild${eigenes ? '' : ' ist-hausmarke'}">
           <img src="${senderbild(sender)}" alt="" loading="lazy" width="256" height="256">
         </div>
@@ -474,8 +498,7 @@ class UI {
         </div>
         <p class="karte__kaertchen">${sender.kaertchen}</p>
         <div class="karte__fuss">
-          ${guete ? `<span class="marke${hochwertig ? ' marke--gut' : ''}">${guete}</span>` : ''}
-          ${(sender.etiketten ?? []).slice(0, 2).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
+          ${(sender.etiketten ?? []).slice(0, 3).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
         </div>
         <div class="karte__laeuft"><span></span><span></span><span></span></div>
       </article>`;
@@ -535,6 +558,19 @@ class UI {
     for (const s of this.sender) {
       for (const e of s.etiketten ?? []) zaehler.set(e, (zaehler.get(e) ?? 0) + 1);
     }
+    // Die Regale sind die Genres dieses Ladens — aus den Daten erzeugt,
+    // damit ein neuntes Regal hier nichts kostet.
+    const proRegal = new Map();
+    for (const x of this.sender) proRegal.set(x.regal, (proRegal.get(x.regal) ?? 0) + 1);
+    const regalKasten = document.getElementById('regalFilter');
+    if (regalKasten) {
+      regalKasten.innerHTML = this.regale
+        .filter(r => proRegal.get(r.id))
+        .map(r => `<button class="regal-knopf" data-regal="${r.id}" title="${r.beschreibung ?? ''}">`
+                + `${r.icon} ${r.name}<span>${proRegal.get(r.id)}</span></button>`)
+        .join(' ');
+    }
+
     document.getElementById('etiketten').innerHTML = [...zaehler.entries()]
       .sort((a, b) => b[1] - a[1])
       .map(([e, n]) => `<button class="etikett" data-etikett="${e}">${e}<span>${n}</span></button>`)
@@ -545,31 +581,95 @@ class UI {
   // war sie die erste Frage. Sie steckte bisher nur im Etikett 'lossless'
   // versteckt, das man kennen musste.
   setzeGueteFilter(stufe) {
-    this.aktiveGuete = this.aktiveGuete === stufe ? null : stufe;
-    this.aktivesEtikett = null;
-    document.querySelectorAll('.guete-knopf').forEach(k =>
-      k.classList.toggle('ist-aktiv', k.dataset.guete === this.aktiveGuete));
-    document.querySelectorAll('.etikett').forEach(k => k.classList.remove('ist-aktiv'));
+    this.filter.guete = this.filter.guete === stufe ? null : stufe;
+    this.wendeFilterAn();
+  }
 
-    const passt = {
-      // Verlustfrei oder ein Format, das bei gleicher Datenrate deutlich
-      // besser klingt als MP3
-      verlustfrei: s => ['flac', 'opus', 'vorbis'].includes(s.codec),
-      hoch:        s => s.codec === 'flac' || ['opus', 'vorbis'].includes(s.codec) || (s.bitrate ?? 0) >= 256,
-    }[this.aktiveGuete];
-
-    this.zeichneRegale(passt ? this.sender.filter(passt) : null);
+  setzeRegalFilter(regal) {
+    this.filter.regal = this.filter.regal === regal ? null : regal;
+    this.wendeFilterAn();
   }
 
   setzeEtikettFilter(etikett) {
-    this.aktivesEtikett = this.aktivesEtikett === etikett ? null : etikett;
-    this.aktiveGuete = null;
-    document.querySelectorAll('.guete-knopf').forEach(k => k.classList.remove('ist-aktiv'));
+    this.filter.etikett = this.filter.etikett === etikett ? null : etikett;
+    this.wendeFilterAn();
+  }
+
+  setzeSuche(text) {
+    this.filter.suche = text ?? '';
+    this.wendeFilterAn();
+  }
+
+  filterZuruecksetzen() {
+    this.filter = { guete: null, regal: null, etikett: null, suche: '' };
+    const feld = document.getElementById('suche');
+    if (feld) feld.value = '';
+    this.wendeFilterAn();
+  }
+
+  istGefiltert() {
+    const f = this.filter;
+    return !!(f.guete || f.regal || f.etikett || f.suche.trim());
+  }
+
+  /*
+   Die eine Stelle, an der gefiltert wird. Alle vier Dimensionen wirken
+   zusammen — jede fuer sich, keine loescht eine andere.
+  */
+  wendeFilterAn() {
+    const f = this.filter;
+
+    const gueteTest = {
+      // Verlustfrei oder ein Format, das bei gleicher Datenrate deutlich
+      // besser klingt als MP3
+      verlustfrei: x => ['flac', 'opus', 'vorbis'].includes(x.codec),
+      hoch:        x => x.codec === 'flac' || ['opus', 'vorbis'].includes(x.codec) || (x.bitrate ?? 0) >= 256,
+    }[f.guete];
+
+    const suchtext = f.suche.toLowerCase().trim();
+    const suchTest = (x) =>
+      x.name.toLowerCase().includes(suchtext) ||
+      (x.betreiber ?? '').toLowerCase().includes(suchtext) ||
+      (x.ort ?? '').toLowerCase().includes(suchtext) ||
+      (x.land ?? '').toLowerCase().includes(suchtext) ||
+      (x.kaertchen ?? '').toLowerCase().includes(suchtext) ||
+      (x.etiketten ?? []).some(e => e.toLowerCase().includes(suchtext));
+
+    const treffer = this.sender.filter(x =>
+      (!gueteTest || gueteTest(x)) &&
+      (!f.regal   || x.regal === f.regal) &&
+      (!f.etikett || (x.etiketten ?? []).includes(f.etikett)) &&
+      (!suchtext  || suchTest(x)));
+
+    document.querySelectorAll('.guete-knopf').forEach(k =>
+      k.classList.toggle('ist-aktiv', k.dataset.guete === f.guete));
+    document.querySelectorAll('.regal-knopf').forEach(k =>
+      k.classList.toggle('ist-aktiv', k.dataset.regal === f.regal));
     document.querySelectorAll('.etikett').forEach(k =>
-      k.classList.toggle('ist-aktiv', k.dataset.etikett === this.aktivesEtikett));
-    this.zeichneRegale(this.aktivesEtikett
-      ? this.sender.filter(s => (s.etiketten ?? []).includes(this.aktivesEtikett))
-      : null);
+      k.classList.toggle('ist-aktiv', k.dataset.etikett === f.etikett));
+
+    this.zeigeFilterstand(treffer.length);
+    this.zeichneRegale(this.istGefiltert() ? treffer : null);
+  }
+
+  zeigeFilterstand(anzahl) {
+    const kasten = document.getElementById('filterStand');
+    if (!kasten) return;
+    if (!this.istGefiltert()) { kasten.hidden = true; kasten.replaceChildren(); return; }
+
+    const text = document.createElement('span');
+    text.textContent = anzahl === 1
+      ? '1 Sender passt'
+      : `${anzahl} von ${this.sender.length} Sendern passen`;
+
+    const knopf = document.createElement('button');
+    knopf.type = 'button';
+    knopf.className = 'filter__zuruecksetzen';
+    knopf.textContent = 'Alle zeigen';
+    knopf.addEventListener('click', () => this.filterZuruecksetzen());
+
+    kasten.replaceChildren(text, knopf);
+    kasten.hidden = false;
   }
 
   // ── Anzeigen aktualisieren ───────────────────────────────────────
@@ -887,16 +987,9 @@ class App {
 
   // ── Suche ────────────────────────────────────────────────────────
   suche(eingabe) {
-    const s = eingabe.toLowerCase().trim();
-    if (!s) return this.ui.zeichneRegale();
-    const passt = (x) =>
-      x.name.toLowerCase().includes(s) ||
-      (x.betreiber ?? '').toLowerCase().includes(s) ||
-      (x.ort ?? '').toLowerCase().includes(s) ||
-      (x.land ?? '').toLowerCase().includes(s) ||
-      (x.kaertchen ?? '').toLowerCase().includes(s) ||
-      (x.etiketten ?? []).some(e => e.toLowerCase().includes(s));
-    this.ui.zeichneRegale(this.ui.sender.filter(passt));
+    // Fuettert denselben Filterzustand wie die Knoepfe. Vorher zeichnete die
+    // Suche direkt und verwarf dabei jede aktive Auswahl.
+    this.ui.setzeSuche(eingabe);
   }
 
   // ── MyRetuner ────────────────────────────────────────────────────
@@ -1059,6 +1152,12 @@ class App {
     document.getElementById('etiketten')?.addEventListener('click', (e) => {
       const knopf = e.target.closest('.etikett');
       if (knopf) this.ui.setzeEtikettFilter(knopf.dataset.etikett);
+    });
+    // Auf dem Behaelter, nicht je Knopf: Die Regal-Knoepfe entstehen erst
+    // beim Zeichnen, ein Knopf-weises Verdrahten liefe ins Leere.
+    document.getElementById('regalFilter')?.addEventListener('click', (e) => {
+      const knopf = e.target.closest('.regal-knopf');
+      if (knopf) this.ui.setzeRegalFilter(knopf.dataset.regal);
     });
     document.querySelectorAll('.guete-knopf').forEach(k =>
       k.addEventListener('click', () => this.ui.setzeGueteFilter(k.dataset.guete)));

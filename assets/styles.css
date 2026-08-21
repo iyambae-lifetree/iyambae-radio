@@ -383,6 +383,38 @@ body.spielt .platte { animation-play-state: running; }
 .guete-knopf.ist-aktiv { background: var(--blau); border-color: var(--blau); color: #fff; }
 .guete-knopf.ist-aktiv span { opacity: 0.85; }
 
+/* Regale sind die Genres dieses Ladens. Eigene Farbe, damit auf einen Blick
+   erkennbar ist, welche Art Filter gerade aktiv ist: Klang blau, Regal gold,
+   Stichwort neutral. */
+.filter__regale { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.regal-knopf {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    background: rgba(242, 183, 5, 0.10); color: var(--pink-hell);
+    border: 1px solid rgba(242, 183, 5, 0.28); border-radius: 999px;
+    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+    transition: all 0.15s ease;
+}
+.regal-knopf span { opacity: 0.6; font-size: 0.65rem; }
+.regal-knopf:hover { background: rgba(242, 183, 5, 0.2); }
+.regal-knopf.ist-aktiv { background: var(--pink); border-color: var(--pink); color: var(--grund); font-weight: 700; }
+.regal-knopf.ist-aktiv span { opacity: 0.75; }
+
+/* Der Filterstand. Ohne ihn weiß niemand, warum plötzlich wenig zu sehen ist —
+   das ist der häufigste Grund, warum Filter als kaputt empfunden werden. */
+.filter__stand {
+    display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise);
+    padding-top: 0.2rem;
+}
+.filter__zuruecksetzen {
+    padding: 0.24rem 0.7rem; border-radius: 999px; cursor: pointer;
+    background: none; color: var(--text-leise);
+    border: 1px solid var(--rand); font-family: var(--mono); font-size: 0.68rem;
+    transition: all 0.15s ease;
+}
+.filter__zuruecksetzen:hover { color: var(--text); border-color: var(--rand-hell); }
+
 .etiketten { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .etikett {
     display: inline-flex; align-items: center; gap: 0.35rem;
@@ -430,6 +462,32 @@ body.spielt .platte { animation-play-state: running; }
 }
 .karte__favorit:hover { color: var(--pink-hell); background: rgba(0, 0, 0, 0.6); }
 .karte__favorit.ist-favorit { color: var(--pink); }
+
+/* Klangqualität — gegenüber vom Herzen, auf derselben Höhe.
+   Die beiden gehören zusammen: wie es klingt, und ob ich es behalte.
+   Vier Stufen statt zwei, weil FLAC für audiophile Hörer etwas anderes ist
+   als 256 kbit/s — und Opus bei 128 besser klingt als MP3 bei 192. */
+.karte__guete {
+    position: absolute; top: 0.6rem; left: 0.6rem; z-index: 2;
+    padding: 0.16rem 0.5rem;
+    border-radius: 0.35rem;
+    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.02em;
+    background: rgba(0, 0, 0, 0.45);
+    color: var(--text-leise);
+    border: 1px solid transparent;
+    backdrop-filter: blur(3px);
+    cursor: help;
+}
+/* Verlustfrei ist der einzige Fall, der wirklich heraussticht — sonst wäre
+   die Abstufung wertlos. */
+.karte__guete--verlustfrei {
+    color: var(--gruen);
+    border-color: rgba(53, 224, 138, 0.55);
+    background: rgba(53, 224, 138, 0.16);
+}
+.karte__guete--gut         { color: var(--gruen); }
+.karte__guete--ordentlich  { color: var(--text); }
+.karte__guete--einfach     { color: var(--text-leise); opacity: 0.75; }
 
 /* Das Senderbild: der Eyecatcher, der aus einem Textkasten eine Hülle macht */
 .karte__bild {
