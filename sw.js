@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v10';
+const SW_VERSION = 'iyambae-v11';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -35,6 +35,7 @@ const SHELL_FILES = [
     './assets/lib/wochentipp.mjs',
     './assets/lib/senderbild.mjs',
     './assets/lib/aktualisierung.mjs',
+    './assets/lib/fehlerbericht.mjs',
     // MyRetuners Signalkern. Der Worklet wird nicht importiert, sondern per
     // addModule geladen, und die .wasm per fetch — beides sieht der
     // import-Ausdruck nicht. Scripts/pruefe-shell-dateien.py prueft deshalb

@@ -13,12 +13,16 @@ import { frageMyRetuner, wartAufEinwilligung, anzeigeStimmung, anzeigeQuelle, ZU
 import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
 import { senderbild, hatEigenesLogo, regalton, MARKE } from './lib/senderbild.mjs';
 import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
+import { beobachteFehler } from './lib/fehlerbericht.mjs';
 
 // ── Katalog laden ──────────────────────────────────────────────────
 const antwort = await fetch('./data/sender.json');
 if (!antwort.ok) throw new Error('Katalog nicht ladbar: ' + antwort.status);
 const KATALOG = await antwort.json();
 const REGALE = KATALOG.regale;
+// Fuer die Zuordnung von Fehlerberichten. Der Katalog traegt ohnehin eine
+// Fassung, und sie steigt mit jeder Auslieferung.
+const FASSUNG = KATALOG._version ?? 'unbekannt';
 const SENDER = KATALOG.sender.filter(s => s.status !== 'tot');
 
 // ── Örtlicher Speicher ─────────────────────────────────────────────
@@ -791,6 +795,37 @@ class UI {
     });
   }
 
+  /*
+   Eine Ruecksicht, die stehen bleibt, bis der Besucher entscheidet.
+
+   Anders als `meldung()`: kein Zeitablauf. Fuer Fragen, die eine Antwort
+   brauchen — Fehlerbericht senden, neue Fassung laden. Wer nicht antwortet,
+   hat damit auch geantwortet: Es passiert nichts.
+  */
+  frage(text, aktionen) {
+    const behaelter = document.getElementById('meldungen');
+    if (!behaelter) return;
+
+    const kasten = document.createElement('div');
+    kasten.className = 'meldung meldung--info meldung--bleibt';
+    kasten.setAttribute('role', 'status');
+
+    const zeile = document.createElement('span');
+    zeile.textContent = text;
+    kasten.append(zeile);
+
+    for (const a of aktionen) {
+      const knopf = document.createElement('button');
+      knopf.type = 'button';
+      knopf.className = 'meldung__knopf' + (a.haupt ? '' : ' meldung__knopf--leise');
+      knopf.textContent = a.text;
+      knopf.addEventListener('click', () => { kasten.remove(); a.tun?.(); });
+      kasten.append(knopf);
+    }
+
+    behaelter.appendChild(kasten);
+  }
+
   meldung(text, art = 'info') {
     const behaelter = document.getElementById('meldungen');
     const el = document.createElement('div');
@@ -862,6 +897,13 @@ class App {
       spieltGerade: () => this.engine.laeuft,
       melde: (text, art) => this.ui.meldung(text, art),
     });
+
+    /*
+     Fehlerberichte. Gefragt wird erst, wenn wirklich ein Fehler auftritt —
+     eine Einwilligungsfrage beim ersten Besuch betraefe etwas, das
+     vielleicht nie passiert, und staende zwischen Besucher und Musik.
+    */
+    beobachteFehler({ fassung: FASSUNG, melde: this.ui });
   }
 
   /*
