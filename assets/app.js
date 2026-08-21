@@ -657,17 +657,13 @@ class UI {
     const faecher = this.regale.filter(r => (proRegal.get(r.id) ?? []).length);
     raster.innerHTML = faecher.map(r => {
       const drin = proRegal.get(r.id);
-      const bilder = regalmosaik(drin);
+      // Nur die blanke Zahl. Sie braucht keine Uebersetzung und steht in
+      // jeder der sieben Sprachen richtig da.
       return `
         <button class="regalfach" data-regal="${r.id}" style="--regalton:${REGALTON[r.id] ?? REGALTON.grenzgaenger}"
                 title="${r.beschreibung ?? ''}">
-          <div class="regalfach__mosaik">
-            ${bilder.map(b => `<img src="${b}" alt="" loading="lazy" width="256" height="256">`).join('')}
-          </div>
-          <div class="regalfach__text">
-            <span class="regalfach__name">${r.name}</span>
-            <span class="regalfach__zahl">${t('regalwand.sender', { anzahl: drin.length })}</span>
-          </div>
+          <span class="regalfach__name">${r.name}</span>
+          <span class="regalfach__zahl">${drin.length}</span>
         </button>`;
     }).join('');
 
@@ -676,13 +672,40 @@ class UI {
 
     raster.onclick = (e) => {
       const fach = e.target.closest('.regalfach');
-      if (!fach) return;
-      this.setzeRegalFilter(fach.dataset.regal);
-      // Zum Ergebnis fuehren, aber unter die klebende Leiste — sonst steht
-      // die erste Reihe Huellen dahinter.
-      document.getElementById('regale')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (fach) this.springZuRegal(fach.dataset.regal);
     };
+  }
+
+  /*
+   Ein Regalknopf filtert nicht — er fuehrt hin.
+
+   Vorher blendete ein Druck alle anderen Sender aus. Im Plattenladen
+   verschwinden die anderen Tische aber nicht, wenn man sich vor einen
+   stellt; man geht hinueber und sieht die uebrigen weiter aus dem
+   Augenwinkel. Genau das soll der Knopf tun.
+
+   Steht noch ein Filter, wird er vorher aufgehoben: Sonst fuehrt der Knopf
+   an eine Stelle, die es gerade nicht gibt.
+  */
+  springZuRegal(id) {
+    miss('regal', { regal: id });
+    const hin = () => {
+      const reihe = document.querySelector(`#regale .regal[data-regal="${id}"]`);
+      if (!reihe) return;
+      // Wer reduzierte Bewegung eingestellt hat, will nicht durch drei
+      // Bildschirmhoehen gefahren werden — der springt.
+      const magBewegung = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      reihe.scrollIntoView({ behavior: magBewegung ? 'smooth' : 'auto', block: 'start' });
+      reihe.classList.remove('wird-angesteuert');
+      void reihe.offsetWidth;            // erzwingt den Neustart der Animation
+      reihe.classList.add('wird-angesteuert');
+    };
+    if (this.istGefiltert?.() ?? false) {
+      this.filterZuruecksetzen();
+      requestAnimationFrame(() => requestAnimationFrame(hin));
+    } else {
+      hin();
+    }
   }
 
   // ── Regale ───────────────────────────────────────────────────────
@@ -1668,10 +1691,22 @@ class App {
     const knopf432 = document.getElementById('knopf432');
     if (knopf432) {
       knopf432.disabled = this.myRetunerAktiv;
-      knopf432.querySelector('span:last-child').textContent =
+      knopf432.querySelector('.stimmung__wort').textContent =
         this.myRetunerAktiv ? t('kopf.432.myretuner')
                             : t(this.engine.ist432An ? 'kopf.432.an' : 'kopf.432.aus');
-      knopf432.classList.toggle('ist-an', this.engine.ist432An && !this.myRetunerAktiv);
+      const an = this.engine.ist432An && !this.myRetunerAktiv;
+      knopf432.classList.toggle('ist-an', an);
+      knopf432.setAttribute('aria-checked', String(an));
+      /*
+       Erst wenn die Stimmung wirklich an ist, wird darunter etwas sichtbar.
+       Vorher ist „Ich habe MyRetuner" eine Frage nach einem Ding, von dem
+       der Besucher noch nie gehoert hat — und ein Hinweis auf eine App die
+       Antwort auf eine Frage, die er nicht gestellt hat.
+
+       Angezeigt wird auch, solange MyRetuner selbst stimmt: Dann steht dort
+       die gemessene Tonhoehe, und die ist der eigentliche Beleg.
+      */
+      document.body.classList.toggle('stimmt-432', an || this.myRetunerAktiv);
     }
     /*
      Frueher stand hier die Beschriftung des zweiten Knopfes. Der ist kein

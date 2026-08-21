@@ -1,5 +1,5 @@
 {
-  "seite.titel": "IYAMBAE Radio — la cabina de escucha de una tienda de discos",
+  "seite.titel": "IYAMBAE Radio — la cabina de escucha de una tienda de discos, en 432 Hz",
   "seite.beschreibung": "IYAMBAE Radio — una tienda de discos escogida a mano que se recorre escuchando. 146 emisoras de 31 países: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
   "laden.hinweis": "Abriendo la tienda de discos …",
   "kopf.marke": "IYAMBAE Radio",
@@ -18,7 +18,7 @@
   "hero.guete.bitrate": "{codec} {bitrate} kbit/s",
   "hero.pegel.live": " · niveles en vivo",
   "hero.pegel.simuliert": " · niveles aproximados",
-  "hero.name.start": "Bienvenida",
+  "hero.name.start": "Radio en 432 Hz",
   "hero.ort.start": "146 emisoras de 31 países, en once cajones",
   "hero.kaertchen.start": "Pon un disco — o deja caer la aguja y mira dónde cae.",
   "hero.knopf.abspielen": "Reproducir",
@@ -145,5 +145,6 @@
   "einstellungen.fehler.was": "Cuando algo falla, se te pregunta si el informe puede enviarse. Aquí puedes retirar un consentimiento ya dado.",
   "einstellungen.nachwort": "Lo que se guarda, y durante cuánto tiempo, está en la <a href=\"/recht/datenschutz/\" hreflang=\"de\">política de privacidad</a> (en alemán).",
   "einstellungen.messungAn": "La medición de audiencia está activada.",
-  "einstellungen.messungAus": "La medición de audiencia está desactivada."
+  "einstellungen.messungAus": "La medición de audiencia está desactivada.",
+  "stimmung.erklaerung": "Lo especial de este sitio: cada emisora puede sonar en 432 Hz en vez de los 440 habituales."
 }

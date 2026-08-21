@@ -1,5 +1,5 @@
 {
-  "seite.titel": "راديو IYAMBAE — متجر أسطوانات للاستماع",
+  "seite.titel": "راديو IYAMBAE — متجر أسطوانات للاستماع، بتردد 432 هرتز",
   "seite.beschreibung": "راديو IYAMBAE — متجر أسطوانات منتقى بعناية، تتصفّحه بالاستماع. 146 محطة من 31 بلدًا: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
   "laden.hinweis": "يُفتح متجر الأسطوانات …",
   "kopf.marke": "IYAMBAE Radio",
@@ -18,7 +18,7 @@
   "hero.guete.bitrate": "{codec} {bitrate} kbit/s",
   "hero.pegel.live": " · المستويات مباشرة",
   "hero.pegel.simuliert": " · المستويات تقريبية",
-  "hero.name.start": "أهلًا بك",
+  "hero.name.start": "راديو بتردد 432 هرتز",
   "hero.ort.start": "146 محطة من 31 بلدًا، على أحد عشر رفًا",
   "hero.kaertchen.start": "ضع أسطوانة على المشغّل — أو أنزِل الإبرة وانظر أين تحطّ.",
   "hero.knopf.abspielen": "تشغيل",
@@ -145,5 +145,6 @@
   "einstellungen.fehler.was": "عند حدوث عطل، يُسأل عمّا إذا كان يجوز إرسال التقرير. وهنا يمكنك سحب موافقة سبق أن منحتها.",
   "einstellungen.nachwort": "ما يُحفَظ ومدّة حفظه مذكوران في <a href=\"/recht/datenschutz/\" hreflang=\"de\">سياسة الخصوصية</a> (بالألمانية).",
   "einstellungen.messungAn": "قياس الاستخدام مفعّل.",
-  "einstellungen.messungAus": "قياس الاستخدام متوقف."
+  "einstellungen.messungAus": "قياس الاستخدام متوقف.",
+  "stimmung.erklaerung": "ما يميّز هذا المكان: كل محطة يمكن أن تُشغَّل بتردد 432 هرتز بدلًا من 440 المعتادة."
 }

@@ -1,5 +1,5 @@
 {
-  "seite.titel": "IYAMBAE Radio — 耳で掘るレコード店",
+  "seite.titel": "IYAMBAE Radio — 耳で掘るレコード店、432 Hz で",
   "seite.beschreibung": "IYAMBAE Radio — 一枚ずつ選んだ、耳で掘るレコード店。31カ国 146局、十一の棚：Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste。",
   "laden.hinweis": "店の鍵を開けています …",
   "kopf.marke": "IYAMBAE Radio",
@@ -18,7 +18,7 @@
   "hero.guete.bitrate": "{codec} {bitrate} kbit/s",
   "hero.pegel.live": " · レベルは実測",
   "hero.pegel.simuliert": " · レベルは擬似",
-  "hero.name.start": "ようこそ",
+  "hero.name.start": "432 Hz のラジオ",
   "hero.ort.start": "31カ国 146局、十一の棚に",
   "hero.kaertchen.start": "一枚かけてみてください。あるいは針を落として、どこに当たるか見てください。",
   "hero.knopf.abspielen": "再生",
@@ -145,5 +145,6 @@
   "einstellungen.fehler.was": "不具合が起きたときに、報告を送ってよいか確認します。一度与えた同意は、ここで取り消せます。",
   "einstellungen.nachwort": "何がどれだけの期間保存されるかは<a href=\"/recht/datenschutz/\" hreflang=\"de\">プライバシーポリシー</a>（ドイツ語）に書いてあります。",
   "einstellungen.messungAn": "利用状況の計測はオンです。",
-  "einstellungen.messungAus": "利用状況の計測はオフです。"
+  "einstellungen.messungAus": "利用状況の計測はオフです。",
+  "stimmung.erklaerung": "ここだけの特徴：どの局も、通常の 440 Hz ではなく 432 Hz で鳴らせます。"
 }

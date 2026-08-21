@@ -1,5 +1,5 @@
 {
-  "seite.titel": "IYAMBAE Radio — la cabine d'écoute d'un disquaire",
+  "seite.titel": "IYAMBAE Radio — la cabine d'écoute d'un disquaire, en 432 Hz",
   "seite.beschreibung": "IYAMBAE Radio — un disquaire trié à la main, que l'on parcourt à l'oreille. 146 stations de 31 pays : Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
   "laden.hinweis": "On ouvre chez le disquaire …",
   "kopf.marke": "IYAMBAE Radio",
@@ -18,7 +18,7 @@
   "hero.guete.bitrate": "{codec} {bitrate} kbit/s",
   "hero.pegel.live": " · niveaux en direct",
   "hero.pegel.simuliert": " · niveaux approchés",
-  "hero.name.start": "Bienvenue",
+  "hero.name.start": "La radio en 432 Hz",
   "hero.ort.start": "146 stations de 31 pays, dans onze bacs",
   "hero.kaertchen.start": "Mets un disque — ou laisse tomber le diamant et vois où il se pose.",
   "hero.knopf.abspielen": "Lire",
@@ -145,5 +145,6 @@
   "einstellungen.fehler.was": "Quand quelque chose casse, on vous demande si le rapport peut être envoyé. Ici, vous pouvez retirer un consentement déjà donné.",
   "einstellungen.nachwort": "Ce qui est conservé, et pendant combien de temps, figure dans la <a href=\"/recht/datenschutz/\" hreflang=\"de\">politique de confidentialité</a> (en allemand).",
   "einstellungen.messungAn": "La mesure d'audience est activée.",
-  "einstellungen.messungAus": "La mesure d'audience est désactivée."
+  "einstellungen.messungAus": "La mesure d'audience est désactivée.",
+  "stimmung.erklaerung": "La particularité d'ici : chaque station peut jouer en 432 Hz au lieu des 440 habituels."
 }
