@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v19';
+const SW_VERSION = 'iyambae-v20';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -52,6 +52,7 @@ const SHELL_FILES = [
     '/assets/lib/senderbild.mjs',
     '/assets/lib/symbole.mjs',
     '/assets/lib/achsen.mjs',
+    '/assets/lib/messung.mjs',
     '/assets/lib/sprache.mjs',
     '/assets/lib/aktualisierung.mjs',
     '/assets/lib/fehlerbericht.mjs',
@@ -120,6 +121,19 @@ self.addEventListener('fetch', (event) => {
     // die Schriften im eigenen Haus liegen. Damit faellt auch der
     // stale-while-revalidate-Zweig ganz unten weg.
     if (url.origin !== self.location.origin) return;
+
+    /*
+     /api/ und /messung fasst der Worker NICHT an.
+
+     Das ist keine Feinheit, sondern verhindert eine Datenpanne: Unter /api/
+     liegt die Merkliste eines angemeldeten Menschen. Legte der Worker die
+     Antwort ab, bekaeme sie der naechste am selben Geraet vorgesetzt — auch
+     nach dem Abmelden. Auf einem Familien-Tablett waere das genau das.
+
+     /messung steht aus einem anderen Grund hier: Eine zwischengespeicherte
+     Messung waere eine Zahl, die zweimal gezaehlt wird.
+    */
+    if (url.pathname.startsWith('/api/') || url.pathname === '/messung') return;
 
     // Eigene Dateien: erst das Netz, dann der Zwischenspeicher.
     //

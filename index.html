@@ -280,9 +280,75 @@
     <nav class="fuss__recht" data-aria="fuss.recht.bereich" aria-label="Rechtliches">
         <a href="/recht/impressum/" hreflang="de" data-text="fuss.impressum">Impressum</a>
         <a href="/recht/datenschutz/" hreflang="de" data-text="fuss.datenschutz">Datenschutz</a>
-        <button class="fuss__widerruf" id="widerrufFehler" hidden
-                data-text="fuss.widerruf">Fehlerberichte nicht mehr senden</button>
+        <button class="fuss__widerruf" id="einstellungenAuf"
+                data-text="fuss.einstellungen">Datenschutz-Einstellungen</button>
     </nav>
+
+<!-- Die Einstellungen.
+
+     KEIN blockierender Banner, und das ist eine Entscheidung mit Begründung:
+     § 25 Abs. 2 Nr. 2 TDDDG befreit alles, was für den ausdrücklich
+     gewünschten Dienst unbedingt erforderlich ist — und was diese Seite sonst
+     tut, speichert nichts auf dem Gerät und liest nichts von dort. Damit gibt
+     es nichts, wofür eine Einwilligung nötig wäre.
+
+     Die DSK-Orientierungshilfe „Digitale Dienste" (Nov. 2024) warnt in Rz. 116
+     ausdrücklich davor, Banner zu zeigen, wo keine Einwilligung nötig ist:
+     Sie gewöhnen Menschen ans Wegklicken und entwerten die Einwilligung da,
+     wo sie zählt.
+
+     Also kein Vorhang vor der Musik, sondern ein Schalter im Fuß — für die,
+     die ihn suchen. -->
+<dialog class="einstellungen" id="einstellungen" data-aria="fuss.einstellungen.bereich" aria-label="Datenschutz-Einstellungen">
+    <div class="filter-panel__kopf">
+        <h2 class="filter-panel__titel" data-text="fuss.einstellungen">Datenschutz-Einstellungen</h2>
+        <button class="filter-panel__zu" id="einstellungenZu"
+                data-aria="filter.panel.schliessen" aria-label="Schließen">
+            <span data-symbol="zu" data-symbol-groesse="18"></span>
+        </button>
+    </div>
+
+    <div class="einstellungen__inhalt">
+        <p class="einstellungen__vorwort" data-text="einstellungen.vorwort">Diese Seite setzt keine Werbe- oder Verfolgungsplätzchen. Was hier steht, kannst du trotzdem abschalten.</p>
+
+        <div class="einstellungen__punkt">
+            <div class="einstellungen__text">
+                <p class="einstellungen__name" data-text="einstellungen.noetig.titel">Notwendig</p>
+                <p class="einstellungen__was" data-text="einstellungen.noetig.was">Deine Sprache, die 432-Hz-Einstellung, die Lautstärke und diese Auswahl hier. Ohne das wüsste die Seite bei jedem Besuch wieder nichts von dir.</p>
+            </div>
+            <span class="einstellungen__fest" data-text="einstellungen.immer">immer an</span>
+        </div>
+
+        <div class="einstellungen__punkt">
+            <div class="einstellungen__text">
+                <p class="einstellungen__name" data-text="einstellungen.messung.titel">Reichweitenmessung</p>
+                <p class="einstellungen__was" data-text="einstellungen.messung.was">Welcher Sender gestartet wird und welche Filter greifen — ohne Kennung, ohne Plätzchen, mit gekürzter Adresse. Auf dem eigenen Server, nicht bei einem Dritten.</p>
+            </div>
+            <label class="schieber">
+                <input type="checkbox" id="schalterMessung" checked>
+                <span class="schieber__bahn"><span class="schieber__knopf"></span></span>
+            </label>
+        </div>
+
+        <div class="einstellungen__punkt">
+            <div class="einstellungen__text">
+                <p class="einstellungen__name" data-text="einstellungen.fehler.titel">Fehlerberichte</p>
+                <p class="einstellungen__was" data-text="einstellungen.fehler.was">Wenn etwas kaputtgeht, wird gefragt, ob der Bericht gesendet werden darf. Hier kannst du eine erteilte Zustimmung zurücknehmen.</p>
+            </div>
+            <label class="schieber">
+                <input type="checkbox" id="schalterFehler">
+                <span class="schieber__bahn"><span class="schieber__knopf"></span></span>
+            </label>
+        </div>
+
+        <p class="einstellungen__nachwort" data-html="einstellungen.nachwort">Was gespeichert wird und wie lange, steht in der <a href="/recht/datenschutz/" hreflang="de">Datenschutzerklärung</a>.</p>
+    </div>
+
+    <div class="filter-panel__fuss">
+        <span class="filter-panel__stand"></span>
+        <button class="knopf knopf--gross" id="einstellungenFertig" data-text="filter.panel.fertig">Fertig</button>
+    </div>
+</dialog>
 </footer>
 
 <div class="spieler" id="spieler">

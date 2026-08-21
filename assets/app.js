@@ -20,6 +20,7 @@ import { leererFilter, istGefiltert, anzahlAktiv, wendeAn, vorschau,
 import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 import { beobachteFehler, einwilligungsstand, widerrufeEinwilligung }
   from './lib/fehlerbericht.mjs';
+import { miss, messungLaeuft, setzeMessung } from './lib/messung.mjs';
 import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t }
   from './lib/sprache.mjs';
 
@@ -720,7 +721,19 @@ class UI {
     */
     const magBewegung = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (document.startViewTransition && magBewegung && this._schonGezeichnet) {
-      document.startViewTransition(zeichne);
+      /*
+       Die Zusagen abfangen, sonst schreibt der Browser in die Konsole.
+
+       Wer zwei Filterchips schnell hintereinander anklickt, bricht den
+       laufenden Uebergang ab. Der Browser lehnt dann `finished` mit
+       "Transition was skipped" ab — das ist kein Fehler, sondern genau das
+       gewuenschte Verhalten. Unbehandelt landet es aber als Fehler in der
+       Konsole und, schlimmer, im Fehlerbericht: Ein Bericht ueber etwas,
+       das richtig laeuft, verstellt den Blick auf die echten.
+      */
+      const uebergang = document.startViewTransition(zeichne);
+      uebergang.finished.catch(() => {});
+      uebergang.updateCallbackDone.catch(() => {});
     } else {
       zeichne();
     }
@@ -1087,6 +1100,9 @@ class UI {
   }
 
   schalteFilter(achse, wert) {
+    // Mit der Trefferzahl: Ein Filter, der immer ins Leere fuehrt, ist ein
+    // Gestaltungsfehler — und einer, den man ohne Messung nie bemerkt.
+    miss('filter', { achse, wert, treffer: this._letzteTreffer ?? 0 });
     const f = this.filter;
     if (achse === 'etikett') f.etiketten.has(wert) ? f.etiketten.delete(wert) : f.etiketten.add(wert);
     else if (achse === 'region') f.regionen.has(wert) ? f.regionen.delete(wert) : f.regionen.add(wert);
@@ -1096,7 +1112,10 @@ class UI {
     this.wendeFilterAn();
   }
 
-  setzeRegalFilter(regal) { this.schalteFilter('regal', regal); }
+  setzeRegalFilter(regal) {
+    miss('regal', { regal });
+    this.schalteFilter('regal', regal);
+  }
 
   setzeSuche(text) {
     this.filter.suche = text ?? '';
@@ -1121,6 +1140,7 @@ class UI {
     document.querySelectorAll('.regalfach').forEach(k =>
       k.classList.toggle('ist-aktiv', k.dataset.regal === this.filter.regal));
 
+    this._letzteTreffer = treffer.length;
     this.zeigeFilterstand(treffer.length);
     this.zeichneRegale(this.istGefiltert() ? treffer : null);
   }
@@ -1455,6 +1475,9 @@ class App {
     if (!optionen.still) {
       zaehleGehoert(sender.id);
       merkeZuletzt(sender.id);
+      // Die eine Zahl, die ein Radio wirklich braucht: Wird der Sender
+      // ueberhaupt gestartet? Wer nichts startet, hat nichts gefunden.
+      miss('start', { sender: sender.id });
       this.aktualisiereGriff();
       this.ui.zeichneVerlauf();
     }
@@ -1746,44 +1769,44 @@ class App {
     anKlick('filterPanelLeeren',   () => this.ui.filterZuruecksetzen());
 
     /*
-     Der Widerruf der Fehlerbericht-Einwilligung.
+     Die Datenschutz-Einstellungen.
 
-     Er steht nur da, wenn eingewilligt wurde. Ein Widerrufsknopf fuer etwas,
-     das niemand gegeben hat, waere eine Frage ohne Anlass — und wuerde
-     obendrein verraten, dass es diese Sammlung gibt, bevor sie je stattfand.
+     Ein natives <dialog> wie das Filterpanel — Fokusfang, Escape und
+     Verdunkler kommen vom Browser. Kein Banner beim ersten Besuch: Es gibt
+     hier nichts, wofuer eine Einwilligung noetig waere, und ein Banner ohne
+     Anlass gewoehnt Menschen nur ans Wegklicken.
     */
-    const widerruf = document.getElementById('widerrufFehler');
-    if (widerruf) {
-      const zeige = () => { widerruf.hidden = einwilligungsstand() !== 'erlaubt'; };
-      zeige();
-      widerruf.addEventListener('click', () => {
-        widerrufeEinwilligung();
-        zeige();
-        this.ui.meldung(t('fuss.widerrufen'));
+    const einst = document.getElementById('einstellungen');
+    if (einst) {
+      const schalterM = document.getElementById('schalterMessung');
+      const schalterF = document.getElementById('schalterFehler');
+      const zeige = () => {
+        if (schalterM) schalterM.checked = messungLaeuft();
+        // Der Fehlerschalter zeigt den Ist-Zustand. Er laesst sich nur AUS-
+        // schalten: Zustimmung wird im Fehlerfall gefragt, nicht auf Vorrat
+        // erteilt.
+        if (schalterF) {
+          schalterF.checked = einwilligungsstand() === 'erlaubt';
+          schalterF.disabled = einwilligungsstand() !== 'erlaubt';
+        }
+      };
+      anKlick('einstellungenAuf', () => { zeige(); einst.showModal(); });
+      anKlick('einstellungenZu', () => einst.close());
+      anKlick('einstellungenFertig', () => einst.close());
+      einst.addEventListener('click', (e) => { if (e.target === einst) einst.close(); });
+      schalterM?.addEventListener('change', (e) => {
+        setzeMessung(e.target.checked);
+        this.ui.meldung(t(e.target.checked ? 'einstellungen.messungAn' : 'einstellungen.messungAus'));
+      });
+      schalterF?.addEventListener('change', (e) => {
+        if (!e.target.checked) {
+          widerrufeEinwilligung();
+          zeige();
+          this.ui.meldung(t('fuss.widerrufen'));
+        }
       });
     }
 
-    /*
-     Das Filterpanel ist ein natives <dialog>.
-
-     showModal() bringt mit, was man sonst von Hand nachbaut und dabei falsch
-     macht: Der Fokus bleibt gefangen, Escape schliesst, der Rest der Seite
-     wird fuer Vorlesestimmen unsichtbar, und der Verdunkler kommt aus dem
-     Browser statt aus einem eigenen Element mit geratenem z-index.
-    */
-    const panel = document.getElementById('filterPanel');
-    const filterKnopf = document.getElementById('filterKnopf');
-    if (panel && filterKnopf) {
-      const auf = () => { panel.showModal(); filterKnopf.setAttribute('aria-expanded', 'true'); };
-      const zu = () => panel.close();
-      filterKnopf.addEventListener('click', auf);
-      anKlick('filterPanelZu', zu);
-      anKlick('filterPanelFertig', zu);
-      panel.addEventListener('close', () => filterKnopf.setAttribute('aria-expanded', 'false'));
-      // Klick auf den Verdunkler schliesst. Der Verdunkler IST der Dialog —
-      // ein Treffer ausserhalb des Inhalts landet auf ihm selbst.
-      panel.addEventListener('click', (e) => { if (e.target === panel) zu(); });
-    }
     anKlick('heroFavorit',       () => { if (this.ui.aktuelleId) this.ui.toggleFavorit(this.ui.aktuelleId); });
 
     /*

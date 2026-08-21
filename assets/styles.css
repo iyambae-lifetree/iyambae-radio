@@ -1304,6 +1304,88 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     transition: color 0.18s ease, border-color 0.18s ease;
 }
 .fuss__widerruf[hidden] { display: none; }
+
+/* ── Datenschutz-Einstellungen ───────────────────────────────────
+   Dieselbe Bauart wie das Filterpanel: ein natives <dialog>, dieselbe
+   Kopf- und Fußzeile, derselbe Reiter am Rand. Ein zweites Aussehen für
+   dasselbe Verhalten wäre genau die Uneinheitlichkeit, die weg sollte. */
+.einstellungen {
+    width: min(34rem, 100vw);
+    max-height: 85dvh;
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--rand-hell);
+    border-radius: var(--rund);
+    background: var(--grund-hoch);
+    color: var(--text);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+.einstellungen::backdrop { background: rgba(5, 2, 10, 0.72); backdrop-filter: blur(3px); }
+.einstellungen__inhalt {
+    display: grid; gap: 0.9rem;
+    padding: 1.1rem;
+    overflow-y: auto;
+    max-height: calc(85dvh - 9rem);
+    overscroll-behavior: contain;
+}
+.einstellungen__vorwort,
+.einstellungen__nachwort { font-size: 0.86rem; color: var(--text-leise); line-height: 1.55; }
+.einstellungen__nachwort a { color: var(--pink-hell); }
+
+.einstellungen__punkt {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 0.85rem 1rem;
+    background: var(--karte);
+    border: 1px solid var(--rand);
+    border-inline-start: 3px solid var(--rand-hell);
+    border-radius: var(--rund);
+}
+.einstellungen__text { flex: 1; min-width: 0; }
+.einstellungen__name { font-weight: 600; font-size: 0.92rem; }
+.einstellungen__was {
+    font-size: 0.8rem; color: var(--text-leise); line-height: 1.5;
+    margin-top: 0.2rem;
+}
+.einstellungen__fest {
+    flex: none;
+    font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise);
+    padding-top: 0.2rem;
+}
+
+/* Der Schieber. Rund, weil er einen Kippschalter abbildet — dieselbe
+   Ausnahme wie beim Drehknopf am Spieler. */
+.schieber { flex: none; cursor: pointer; padding-top: 0.1rem; }
+.schieber input { position: absolute; opacity: 0; width: 0; height: 0; }
+.schieber__bahn {
+    display: block;
+    width: 2.6rem; height: 1.5rem;
+    background: var(--rand-hell);
+    border-radius: 999px;
+    transition: background-color 0.18s ease;
+}
+.schieber__knopf {
+    display: block;
+    width: 1.1rem; height: 1.1rem;
+    margin: 0.2rem;
+    background: var(--text);
+    border-radius: 50%;
+    transition: transform 0.18s ease;
+}
+.schieber input:checked + .schieber__bahn { background: var(--pink); }
+.schieber input:checked + .schieber__bahn .schieber__knopf {
+    transform: translateX(1.1rem);
+    background: var(--grund);
+}
+.schieber input:disabled + .schieber__bahn { opacity: 0.4; }
+.schieber input:focus-visible + .schieber__bahn {
+    outline: 2px solid var(--pink); outline-offset: 2px;
+}
+[dir="rtl"] .schieber input:checked + .schieber__bahn .schieber__knopf {
+    transform: translateX(-1.1rem);
+}
+
+@media (pointer: coarse) { .schieber__bahn { width: 3rem; height: 1.75rem; } }
 .fuss__widerruf:hover { color: var(--text); border-color: var(--rand-hell); }
 
 .fuss__test {
