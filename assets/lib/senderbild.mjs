@@ -3,10 +3,19 @@
 // Hat er ein eigenes Logo, gilt das. Hat er keins, erscheint die
 // IYAMBAE-Marke: im Plattenladen ist das die Hausmarke auf der Testpressung.
 
-export const MARKE = 'assets/logo/iyambae-marke.svg';
+export const MARKE = '/assets/logo/iyambae-marke.svg';
 
+/*
+ Die Adressen in data/sender.json stehen ohne fuehrenden Schraegstrich
+ (assets/logos/xyz.webp). Seit die Seite unter /de/, /en/, /fr/ … liegt,
+ suchte der Browser sie unter /de/assets/logos/ — 95 Bilder auf einen
+ Schlag weg. Der Schraegstrich kommt deshalb hier dazu und nicht in die
+ Daten: Die Daten beschreiben den Sender, nicht die Wegfuehrung.
+*/
 export function senderbild(sender) {
-  return sender?.logo || MARKE;
+  const bild = sender?.logo;
+  if (!bild) return MARKE;
+  return bild.startsWith('/') || bild.startsWith('http') ? bild : '/' + bild;
 }
 
 export function hatEigenesLogo(sender) {

@@ -16,16 +16,23 @@ import { senderbild, hatEigenesLogo, regalton, REGALTON, MARKE, huellenzeilen,
 import { symbol, setzeSymbole } from './lib/symbole.mjs';
 import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 import { beobachteFehler } from './lib/fehlerbericht.mjs';
-import { ladeSprache, uebersetzeDokument, t } from './lib/sprache.mjs';
+import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t }
+  from './lib/sprache.mjs';
 
 // ── Sprache ────────────────────────────────────────────────────────
 // Zuerst, denn alles darunter schlaegt seine Texte hier nach. Die festen
 // Texte im Dokument werden in einem Zug ersetzt, bevor der Ladeschirm faellt.
 await ladeSprache();
 uebersetzeDokument();
+/*
+ Der Umschalter wird gebaut, nicht ausgeliefert: Seine Verweise haengen von
+ der Adresse ab, auf der man gerade steht — wer /fr/?los=meine liest, soll
+ beim Wechsel auf /ja/?los=meine landen und nicht auf der Startseite.
+*/
+baueSprachumschalter(document.getElementById('sprachwahl'));
 
 // ── Katalog laden ──────────────────────────────────────────────────
-const antwort = await fetch('./data/sender.json');
+const antwort = await fetch('/data/sender.json');
 if (!antwort.ok) throw new Error('Katalog nicht ladbar: ' + antwort.status);
 const KATALOG = await antwort.json();
 const REGALE = KATALOG.regale;
@@ -193,8 +200,8 @@ class AudioEngine {
     if (this._retuner || !this._audioCtx?.audioWorklet) return false;
     try {
       const [, antwort] = await Promise.all([
-        this._audioCtx.audioWorklet.addModule('./assets/lib/retuner-worklet.js'),
-        fetch('./assets/wasm/retuner.wasm'),
+        this._audioCtx.audioWorklet.addModule('/assets/lib/retuner-worklet.js'),
+        fetch('/assets/wasm/retuner.wasm'),
       ]);
       if (!antwort.ok) throw new Error('wasm ' + antwort.status);
       const bytes = await antwort.arrayBuffer();

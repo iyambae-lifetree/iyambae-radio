@@ -6,23 +6,30 @@
     <title data-text="seite.titel">IYAMBAE Radio — ein Plattenladen zum Zuhören</title>
     <meta name="description" data-inhalt="seite.beschreibung" content="IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 129 Sender aus 29 Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Fundstücke, Freakshow, Rückspiegel.">
     <meta name="theme-color" content="#F2B705">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/de/manifest.webmanifest">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/styles.css">
+    <!-- Arabisch. Inter, Orbitron und JetBrains Mono haben keine arabischen
+         Glyphen; ohne diese beiden fiele /ar/ auf eine Systemschrift zurueck
+         und risse das Schriftbild auseinander. Geladen wird nur, was die
+         arabische Fassung braucht — media="..." greift hier nicht, deshalb
+         entscheidet der Erzeuger: Scripts/baue-sprachen.py entfernt die Zeile
+         aus allen Seiten ausser /ar/. -->
+    <link id="schriftArabisch" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Noto+Kufi+Arabic:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/styles.css">
 </head>
 <body>
 
 <div class="ladeschirm" id="ladeschirm">
-    <img class="ladeschirm__marke" src="assets/logo/iyambae-marke.svg" alt="" width="150" height="109">
+    <img class="ladeschirm__marke" src="/assets/logo/iyambae-marke.svg" alt="" width="150" height="109">
     <div class="ladeschirm__unter" data-text="laden.hinweis">Plattenladen wird aufgeschlossen …</div>
 </div>
 
 <header class="kopf" id="kopf">
-    <a class="logo" href="#" data-aria="kopf.marke" aria-label="IYAMBAE FM">
-        <img src="assets/logo/iyambae-marke.svg" alt="" width="46" height="33">
+    <a class="logo" href="/de/" data-aria="kopf.marke" aria-label="IYAMBAE FM">
+        <img src="/assets/logo/iyambae-marke.svg" alt="" width="46" height="33">
         <span class="logo__wort">IYAMBAE<span>FM</span></span>
     </a>
 
@@ -30,6 +37,12 @@
         <span class="kopf__lupe" data-symbol="suche" data-symbol-groesse="16"></span>
         <input type="search" id="suche" data-platzhalter="kopf.suche.platzhalter" data-aria="kopf.suche.hinweis" placeholder="Sender, Ort, Stichwort …" aria-label="Sender suchen">
     </div>
+
+    <!-- Der Sprachumschalter. Echte Verweise auf /de/, /en/ … statt einer
+         Auswahlliste: Sie sind fuer eine Suchmaschine die Bruecke zwischen den
+         sieben Fassungen und funktionieren auch ohne Programmcode. Inhalt
+         setzt assets/lib/sprache.mjs. -->
+    <details class="sprachwahl" id="sprachwahl"></details>
 
     <div class="kopf__schalter">
         <button class="schalter" id="knopf432" data-titel="kopf.432.titel" title="432-Hz-Stimmung ein- und ausschalten">
@@ -54,7 +67,7 @@
                 <div class="platte__rillen"></div>
                 <div class="platte__glanz"></div>
                 <div class="label" id="label">
-                    <img class="label__bild" id="labelBild" src="assets/logo/iyambae-marke.svg" alt="">
+                    <img class="label__bild" id="labelBild" src="/assets/logo/iyambae-marke.svg" alt="">
                     <span class="label__loch"></span>
                 </div>
             </div>
@@ -218,6 +231,6 @@
   assets/lib/aktualisierung.mjs — dort wird ihr Fehlschlag auch gemeldet
   statt verschluckt, und dort steht die Nachfrage nach neuen Fassungen.
 -->
-<script type="module" src="assets/app.js"></script>
+<script type="module" src="/assets/app.js"></script>
 </body>
 </html>

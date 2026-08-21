@@ -8,48 +8,63 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v15';
+const SW_VERSION = 'iyambae-v16';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
+// Die sieben Sprachen. Muss zu Scripts/baue-sprachen.py und zu
+// assets/lib/sprache.mjs passen — Scripts/pruefe-sprachen.py haelt die drei
+// Listen gegeneinander.
+const SPRACHEN = ['de', 'en', 'fr', 'es', 'it', 'ja', 'ar'];
+
 const SHELL_FILES = [
-    './',
-    './index.html',
-    './manifest.webmanifest',
-    './icon.svg',
-    './icon-192.png',
+    // Jede Sprachseite und ihr Manifest. Sieben Seiten statt einer, weil
+    // jede Sprache jetzt eine eigene Adresse hat — und weil ein Umschalten
+    // ohne Netz sonst ins Leere liefe.
+    //
+    // Die Wurzel '/' steht bewusst NICHT hier: Sie antwortet mit einer
+    // Umleitung, und eine Umleitung im Zwischenspeicher waere eine
+    // eingefrorene Sprachentscheidung.
+    ...SPRACHEN.flatMap((s) => [`/${s}/`, `/${s}/manifest.webmanifest`]),
+    // Und jede Sprachdatei, aus demselben Grund.
+    ...SPRACHEN.map((s) => `/assets/lang/${s}.json`),
+
+    '/icon.svg',
+    '/icon-192.png',
     // Vom Manifest verlangt, fehlte bisher.
-    './icon-512.png',
-    './assets/logo/icon-maskable-512.png',
+    '/icon-512.png',
+    '/assets/logo/icon-maskable-512.png',
     // Ladeschirm und Logo im Kopf. Ohne dieses Bild oeffnet der Laden
     // offline mit einer leeren Flaeche.
-    './assets/logo/iyambae-marke.svg',
-    './assets/styles.css',
-    './assets/app.js',
+    '/assets/logo/iyambae-marke.svg',
+    '/assets/styles.css',
+    '/assets/app.js',
     // Jedes Modul, das app.js importiert, muss hier stehen. Fehlt eines,
     // bricht offline der ganze Start ab — ein fehlendes ES-Modul reisst das
     // Skript mit. Scripts/pruefe-shell-dateien.py wacht darueber.
-    './assets/lib/gewichtung.mjs',
-    './assets/lib/verwandt.mjs',
-    './assets/lib/myretuner.mjs',
-    './assets/lib/wochentipp.mjs',
-    './assets/lib/senderbild.mjs',
-    './assets/lib/symbole.mjs',
-    './assets/lib/sprache.mjs',
-    // Beide Sprachdateien in die Huelle: Wer offline die Sprache umstellt,
-    // soll nicht ins Leere greifen.
-    './assets/lang/de.json',
-    './assets/lang/en.json',
-    './assets/lib/aktualisierung.mjs',
-    './assets/lib/fehlerbericht.mjs',
+    '/assets/lib/gewichtung.mjs',
+    '/assets/lib/verwandt.mjs',
+    '/assets/lib/myretuner.mjs',
+    '/assets/lib/wochentipp.mjs',
+    '/assets/lib/senderbild.mjs',
+    '/assets/lib/symbole.mjs',
+    '/assets/lib/sprache.mjs',
+    '/assets/lib/aktualisierung.mjs',
+    '/assets/lib/fehlerbericht.mjs',
     // MyRetuners Signalkern. Der Worklet wird nicht importiert, sondern per
     // addModule geladen, und die .wasm per fetch — beides sieht der
     // import-Ausdruck nicht. Scripts/pruefe-shell-dateien.py prueft deshalb
     // auch diese beiden Wege.
-    './assets/lib/retuner-worklet.js',
-    './assets/wasm/retuner.wasm',
-    './data/sender.json',
+    '/assets/lib/retuner-worklet.js',
+    '/assets/wasm/retuner.wasm',
+    '/data/sender.json',
 ];
+
+/** Welche Sprachseite zu dieser Adresse gehoert — Rueckfall Englisch. */
+function sprachseite(url) {
+    const erster = url.pathname.split('/').filter(Boolean)[0];
+    return SPRACHEN.includes(erster) ? `/${erster}/` : '/en/';
+}
 
 // Install: pre-cache app shell so the page loads offline.
 self.addEventListener('install', (event) => {
@@ -139,7 +154,10 @@ self.addEventListener('fetch', (event) => {
                     caches.match(req).then((gespeichert) =>
                         gespeichert
                         || (req.mode === 'navigate'
-                            ? caches.match('./index.html')
+                            // Die Seite DER angefragten Sprache. Frueher stand
+                            // hier './index.html' — das lieferte offline unter
+                            // /ja/ die deutsche Seite aus.
+                            ? caches.match(sprachseite(url))
                             // Ein mit undefined aufgeloestes respondWith wird
                             // zum Netzwerkfehler ohne Erklaerung. Eine echte
                             // Antwort sagt wenigstens, was los ist.

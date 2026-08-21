@@ -97,5 +97,6 @@
   "aktualisierung.spaeter": "Later",
   "fehler.frage": "Something went wrong. Send an anonymous report so it can be fixed?",
   "fehler.senden": "Send",
-  "fehler.nein": "No"
+  "fehler.nein": "No",
+  "kopf.sprache.titel": "Language"
 }

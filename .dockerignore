@@ -9,11 +9,15 @@
 .dockerignore
 Dockerfile
 
-# Unterlagen und Werkzeuge, nicht Teil der Seite.
+# Unterlagen, nicht Teil der Seite.
 docs
-Scripts
 README.md
 STATIONS_AUDIT.md
+
+# `Scripts/` bleibt bewusst im Kontext: Die erste Bau-Stufe erzeugt damit die
+# sieben Sprachseiten (baue-sprachen.py) und prueft den Service Worker
+# (pruefe-shell-dateien.py). Aus dem ausgelieferten Wurzelverzeichnis wird der
+# Ordner danach entfernt, siehe Dockerfile — genauso wie deploy/.
 
 # infra/ ist die Bicep-Vorlage — sie beschreibt den Container, gehört aber
 # nicht hinein.

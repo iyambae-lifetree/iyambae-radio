@@ -308,7 +308,7 @@ body.spielt .platte { animation-play-state: running; }
     padding: 1rem 1.2rem;
     background: var(--karte); color: var(--text);
     border: 1px solid var(--rand); border-radius: var(--rund);
-    font-family: inherit; text-align: left; cursor: pointer;
+    font-family: inherit; text-align: start; cursor: pointer;
     transition: all 0.2s ease;
 }
 .griff:hover { transform: translateY(-2px); border-color: var(--rand-hell); box-shadow: var(--schatten); }
@@ -350,7 +350,7 @@ body.spielt .platte { animation-play-state: running; }
     padding: 0.5rem 0.7rem;
     background: rgba(255, 255, 255, 0.04); color: var(--text);
     border: 1px solid var(--rand); border-radius: 0.6rem;
-    font-family: inherit; font-size: 0.82rem; text-align: left; cursor: pointer;
+    font-family: inherit; font-size: 0.82rem; text-align: start; cursor: pointer;
     transition: all 0.15s ease;
 }
 .tipp__dazuKnopf:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--rand-hell); }
@@ -401,7 +401,7 @@ body.spielt .platte { animation-play-state: running; }
     background: var(--karte);
     border: 1px solid var(--rand);
     color: var(--text);
-    font-family: inherit; text-align: left; cursor: pointer;
+    font-family: inherit; text-align: start; cursor: pointer;
     transition: border-color 0.18s ease, transform 0.18s ease,
                 box-shadow 0.18s ease, background-color 0.18s ease;
 }
@@ -491,7 +491,7 @@ body.spielt .platte { animation-play-state: running; }
     overflow-x: auto; overflow-y: hidden;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
-    scroll-padding-left: 1rem;
+    scroll-padding-inline-start: 1rem;
 }
 .filter::-webkit-scrollbar { display: none; }
 .filter > * { flex: none; }
@@ -506,10 +506,10 @@ body.spielt .platte { animation-play-state: running; }
 /* Der Filterstand klebt am linken Rand der Leiste — auch wenn man die Chips
    nach rechts geschoben hat, bleibt sichtbar, was gerade greift. */
 .filter__stand {
-    position: sticky; left: 0; z-index: 2;
+    position: sticky; inset-inline-start: 0; z-index: 2;
     display: flex; align-items: center; gap: 0.5rem;
-    padding: 0.28rem 0.7rem 0.28rem 0.6rem;
-    margin-right: 0.2rem;
+    padding-block: 0.28rem; padding-inline: 0.6rem 0.7rem;
+    margin-inline-end: 0.2rem;
     background: var(--pink); color: var(--grund);
     font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
     box-shadow: 0 0 18px rgba(242, 183, 5, 0.35);
@@ -580,7 +580,7 @@ body.spielt .platte { animation-play-state: running; }
     content: '';
     display: inline-block; vertical-align: 0.08em;
     width: 0.32rem; height: 1em;
-    margin-right: 0.5rem;
+    margin-inline-end: 0.5rem;
     background: var(--regalton, var(--pink));
 }
 .regal__zahl { font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
@@ -660,7 +660,7 @@ body.spielt .platte { animation-play-state: running; }
                 transform 0.2s ease, background-color 0.15s ease;
 }
 .karte__favorit {
-    top: 0.35rem; right: 0.35rem;
+    inset-block-start: 0.35rem; inset-inline-end: 0.35rem;
     background: none;
     color: rgba(255, 255, 255, 0.9);
     filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
@@ -674,7 +674,7 @@ body.spielt .platte { animation-play-state: running; }
    einziges Wort erklärt. Auf Geräten ohne Zeiger steht er dauerhaft, sonst
    wäre er dort unerreichbar. */
 .karte__spielen {
-    right: 0.5rem; bottom: 0.5rem;
+    inset-inline-end: 0.5rem; inset-block-end: 0.5rem;
     background: var(--pink);
     color: #120a02;
     opacity: 0; transform: translateY(0.6rem);
@@ -723,7 +723,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 
 /* Läuft gerade: drei Balken unten links auf dem Cover. */
 .karte__laeuft {
-    position: absolute; left: 0.6rem; bottom: 0.65rem; z-index: 3;
+    position: absolute; inset-inline-start: 0.6rem; inset-block-end: 0.65rem; z-index: 3;
     display: none; gap: 3px; height: 14px; align-items: flex-end;
 }
 .karte.ist-aktiv .karte__laeuft { display: flex; }
@@ -767,7 +767,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .huelle--gross  .huelle__name { font-size: clamp(1.1rem, 3.6vw, 1.6rem); }
 .huelle--mittel .huelle__name { font-size: clamp(0.85rem, 2.7vw, 1.15rem); }
 .huelle--klein  .huelle__name { font-size: clamp(0.68rem, 2.1vw, 0.88rem); letter-spacing: 0.02em; }
-.huelle__marke { position: absolute; right: 0.55rem; bottom: 0.5rem; opacity: 0.28; }
+.huelle__marke { position: absolute; inset-inline-end: 0.55rem; inset-block-end: 0.5rem; opacity: 0.28; }
 
 /* ── Das Etikett ─────────────────────────────────────────────── */
 .karte__etikett {
@@ -793,7 +793,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .karte__guete {
     flex: none;
     padding: 0.14rem 0.42rem;
-    border-left: 3px solid currentColor;
+    border-inline-start: 3px solid currentColor;
     background: rgba(255, 255, 255, 0.06);
     font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
     letter-spacing: 0.04em; text-transform: uppercase;
@@ -818,7 +818,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .marke--etikett { background: rgba(255, 255, 255, 0.04); }
 
 .karte__stumm {
-    position: absolute; left: 0.6rem; top: 0.6rem; z-index: 3;
+    position: absolute; inset-inline-start: 0.6rem; inset-block-start: 0.6rem; z-index: 3;
     padding: 0.12rem 0.45rem;
     background: rgba(0, 0, 0, 0.75);
     font-family: var(--mono); font-size: 0.62rem; color: var(--rot);
@@ -853,7 +853,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .fuss__hinweis strong { color: var(--text); }
 .fuss__powered { margin-top: 0.9rem; font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
 .fuss__test {
-    margin-left: 0.5rem; padding: 0.1rem 0.45rem;
+    margin-inline-start: 0.5rem; padding: 0.1rem 0.45rem;
     background: rgba(255, 200, 87, 0.14); color: var(--gold);
     border-radius: 0.35rem; font-size: 0.65rem;
 }
@@ -883,7 +883,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 #lautstaerke { width: 5.5rem; accent-color: var(--pink); }
 
 /* ── Meldungen ───────────────────────────────────────────────────── */
-.meldungen { position: fixed; right: 1rem; bottom: 5.5rem; z-index: 90; display: grid; gap: 0.5rem; }
+.meldungen { position: fixed; inset-inline-end: 1rem; bottom: 5.5rem; z-index: 90; display: grid; gap: 0.5rem; }
 .meldung {
     padding: 0.6rem 1rem;
     background: var(--karte-hoch); border: 1px solid var(--rand-hell); border-radius: var(--rund);
@@ -950,7 +950,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     .spieler { bottom: 3.9rem; padding: 0.5rem 0.9rem; }
     .spieler__rechts canvas { display: none; }
     #lautstaerke { width: 4rem; }
-    .meldungen { right: 0.7rem; left: 0.7rem; bottom: 9rem; }
+    .meldungen { inset-inline: 0.7rem; bottom: 9rem; }
 
     .handy-leiste {
         display: grid; grid-template-columns: repeat(4, 1fr);
@@ -975,3 +975,129 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ── Sprachumschalter ────────────────────────────────────────────
+   Ein <details> statt einer Auswahlliste: Die Einträge sind echte Verweise
+   auf /de/, /en/, /fr/ … Damit sind sie für eine Suchmaschine die Brücke
+   zwischen den sieben Fassungen, sie lassen sich mit der mittleren Maustaste
+   in einem neuen Reiter öffnen, und sie stehen auch dann da, wenn der
+   Programmcode ausfällt. Jede Sprache steht in sich selbst — wer kein Deutsch
+   kann, findet „Deutsch" nicht unter „German". */
+.sprachwahl { position: relative; flex: none; }
+.sprachwahl__knopf {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--karte); border: 1px solid var(--rand); border-radius: 999px;
+    color: var(--text-leise);
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em;
+    cursor: pointer; list-style: none;
+    transition: all 0.15s ease;
+}
+.sprachwahl__knopf::-webkit-details-marker { display: none; }
+.sprachwahl__knopf::after {
+    content: '';
+    width: 0.32rem; height: 0.32rem;
+    /* Physisch, nicht logisch: Ein Pfeil nach UNTEN hat keine Leserichtung.
+       Mit logischen Kanten kippte er in der arabischen Fassung zur Seite. */
+    border-right: 1.4px solid currentColor;
+    border-bottom: 1.4px solid currentColor;
+    transform: rotate(45deg) translate(-1px, -1px);
+}
+.sprachwahl__knopf:hover { color: var(--text); border-color: var(--rand-hell); }
+.sprachwahl[open] .sprachwahl__knopf { color: var(--text); border-color: var(--pink); }
+
+.sprachwahl__liste {
+    position: absolute; z-index: 60;
+    inset-block-start: calc(100% + 0.35rem); inset-inline-end: 0;
+    min-width: 9rem;
+    margin: 0; padding: 0.3rem;
+    list-style: none;
+    background: var(--grund-hoch);
+    border: 1px solid var(--rand-hell);
+    box-shadow: var(--schatten);
+}
+.sprachwahl__liste a {
+    display: block;
+    padding: 0.4rem 0.65rem;
+    color: var(--text-leise); text-decoration: none;
+    font-size: 0.85rem;
+}
+.sprachwahl__liste a:hover { background: rgba(255, 255, 255, 0.07); color: var(--text); }
+.sprachwahl__liste a[aria-current] { color: var(--pink); font-weight: 600; }
+
+/* ── Rechts nach links ───────────────────────────────────────────
+   Arabisch. Was sich mit logischen Eigenschaften ausdrücken lässt, steht
+   oben im Bestand und gilt in beide Richtungen. Hier steht nur, wofür CSS
+   keine logische Entsprechung hat.
+
+   Ausdrücklich NICHT gespiegelt, und das ist kein Versehen:
+
+     Der Tonarm. Ein Plattenspieler hat den Tonarm rechts, in jedem Land.
+     Die Drehrichtung der Platte und der Lichtreflex darauf, aus demselben
+     Grund. Das Abspieldreieck — Medienbedienelemente stehen auch in
+     arabischen Oberflächen von YouTube und Spotify unverändert.
+
+   Ein gespiegelter Plattenspieler wäre kein Zugeständnis an die Leserichtung,
+   sondern ein falsches Gerät. */
+
+/* Die drei Hausschriften haben keine arabischen Glyphen. Ohne eigene Schrift
+   fiele Arabisch auf irgendeine Systemschrift zurück und risse das
+   Schriftbild auseinander — sichtbar an jeder Überschrift und an jedem
+   Abzeichen, denn --anzeige und --mono tragen fast alle davon. */
+:root[dir="rtl"] {
+    --schrift:  'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Segoe UI', sans-serif;
+    --mono:     'IBM Plex Sans Arabic', 'Noto Sans Arabic', ui-monospace, monospace;
+    --anzeige:  'Noto Kufi Arabic', 'IBM Plex Sans Arabic', sans-serif;
+}
+
+/* Sperrung zerlegt arabische Ligaturen: Die Buchstaben verbinden sich nicht
+   mehr, und das Wort zerfällt sichtbar in Einzelzeichen. Das ist der Fund mit
+   der größten optischen Wirkung — betroffen sind lauter Stellen, die im
+   Arabischen Text tragen. Die Wortmarke im Kopf bleibt gesperrt, sie ist
+   lateinisch. */
+[dir="rtl"] :is(.hero__guete, .tipp__marke, .tipp__dazuTitel, .regalfach__name,
+                .filter__titel, .huelle__name, .karte__guete, .auslage__titel,
+                .regalwand__titel, .sprachwahl__knopf) {
+    letter-spacing: normal;
+}
+
+/* Verläufe: gespiegelt wird über 360 − Winkel. Die schräge Rillenstruktur der
+   Ersatzhülle neigte sich sonst gegen den Textfluss. */
+[dir="rtl"] .tipp {
+    background:
+        linear-gradient(225deg, rgba(242, 183, 5, 0.07), rgba(42, 124, 199, 0.05)),
+        var(--karte);
+}
+[dir="rtl"] .regalfach__mosaik::before {
+    background: linear-gradient(205deg, rgba(5, 2, 10, 0.10), rgba(5, 2, 10, 0.62));
+}
+[dir="rtl"] .huelle {
+    background: linear-gradient(212deg,
+        color-mix(in srgb, var(--regalton) 30%, #0d0916) 0%,
+        color-mix(in srgb, var(--regalton) 12%, #0d0916) 52%,
+        #0a0712 100%);
+}
+[dir="rtl"] .huelle::after {
+    background: repeating-linear-gradient(212deg,
+        rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 7px);
+}
+/* Der Farbschimmer im Hintergrund sitzt am Kopf. Prozentangaben sind
+   physisch, nicht logisch — ungespiegelt läge das Gold auf der leeren Seite. */
+[dir="rtl"] body::before {
+    background:
+        radial-gradient(60rem 40rem at 85% -10%, rgba(242, 183, 5, 0.10), transparent 60%),
+        radial-gradient(50rem 35rem at 5% 5%, rgba(42, 124, 199, 0.12), transparent 60%);
+}
+
+/* Meldungen fliegen von der Seite herein, an der sie stehen. transform kennt
+   keine logische Achse, und Keyframes lassen sich nicht per Attributselektor
+   umkehren — deshalb ein eigener Satz. */
+[dir="rtl"] .meldung.geht { transform: translateX(-1rem); }
+[dir="rtl"] .meldung { animation-name: kommt-rtl; }
+@keyframes kommt-rtl {
+    from { opacity: 0; transform: translateX(-1rem); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* „Öffnet woanders" zeigt in einer RTL-Oberfläche nach oben links. */
+[dir="rtl"] [data-symbol="extern"] svg { transform: scaleX(-1); }

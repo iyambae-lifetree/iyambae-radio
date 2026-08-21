@@ -20,7 +20,7 @@ import { t } from './sprache.mjs';
 
 
 const SCHLUESSEL = 'hz_fehlerbericht';
-const ZIEL = './fehler';
+const ZIEL = '/fehler';
 
 export const EINWILLIGUNG = {
     unbekannt: 'unbekannt',

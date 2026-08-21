@@ -2,3 +2,15 @@
 # Python-Zwischenstaende der Pruefskripte
 __pycache__/
 *.pyc
+
+# Die Sprachseiten erzeugt Scripts/baue-sprachen.py aus index.html und
+# assets/lang/*.json — beim Bauen des Containers, nicht von Hand. Im
+# Repository waeren sie eine zweite Wahrheit, die beim naechsten Textwechsel
+# still veraltet.
+/de/
+/en/
+/fr/
+/es/
+/it/
+/ja/
+/ar/

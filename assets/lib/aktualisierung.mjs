@@ -34,7 +34,9 @@ const STUNDE = 60 * 60 * 1000;
 export function beobachteAktualisierung({ spieltGerade, melde }) {
     if (!('serviceWorker' in navigator)) return;
 
-    navigator.serviceWorker.register('./sw.js', { scope: './' })
+    // Wurzelbereich, nicht './': Unter /de/ waere der Geltungsbereich sonst
+    // /de/ — und /en/ bekaeme einen zweiten Worker mit eigenem Speicher.
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
         .then((registrierung) => {
             const sieheNach = () => registrierung.update().catch(() => {
                 /*
