@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
     liesIcyTitel, saeubereTitel, erzeugeTitel,
-    ALTER_MS, JE_ZUG, METAINT_HOECHSTENS,
+    ALTER_MS, JE_ZUG, REIHUM, METAINT_HOECHSTENS,
 } from '../src/titel.mjs';
 
 /*
@@ -190,12 +190,23 @@ test('HLS-Sender werden gar nicht angefragt', async () => {
     assert.deepEqual(angefragt, ['sa'], 'HLS liest die Abspielmaschine selbst');
 });
 
-test('nur die zuletzt gestarteten Sender werden angefasst', async () => {
+test('die zuletzt gestarteten Sender werden ZUERST angefasst', async () => {
+    /*
+      Diese Zusicherung hiess bis 432hz-radio#9 „nur die zuletzt
+      gestarteten" und pruefte einen Ausschluss. Der war falsch: Ein Sender,
+      den heute zum ersten Mal jemand auflegt, steht in `sender_oben` noch
+      nicht — und die Zahlen dahinter gelten bis zu einer Stunde. Aus dem
+      Ausschluss ist ein Vorrang geworden; hier steht jetzt, dass der
+      Vorrang wirklich einer ist.
+    */
     const viele = Array.from({ length: 40 },
         (_x, i) => ({ id: 's' + i, stream: 'u' + i }));
     const { laden, angefragt } = bau({ sender: viele, beobachtet: ['s7', 's9'] });
     await laden.fuelle();
-    assert.deepEqual(angefragt.sort(), ['u7', 'u9']);
+    assert.ok(angefragt.includes('u7') && angefragt.includes('u9'),
+              'beide Beobachteten sind dabei');
+    assert.equal(angefragt.indexOf('u7') < 2 && angefragt.indexOf('u9') < 2, true,
+                 'und zwar vorn: ' + angefragt.slice(0, 4).join(','));
 });
 
 test('ein Zug fasst hoechstens JE_ZUG Stroeme an', async () => {
@@ -313,4 +324,60 @@ test('eingerichtet liefert er den Stand — ohne Schluessel, fuer alle gleich', 
         const zwei = await d.rufe('GET', '/api/titel');
         assert.deepEqual(zwei.daten, eins.daten);
     } finally { await d.schliesse(); }
+});
+
+// ── Vorrang statt Ausschluss ────────────────────────────────────────
+
+test('ein Sender ausserhalb der Vorrangliste kommt trotzdem dran', async () => {
+    /*
+      Saemi-Ras Einwand aus 432hz-radio#9: Ein Sender, den heute zum ersten
+      Mal jemand auflegt, steht noch nicht in `sender_oben` — und die Zahlen
+      dahinter gelten bis zu einer Stunde. Waere die Liste ein Filter, waere
+      genau dieser Sender eine Stunde lang der, ueber den nichts dasteht.
+    */
+    const viele = Array.from({ length: 40 },
+        (_x, i) => ({ id: 's' + i, stream: 'u' + i }));
+    const { laden, angefragt } = bau({ sender: viele, beobachtet: ['s0', 's1'] });
+    await laden.fuelle();
+    assert.ok(angefragt.includes('u0'), 'die Beobachteten zuerst');
+    assert.ok(angefragt.includes('u1'));
+    /*
+      REIHUM ist eine UNTERGRENZE fuer die Restplaetze, keine Obergrenze:
+      Ist die Vorrangliste kuerzer als JE_ZUG - REIHUM, gehen alle uebrigen
+      Plaetze an die anderen. Sonst laege der Zug halb brach, waehrend
+      Sender ungelesen warten.
+    */
+    const fremde = angefragt.filter((u) => !['u0', 'u1'].includes(u));
+    assert.equal(fremde.length, JE_ZUG - 2, 'der Zug bleibt voll');
+    assert.ok(fremde.length >= REIHUM);
+});
+
+test('die Vorrangliste bekommt die Mehrheit der Plaetze', async () => {
+    const viele = Array.from({ length: 40 },
+        (_x, i) => ({ id: 's' + i, stream: 'u' + i }));
+    const beobachtet = viele.slice(0, 20).map((s) => s.id);
+    const { laden, angefragt } = bau({ sender: viele, beobachtet });
+    await laden.fuelle();
+    const menge = new Set(beobachtet.map((id) => 'u' + id.slice(1)));
+    const ausVorrang = angefragt.filter((u) => menge.has(u)).length;
+    assert.equal(angefragt.length, JE_ZUG);
+    assert.equal(ausVorrang, JE_ZUG - REIHUM, 'sieben von zehn');
+});
+
+test('ohne Vorrangliste gehen alle Plaetze reihum', async () => {
+    const viele = Array.from({ length: 40 },
+        (_x, i) => ({ id: 's' + i, stream: 'u' + i }));
+    const { laden, angefragt } = bau({ sender: viele, beobachtet: null });
+    await laden.fuelle();
+    assert.equal(angefragt.length, JE_ZUG);
+});
+
+test('ueber mehrere Zuege kommt jeder Sender einmal dran', async () => {
+    const uhr = { t: 1_000_000 };
+    const viele = Array.from({ length: 12 },
+        (_x, i) => ({ id: 's' + i, stream: 'u' + i }));
+    const { laden, angefragt } = bau({ sender: viele, beobachtet: ['s0'], uhr });
+    for (let i = 0; i < 8; i += 1) { await laden.fuelle(); uhr.t += 1; }
+    const erreicht = new Set(angefragt);
+    assert.equal(erreicht.size, 12, 'keiner bleibt liegen: ' + [...erreicht].join(','));
 });

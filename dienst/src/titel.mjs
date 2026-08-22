@@ -50,14 +50,14 @@
   Bei 165 Sendern alle zwanzig Sekunden wären es rund 8 MB je Stunde für
   nichts. Deshalb:
 
-    · nur Sender, die zuletzt wirklich gestartet wurden (aus den Zahlen)
-    · höchstens SENDER_HOECHSTENS davon
+    · VORRANG für Sender, die zuletzt wirklich gestartet wurden (aus den
+      Zahlen) — aber kein Ausschluss der übrigen, siehe REIHUM
     · ein Titel gilt ALTER_MS lang als frisch
     · höchstens JE_ZUG Ströme in einem Nachschub, GLEICHZEITIG davon
       wenige
 
-  Rechnung im eingeschwungenen Zustand: 25 Sender × 16 KB alle 90 s sind
-  rund 10 MB je Stunde — und nur, solange überhaupt jemand fragt.
+  Rechnung im eingeschwungenen Zustand: 10 Ströme × 16 KB alle 90 s sind
+  rund 6 MB je Stunde — und nur, solange überhaupt jemand fragt.
 
   ── WAS HIER NICHT PASSIERT ─────────────────────────────────────────
 
@@ -87,6 +87,17 @@ export const JE_ZUG = 10;
 
 /** Davon gleichzeitig. Mehr bringt nichts und fällt fremden Servern auf. */
 export const GLEICHZEITIG = 4;
+
+/*
+  So viele Plätze eines Zuges bleiben den Sendern OHNE Vorrang.
+
+  Ohne sie käme ein Sender, den heute zum ersten Mal jemand auflegt, bis zu
+  eine Stunde lang gar nicht dran — so lange gelten die Zahlen, aus denen
+  die Vorrangliste stammt. Mit drei Restplätzen ist bei 156 Sendern jeder
+  spätestens nach gut fünfzig Zügen einmal gelesen, und das kostet drei
+  Ströme mehr je Zug.
+*/
+export const REIHUM = 3;
 
 /** Nach so langer Zeit wird eine Verbindung abgebrochen. */
 export const ZEITLIMIT_MS = 6_000;
@@ -282,25 +293,53 @@ export function erzeugeTitel({
     async function welcheNachsehen() {
         const alle = await senderMitStrom();
         if (!alle.length) return [];
-        let inFrage = alle;
+
+        let beobachtet = null;
         try {
-            const beobachtet = await holeBeobachtete();
-            if (Array.isArray(beobachtet) && beobachtet.length) {
-                const menge = new Set(beobachtet);
-                const gefiltert = alle.filter((s) => menge.has(s.id));
-                if (gefiltert.length) inFrage = gefiltert;
-            }
-        } catch { /* dann eben alle */ }
+            const liste = await holeBeobachtete();
+            if (Array.isArray(liste) && liste.length) beobachtet = new Set(liste);
+        } catch { /* dann gibt es eben keine Vorrangliste */ }
 
         // Die ältesten zuerst. Ein Sender ohne Eintrag zählt als unendlich
         // alt und kommt damit vor allen, die schon einmal gelesen wurden.
         const jetztMs = jetzt();
-        return inFrage
+        const faellig = alle
             .map((s) => ({ s, alter: jetztMs - (stand.get(s.id)?.stand ?? -Infinity) }))
             .filter((x) => x.alter >= ALTER_MS)
-            .sort((a, b) => b.alter - a.alter)
-            .slice(0, Math.min(JE_ZUG, SENDER_HOECHSTENS))
-            .map((x) => x.s);
+            .sort((a, b) => b.alter - a.alter);
+
+        if (!beobachtet) return faellig.slice(0, JE_ZUG).map((x) => x.s);
+
+        /*
+          VORRANG STATT AUSSCHLUSS — und das ist eine Berichtigung.
+
+          Zuerst stand hier ein Filter: Wer nicht in der Beobachtungsliste
+          steht, wird gar nicht gelesen. Saemi-Ras Einwand dazu trifft
+          (432hz-radio#9):
+
+            „Ein Sender, den heute zum ersten Mal jemand auflegt, steht dort
+             noch nicht — also gerade der Fall, um den es dem Tester ging."
+
+          Die Liste kommt aus `sender_oben` und die Zahlen dahinter gelten
+          bis zu einer Stunde. Ein Sender, den gerade jemand entdeckt, waere
+          also eine Stunde lang genau der, ueber den nichts dasteht.
+
+          Deshalb: RESTPLAETZE. Die Beobachteten bekommen den Vorrang, aber
+          die letzten REIHUM Plaetze eines Zuges gehen an die aeltesten
+          aller uebrigen. Damit kommt jeder Sender ueber ein paar Zuege
+          hinweg dran, ohne dass die Deckelung faellt.
+
+          Nicht gewaehlt: die Seite den Sender nennen zu lassen. Das waere
+          der kurze Weg und der falsche — eine Anfrage mit Sender landet
+          samt Adresse im Zugriffsprotokoll, alle zwanzig Sekunden neu, und
+          ergibt damit nicht nur den Anfang, sondern die Dauer. Genau das
+          Hoerprotokoll, das diese Bauart vermeidet.
+        */
+        const vorrang = faellig.filter((x) => beobachtet.has(x.s.id));
+        const uebrige = faellig.filter((x) => !beobachtet.has(x.s.id));
+        const ausVorrang = vorrang.slice(0, Math.max(0, JE_ZUG - REIHUM));
+        const ausReihum = uebrige.slice(0, JE_ZUG - ausVorrang.length);
+        return [...ausVorrang, ...ausReihum].map((x) => x.s);
     }
 
     async function nachschub() {
