@@ -39,8 +39,12 @@ async function hole(adresse, wandle) {
 // SomaFM fuehrt je Kanal eine eigene Liste. Der Kanalname steckt in der
 // Stromadresse: .../groovesalad-128-mp3 -> groovesalad
 function somaKanal(stream) {
-  const t = /somafm\.com\/(?:[a-z0-9]+\/)?([a-z0-9]+)[-.]/i.exec(stream);
-  return t ? t[1] : null;
+  // Zwei Formen: ice5.somafm.com/groovesalad-128-mp3
+  //         und hls.somafm.com/hls/groovesalad/FLAC/program.m3u8
+  const hls = /somafm\.com\/hls\/([a-z0-9]+)\//i.exec(stream);
+  if (hls) return hls[1];
+  const eis = /somafm\.com\/(?:[a-z0-9]+\/)?([a-z0-9]+)[-.]/i.exec(stream);
+  return eis ? eis[1] : null;
 }
 
 async function vonSoma(stream) {

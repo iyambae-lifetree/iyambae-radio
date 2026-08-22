@@ -1,5 +1,5 @@
 {
-  "_version": "2.2.0",
+  "_version": "2.3.0",
   "_geprueft_am": "2026-08-22",
   "regale": [
     {
@@ -188,7 +188,9 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": false,
-      "kanal": "Barcelona"
+      "kanal": "Barcelona",
+      "logo": "assets/logos/dublab-bcn.webp",
+      "logoQuelle": "apple-touch-icon"
     },
     {
       "id": "dublab-de",
@@ -944,16 +946,17 @@
       "regal": "tiefe",
       "etiketten": [
         "nur-instrumental",
-        "ohne-werbung"
+        "ohne-werbung",
+        "lossless"
       ],
-      "stream": "https://ice5.somafm.com/groovesalad-128-mp3",
+      "stream": "https://hls.somafm.com/hls/groovesalad/FLAC/program.m3u8",
       "homepage": "https://somafm.com/groovesalad",
-      "kaertchen": "Der Kanal, mit dem SomaFM 2000 bekannt wurde: Downtempo und Chill-Elektronik in der Bauform, die später überall kopiert wurde. Das Original ist immer noch besser sortiert als die meisten Nachahmer.",
-      "codec": "mp3",
-      "bitrate": 128,
+      "kaertchen": "Der bekannteste Kanal des Hauses, seit über zwanzig Jahren dieselbe ruhige Hand — und seit Kurzem verlustfrei: FLAC um die 1000 kbit/s statt 128 MP3. Wer wissen will, was der Unterschied ausmacht, hat hier den Vergleich zum eigenen Gedächtnis.",
+      "codec": "flac",
+      "bitrate": 1084,
       "samplerate": 44100,
       "status": "ok",
-      "geprueft_am": "2026-08-21",
+      "geprueft_am": "2026-08-22",
       "cors": true,
       "logo": "assets/logos/soma-groovesalad.webp",
       "logoQuelle": "somafm",
@@ -1214,7 +1217,7 @@
       "samplerate": 48000,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true,
+      "cors": false,
       "kanal": "Classic Vinyl HD"
     },
     {
@@ -1828,6 +1831,29 @@
       "logo": "assets/logos/panamericana-salsa.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "Panamericana Salsa Power"
+    },
+    {
+      "id": "radionica",
+      "name": "Radiónica",
+      "betreiber": "RTVC",
+      "ort": "Bogotá",
+      "land": "CO",
+      "regal": "barrio",
+      "etiketten": [
+        "ohne-werbung",
+        "mensch-am-mikro"
+      ],
+      "stream": "https://streaming.rtvc.gov.co/Radio_Radionica/Radionica.stream/playlist.m3u8",
+      "homepage": "https://www.radionica.rocks",
+      "codec": "aac",
+      "bitrate": 48,
+      "samplerate": 44100,
+      "cors": true,
+      "kaertchen": "Der öffentliche Sender Kolumbiens für alles, was sonst nicht im Radio läuft — kolumbianischer Rock, Cumbia in unerwarteten Fassungen, Hip-Hop aus Medellín. Die Datenrate ist bescheiden, die Auswahl nicht.",
+      "status": "ok",
+      "geprueft_am": "2026-08-22",
+      "logoQuelle": null,
+      "kanal": "Radiónica"
     },
     {
       "id": "bytefm",
@@ -2639,6 +2665,29 @@
       "kanal": "The Trip"
     },
     {
+      "id": "dunkerque-street",
+      "name": "Dunkerque Street Radio",
+      "betreiber": "Dunkerque Street Radio",
+      "ort": "Dünkirchen",
+      "land": "FR",
+      "regal": "maschinenraum",
+      "etiketten": [
+        "live-dj",
+        "community"
+      ],
+      "stream": "https://azuracast.conceptradio.fr/hls/dunkerque_street_radio/live.m3u8",
+      "homepage": "https://dunkerquestreetradio.fr",
+      "codec": "aac",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "cors": true,
+      "kaertchen": "Aus einer Hafenstadt an der Nordsee, die man nicht mit Clubmusik verbindet — genau deshalb. Electro, House und Techno von Leuten, die dort wohnen und keine Szene im Rücken haben.",
+      "status": "ok",
+      "geprueft_am": "2026-08-22",
+      "logoQuelle": null,
+      "kanal": "Dunkerque Street Radio"
+    },
+    {
       "id": "soma-covers",
       "name": "SomaFM Covers",
       "betreiber": "SomaFM",
@@ -2969,6 +3018,30 @@
       "kanal": "Rádio Unisinos"
     },
     {
+      "id": "kmhd2",
+      "name": "KMHD2",
+      "betreiber": "Mt. Hood Community College",
+      "ort": "Portland",
+      "land": "US",
+      "regal": "jazz",
+      "etiketten": [
+        "community",
+        "mensch-am-mikro",
+        "ohne-werbung"
+      ],
+      "stream": "https://live.amperwave.net/manifest/mhcc-kmhchd2aac-hlsc1.m3u8",
+      "homepage": "http://kmhd2.org",
+      "codec": "aac",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "cors": true,
+      "kaertchen": "Der zweite Kanal von Portlands Jazzsender, hörergetragen und werbefrei. Wo der Hauptkanal die Standards spielt, geht dieser weiter nach draußen — dorthin, wo Jazz aufhört, sich an Regeln zu halten.",
+      "status": "ok",
+      "geprueft_am": "2026-08-22",
+      "logoQuelle": null,
+      "kanal": "KMHD2"
+    },
+    {
       "id": "soma-brfm",
       "name": "SomaFM Black Rock FM",
       "betreiber": "SomaFM",
@@ -3016,6 +3089,79 @@
       "kanal": "Poolside"
     },
     {
+      "id": "the-lot-radio",
+      "name": "The Lot Radio",
+      "betreiber": "The Lot Radio",
+      "ort": "New York",
+      "land": "US",
+      "regal": "grenzgaenger",
+      "etiketten": [
+        "live-dj",
+        "community"
+      ],
+      "stream": "https://livepeercdn.studio/hls/85c28sa2o8wppm58/index.m3u8",
+      "homepage": "https://www.thelotradio.com",
+      "codec": "aac",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "cors": true,
+      "kaertchen": "Sendet aus einem umgebauten Schiffscontainer auf einem ehemaligen Parkplatz in Brooklyn. Durchgehend Gäste an den Plattentellern, kein Programm im üblichen Sinn — man hört, wer gerade da ist.",
+      "status": "ok",
+      "geprueft_am": "2026-08-22",
+      "logoQuelle": null,
+      "kanal": "The Lot Radio"
+    },
+    {
+      "id": "pbs-fm",
+      "name": "PBS FM",
+      "betreiber": "PBS 106.7FM",
+      "ort": "Melbourne",
+      "land": "AU",
+      "regal": "grenzgaenger",
+      "etiketten": [
+        "community",
+        "mensch-am-mikro",
+        "ohne-werbung"
+      ],
+      "stream": "https://playerservices.streamtheworld.com/api/livestream-redirect/3PBS_FMAACHIGH.m3u8",
+      "homepage": "https://www.pbsfm.org.au",
+      "codec": "aac",
+      "bitrate": 195,
+      "samplerate": 44100,
+      "cors": true,
+      "kaertchen": "Gemeinderadio aus Melbourne, getragen von Mitgliedern und ehrenamtlichen Moderatoren. Australien hat eine Szene, von der man in Europa wenig mitbekommt — hier läuft sie, neben Soul, Dub und allem, was die Leute mitbringen.",
+      "status": "ok",
+      "geprueft_am": "2026-08-22",
+      "logo": "assets/logos/pbs-fm.webp",
+      "logoQuelle": "og:image",
+      "kanal": "PBS FM"
+    },
+    {
+      "id": "wruw",
+      "name": "WRUW",
+      "betreiber": "Case Western Reserve University",
+      "ort": "Cleveland",
+      "land": "US",
+      "regal": "grenzgaenger",
+      "etiketten": [
+        "community",
+        "mensch-am-mikro",
+        "ohne-werbung"
+      ],
+      "stream": "https://wruw-stream.wruw.org/hls/stream.m3u8",
+      "homepage": "https://wruw.org",
+      "codec": "aac",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "cors": true,
+      "kaertchen": "Studentenradio aus Cleveland mit dem Wahlspruch „More Diversity, Less Commercials\". Über hundert Sendungen von Freiwilligen, von Polka bis Krach — die Sorte Programm, die kein Algorithmus zusammenstellen würde.",
+      "status": "ok",
+      "geprueft_am": "2026-08-22",
+      "logo": "assets/logos/wruw.webp",
+      "logoQuelle": "apple-touch-icon",
+      "kanal": "WRUW"
+    },
+    {
       "id": "nts-labyrinth",
       "name": "NTS Labyrinth",
       "betreiber": "NTS Radio",
@@ -3039,6 +3185,30 @@
       "logo": "assets/logos/nts-labyrinth.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "Labyrinth"
+    },
+    {
+      "id": "gutsy-radio",
+      "name": "Gutsy Radio",
+      "betreiber": "Gutsy Radio",
+      "ort": "Vereinigte Staaten",
+      "land": "US",
+      "regal": "freakshow",
+      "etiketten": [
+        "live-dj",
+        "community"
+      ],
+      "stream": "https://broadcast.gutsyradio.org/hls/gutsy_radio/live.m3u8",
+      "homepage": "https://gutsyradio.org",
+      "codec": "aac",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "cors": true,
+      "kaertchen": "Freeform im ursprünglichen Sinn: keine Formatvorgabe, keine Playlist, kein Programmschema. Was läuft, entscheidet die Person am Mikrofon — und man merkt sofort, wenn gewechselt wird.",
+      "status": "ok",
+      "geprueft_am": "2026-08-22",
+      "logo": "assets/logos/gutsy-radio.webp",
+      "logoQuelle": "og:image",
+      "kanal": "Gutsy Radio"
     },
     {
       "id": "nts-otaku",
@@ -3756,6 +3926,31 @@
       "cors": true,
       "geprueft_am": "2026-08-21",
       "kanal": "Flowstate Classical"
+    },
+    {
+      "id": "fine-music-radio",
+      "name": "Fine Music Radio",
+      "betreiber": "Fine Music Radio",
+      "ort": "Kapstadt",
+      "land": "ZA",
+      "regal": "klassik",
+      "etiketten": [
+        "community",
+        "ohne-werbung",
+        "mensch-am-mikro"
+      ],
+      "stream": "https://edge.iono.fm/xhls/fmr_live_high.m3u8",
+      "homepage": "https://www.fmr.co.za",
+      "codec": "aac",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "cors": true,
+      "kaertchen": "Klassik und Jazz aus Kapstadt, von Freiwilligen gemacht. Der einzige Sender im Regal, der beides gleichberechtigt spielt — und der einzige vom afrikanischen Kontinent.",
+      "status": "ok",
+      "geprueft_am": "2026-08-22",
+      "logo": "assets/logos/fine-music-radio.webp",
+      "logoQuelle": "og:image",
+      "kanal": "Fine Music Radio"
     }
   ]
 }

@@ -184,7 +184,32 @@ class AudioEngine {
       this.laeuft = true; this._rufe('start');
     });
     el.addEventListener('pause', () => { if (el === this.audio) this.laeuft = false; });
-    el.addEventListener('error', () => { if (el === this.audio) this._rufe('fehler'); });
+    /*
+     Ein Ladefehler auf dem Analyse-Element ist meistens KEIN kaputter
+     Sender, sondern ein falscher Eintrag im Katalog.
+
+     Das Element traegt crossOrigin="anonymous". Schickt der Strom den
+     Kopfeintrag nicht mit, verweigert der Browser das Laden komplett —
+     Fehlercode 4, Zeit bleibt null. Gemessen an NTS 1, dem ersten Sender
+     im Laden: steht als cors:true drin, hat aber keinen Kopfeintrag.
+
+     Das ist der haeufigere Zwilling der Stille: Dort kommt Ton an und man
+     hoert nichts, hier kommt gar nichts erst an. Beide sehen fuer den
+     Besucher gleich aus — „der Sender geht nicht".
+
+     Also: einmal ohne Analyse versuchen, bevor der Sender als kaputt gilt.
+    */
+    el.addEventListener('error', () => {
+      if (el !== this.audio) return;
+      const sender = this.aktuellerSender;
+      if (el === this.audioAnalyse && sender?.cors) {
+        sender.cors = false;
+        this._rufe('ohneZugriff', sender);
+        this.spiele(sender);
+        return;
+      }
+      this._rufe('fehler');
+    });
     el.addEventListener('loadstart', () => { if (el === this.audio) this._rufe('laden'); });
     el.addEventListener('waiting',  () => { if (el === this.audio) this._rufe('puffern'); });
   }
@@ -323,11 +348,15 @@ class AudioEngine {
     this._loeseHlsAb();
     const istHls = /\.m3u8(\?|$)/i.test(sender.stream);
 
-    if (!istHls || this.audio.canPlayType('application/vnd.apple.mpegurl')) {
-      this.audio.src = sender.stream;
-      return;
-    }
+    if (!istHls) { this.audio.src = sender.stream; return; }
 
+    /*
+     NICHT canPlayType fragen. Chrome antwortet dort „maybe" und scheitert
+     dann trotzdem — die Angabe ist seit Jahren unzuverlaessig, und ein
+     „vielleicht" ist keine Grundlage. Stattdessen: Bibliothek nehmen, wo sie
+     kann; nativ nur dort, wo sie nicht kann. Das ist Safari und iOS, und
+     dort ist HLS eingebaut und gut.
+    */
     try {
       const { default: Hls } = await import('./lib/hls.light.min.mjs');
       if (!Hls.isSupported()) { this.audio.src = sender.stream; return; }
@@ -338,7 +367,15 @@ class AudioEngine {
       this._hls.attachMedia(this.audio);
       this._hls.loadSource(sender.stream);
       this._hls.on(Hls.Events.ERROR, (_, daten) => {
-        if (daten.fatal) { this._loeseHlsAb(); this._rufe('fehler'); }
+        if (!daten.fatal) return;
+        // Erst den eingebauten Weg versuchen, bevor der Sender als kaputt gilt.
+        this._loeseHlsAb();
+        if (this.audio.canPlayType('application/vnd.apple.mpegurl')) {
+          this.audio.src = sender.stream;
+          this.audio.play().catch(() => this._rufe('fehler'));
+        } else {
+          this._rufe('fehler');
+        }
       });
       /*
        HLS traegt die Titelangabe im Strom mit, als ID3 zwischen den
