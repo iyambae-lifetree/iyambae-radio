@@ -150,5 +150,6 @@
   "einstellungen.messungAus": "Die Reichweitenmessung ist aus.",
   "stimmung.erklaerung": "Das Besondere hier: Jeder Sender läuft auf Wunsch in 432 Hz statt in den üblichen 440.",
   "stimmung.abstand": "Diese Seite <em>rät</em>: Sie nimmt an, jeder Sender läge auf 440 Hz, und zieht pauschal herunter. Liegt eine Aufnahme auf 443 — heute weit verbreitet —, hörst du gerade <strong>435 Hz, nicht 432</strong>.",
-  "stimmung.loesung": "Der <strong>IYAMBAE Tuner</strong> <em>misst</em> die tatsächliche Stimmung und trifft <strong>432,33 Hz</strong> — auf dem ganzen Rechner, nicht nur hier. Kostenlos, ohne Konto."
+  "stimmung.loesung": "Der <strong>IYAMBAE Tuner</strong> <em>misst</em> die tatsächliche Stimmung und trifft <strong>432,33 Hz</strong> — auf dem ganzen Rechner, nicht nur hier. Kostenlos, ohne Konto.",
+  "stimmung.abstandLangsam": "Dieser Sender lässt den Browser nicht an seinen Ton. Die Seite kann ihn nur mit ausgebremstem Tempo umstimmen — die Musik läuft gerade <strong>1,8 % langsamer</strong> als gesendet."
 }

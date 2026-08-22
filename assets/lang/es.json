@@ -150,5 +150,6 @@
   "einstellungen.messungAus": "La medición de audiencia está desactivada.",
   "stimmung.erklaerung": "Lo especial de este sitio: cada emisora puede sonar en 432 Hz en vez de los 440 habituales.",
   "stimmung.abstand": "Esta página <em>adivina</em>: supone que cada emisora está en 440 Hz y lo baja todo por igual. Si una grabación está en 443 — algo habitual hoy —, ahora mismo estás oyendo <strong>435 Hz, no 432</strong>.",
-  "stimmung.loesung": "El <strong>IYAMBAE Tuner</strong> <em>mide</em> la afinación real y llega a <strong>432,33 Hz</strong> — en todo el ordenador, no solo aquí. Gratis, sin cuenta."
+  "stimmung.loesung": "El <strong>IYAMBAE Tuner</strong> <em>mide</em> la afinación real y llega a <strong>432,33 Hz</strong> — en todo el ordenador, no solo aquí. Gratis, sin cuenta.",
+  "stimmung.abstandLangsam": "Esta emisora no deja que el navegador acceda a su audio. La página solo puede afinarla frenándola — la música suena ahora mismo <strong>un 1,8 % más lenta</strong> que en la emisión."
 }

@@ -1294,6 +1294,19 @@ class UI {
                 : t('hero.guete.bitrate', { codec: sender.codec.toUpperCase(), bitrate: sender.bitrate ?? '?' });
     // Ehrlich benennen, ob der Balkenkranz das echte Signal zeigt.
     const pegel = sender.cors ? t('hero.pegel.live') : t('hero.pegel.simuliert');
+    /*
+     Und ebenso ehrlich benennen, was beim Umstimmen wirklich passiert.
+
+     Achtzehn Sender lassen den Browser nicht an ihren Ton. Fuer die faellt
+     die Seite auf playbackRate zurueck, und das zieht Tonhoehe und Tempo
+     gemeinsam herunter — die Musik laeuft dort 1,8 Prozent langsamer.
+
+     Das steht als cors im Katalog, ist gemessen und gilt je Sender. Anders
+     als die Stimmung einer Aufnahme, die von Titel zu Titel wechselt und
+     ueber die wir deshalb nichts behaupten.
+    */
+    const abstand = document.querySelector('.abstand__satz:not(.abstand__satz--loesung)');
+    if (abstand) abstand.innerHTML = t(sender.cors ? 'stimmung.abstand' : 'stimmung.abstandLangsam');
     document.getElementById('heroGuete').textContent = guete + pegel;
     document.getElementById('heroLink').href = sender.homepage;
     document.getElementById('barName').textContent = sender.name;
