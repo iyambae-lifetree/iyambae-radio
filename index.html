@@ -62,8 +62,19 @@
         <span class="logo__wort">IYAMBAE<span>FM</span></span>
     </a>
 
-    <div class="kopf__suche">
-        <span class="kopf__lupe" data-symbol="suche" data-symbol-groesse="16"></span>
+    <!-- Die Suche klappt auf, statt dauerhaft die beste Stelle der Kopfzeile
+         zu belegen. Gemessen: fuenf Suchen in sieben Tagen gegen 51
+         Regaloeffnungen — hier wird gestoebert, nicht gesucht.
+
+         GELOESCHT WIRD SIE NICHT. Sie ist die einzige Art, unter 165 Sendern
+         einen bestimmten zu finden; wer sucht, weiss was er will, und fuer
+         den waere der Verlust gross. Sie kostet jetzt einen Klick und gibt
+         dafuer den Platz frei. -->
+    <div class="kopf__suche" id="kopfSuche">
+        <button class="kopf__lupe" id="lupe" type="button" aria-expanded="false" aria-controls="suche"
+                data-titel="kopf.suche.hinweis" title="Sender suchen">
+            <span data-symbol="suche" data-symbol-groesse="16"></span>
+        </button>
         <input type="search" id="suche" data-platzhalter="kopf.suche.platzhalter" data-aria="kopf.suche.hinweis" placeholder="Sender, Ort, Stichwort …" aria-label="Sender suchen">
     </div>
 

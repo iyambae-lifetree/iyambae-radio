@@ -35,6 +35,9 @@
 //   Wer etwas hört. Es gibt keine Kennung, kein Plätzchen, keine Sitzung.
 //   Wie lange jemand hört. Nur der Start wird gemeldet, nie das Ende.
 //   Wonach gesucht wurde. Gezählt wird, DASS gesucht wurde — nie das Wort.
+//   Der Text einer Fehlermeldung. Beim Abspielfehler geht die NUMMER hinaus
+//   (MediaError.code, 1 bis 4 aus dem Standard), nie el.error.message — die
+//   ist herstellerabhängiger Freitext aus fremder Quelle.
 //   Die Adresse. Überhaupt keine, auch keine gekürzte: Mess- und
 //   Zugriffszeilen liegen in derselben Tabelle, ein gemeinsames Adressfeld
 //   hätte beide verbindbar gemacht (siehe deploy/nginx.conf).
@@ -52,7 +55,20 @@ const SCHLUESSEL = 'hz_messung';
  will, muss es hier eintragen und kommt dabei an diesem Kommentar vorbei.
  Genau dieselbe Bauart hat protokoll.mjs im Anmeldedienst.
 */
-const ARTEN = new Set(['start', 'filter', 'regal', 'suche', 'sprache', 'installiert']);
+const ARTEN = new Set(['start', 'filter', 'regal', 'suche', 'sprache',
+                       'installiert', 'abspielfehler',
+                       'teilen', 'teilen-uebernommen']);
+
+/*
+ Die drei Zweige von `abspielfehler` — ebenfalls abschliessend.
+
+ Warum eine zweite Liste und nicht einfach eine Zeichenkette: Diese Werte
+ landen als Spalte in einer Auswertung. Waere sie offen, entschiede jeder
+ spaetere Aufrufer mit, welche Kategorien es gibt — und niemand merkte es,
+ bis die Zahlen nicht mehr zusammenpassen.
+*/
+const ZWEIGE = new Set(['analyse-gescheitert', 'ohne-analyse-gelungen',
+                        'ganz-gescheitert']);
 
 let erlaubt = null;   // null = noch nicht gelesen
 
@@ -132,6 +148,50 @@ export function miss(was, felder = {}) {
   // Beim Wechsel die ZIELsprache — rumpf.sprache traegt zu diesem
   // Zeitpunkt noch die alte, die Seite laedt ja erst danach neu.
   if (was === 'sprache' && felder.wert) rumpf.wert = String(felder.wert);
+  /*
+   Der Abspielfehler: Sender, Zweig, Fehlercode. Sonst nichts.
+
+   Der Zweig muss in ZWEIGE stehen, sonst geht die Zeile OHNE ihn hinaus —
+   nicht gar nicht. Eine Zeile ohne Zweig ist immer noch die Auskunft „bei
+   diesem Sender ging etwas schief", und die ist mehr wert als Schweigen.
+
+   `code` ist MediaError.code, eine Zahl von 1 bis 4 aus dem Standard. Sie
+   wird auf ganze Zahlen 1..4 eingegrenzt: Was ausserhalb liegt, kommt nicht
+   aus dem Standard, sondern von irgendwoher — und dann steht die Zeile
+   lieber ohne Code da.
+
+   `el.error.message` steht ausdruecklich NICHT hier. Die ist
+   herstellerabhaengiger Freitext aus fremder Quelle und hat in einer
+   Protokollzeile nichts verloren.
+  */
+  /*
+   'teilen' und 'teilen-uebernommen' gehen OHNE FELDER hinaus, obwohl
+   app.js `{ anzahl }` mitgibt.
+
+   Das ist kein Versehen, sondern dieselbe Entscheidung wie bei der Achse
+   `gemerkte` ein paar Zeilen weiter oben — und es ist sogar dieselbe Zahl:
+   die Anzahl der gemerkten Sender.
+
+   Sie ist ueber Wochen stabil und liegt zwischen 0 und der Zahl der Sender.
+   Die Messzeile hat zwar kein Adressfeld, aber sie liegt mit Zeitstempel in
+   derselben Ablage wie die Zugriffszeilen, die eines haben. Eine stabile
+   Zahl an einem Zeitstempel ist damit ein Wiedererkennungswert.
+
+   Gemessen wird also, DASS jemand geteilt hat. Das beantwortet die Frage,
+   fuer die das Ereignis gebaut wurde — wird die Teilenfunktion ueberhaupt
+   benutzt —, und traegt nichts bei, woran sich jemand wiedererkennen liesse.
+
+   Bis heute sendeten beide Aufrufe GAR NICHTS: Ihre Art stand nicht in
+   ARTEN, und miss() gibt dann still `false` zurueck. Scripts/pruefe-messung.mjs
+   faengt diesen Fall jetzt ab.
+  */
+  if (was === 'abspielfehler') {
+    if (felder.sender) rumpf.sender = String(felder.sender);
+    if (ZWEIGE.has(felder.zweig)) rumpf.zweig = felder.zweig;
+    if (Number.isInteger(felder.code) && felder.code >= 1 && felder.code <= 4) {
+      rumpf.code = felder.code;
+    }
+  }
 
   try {
     /*
