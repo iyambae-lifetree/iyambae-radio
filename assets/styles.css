@@ -2022,3 +2022,26 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     border: 1px solid var(--rand); border-radius: 0.35rem;
     font-family: var(--mono); font-size: 0.72rem;
 }
+
+/* ── Was gerade laeuft ───────────────────────────────────────────
+   Steht unter dem Sendernamen und verschwindet, sobald nichts mehr
+   kommt. Kein Platzhalter, keine drei Punkte: Ein Feld, das meistens
+   „unbekannt" sagt, ist schlimmer als keins. */
+.hero__titel {
+    margin: 0.35rem 0 0;
+    font-size: 0.92rem;
+    color: var(--gold);
+    display: flex; align-items: baseline; gap: 0.45rem;
+}
+.hero__titel[hidden] { display: none; }
+.hero__titel::before {
+    content: '♪';
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+.spieler__titel {
+    font-family: var(--mono); font-size: 0.68rem;
+    color: var(--gold);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.spieler__titel[hidden] { display: none; }

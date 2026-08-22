@@ -22,6 +22,7 @@ import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 import { beobachteFehler, einwilligungsstand, widerrufeEinwilligung }
   from './lib/fehlerbericht.mjs';
 import { miss, messungLaeuft, setzeMessung } from './lib/messung.mjs';
+import { beobachteTitel, haltAn as haltTitelAn } from './lib/titel.mjs';
 import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t }
   from './lib/sprache.mjs';
 
@@ -160,7 +161,7 @@ class AudioEngine {
     this.istStumm = false;
     this.vorherigeLautstaerke = 0.7;
     this._simDaten = new Float32Array(128);
-    this._rueckrufe = { start: [], fehler: [], laden: [], puffern: [], ohneZugriff: [] };
+    this._rueckrufe = { start: [], fehler: [], laden: [], puffern: [], ohneZugriff: [], titel: [] };
 
     this._audioCtx = null;
     this._analyse = null;
@@ -284,7 +285,7 @@ class AudioEngine {
       }
       this.audio = zielElement;
       this.analyseEcht = sender.cors ? this._richteAnalyseEin() : false;
-      this.audio.src = sender.stream;
+      await this._haengeQuelleAn(sender);
     }
 
     if (this.audio === this.audioAnalyse && this._audioCtx?.state === 'suspended') {
@@ -300,6 +301,67 @@ class AudioEngine {
     } catch (e) {
       if (e.name !== 'AbortError') this._rufe('fehler');
     }
+  }
+
+  /*
+   ═══ HLS ═══════════════════════════════════════════════════════════
+
+   Die meisten Sender schicken einen einzigen, endlosen Strom. Manche
+   zerhacken ihn stattdessen in Haeppchen von wenigen Sekunden und fuehren
+   eine Liste darueber (.m3u8). Das kommt durch Firmennetze, laesst sich in
+   der Qualitaet umschalten — und der Browser kann es nicht von selbst.
+
+   AUSSER SAFARI. Der versteht es eingebaut, und dann ist die Bibliothek
+   ueberfluessig. Deshalb wird zuerst gefragt und erst dann geladen.
+
+   GELADEN WIRD SIE NUR HIER. 371 KB sind viel fuer eine Seite, die sonst
+   nichts nachlaedt; die 157 gewoehnlichen Sender kosten davon nichts. Und
+   sie liegt im eigenen Haus, nicht auf einem Auslieferungsnetz — dieselbe
+   Ueberlegung wie bei den Schriften.
+  */
+  async _haengeQuelleAn(sender) {
+    this._loeseHlsAb();
+    const istHls = /\.m3u8(\?|$)/i.test(sender.stream);
+
+    if (!istHls || this.audio.canPlayType('application/vnd.apple.mpegurl')) {
+      this.audio.src = sender.stream;
+      return;
+    }
+
+    try {
+      const { default: Hls } = await import('./lib/hls.light.min.mjs');
+      if (!Hls.isSupported()) { this.audio.src = sender.stream; return; }
+      // Der Sender kann waehrend des Ladens gewechselt haben.
+      if (this.aktuellerSender !== sender) return;
+
+      this._hls = new Hls({ enableWorker: true, lowLatencyMode: false, backBufferLength: 30 });
+      this._hls.attachMedia(this.audio);
+      this._hls.loadSource(sender.stream);
+      this._hls.on(Hls.Events.ERROR, (_, daten) => {
+        if (daten.fatal) { this._loeseHlsAb(); this._rufe('fehler'); }
+      });
+      /*
+       HLS traegt die Titelangabe im Strom mit, als ID3 zwischen den
+       Haeppchen. Wer sie liest, weiss ohne eine zweite Adresse, was gerade
+       laeuft — bei gewoehnlichen Stroemen geht das nicht.
+      */
+      this._hls.on(Hls.Events.FRAG_PARSING_METADATA, (_, daten) => {
+        for (const probe of daten.samples ?? []) {
+          const text = new TextDecoder('utf-8', { fatal: false }).decode(probe.data ?? new Uint8Array());
+          const titel = (/TIT2|StreamTitle/.test(text) ? text : '')
+            .replace(/[\x00-\x1f]+/g, ' ').replace(/^.*?(TIT2|StreamTitle)/, '').trim();
+          if (titel.length > 2) this._rufe('titel', titel.slice(0, 120));
+        }
+      });
+    } catch {
+      this.audio.src = sender.stream;   // Bibliothek nicht da: der uebliche Weg
+    }
+  }
+
+  _loeseHlsAb() {
+    if (!this._hls) return;
+    try { this._hls.destroy(); } catch {}
+    this._hls = null;
   }
 
   /*
@@ -544,6 +606,16 @@ class UI {
     */
     this.filter = leererFilter();
     this.favoriten = new Set(speicher.lies(SCHLUESSEL.favoriten, []));
+  }
+
+  zeigeTitel(titel) {
+    const sauber = (titel ?? '').replace(/\s+/g, ' ').trim();
+    for (const id of ['heroTitel', 'barTitel']) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      el.textContent = sauber;
+      el.hidden = !sauber;
+    }
   }
 
   senderMitId(id) { return this.sender.find(s => s.id === id) ?? null; }
@@ -1324,6 +1396,7 @@ class UI {
   }
 
   zeigeSender(sender) {
+    this.zeigeTitel('');
     // Das Plattenlabel: Logo des Senders, sonst bleibt die IYAMBAE-Marke.
     const label = document.getElementById('labelBild');
     if (label && label.dataset.senderId !== sender.id) {
@@ -1521,6 +1594,16 @@ class App {
      direkten Weg — also gilt der andere Satz im Abstandsfeld, und der
      Balkenkranz zeigt kein echtes Signal mehr.
     */
+    /*
+     Was gerade laeuft. Die Rueckmeldung eines Testers am 22.08.2026: „Schade
+     auch, dass man nicht weiss, was man da gerade hoert." Er vermutete
+     richtig — manche Sender schicken es mit, viele nicht.
+
+     Deshalb: anzeigen, wenn es kommt, und sonst nichts. Ein Feld, das
+     meistens „unbekannt" sagt, ist schlimmer als kein Feld.
+    */
+    this.engine.bei('titel', (titel) => this.ui.zeigeTitel(titel));
+
     this.engine.bei('ohneZugriff', (sender) => {
       const feld = document.querySelector('.abstand__satz:not(.abstand__satz--loesung)');
       if (feld) feld.innerHTML = t('stimmung.abstandLangsam');
@@ -1596,6 +1679,7 @@ class App {
 
   // ── Wiedergabe ───────────────────────────────────────────────────
   async spieleSender(sender, optionen = {}) {
+    beobachteTitel(sender, (titel) => this.ui.zeigeTitel(titel));
     this.ui.aktuelleId = sender.id;
     this.engine.aktuellerSender = sender;
     this.ui.zeigeSender(sender);
