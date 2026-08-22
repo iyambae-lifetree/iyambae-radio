@@ -27,51 +27,25 @@
 
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 
-    <!-- Strukturierte Daten. Sie sind das, woraus Google seine Ergebnisse baut
-         und woraus Antwortmaschinen zitieren — und anders als der Katalog
-         stehen sie ohne einen einzigen Programmschritt im HTML.
+    <!-- Strukturierte Daten stehen NICHT hier, sondern am Ende des Rumpfes,
+         und sie werden erzeugt statt geschrieben.
 
-         Bewusst sprachneutral: Diese Datei ist die Vorlage fuer alle sieben
-         Fassungen, und Scripts/baue-sprachen.py setzt nur die data-Attribute
-         um. Was hier an deutschem Text staende, staende sechsmal falsch da.
+         Hier stand bis zum Zusammenfuehren ein fester Block. Er tat dasselbe
+         wie der erzeugte — Organization und WebSite —, und weil beide
+         dieselbe `@id` vergaben, standen am Ende zwei Knoten `…/#haus` mit
+         verschiedenem `logo` im selben Dokument. Ein Widerspruch in den
+         Daten, kein Schoenheitsfehler: Der Leser darf sich aussuchen, welchem
+         er glaubt.
 
-         Der Katalog der Sender gehoert ebenfalls hierher, aber je Sprache
-         erzeugt — siehe 432hz-radio#3. -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Organization",
-          "@id": "https://iyambae.fm/#haus",
-          "name": "IYAMBAE",
-          "url": "https://iyambae.fm/",
-          "logo": "https://iyambae.fm/assets/logo/iyambae-radio.svg"
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://iyambae.fm/#seite",
-          "name": "IYAMBAE FM",
-          "alternateName": "IYAMBAE Radio",
-          "url": "https://iyambae.fm/",
-          "publisher": { "@id": "https://iyambae.fm/#haus" },
-          "inLanguage": ["de", "en", "fr", "es", "it", "ja", "ar"],
-          "about": [
-            { "@type": "Thing", "name": "432 Hz" },
-            { "@type": "Thing", "name": "Internet radio" }
-          ],
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-              "@type": "EntryPoint",
-              "urlTemplate": "https://iyambae.fm/?suche={search_term_string}"
-            },
-            "query-input": "required name=search_term_string"
-          }
-        }
-      ]
-    }
-    </script>
+         Der erzeugte gewinnt, weil er kann, was ein fester nicht kann —
+         uebersetzen. Der Senderkatalog steht darin, die Beschreibung in der
+         Sprache der Seite, und die Suchadresse zeigt auf die Sprachfassung,
+         in der jemand gerade liest. Alles, was hier stand, ist in
+         Scripts/baue-sprachen.py -> katalog_jsonld() aufgegangen.
+
+         Wer hier wieder einen Block einsetzt, bekommt die Selbstpruefung des
+         Erzeugers zu sehen: „2 JSON-LD-Bloecke statt genau einem", und es
+         wird nichts geschrieben. -->
     <link rel="stylesheet" href="/assets/schrift/schriften.css">
     <link rel="stylesheet" href="/assets/styles.css">
 </head>
