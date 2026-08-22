@@ -504,17 +504,44 @@ def katalog_jsonld(katalog, texte, kuerzel):
         "@id": f"{HAUS}/#haus",
         "name": "IYAMBAE",
         "url": f"{HAUS}/",
-        "logo": f"{HAUS}/icon-512.png",
+        # Das Markenlogo, nicht das App-Symbol. icon-512.png ist der Kachel-
+        # Anstrich der PWA und traegt den Rand, den ein Startbildschirm
+        # braucht; als Logo einer Organisation ist die Marke gemeint.
+        # Uebernommen aus dem festen Block, den der Zweig
+        # plattenspieler-und-logo in den Kopf gesetzt hatte — die Marke
+        # gehoert Saemi-Ra, also seine Datei.
+        "logo": f"{HAUS}/assets/logo/iyambae-radio.svg",
     }
 
     website = {
         "@type": "WebSite",
         "@id": f"{seite}#seite",
         "url": seite,
-        "name": "IYAMBAE Radio",
+        "name": "IYAMBAE FM",
+        "alternateName": "IYAMBAE Radio",
         "description": t("seite.beschreibung"),
         "inLanguage": kuerzel,
         "publisher": {"@id": f"{HAUS}/#haus"},
+        "about": [
+            {"@type": "Thing", "name": "432 Hz"},
+            {"@type": "Thing", "name": "Internet radio"},
+        ],
+        # Die Suche, die Google als Suchfeld unter dem Treffer anbieten kann.
+        #
+        # SPRACHABHAENGIG, und das ist der Grund, warum sie hier steht und
+        # nicht mehr fest im Kopf von index.html: Der feste Block zeigte auf
+        # HAUS/?suche=…, also auf die Wurzel. Wer auf Japanisch gesucht
+        # haette, waere auf der Sprachweiche gelandet und von dort — je nach
+        # Browsereinstellung — irgendwo. Hier zeigt sie auf die Fassung, in
+        # der jemand tatsaechlich liest.
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": f"{seite}?suche={{search_term_string}}",
+            },
+            "query-input": "required name=search_term_string",
+        },
     }
 
     eintraege = []
