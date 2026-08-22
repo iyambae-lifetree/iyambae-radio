@@ -264,8 +264,25 @@ async function liesKoerper(anfrage) {
 
 function antworte(res, status, koerper, kopf = {}) {
     const kopfzeilen = {
-        // Doppelt gemoppelt mit nginx, und das mit Absicht: Eine Merkliste,
-        // die in einem Firmenproxy landet, sammelt man nicht wieder ein.
+        /*
+          Doppelt gemoppelt mit nginx, und bei den ersten beiden mit Absicht:
+          Eine Merkliste, die in einem Firmenproxy landet, sammelt man nicht
+          wieder ein — und wenn jemand diesen Dienst je ohne nginx davor
+          betreibt, gelten die Regeln trotzdem.
+
+          BEI Referrer-Policy IST DIE DOPPELUNG WIRKUNGSLOS, und das stand
+          hier bis heute falsch. nginx setzt fuer den ganzen Serverblock
+          `strict-origin-when-cross-origin`, und weil seine Zeile ZULETZT
+          kommt, nimmt der Browser sie: Bei mehreren Referrer-Policy-Koepfen
+          gilt der letzte gueltige, nicht der strengste.
+
+          Praktisch aendert das hier nichts — die Regel steuert, was ein
+          DOKUMENT beim Weiterklicken mitschickt, und eine JSON-Antwort
+          verlinkt nirgendwohin. Die Zeile bleibt fuer den Fall ohne nginx
+          stehen. Wer sie wirklich durchsetzen will, muss sie in nginx
+          aendern, nicht hier — und dort gilt sie dann auch fuer die Seiten,
+          wo `strict-origin-when-cross-origin` bewusst gewaehlt ist.
+        */
         'Cache-Control': 'no-store',
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'no-referrer',
@@ -1142,12 +1159,26 @@ export function baueDienst({
             return {
                 status: 200,
                 /*
-                  Zwanzig Sekunden oeffentlich zwischenspeicherbar. `public`
-                  ist hier richtig und anderswo in diesem Dienst falsch: Die
-                  Antwort haengt an keinem Besucher, also darf sie auch ein
-                  Zwischenspeicher unterwegs fuer alle halten.
+                  KEIN eigener Cache-Kopf, obwohl die Antwort fuer alle
+                  dieselbe ist und ein Zwischenspeicher hier sinnvoll waere.
+
+                  Gemessen, nachdem ich es zuerst versucht hatte: nginx setzt
+                  fuer /api/ ein `add_header Cache-Control "no-store" always`,
+                  und `add_header` ERSETZT nicht, sondern HAENGT AN. Heraus kam
+                  `cache-control: public, max-age=20,no-store` — ein
+                  Widerspruch, bei dem no-store gewinnt. Die Zeile hatte also
+                  keine Wirkung ausser der, einen Leser in die Irre zu fuehren.
+
+                  Das Zwischenspeichern passiert eine Ebene tiefer, in
+                  titel.mjs: Der Stand wird ANTWORT_MS lang wiederverwendet,
+                  und nach aussen geht ohnehin nur alle 90 s je Sender eine
+                  Anfrage. Genau das war der Zweck.
+
+                  Wer den HTTP-Zwischenspeicher wirklich will, braucht einen
+                  eigenen `location = /api/titel`-Block in nginx — dort erbt
+                  add_header nicht mehr. Bis dahin gilt fuer /api/ eine Regel
+                  und keine Ausnahme, die jemand kennen muesste.
                 */
-                kopf: { 'Cache-Control': 'public, max-age=20' },
                 koerper: stand,
             };
         },
