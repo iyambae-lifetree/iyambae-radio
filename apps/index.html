@@ -2206,7 +2206,22 @@ code {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paket),
       });
-      if (!antwort.ok) throw new Error(String(antwort.status));
+      /*
+       NUR 204 GILT ALS ANGEKOMMEN, nicht „irgendein 2xx".
+
+       Micha hat beim Bauen des Endpunkts gefunden, dass apps.iyambae.fm
+       /api/ ueberhaupt nicht weiterreichte: Der Serverblock faellt auf
+       index.html zurueck. Ein POST haette 200 mit einer HTML-Seite bekommen
+       — und `antwort.ok` waere true gewesen. Die Umfrage haette „Danke"
+       gezeigt und jede Antwort weggeworfen, wochenlang, ohne dass es
+       jemandem auffaellt.
+
+       Er hat die Weiterleitung berichtigt. Diese Zeile sorgt dafuer, dass
+       derselbe Fehler nie wieder still ist: Der Dienst antwortet bei Erfolg
+       mit 204 und ohne Rumpf. Alles andere — auch ein freundliches 200 mit
+       einer Seite darin — gilt als nicht angekommen.
+      */
+      if (antwort.status !== 204) throw new Error(String(antwort.status));
     } catch {
       schluss.innerHTML = (window.__umfrageTexte?.fehler)
         || ('Angekommen ist es leider nicht — der Dienst antwortet gerade nicht. '
