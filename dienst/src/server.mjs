@@ -62,6 +62,7 @@ import {
     erzeugeAbfrager, erzeugeZusammenfassung, liesFenster,
     liesSchluessel, schluesselStimmt,
 } from './zahlen.mjs';
+import { erzeugeTitel } from './titel.mjs';
 
 const PORT = Number(process.env.PORT ?? 8081);
 const HOECHSTER_KOERPER = Number(process.env.HOECHSTER_KOERPER ?? 32 * 1024);
@@ -422,6 +423,7 @@ function fremdDrossel(schluessel, netz) {
  */
 export function baueDienst({
     speicher, versender, drossel = erzeugeDrossel(), fremd = null, zahlen = null,
+    titel = null,
 } = {}) {
 
     // ── Kleinkram, der von mehreren Stellen gebraucht wird ──────────
@@ -1106,6 +1108,51 @@ export function baueDienst({
         },
 
         /*
+          Was gerade laeuft — fuer ALLE Sender auf einmal.
+
+          KEIN SENDER IN DER ANFRAGE, und das ist die ganze Bauart. Der
+          naheliegende Weg waere `?sender=kiosk-radio`. Dann entstuende bei
+          jedem Zuhoerer alle zwanzig Sekunden eine Anfrage, die verraet,
+          was er hoert — ueber eine Stunde ein Muster neben einer Adresse im
+          Zugriffsprotokoll. Aus einer Messung, die bewusst kein Adressfeld
+          hat, wuerde so durch die Hintertuer ein Hoerprotokoll.
+
+          Die Antwort ist deshalb fuer jeden dieselbe: ein Anschlagbrett,
+          kein Dialog. Rund hundert kurze Zeilen sind wenige Kilobyte, mit
+          gzip weniger.
+
+          KEIN SCHLUESSEL, anders als bei /api/zusammenfassung. Dort geht es
+          um Zahlen ueber Besucher; hier steht, was ein oeffentlicher Sender
+          gerade oeffentlich sendet. Ein Schluessel schuetzte nichts und
+          machte die Antwort nur fuer den Browser unerreichbar, der sie
+          braucht.
+
+          Zwischengespeichert wird oben in titel.mjs. Hier wird nichts
+          abgewartet: `hole()` liefert sofort den vorhandenen Stand und
+          stoesst den Nachschub im Hintergrund an.
+        */
+        'GET /api/titel': async () => {
+            if (!titel) {
+                // Nicht eingerichtet heisst: Diesen Weg gibt es hier nicht.
+                // 424 und nicht 503, weil nginx die 503 abfaengt und daraus
+                // `dienst_schlaeft` macht — also die falsche Ursache.
+                return { status: 424, koerper: { fehler: 'titel_nicht_eingerichtet' } };
+            }
+            const stand = titel.hole();
+            return {
+                status: 200,
+                /*
+                  Zwanzig Sekunden oeffentlich zwischenspeicherbar. `public`
+                  ist hier richtig und anderswo in diesem Dienst falsch: Die
+                  Antwort haengt an keinem Besucher, also darf sie auch ein
+                  Zwischenspeicher unterwegs fuer alle halten.
+                */
+                kopf: { 'Cache-Control': 'public, max-age=20' },
+                koerper: stand,
+            };
+        },
+
+        /*
           Lebenszeichen. Ohne Sitzung, ohne Protokolleintrag, ohne
           Tabellenzugriff.
 
@@ -1320,7 +1367,38 @@ export async function starte({ port = PORT } = {}) {
         });
     }
 
-    const server = http.createServer(baueDienst({ speicher, versender, fremd, zahlen }));
+    /*
+      Der Titelstand.
+
+      Die Senderliste kommt vom NACHBARN IM SELBEN BEHAELTERPAAR, nicht von
+      aussen: nginx liefert /data/sender.json, und beide Container stecken in
+      derselben Replik. Damit ist die Liste immer genau die des
+      ausgelieferten Abbilds — ein Abruf ueber das Internet koennte einen
+      anderen Stand erwischen, waehrend gerade ausgerollt wird.
+
+      `holeBeobachtete` fragt die Zahlen, welche Sender zuletzt wirklich
+      gestartet wurden. Ohne das wuerde bei jedem Zug irgendwo im Rundlauf
+      durch 156 Sender gelesen; mit ihm nur dort, wo jemand zuhoert. Fallen
+      die Zahlen aus, ist es kein Fehler — dann eben der Rundlauf.
+    */
+    const titel = erzeugeTitel({
+        holeSenderliste: async () => {
+            const antwort = await fetch('http://127.0.0.1:8080/data/sender.json');
+            if (!antwort.ok) throw new Error('sender.json ' + antwort.status);
+            const daten = await antwort.json();
+            return Array.isArray(daten) ? daten : daten.sender;
+        },
+        holeBeobachtete: async () => {
+            if (!zahlen) return null;
+            const ergebnis = await zahlen.hole(1);
+            const liste = ergebnis?.zahlen?.sender_oben;
+            return Array.isArray(liste) ? liste.map((x) => x.sender) : null;
+        },
+        protokolliere,
+    });
+
+    const server = http.createServer(
+        baueDienst({ speicher, versender, fremd, zahlen, titel }));
 
     /*
       Zeitgrenzen ausdruecklich setzen. Die Vorgaben von node:http sind

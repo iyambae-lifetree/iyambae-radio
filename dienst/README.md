@@ -259,6 +259,7 @@ Sprachen, der Dienst keine. Ein deutscher Satz aus dem Server waere auf
 | `DELETE /api/konto` | 204 · 400 · 401 | verlangt `{bestaetigung:"loeschen"}` |
 | `POST /api/umfrage` | 204 · 400 · 413 · 429 | — bzw. `{fehler:'nichts_erkannt'}` |
 | `GET /api/zusammenfassung` | 200 · 401 · 424 · 429 | Schluessel als `Authorization: Bearer` |
+| `GET /api/titel` | 200 · 424 | ohne Schluessel, ohne Sender in der Anfrage |
 | `GET /api/leben` | 204 | ohne Sitzung, ohne Protokolleintrag |
 
 ### `POST /api/umfrage` — der einzige schreibende Weg ohne Sitzung
@@ -294,6 +295,51 @@ Der Freitext ist das einzige Feld, das gesaeubert wird: Adressen und lange
 Zeichenfolgen mit Ziffern werden geschwaerzt, spitze Klammern und
 Steuerzeichen fallen weg, danach wird auf 600 Zeichen gekuerzt. Das Warum
 steht in `src/umfrage.mjs`.
+
+### `GET /api/titel` — was gerade laeuft, fuer alle dieselbe Antwort
+
+Der Anlass ist die Rueckmeldung eines Testers (432hz-radio#9): *„Irgendwie
+stimmt dann das Bild vom Plattenladen nicht mehr, wenn man zwar weiss, welches
+Genre, aber nicht welcher Kuenstler."*
+
+Rund 36 von 165 Sendern geben den Titel so heraus, dass ein Browser ihn lesen
+kann. Die uebrigen schicken ihn im **Tonstrom** mit (ICY), und da kommt ein
+`<audio>`-Element nicht heran. Dieser Weg liest ihn: kurz anhaengen, den ersten
+Metadatenblock lesen, Verbindung zu — rund 16 KB je Sender.
+
+```bash
+curl -s https://iyambae.fm/api/titel
+```
+
+```json
+{ "stand": 1755874320,
+  "titel": { "kiosk-radio": "Drifting and Dreaming w/ Rambling Boy Harrers",
+             "nts-2": "NTS Guide to: Mafia & Fluxy Versions" } }
+```
+
+**Kein Sender in der Anfrage — das ist die ganze Bauart.** Der naheliegende Weg
+waere `?sender=kiosk-radio`. Dann entstuende bei jedem Zuhoerer alle zwanzig
+Sekunden eine Anfrage, die verraet, was er hoert; ueber eine Stunde ein Muster
+neben einer Adresse im Zugriffsprotokoll. Aus einer Messung, die bewusst kein
+Adressfeld hat, wuerde so durch die Hintertuer ein Hoerprotokoll.
+
+**Kein Schluessel**, anders als bei der Zusammenfassung: Dort geht es um Zahlen
+ueber Besucher, hier um das, was ein oeffentlicher Sender gerade oeffentlich
+sendet.
+
+**Kein Timer.** Container Apps rechnet Leerlauf ab. Ein Abruf liefert sofort den
+vorhandenen Stand und stoesst im Hintergrund an, was aelter als 90 s ist; der
+naechste Abruf sieht das Ergebnis. Fragt niemand, passiert nichts.
+
+**Gedeckelt:** hoechstens 10 Stroeme je Zug, davon 4 gleichzeitig, und nur bei
+Sendern, die zuletzt wirklich gestartet wurden (aus `/api/zusammenfassung`).
+Ohne diese Deckelung waeren es bei 165 Sendern alle 20 s rund 8 MB je Stunde
+fuer nichts.
+
+**Im Zweifel nichts anzeigen.** Ein Sender ohne brauchbaren Titel steht gar
+nicht erst in der Antwort. `Now Playing info goes here` und `Airtime - offline`
+sind gemessene Vorgabetexte, keine Titel — ein Feld, das sie zeigt, ist
+schlimmer als ein leeres.
 
 ### `GET /api/zusammenfassung` — der einzige lesende Weg ohne Sitzung
 
