@@ -155,7 +155,7 @@ class AudioEngine {
     this.istStumm = false;
     this.vorherigeLautstaerke = 0.7;
     this._simDaten = new Float32Array(128);
-    this._rueckrufe = { start: [], fehler: [], laden: [], puffern: [] };
+    this._rueckrufe = { start: [], fehler: [], laden: [], puffern: [], ohneZugriff: [] };
 
     this._audioCtx = null;
     this._analyse = null;
@@ -183,7 +183,7 @@ class AudioEngine {
     el.addEventListener('waiting',  () => { if (el === this.audio) this._rufe('puffern'); });
   }
 
-  _rufe(art) { this._rueckrufe[art].forEach(fn => fn()); }
+  _rufe(art, ...was) { this._rueckrufe[art].forEach(fn => fn(...was)); }
   bei(art, fn) { this._rueckrufe[art].push(fn); }
 
   // Baut den Analysegraphen — nur einmal, und nur um das Analyse-Element.
@@ -291,12 +291,62 @@ class AudioEngine {
     try {
       await this.audio.play();
       this.laeuft = true;
+      this._wacheUeberStille();
     } catch (e) {
       if (e.name !== 'AbortError') this._rufe('fehler');
     }
   }
 
-  pausiere() { this.audio.pause(); this.laeuft = false; }
+  /*
+   ═══ Die Stillewache ═══════════════════════════════════════════════
+
+   Ein Element im Web-Audio-Graphen, dessen Quelle den Kopfeintrag
+   `access-control-allow-origin` NICHT mitschickt, gibt STILLE aus. Kein
+   Fehler, kein Ereignis — die Zeit laeuft weiter, der Balkenkranz zappelt,
+   und der Besucher hoert nichts.
+
+   WARUM DER KATALOG DAS NICHT LOESEN KANN: Der Wert steht dort als `cors`
+   und ist gemessen. Aber er ist nicht stabil. Dreimal hintereinander
+   gemessen ergab bei Kiosk Radio `true,true,false` und bei Classic Vinyl HD
+   `false,true,true` — offenbar ein Verteiler, bei dem nur ein Teil der
+   Knoten den Eintrag mitschickt. Von 40 geprueften Sendern mit cors:true
+   antworteten VIER nicht zuverlaessig.
+
+   Welcher Wert im Katalog steht, ist damit Glueckssache. Die Seite muss es
+   selbst merken.
+
+   WIE: Nach dem Start zwei Sekunden lang in den Analysator sehen. Laeuft die
+   Zeit und bleibt der Pegel bei exakt null, ist es diese Stille — echte
+   Musik hat immer Rauschen. Dann still auf das direkte Element umschalten
+   und den Sender fuer diese Sitzung als „ohne Zugriff" merken.
+
+   Der Besucher merkt davon eine Verzoegerung von zwei Sekunden und sonst
+   nichts. Das ist besser als Stille, und es ist besser, als ihn eine
+   Fehlermeldung lesen zu lassen, mit der er nichts anfangen kann.
+  */
+  _wacheUeberStille() {
+    clearTimeout(this._stilleWache);
+    if (this.audio !== this.audioAnalyse || !this.analyseEcht || !this._analyse) return;
+    const sender = this.aktuellerSender;
+    const begonnen = this.audio.currentTime;
+    const daten = new Uint8Array(this._analyse.frequencyBinCount);
+
+    this._stilleWache = setTimeout(() => {
+      if (!this.laeuft || this.aktuellerSender !== sender) return;
+      // Die Zeit muss gelaufen sein — sonst puffert er nur, und das ist
+      // keine Stille, sondern eine langsame Leitung.
+      if (this.audio.currentTime - begonnen < 0.5) return this._wacheUeberStille();
+      this._analyse.getByteFrequencyData(daten);
+      if (daten.some((w) => w > 0)) return;          // es kommt Ton, alles gut
+
+      // Stille trotz laufender Zeit: der Graph ist vergiftet.
+      sender.cors = false;
+      this._rufe('ohneZugriff', sender);
+      this.spiele(sender);
+    }, 2000);
+  }
+
+  pausiere() { clearTimeout(this._stilleWache); this.audio.pause(); this.laeuft = false; }
 
   wechsle() {
     if (this.laeuft) this.pausiere();
@@ -1460,6 +1510,21 @@ class App {
 
     this.engine.bei('laden',   () => this.ui.zeigeStatus('laden', t('status.verbinden')));
     this.engine.bei('puffern', () => this.ui.zeigeStatus('laden', t('status.puffern')));
+    /*
+     Die Stillewache hat umgeschaltet: Der Sender stand als „Browser darf
+     zugreifen" im Katalog, tat es aber nicht. Jetzt laeuft er ueber den
+     direkten Weg — also gilt der andere Satz im Abstandsfeld, und der
+     Balkenkranz zeigt kein echtes Signal mehr.
+    */
+    this.engine.bei('ohneZugriff', (sender) => {
+      const feld = document.querySelector('.abstand__satz:not(.abstand__satz--loesung)');
+      if (feld) feld.innerHTML = t('stimmung.abstandLangsam');
+      const guete = document.getElementById('heroGuete');
+      if (guete && sender) {
+        guete.textContent = guete.textContent.replace(t('hero.pegel.live'), t('hero.pegel.simuliert'));
+      }
+      miss('ohne-zugriff', { sender: sender?.id });
+    });
 
     // Kein automatisches Weiterspringen mehr. Früher wechselte die App alle
     // 2,5 s zum nächsten Sender und warf jedes Mal eine rote Meldung — bei

@@ -832,7 +832,7 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true,
+      "cors": false,
       "logo": "assets/logos/res-radio.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "RES"
@@ -1193,7 +1193,7 @@
       "samplerate": 48000,
       "status": "ok",
       "geprueft_am": "2026-08-21",
-      "cors": true,
+      "cors": false,
       "kanal": "Adroit Jazz Underground"
     },
     {
