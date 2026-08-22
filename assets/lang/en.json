@@ -1,6 +1,6 @@
 {
-  "seite.titel": "IYAMBAE Radio — the listening booth of a record shop",
-  "seite.beschreibung": "IYAMBAE Radio — a hand-picked record shop you listen your way through. 146 stations from 31 countries: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
+  "seite.titel": "IYAMBAE Radio — the listening booth of a record shop, in 432 Hz",
+  "seite.beschreibung": "IYAMBAE Radio — a hand-picked record shop you listen your way through. 157 stations from 35 countries: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
   "laden.hinweis": "Unlocking the record shop …",
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "Station, place, keyword …",
@@ -19,7 +19,7 @@
   "hero.pegel.live": " · levels live",
   "hero.pegel.simuliert": " · levels approximated",
   "hero.name.start": "Radio in 432 Hz",
-  "hero.ort.start": "146 stations from 31 countries, on eleven shelves",
+  "hero.ort.start": "157 stations from 35 countries, on eleven shelves",
   "hero.kaertchen.start": "Put a record on — or drop the needle and see where it lands.",
   "hero.knopf.abspielen": "Play",
   "hero.knopf.merken": "Keep",
@@ -150,5 +150,15 @@
   "einstellungen.fehler.was": "When something breaks, you are asked whether the report may be sent. Here you can withdraw a consent you gave.",
   "einstellungen.nachwort": "What is stored and for how long is in the <a href=\"/recht/datenschutz/\" hreflang=\"de\">privacy policy</a>.",
   "einstellungen.messungAn": "Audience measurement is on.",
-  "einstellungen.messungAus": "Audience measurement is off."
+  "einstellungen.messungAus": "Audience measurement is off.",
+  "stimmung.erklaerung": "What makes this place different: every station can play at 432 Hz instead of the usual 440.",
+  "stimmung.abstand": "This page <em>guesses</em>: it assumes every station sits at 440 Hz and pulls everything down by the same amount. If a recording sits at 443 — common today — what you are hearing right now is <strong>435 Hz, not 432</strong>.",
+  "stimmung.loesung": "The <strong>IYAMBAE Tuner</strong> <em>measures</em> the actual tuning and lands on <strong>432.33 Hz</strong> — across your whole computer, not just here. Free, no account.",
+  "stimmung.abstandLangsam": "This station does not let the browser at its audio. The page can only retune it by slowing it down — the music is playing <strong>1.8 % slower</strong> than broadcast right now.",
+  "teilen.satz": "{anzahl} records in your crate.",
+  "teilen.knopf": "Link to pass on",
+  "teilen.kopiert": "Link copied",
+  "teilen.empfangen": "Someone sent you {anzahl} stations.",
+  "teilen.uebernehmen": "Add to my records",
+  "teilen.uebernommen": "{anzahl} stations added."
 }

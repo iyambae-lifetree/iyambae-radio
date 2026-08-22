@@ -71,6 +71,7 @@ const SHELL_FILES = [
     '/assets/lib/gewichtung.mjs',
     '/assets/lib/verwandt.mjs',
     '/assets/lib/myretuner.mjs',
+    '/assets/lib/titel.mjs',
     '/assets/lib/wochentipp.mjs',
     '/assets/lib/senderbild.mjs',
     '/assets/lib/symbole.mjs',

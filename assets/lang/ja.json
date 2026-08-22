@@ -1,6 +1,6 @@
 {
-  "seite.titel": "IYAMBAE Radio — 耳で掘るレコード店",
-  "seite.beschreibung": "IYAMBAE Radio — 一枚ずつ選んだ、耳で掘るレコード店。31カ国 146局、十一の棚：Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste。",
+  "seite.titel": "IYAMBAE Radio — 耳で掘るレコード店、432 Hz で",
+  "seite.beschreibung": "IYAMBAE Radio — 一枚ずつ選んだ、耳で掘るレコード店。35カ国 157局、十一の棚：Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste。",
   "laden.hinweis": "店の鍵を開けています …",
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "局名、地名、キーワード …",
@@ -19,7 +19,7 @@
   "hero.pegel.live": " · レベルは実測",
   "hero.pegel.simuliert": " · レベルは擬似",
   "hero.name.start": "432 Hz のラジオ",
-  "hero.ort.start": "31カ国 146局、十一の棚に",
+  "hero.ort.start": "35カ国 157局、十一の棚に",
   "hero.kaertchen.start": "一枚かけてみてください。あるいは針を落として、どこに当たるか見てください。",
   "hero.knopf.abspielen": "再生",
   "hero.knopf.merken": "キープ",
@@ -150,5 +150,15 @@
   "einstellungen.fehler.was": "不具合が起きたときに、報告を送ってよいか確認します。一度与えた同意は、ここで取り消せます。",
   "einstellungen.nachwort": "何がどれだけの期間保存されるかは<a href=\"/recht/datenschutz/\" hreflang=\"de\">プライバシーポリシー</a>（ドイツ語）に書いてあります。",
   "einstellungen.messungAn": "利用状況の計測はオンです。",
-  "einstellungen.messungAus": "利用状況の計測はオフです。"
+  "einstellungen.messungAus": "利用状況の計測はオフです。",
+  "stimmung.erklaerung": "ここだけの特徴：どの局も、通常の 440 Hz ではなく 432 Hz で鳴らせます。",
+  "stimmung.abstand": "このページは<em>推測</em>しています。どの局も 440 Hz だと仮定して一律に下げています。録音が 443 Hz の場合（今日ではよくあります）、いま聞こえているのは <strong>432 Hz ではなく 435 Hz</strong> です。",
+  "stimmung.loesung": "<strong>IYAMBAE Tuner</strong> は実際の調律を<em>測定</em>し、<strong>432.33 Hz</strong> に合わせます。このページだけでなく、パソコン全体で。無料、アカウント不要。",
+  "stimmung.abstandLangsam": "この局はブラウザに音声を触らせません。このページは速度を落とすことでしか調律できず、いま音楽は放送より <strong>1.8 % 遅く</strong> 再生されています。",
+  "teilen.satz": "棚に {anzahl} 枚。",
+  "teilen.knopf": "共有リンク",
+  "teilen.kopiert": "リンクをコピーしました",
+  "teilen.empfangen": "{anzahl} 局が届いています。",
+  "teilen.uebernehmen": "自分の棚に入れる",
+  "teilen.uebernommen": "{anzahl} 局を追加しました。"
 }

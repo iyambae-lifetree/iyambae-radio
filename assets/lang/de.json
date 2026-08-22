@@ -1,6 +1,6 @@
 {
-  "seite.titel": "IYAMBAE Radio — ein Plattenladen zum Zuhören",
-  "seite.beschreibung": "IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 146 Sender aus 31 Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
+  "seite.titel": "IYAMBAE Radio — ein Plattenladen zum Zuhören, in 432 Hz",
+  "seite.beschreibung": "IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 157 Sender aus 35 Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
   "laden.hinweis": "Plattenladen wird aufgeschlossen …",
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "Sender, Ort, Stichwort …",
@@ -19,7 +19,7 @@
   "hero.pegel.live": " · Pegel live",
   "hero.pegel.simuliert": " · Pegel nachempfunden",
   "hero.name.start": "Radio in 432 Hz",
-  "hero.ort.start": "146 Sender aus 31 Ländern, in elf Regalen",
+  "hero.ort.start": "157 Sender aus 35 Ländern, in elf Regalen",
   "hero.kaertchen.start": "Leg eine Platte auf — oder lass die Nadel fallen und sieh, wo sie landet.",
   "hero.knopf.abspielen": "Abspielen",
   "hero.knopf.merken": "Merken",
@@ -150,5 +150,15 @@
   "einstellungen.fehler.was": "Wenn etwas kaputtgeht, wird gefragt, ob der Bericht gesendet werden darf. Hier kannst du eine erteilte Zustimmung zurücknehmen.",
   "einstellungen.nachwort": "Was gespeichert wird und wie lange, steht in der <a href=\"/recht/datenschutz/\" hreflang=\"de\">Datenschutzerklärung</a>.",
   "einstellungen.messungAn": "Die Reichweitenmessung ist an.",
-  "einstellungen.messungAus": "Die Reichweitenmessung ist aus."
+  "einstellungen.messungAus": "Die Reichweitenmessung ist aus.",
+  "stimmung.erklaerung": "Das Besondere hier: Jeder Sender läuft auf Wunsch in 432 Hz statt in den üblichen 440.",
+  "stimmung.abstand": "Diese Seite <em>rät</em>: Sie nimmt an, jeder Sender läge auf 440 Hz, und zieht pauschal herunter. Liegt eine Aufnahme auf 443 — heute weit verbreitet —, hörst du gerade <strong>435 Hz, nicht 432</strong>.",
+  "stimmung.loesung": "Der <strong>IYAMBAE Tuner</strong> <em>misst</em> die tatsächliche Stimmung und trifft <strong>432,33 Hz</strong> — auf dem ganzen Rechner, nicht nur hier. Kostenlos, ohne Konto.",
+  "stimmung.abstandLangsam": "Dieser Sender lässt den Browser nicht an seinen Ton. Die Seite kann ihn nur mit ausgebremstem Tempo umstimmen — die Musik läuft gerade <strong>1,8 % langsamer</strong> als gesendet.",
+  "teilen.satz": "{anzahl} Platten im Fach.",
+  "teilen.knopf": "Link zum Weitergeben",
+  "teilen.kopiert": "Link kopiert",
+  "teilen.empfangen": "Jemand hat dir {anzahl} Sender geschickt.",
+  "teilen.uebernehmen": "Zu meinen Platten legen",
+  "teilen.uebernommen": "{anzahl} Sender übernommen."
 }

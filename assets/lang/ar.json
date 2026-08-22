@@ -1,6 +1,6 @@
 {
-  "seite.titel": "راديو IYAMBAE — متجر أسطوانات للاستماع",
-  "seite.beschreibung": "راديو IYAMBAE — متجر أسطوانات منتقى بعناية، تتصفّحه بالاستماع. 146 محطة من 31 بلدًا: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
+  "seite.titel": "راديو IYAMBAE — متجر أسطوانات للاستماع، بتردد 432 هرتز",
+  "seite.beschreibung": "راديو IYAMBAE — متجر أسطوانات منتقى بعناية، تتصفّحه بالاستماع. 157 محطة من 35 بلدًا: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
   "laden.hinweis": "يُفتح متجر الأسطوانات …",
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "محطة، مكان، وسم …",
@@ -19,7 +19,7 @@
   "hero.pegel.live": " · المستويات مباشرة",
   "hero.pegel.simuliert": " · المستويات تقريبية",
   "hero.name.start": "راديو على 432 هرتز",
-  "hero.ort.start": "146 محطة من 31 بلدًا، على أحد عشر رفًا",
+  "hero.ort.start": "157 محطة من 35 بلدًا، على أحد عشر رفًا",
   "hero.kaertchen.start": "ضع أسطوانة على المشغّل — أو أنزِل الإبرة وانظر أين تحطّ.",
   "hero.knopf.abspielen": "تشغيل",
   "hero.knopf.merken": "حفظ",
@@ -150,5 +150,15 @@
   "einstellungen.fehler.was": "عند حدوث عطل، يُسأل عمّا إذا كان يجوز إرسال التقرير. وهنا يمكنك سحب موافقة سبق أن منحتها.",
   "einstellungen.nachwort": "ما يُحفَظ ومدّة حفظه مذكوران في <a href=\"/recht/datenschutz/\" hreflang=\"de\">سياسة الخصوصية</a> (بالألمانية).",
   "einstellungen.messungAn": "قياس الاستخدام مفعّل.",
-  "einstellungen.messungAus": "قياس الاستخدام متوقف."
+  "einstellungen.messungAus": "قياس الاستخدام متوقف.",
+  "stimmung.erklaerung": "ما يميّز هذا المكان: كل محطة يمكن أن تُشغَّل بتردد 432 هرتز بدلًا من 440 المعتادة.",
+  "stimmung.abstand": "هذه الصفحة <em>تخمّن</em>: تفترض أن كل محطة على 440 هرتز وتخفض الجميع بالقدر نفسه. إذا كان التسجيل على 443 — وهو شائع اليوم — فأنت تسمع الآن <strong>435 هرتز، لا 432</strong>.",
+  "stimmung.loesung": "‏<strong>IYAMBAE Tuner</strong> <em>يقيس</em> الدوزنة الفعلية ويصل إلى <strong>432٫33 هرتز</strong> — على الحاسوب كله، لا هنا فقط. مجانًا، دون حساب.",
+  "stimmung.abstandLangsam": "هذه المحطة لا تتيح للمتصفح الوصول إلى صوتها. لا تستطيع الصفحة إعادة دوزنتها إلا بإبطائها — الموسيقى تعمل الآن <strong>أبطأ بنسبة ١٫٨٪</strong> مما يُبَث.",
+  "teilen.satz": "{anzahl} أسطوانة في صندوقك.",
+  "teilen.knopf": "رابط للمشاركة",
+  "teilen.kopiert": "نُسخ الرابط",
+  "teilen.empfangen": "أرسل إليك أحدهم {anzahl} محطة.",
+  "teilen.uebernehmen": "أضِفها إلى أسطواناتي",
+  "teilen.uebernommen": "أُضيفت {anzahl} محطة."
 }
