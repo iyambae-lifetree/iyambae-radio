@@ -21,12 +21,12 @@
 
   Nicht nur die FELDNAMEN sind abschliessend aufgezaehlt, sondern bei drei
   von vier Fragen auch die WERTE. Das ist der Unterschied zwischen „wir
-  nehmen ein Feld namens `preis` an" und „wir nehmen genau fuenf Zeichenketten
+  nehmen ein Feld namens `bezahlt` an" und „wir nehmen genau sechs Zeichenketten
   an". Ein Verbotsfilter muesste jeden Angriff kennen, den sich jemand
   ausdenkt; eine geschlossene Werteliste kennt nur, was die Oberflaeche
   ueberhaupt anbieten kann.
 
-  Damit ist bei `heute`, `fehlt`, `preis` und `sprache` gar keine Saeuberung
+  Damit ist bei `heute`, `fehlt`, `bezahlt` und `sprache` gar keine Saeuberung
   noetig — was nicht in der Liste steht, wird nicht gekuerzt, nicht
   entschaerft, nicht geschwaerzt, sondern es entsteht nie eine Zeile daraus.
 
@@ -75,13 +75,28 @@ const AUSWAHL = {
     heute: new Set(['gar-nicht', 'handy', 'dateien', 'browser', 'bastelei', 'youtube']),
     fehlt: new Set(['handy-systemton', 'sammlung', 'andere-stimmungen', 'radio', 'qualitaet', 'einfacher']),
     /*
-      Die Preisstufen bleiben ZEICHENKETTEN, obwohl sie wie Zahlen aussehen.
-      Sie sind Stufen einer Skala, keine Betraege: „0" heisst nicht „null
-      Euro wert", sondern „mir reicht das kostenlose mit Treiber". Wer sie
-      als Zahl ablegt, rechnet spaeter einen Mittelwert daraus, und der
-      waere sinnlos.
+      GEFRAGT IST, WAS WAR — nicht, was waere.
+
+      Bis Commit 76b5aeb hiess dieses Feld `preis` und fragte nach der
+      Zahlungsbereitschaft. Saemi-Ra hat es umgestellt, und die Begruendung
+      steht in seiner Frage selbst: „Erinnerungen sind belastbarer als
+      Absichten." Auf „was waerst du bereit zu zahlen" antwortet jeder zu
+      niedrig; was jemand einmal wirklich ausgegeben hat, ist ein Ereignis.
+
+      Nebenwirkung, die den Ausschlag gab: Die alte Frage MUSSTE das
+      kostenlose Konkurrenzprodukt beim Namen nennen, sonst haette sie zu
+      hoch gemessen. Diese braucht das nicht.
+
+      Die Stufen bleiben ZEICHENKETTEN, obwohl vier von sechs wie Betraege
+      aussehen. Sie sind Stufen einer Erinnerung: `nie` und `abo` haben gar
+      keinen Betrag, und wer aus `bis50` einen Mittelwert rechnet, erfindet
+      eine Zahl, die niemand genannt hat.
+
+      Die sechs Werte stehen woertlich in apps/index.html als data-wert.
+      Wer dort einen aendert, aendert ihn HIER AUCH — sonst faellt die
+      Antwort still durch und die Seite zeigt trotzdem „Danke".
     */
-    preis: new Set(['0', '19', '39', '69', '99']),
+    bezahlt: new Set(['nie', 'bis15', 'bis50', 'bis120', 'ueber120', 'abo']),
     // Die sieben Sprachfassungen aus assets/lib/sprache.mjs. Sie sagt, in
     // welcher Fassung jemand gelesen hat, nicht wer er ist.
     sprache: new Set(['de', 'en', 'fr', 'es', 'it', 'ja', 'ar']),
@@ -177,9 +192,16 @@ export function saeubereAbgabe(koerper) {
 
     for (const [feld, erlaubteWerte] of Object.entries(AUSWAHL)) {
         const wert = koerper[feld];
-        // String() und nicht typeof-Pruefung: Kommt eine Zahl 99 statt der
-        // Zeichenkette '99', ist das dieselbe Antwort. Kommt ein Objekt,
-        // wird daraus '[object Object]' und steht in keiner Liste.
+        // Objekte und Felder kommen gar nicht erst herein: Ein
+        // { toString: () => 'nie' } wuerde sonst zu 'nie' und stuende
+        // damit in der Liste — die Erlaubnisliste liesse sich also mit
+        // einem selbstgebauten Objekt aushebeln.
+        //
+        // Zahlen bleiben zugelassen, obwohl seit der Umstellung auf
+        // `bezahlt` KEIN Feld mehr Zahlenwerte hat. Das ist bewusst
+        // folgenlos: Die Werteliste dahinter entscheidet, und eine Zahl
+        // steht in keiner. Die Zeile kostet nichts und traegt ein
+        // spaeteres Feld, dessen Stufen Zahlen sind.
         if (typeof wert !== 'string' && typeof wert !== 'number') continue;
         const text = String(wert);
         if (!erlaubteWerte.has(text)) continue;

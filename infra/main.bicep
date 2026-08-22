@@ -203,6 +203,18 @@ param appleDienstId string = ''
 param mitApple bool = false
 
 /*
+  Der Zahlenweg — GET /api/zusammenfassung.
+
+  Dasselbe Muster wie oben: Erst wenn der Schlüssel wirklich im Tresor
+  liegt, wird er gebunden. Ohne ihn steht der Weg NICHT OFFEN, sondern gar
+  nicht zur Verfügung — der Dienst schaltet ihn ab, statt ihn ungeschützt
+  anzubieten. Das ist der Unterschied, der zählt: Ein vergessener Schalter
+  darf keine offene Tür ergeben.
+*/
+@description('Liegt der gemeinsame Schlüssel für /api/zusammenfassung im Tresor?')
+param mitZusammenfassung bool = false
+
+/*
   NICHT VORBELEGT, und das ist eine bewusst OFFENE Entscheidung.
 
   Am 21.08.2026 gegen die Berechtigungsliste von Microsoft.Communication
@@ -367,6 +379,22 @@ resource umgebung 'Microsoft.App/managedEnvironments@2024-03-01' = {
   entfernen wäre eine Änderung an einer laufenden Ressource, die für den
   Sidecar nicht nötig ist.
 */
+/*
+  Log Analytics Reader — die kleinste Rolle, die Abfragen erlaubt.
+
+  73c42c96-874c-492b-b04d-ab87d138a893. Sie darf Abfragen AUSFÜHREN und
+  sonst nichts: nicht schreiben, keine Datenquellen anlegen, und —
+  ausdrücklich — den gemeinsamen Schlüssel des Arbeitsbereichs nicht lesen.
+  Der liegt hinter `listKeys`, und das ist eine Aktion der Steuerebene, die
+  diese Rolle nicht hat.
+
+  Warum hier und nicht per `az role assignment create`: Eine Zuweisung, die
+  nur im Portal existiert, überlebt das nächste Ausrollen nicht zwingend —
+  und wenn sie verschwindet, antwortet der Weg 403, was niemand mit dem
+  Ausrollen in Verbindung bringt.
+*/
+var rolleProtokolleLesen = '73c42c96-874c-492b-b04d-ab87d138a893'
+
 resource dienstIdentitaet 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: 'id-${name}-konto'
   location: location
@@ -1017,6 +1045,17 @@ var kontoUmgebung = concat([
   { name: 'GOOGLE_CLIENT_SECRET', secretRef: 'google-geheimnis' }
 ], !mitApple ? [] : [
   { name: 'APPLE_PRIVATE_KEY', secretRef: 'apple-schluessel' }
+], !mitZusammenfassung ? [] : [
+  /*
+    customerId, NICHT der Name des Arbeitsbereichs.
+
+    `log-iyambae` ist der Ressourcenname; die Abfrage-API kennt nur die
+    Arbeitsbereichs-Kennung. Mit dem Namen antwortet sie 404 — und ein 404
+    liest sich in dieser Kette wie „keine Daten", nicht wie „falsch
+    adressiert". Das ist der Tippfehler, der einen halben Tag kostet.
+  */
+  { name: 'LOG_ARBEITSBEREICH', value: protokolle.properties.customerId }
+  { name: 'ZUSAMMENFASSUNG_SCHLUESSEL', secretRef: 'zusammenfassung-schluessel' }
 ])
 
 var kontoSondierungen = bereitschaftKonto ? [
@@ -1074,6 +1113,12 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
     tabelleVerweise
     dienstDarfSchreiben
     dienstDarfSenden
+    // Auch bedingt aufgefuehrt: Ist mitZusammenfassung falsch, wird die
+    // Zuweisung nicht angelegt, und ARM laesst die Abhaengigkeit darauf
+    // still fallen. Steht sie dagegen NICHT hier, kann der Behaelter vor
+    // der Rolle starten — die ersten Abrufe bekaemen dann 403, und ein 403
+    // an dieser Stelle liest sich wie ein falscher Schluessel.
+    dienstDarfProtokolleLesen
   ]
   identity: {
     // Die systemzugewiesene Identität bleibt, wie sie war — sie zu entfernen
@@ -1201,6 +1246,12 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
           keyVaultUrl: '${tresor.properties.vaultUri}secrets/apple-schluessel'
           identity: dienstIdentitaet.id
         }
+      ], !mitZusammenfassung ? [] : [
+        {
+          name: 'zusammenfassung-schluessel'
+          keyVaultUrl: '${tresor.properties.vaultUri}secrets/zusammenfassung-schluessel'
+          identity: dienstIdentitaet.id
+        }
       ])
     }
     template: {
@@ -1299,6 +1350,17 @@ output speicherKonto string = speicher.name
 output acsRessource string = kommunikation.id
 
 @description('Objekt-ID der Dienstidentität. Empfänger der Rollenzuweisung für ACS.')
+resource dienstDarfProtokolleLesen 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (mitZusammenfassung) {
+  scope: protokolle
+  name: guid(protokolle.id, dienstIdentitaet.id, 'log-analytics-reader')
+  properties: {
+    principalId: dienstIdentitaet.properties.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions', rolleProtokolleLesen)
+  }
+}
+
 output dienstObjektId string = dienstIdentitaet.properties.principalId
 
 /*

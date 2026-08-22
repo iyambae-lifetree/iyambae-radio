@@ -29,7 +29,7 @@ async function abgaben(speicher) {
 const VOLL = {
     heute: 'bastelei',
     fehlt: 'andere-stimmungen',
-    preis: '69',
+    bezahlt: 'bis120',
     vorschlag: 'Ein Regler fuer die Stimmung, ohne Treiber.',
     sprache: 'de',
 };
@@ -47,7 +47,7 @@ test('eine gueltige Abgabe wird gespeichert', async () => {
         assert.equal(zeilen.length, 1);
         assert.equal(zeilen[0].heute, 'bastelei');
         assert.equal(zeilen[0].fehlt, 'andere-stimmungen');
-        assert.equal(zeilen[0].preis, '69');
+        assert.equal(zeilen[0].bezahlt, 'bis120');
         assert.equal(zeilen[0].sprache, 'de');
         assert.equal(zeilen[0].vorschlag, 'Ein Regler fuer die Stimmung, ohne Treiber.');
 
@@ -69,10 +69,10 @@ test('alle vier Fragen sind freiwillig — eine einzelne Antwort genuegt', async
     const p = fangeProtokoll();
     const d = await starteTestdienst();
     try {
-        assert.equal((await d.rufe('POST', '/api/umfrage', { preis: '99' })).status, 204);
+        assert.equal((await d.rufe('POST', '/api/umfrage', { bezahlt: 'ueber120' })).status, 204);
         const zeilen = await abgaben(d.speicher);
         assert.equal(zeilen.length, 1);
-        assert.equal(zeilen[0].preis, '99');
+        assert.equal(zeilen[0].bezahlt, 'ueber120');
         assert.equal(zeilen[0].heute, undefined);
     } finally {
         await d.schliesse();
@@ -89,8 +89,8 @@ test('zwei Abgaben ergeben zwei Zeilen ohne gemeinsamen Faden', async () => {
     const p = fangeProtokoll();
     const d = await starteTestdienst();
     try {
-        await d.rufe('POST', '/api/umfrage', { preis: '0' });
-        await d.rufe('POST', '/api/umfrage', { preis: '39' });
+        await d.rufe('POST', '/api/umfrage', { bezahlt: 'nie' });
+        await d.rufe('POST', '/api/umfrage', { bezahlt: 'bis50' });
 
         const zeilen = await abgaben(d.speicher);
         assert.equal(zeilen.length, 2);
@@ -109,7 +109,7 @@ test('ein unbekanntes Feld wird verworfen, nicht gespeichert', async () => {
     const d = await starteTestdienst();
     try {
         const antwort = await d.rufe('POST', '/api/umfrage', {
-            preis: '39',
+            bezahlt: 'bis50',
             // Alles hier drunter steht in keiner Erlaubnisliste und darf
             // deshalb nirgends ankommen — auch nicht „nur zur Sicherheit".
             ip: '203.0.113.47',
@@ -125,7 +125,7 @@ test('ein unbekanntes Feld wird verworfen, nicht gespeichert', async () => {
         assert.equal(zeilen.length, 1);
         assert.deepEqual(
             Object.keys(zeilen[0]).filter((k) => !['partitionKey', 'rowKey', 'etag'].includes(k)).sort(),
-            ['preis']);
+            ['bezahlt']);
         // Auch den Partitionsschluessel darf der Aufrufer nicht setzen: Der
         // Tag kommt vom Server, sonst schreibt jemand in eine Partition
         // seiner Wahl.
@@ -140,16 +140,26 @@ test('ein unbekanntes Feld wird verworfen, nicht gespeichert', async () => {
 test('ein bekanntes Feld mit unbekanntem Wert kommt nicht durch', () => {
     /*
       Der Unterschied zu einer blossen Feldliste. Ein Filter, der nur
-      `preis` durchlaesst, laesst `preis: '<script>'` durch. Eine
+      `bezahlt` durchlaesst, laesst `bezahlt: '<script>'` durch. Eine
       geschlossene Werteliste kann das gar nicht.
     */
-    assert.deepEqual(saeubereAbgabe({ preis: '4711' }), {});
+    assert.deepEqual(saeubereAbgabe({ bezahlt: '4711' }), {});
     assert.deepEqual(saeubereAbgabe({ heute: 'ausgedacht' }), {});
     assert.deepEqual(saeubereAbgabe({ sprache: 'kl' }), {});
-    assert.deepEqual(saeubereAbgabe({ preis: { toString: () => '39' } }), {});
-    assert.deepEqual(saeubereAbgabe({ preis: ['39'] }), {});
-    // Die Zahl 99 und die Zeichenkette '99' sind dieselbe Antwort.
-    assert.deepEqual(saeubereAbgabe({ preis: 99 }), { preis: '99' });
+    assert.deepEqual(saeubereAbgabe({ bezahlt: { toString: () => '39' } }), {});
+    assert.deepEqual(saeubereAbgabe({ bezahlt: ['39'] }), {});
+    /*
+      Seit der Umstellung auf `bezahlt` hat KEIN Feld mehr Zahlenwerte —
+      alle sechs Stufen sind Woerter. Die Zahlenumwandlung im Saeuberer
+      bleibt trotzdem stehen, als Schutz fuer ein spaeteres Feld; sie
+      entscheidet hier aber nichts mehr, weil die Werteliste danach
+      ohnehin greift. Eine Zahl kommt also nicht durch, und zwar an der
+      Werteliste, nicht an der Typpruefung.
+    */
+    assert.deepEqual(saeubereAbgabe({ bezahlt: 99 }), {});
+    // Und die Umwandlung selbst ist weiter da: '39' war frueher gueltig
+    // und ist es heute nicht mehr — es faellt an derselben Stelle.
+    assert.deepEqual(saeubereAbgabe({ bezahlt: '39' }), {});
 });
 
 test('eine Abgabe, von der nichts uebrig bleibt, wird nicht abgelegt', async () => {
@@ -179,7 +189,7 @@ test('ein zu grosser Rumpf bricht ab, ohne etwas abzulegen', async () => {
         // ist auf 600 Zeichen begrenzt; wer 200.000 schickt, meint es nicht
         // gut.
         const antwort = await d.rufe('POST', '/api/umfrage', {
-            preis: '39', vorschlag: 'A'.repeat(200_000),
+            bezahlt: 'bis50', vorschlag: 'A'.repeat(200_000),
         });
         assert.equal(antwort.status, 413);
         assert.equal(antwort.daten.fehler, 'zu_gross');
@@ -197,14 +207,14 @@ test('kaputtes JSON gibt 400, keinen Absturz', async () => {
         const antwort = await fetch(d.basis + '/api/umfrage', {
             method: 'POST',
             headers: { Origin: 'https://iyambae.fm', 'Content-Type': 'application/json' },
-            body: '{"preis": "39", kaputt',
+            body: '{"bezahlt": "bis50", kaputt',
         });
         assert.equal(antwort.status, 400);
         assert.equal((await antwort.json()).fehler, 'kein_json');
         assert.equal((await abgaben(d.speicher)).length, 0);
 
         // Und der Dienst lebt weiter — das ist die eigentliche Zusicherung.
-        assert.equal((await d.rufe('POST', '/api/umfrage', { preis: '39' })).status, 204);
+        assert.equal((await d.rufe('POST', '/api/umfrage', { bezahlt: 'bis50' })).status, 204);
     } finally {
         await d.schliesse();
         p.zurueck();
@@ -236,7 +246,7 @@ test('die Drossel greift und antwortet 429 mit Retry-After', async () => {
     const p = fangeProtokoll();
     const d = await starteTestdienst({ drossel: erzeugeDrossel() });
     try {
-        const rufe = () => d.rufe('POST', '/api/umfrage', { preis: '39' },
+        const rufe = () => d.rufe('POST', '/api/umfrage', { bezahlt: 'bis50' },
             { kopf: { 'X-Forwarded-For': '203.0.113.9' } });
 
         let gedrosselt = null;
@@ -287,7 +297,7 @@ test('ein Angriff: nichts davon landet in der Tabelle oder im Protokoll', async 
     try {
         const antwort = await d.rufe('POST', '/api/umfrage', {
             heute: 'handy',
-            preis: '19',
+            bezahlt: 'bis15',
             sprache: 'de',
             vorschlag: `Schreibt mir an ${ADRESSE} ${SKRIPT} mein Passwort ist `
                 + `${PASSWORT} und die Marke ${MARKE} ${LANG}`,
@@ -323,7 +333,7 @@ test('ein Angriff: nichts davon landet in der Tabelle oder im Protokoll', async 
         // Nur die erlaubten Felder haben ueberlebt.
         assert.deepEqual(
             Object.keys(zeilen[0]).filter((k) => !['partitionKey', 'rowKey', 'etag'].includes(k)).sort(),
-            ['heute', 'preis', 'sprache', 'vorschlag']);
+            ['bezahlt', 'heute', 'sprache', 'vorschlag']);
 
         // Und der Satz drumherum ist erhalten geblieben — das Schwaerzen
         // soll die Antwort retten, nicht sie wegwerfen.
