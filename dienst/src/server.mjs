@@ -58,6 +58,10 @@ import {
 } from './abgleich.mjs';
 import { erzeugeFremdanmeldung } from './fremd.mjs';
 import { saeubereAbgabe, legeAbgabeAb } from './umfrage.mjs';
+import {
+    erzeugeAbfrager, erzeugeZusammenfassung, liesFenster,
+    liesSchluessel, schluesselStimmt,
+} from './zahlen.mjs';
 
 const PORT = Number(process.env.PORT ?? 8081);
 const HOECHSTER_KOERPER = Number(process.env.HOECHSTER_KOERPER ?? 32 * 1024);
@@ -416,7 +420,9 @@ function fremdDrossel(schluessel, netz) {
  * Netzwerk aufrufen koennen — und damit Speicher und Versender von aussen
  * einsetzbar sind.
  */
-export function baueDienst({ speicher, versender, drossel = erzeugeDrossel(), fremd = null } = {}) {
+export function baueDienst({
+    speicher, versender, drossel = erzeugeDrossel(), fremd = null, zahlen = null,
+} = {}) {
 
     // ── Kleinkram, der von mehreren Stellen gebraucht wird ──────────
 
@@ -955,6 +961,151 @@ export function baueDienst({ speicher, versender, drossel = erzeugeDrossel(), fr
         },
 
         /*
+          Die Zusammenfassung — dieselben Zahlen wie das Dashboard, als JSON.
+
+          Der Satz dahinter ist von Saemi-Ra: „Ein Dashboard muss man
+          aufmachen. Was man aufmachen muss, vergisst man." Dieser Weg laesst
+          sich abfragen, und damit meldet sich die Zahl von selbst.
+
+          Das Verfahren, die Abfragen, der Zwischenspeicher und die
+          Crawlertrennung stehen vollstaendig in zahlen.mjs. Hier steht nur,
+          was HTTP daraus macht — und die drei Entscheidungen, die zu HTTP
+          gehoeren:
+
+          1. GET. Damit laeuft `pruefeHerkunft` nicht, und das ist richtig
+             so: Der Aufrufer ist kein Browser, sondern eine Beobachtung mit
+             einem Schluessel. Ein Origin-Kopf kaeme dort nie an.
+
+          2. DROSSEL VOR DER SCHLUESSELPRUEFUNG, und nur auf der Achse Netz.
+             Vorher, damit niemand ungebremst Schluessel durchprobiert. NUR
+             auf der Achse Netz, weil eine globale Achse hier das falsche
+             Werkzeug waere: Ein Fremder, der sie leerschiesst, sperrte
+             damit Saemi-Ras Beobachtung aus — er koennte den Weg abschalten,
+             ohne den Schluessel je zu kennen.
+
+          3. KEIN `aufBoden`. Der Zeitboden schuetzt davor, aus der
+             Antwortdauer zu lesen, ob eine Adresse bekannt ist. Hier gibt es
+             keine Adresse, und der Schluesselvergleich laeuft ohnehin in
+             konstanter Zeit.
+
+          WAS PASSIERT, WENN LOG ANALYTICS NICHT ANTWORTET: 424 mit Grund,
+          oder — wenn ein aelterer Stand daliegt — dieser Stand mit
+          `frisch: false` und `stoerung`. Niemals eine Null. Eine erfundene
+          Null saehe aus wie „niemand hat gehoert", und das ist die eine
+          Aussage, die dieser Weg nie faelschlich machen darf.
+
+          ── WARUM 424 UND NICHT 503, obwohl 503 richtiger klaenge ──────
+
+          Weil ein 503 von hier NIE beim Aufrufer ankaeme. deploy/nginx.conf
+          setzt im Block `location /api/`:
+
+              proxy_intercept_errors on;
+              error_page 502 503 504 = @dienst_schlaeft;
+
+          nginx wirft jede 503 des Sidecars weg und antwortet stattdessen
+          `{"fehler":"dienst_schlaeft"}`. Saemi-Ras Beobachtung bekaeme also
+          „der Anmeldedienst ist eingeschlafen", waehrend in Wahrheit Log
+          Analytics klemmt — eine Fehlermeldung, die auf die falsche Ursache
+          zeigt, ist schlimmer als eine unuebliche Statuszahl.
+
+          424 „Failed Dependency" sagt genau das Richtige — der Weg selbst
+          laeuft, die Quelle, von der er abhaengt, nicht — und nginx reicht
+          ihn unveraendert durch. Sollte der Block in nginx eines Tages diesen
+          Pfad aussparen, waere 503 die schoenere Wahl; solange er es nicht
+          tut, gilt die durchkommende Wahrheit mehr als die schoenere Zahl.
+        */
+        'GET /api/zusammenfassung': async ({ anfrage, netz, start }) => {
+            drossle([['netz', 'zsf:' + netz, 30, 60_000]]);
+
+            /*
+              Kein Arbeitsbereich oder kein Schluessel eingetragen heisst:
+              Diesen Weg gibt es hier nicht. 503 und nicht 401 — es liegt
+              nicht am Aufrufer.
+
+              WICHTIG ist die Reihenfolge im Gedanken, nicht im Code: Ohne
+              hinterlegten Schluessel wird NICHT durchgelassen. Ein Weg, der
+              bei fehlender Einrichtung aufmacht, ist die schlimmste Sorte
+              Fehler — er faellt niemandem auf, weil alles funktioniert.
+            */
+            if (!zahlen || !zahlen.schluessel) {
+                protokolliere({ art: 'zusammenfassung', ergebnis: 'fehler', grund: 'nicht_eingerichtet' });
+                // 424 aus demselben Grund wie unten: Eine 503 frisst nginx.
+                return { status: 424, koerper: { fehler: 'zusammenfassung_nicht_eingerichtet' } };
+            }
+
+            /*
+              Fehlender und falscher Schluessel geben DIESELBE Antwort.
+              „Schluessel fehlt" gegen „Schluessel falsch" waere die Auskunft,
+              dass der Weg ueberhaupt einen hat und wie er heisst.
+            */
+            const mitgebracht = liesSchluessel(anfrage.headers.authorization);
+            if (!schluesselStimmt(zahlen.schluessel, mitgebracht)) {
+                protokolliere({
+                    art: 'zusammenfassung', ergebnis: 'abgelehnt',
+                    // Der Schluessel selbst steht nirgends im Protokoll —
+                    // weder der richtige noch der versuchte.
+                    grund: 'schluessel_falsch', dauer: Date.now() - start,
+                });
+                return {
+                    status: 401,
+                    koerper: { fehler: 'schluessel_fehlt_oder_falsch' },
+                    kopf: { 'WWW-Authenticate': 'Bearer' },
+                };
+            }
+
+            const tage = liesFenster(anfrage.url ?? '/');
+
+            let ergebnis;
+            try {
+                ergebnis = await zahlen.hole(tage);
+            } catch (fehler) {
+                /*
+                  Es gibt NICHTS zu liefern — die Quelle ist weg und es liegt
+                  auch kein alter Stand da. Das wird gesagt, nicht
+                  verschwiegen. Mit Retry-After, denn der Aufrufer soll
+                  wiederkommen und nicht aufgeben.
+                */
+                protokolliere({
+                    art: 'zusammenfassung', ergebnis: 'fehler',
+                    grund: fehler?.grund ?? 'unbekannt', dauer: Date.now() - start,
+                });
+                return {
+                    status: 424,
+                    koerper: {
+                        fehler: 'quelle_nicht_erreichbar',
+                        grund: fehler?.grund ?? 'unbekannt',
+                        hinweis: 'Log Analytics hat nicht geantwortet. Es liegen keine Zahlen vor —'
+                            + ' das ist ausdruecklich NICHT dasselbe wie null Aufrufe.',
+                    },
+                    kopf: { 'Retry-After': '60' },
+                };
+            }
+
+            /*
+              `anzahl` ist hier die Zahl der Tage im Fenster — das einzige
+              Feld der Erlaubnisliste in protokoll.mjs, das eine Anzahl
+              traegt. Die ZAHLEN selbst gehoeren nicht ins Protokoll: Sie
+              stehen in Log Analytics, und sie ein zweites Mal
+              hineinzuschreiben waere genau die zweite Datenhaltung, die
+              dieser Weg vermeidet.
+            */
+            protokolliere({
+                art: 'zusammenfassung', ergebnis: 'ok',
+                anzahl: tage, dauer: Date.now() - start,
+            });
+
+            return {
+                status: 200,
+                koerper: {
+                    ...ergebnis.zahlen,
+                    frisch: ergebnis.frisch,
+                    alter_sekunden: ergebnis.alterSekunden,
+                    ...(ergebnis.stoerung ? { stoerung: ergebnis.stoerung } : {}),
+                },
+            };
+        },
+
+        /*
           Lebenszeichen. Ohne Sitzung, ohne Protokolleintrag, ohne
           Tabellenzugriff.
 
@@ -1136,7 +1287,40 @@ export async function starte({ port = PORT } = {}) {
     */
     const fremd = await baueFremdanmeldung(speicher);
 
-    const server = http.createServer(baueDienst({ speicher, versender, fremd }));
+    /*
+      Die Zusammenfassung entsteht nur, wenn BEIDES da ist: ein
+      Arbeitsbereich, aus dem gelesen werden kann, UND ein Schluessel, mit
+      dem sich der Leser ausweist.
+
+      Fehlt der Schluessel, wird der Weg NICHT etwa offen aufgemacht,
+      sondern gar nicht angeboten — die Startwarnung sagt es laut. Ein
+      Datenfeed, der bei fehlender Einrichtung aufmacht, faellt niemandem
+      auf, weil ja alles funktioniert.
+
+      `erzeugeAbfrager` laedt @azure/identity traege nach, deshalb hier beim
+      Start und nicht bei der ersten Abfrage — dieselbe Ueberlegung wie bei
+      der Fremdanmeldung darueber.
+    */
+    const abfrager = await erzeugeAbfrager();
+    const zusammenfassungsSchluessel = process.env.ZUSAMMENFASSUNG_SCHLUESSEL ?? null;
+    let zahlen = null;
+    if (abfrager && zusammenfassungsSchluessel) {
+        zahlen = erzeugeZusammenfassung({
+            abfrager,
+            schluessel: zusammenfassungsSchluessel,
+            frischeMs: Number(process.env.ZUSAMMENFASSUNG_FRISCHE_MINUTEN ?? 60) * 60_000,
+        });
+    } else if (abfrager || zusammenfassungsSchluessel) {
+        // Genau eines von beiden gesetzt ist fast immer ein Versehen beim
+        // Ausrollen. Still bleiben hiesse, dass jemand auf 503 starrt und
+        // Log Analytics verdaechtigt.
+        protokolliere({
+            art: 'start.warnung', ergebnis: 'fehler',
+            grund: abfrager ? 'zusammenfassung_ohne_schluessel' : 'zusammenfassung_ohne_arbeitsbereich',
+        });
+    }
+
+    const server = http.createServer(baueDienst({ speicher, versender, fremd, zahlen }));
 
     /*
       Zeitgrenzen ausdruecklich setzen. Die Vorgaben von node:http sind

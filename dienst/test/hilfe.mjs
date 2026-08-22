@@ -29,7 +29,7 @@ export function fangeProtokoll() {
  * Startet den Dienst auf einem freien Port.
  * @returns Werkzeug zum Rufen, plus `speicher`, `mails` und `schliesse`.
  */
-export async function starteTestdienst({ drossel, fremd } = {}) {
+export async function starteTestdienst({ drossel, fremd, zahlen } = {}) {
     await bereiteVor();
     vergissAufraeumen();
 
@@ -46,10 +46,18 @@ export async function starteTestdienst({ drossel, fremd } = {}) {
       die Weiche ist genau die Stelle, an der ein Weg versehentlich vor oder
       hinter der Herkunftspruefung landet.
     */
+    /*
+      `zahlen` bleibt ohne Angabe `null` — genau wie im Betrieb, solange
+      kein Arbeitsbereich und kein Schluessel eingetragen sind. Ein Test, der
+      die Zusammenfassung braucht, reicht ein Buendel herein; alle anderen
+      pruefen damit beilaeufig mit, dass der Weg ohne Einrichtung nicht
+      etwa offen dasteht.
+    */
     const server = http.createServer(baueDienst({
         speicher, versender,
         drossel: drossel ?? erzeugeDrossel(),
         fremd: fremd ?? await baueFremdanmeldung(speicher),
+        zahlen: zahlen ?? null,
     }));
     await new Promise((f) => server.listen(0, '127.0.0.1', f));
     const basis = 'http://127.0.0.1:' + server.address().port;

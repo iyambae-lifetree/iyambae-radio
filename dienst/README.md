@@ -23,6 +23,7 @@ eingetragen.
 | `src/mail.mjs` | ACS-Versand mit Warteschlange und eigener Ratenbegrenzung |
 | `src/abgleich.mjs` | Verschmelzen von Merkliste und Verlauf — reine Rechnung |
 | `src/umfrage.mjs` | die vier Fragen: Erlaubnisliste, Freitextsaeuberung, Ablage |
+| `src/zahlen.mjs` | die Zusammenfassung: KQL aus dem Dashboard, Schluessel, Zwischenspeicher, Crawlertrennung |
 | `src/protokoll.mjs` | eine JSON-Zeile je Ereignis nach stdout, ohne Personenbezug |
 
 Das Warum steht jeweils oben in der Datei, nicht hier. Diese Seite sagt, wie
@@ -151,6 +152,9 @@ und Weiche werden also mitgeprueft und nicht nachgebaut.
 | `HIBP_ZEITGRENZE_MS` | `1500` | Leak-Abgleich; laeuft er ab, wird durchgelassen |
 | `HIBP` | — | `aus` schaltet den Leak-Abgleich ab (nur fuer Tests) |
 | `AUFRAEUM_STUNDEN` | `24` | Abstand des grossen Durchgangs |
+| `LOG_ARBEITSBEREICH` | — | **customerId** (GUID) von `log-iyambae`, nicht der Name |
+| `ZUSAMMENFASSUNG_SCHLUESSEL` | — | aus dem Tresor; fehlt er, gibt es den Weg nicht |
+| `ZUSAMMENFASSUNG_FRISCHE_MINUTEN` | `60` | Hoechstalter, bevor neu gerechnet wird |
 | `MAIL_ART` | — | `konsole` schreibt Mails auf stdout — **nur oertlich** |
 | `PLAETZCHEN_UNSICHER` | — | `1` nimmt `Secure` vom Plaetzchen — **nur oertlich** |
 | `HERKUNFT_LOCKER` | — | `1` schaltet die Origin-Pruefung ab — **nur oertlich** |
@@ -254,6 +258,7 @@ Sprachen, der Dienst keine. Ein deutscher Satz aus dem Server waere auf
 | `GET /api/konto/ausfuhr` | 200 · 401 | Anhang `iyambae-konto.json` |
 | `DELETE /api/konto` | 204 · 400 · 401 | verlangt `{bestaetigung:"loeschen"}` |
 | `POST /api/umfrage` | 204 · 400 · 413 · 429 | — bzw. `{fehler:'nichts_erkannt'}` |
+| `GET /api/zusammenfassung` | 200 · 401 · 424 · 429 | Schluessel als `Authorization: Bearer` |
 | `GET /api/leben` | 204 | ohne Sitzung, ohne Protokolleintrag |
 
 ### `POST /api/umfrage` — der einzige schreibende Weg ohne Sitzung
@@ -289,6 +294,72 @@ Der Freitext ist das einzige Feld, das gesaeubert wird: Adressen und lange
 Zeichenfolgen mit Ziffern werden geschwaerzt, spitze Klammern und
 Steuerzeichen fallen weg, danach wird auf 600 Zeichen gekuerzt. Das Warum
 steht in `src/umfrage.mjs`.
+
+### `GET /api/zusammenfassung` — der einzige lesende Weg ohne Sitzung
+
+Dieselben Zahlen wie das Dashboard (`infra/dashboard.bicep`), als JSON. Der
+Satz dahinter ist von Sāmi-Ra: „Ein Dashboard muss man aufmachen. Was man
+aufmachen muss, vergisst man."
+
+```
+curl -H "Authorization: Bearer $ZEICHEN" \
+     "https://iyambae.fm/api/zusammenfassung?tage=7"
+```
+
+`tage` kennt genau **1, 7 und 30**; alles andere faellt still auf 7 zurueck.
+Die geschlossene Liste ist eine Kostenbremse — Log Analytics rechnet nach
+gelesener Datenmenge ab, und `?tage=3650` waere die Aufforderung, alles zu
+lesen.
+
+**Der Schluessel** kommt als `Authorization: Bearer`. Er steht im Tresor
+(`zusammenfassung-schluessel`) und kommt als Umgebungsvariable an. Fehlender
+und falscher Schluessel geben **dieselbe** 401 — ein Unterschied waere die
+Auskunft, dass es ueberhaupt einen gibt. Verglichen wird ueber SHA-256 und
+`timingSafeEqual`, also in konstanter Zeit und laengenunabhaengig. **Ohne
+hinterlegten Schluessel steht der Weg nicht offen, sondern gar nicht zur
+Verfuegung** (424).
+
+**Gerechnet wird hoechstens stuendlich**, je Fenster einmal und nur, wenn
+jemand fragt — es gibt keinen Timer. Im JSON stehen `gerechnet_um`,
+`alter_sekunden` und `frisch`, damit niemand eine 55 Minuten alte Zahl fuer
+frisch haelt.
+
+**Faellt Log Analytics aus**, sagt der Weg das:
+
+| Lage | Antwort |
+|---|---|
+| Quelle weg, kein alter Stand | 424 `quelle_nicht_erreichbar` mit `grund`, `Retry-After: 60` |
+| Quelle weg, alter Stand da | 200 mit dem Stand, `frisch: false`, `stoerung`, `alter_sekunden` |
+| eine von sechs Abfragen weg | 200, der Block ist `null` und steht in `unvollstaendig` |
+
+**Niemals eine Null.** Eine erfundene Null saehe aus wie „niemand hat
+gehoert", und das ist der eine Schluss, den dieser Weg nie ausloesen darf.
+
+**„Besucher" ist eine Schaetzung.** Die Messzeilen tragen kein Adressfeld
+mehr (mit Absicht, siehe den Kopf von `infra/dashboard.bicep`); die einzige
+Quelle ist das Zugriffsprotokoll mit gekuerzter Adresse. Jedes betroffene
+Feld heisst deshalb `besucher_geschaetzt`, und in `hinweise` steht es
+ausgeschrieben.
+
+**Crawler werden getrennt, aber nicht geloescht.** Der Trenner ist nicht die
+Aufrufzahl — sie taugt nicht, gemessen liegt `de` mit 8,5 Aufrufen je Adresse
+*ueber* den Crawlersprachen mit 6,6 bis 7,1. Der Trenner ist, dass Crawler
+kein JavaScript ausfuehren und darum kein Messereignis erzeugen koennen:
+
+```
+Ereignisse je Seitenaufruf   de 0,59   |   en 0,00016   |   uebrige 0,0
+```
+
+Unter **0,05** gilt eine Sprache als Maschinenverkehr und traegt
+`maschinenverkehr: true`. Die Rohzahlen bleiben vollstaendig stehen; nur die
+abgeleitete Summe `menschlich` laesst die maschinellen Sprachen aus. Es gibt
+keine Crawlerliste, die jemand nachpflegen muesste — kommen die
+englischsprachigen Menschen, kippt `en` von allein.
+
+**Was es nicht gibt:** die „Fehlversuche je Sender" aus Vorgang #8.
+`assets/lib/messung.mjs` kennt sechs Ereignisarten und darunter keine fuer
+einen gescheiterten Start. Diese Zahl braeuchte zuerst eine siebte Art in der
+Messung.
 
 **Gruende bei `code_ungueltig`:** `form` (keine sechs Ziffern — zaehlt nicht
 gegen die fuenf Versuche), `kein_code`, `abgelaufen`, `falsch` (mit `uebrig`),

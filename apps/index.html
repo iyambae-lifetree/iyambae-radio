@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title data-text="seite.titel">IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln</title>
-<meta name="description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<meta name="description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Für Windows gibt es heute das Umstimmen von Dateien. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
 <meta name="theme-color" content="#0A0908">
 
 <!-- Vorschau in Foren und Boten. Der Anlass ist unmittelbar: Wer diese
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="IYAMBAE Tuner">
 <meta property="og:title" data-inhalt="seite.titel" content="IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln">
-<meta property="og:description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<meta property="og:description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Für Windows gibt es heute das Umstimmen von Dateien. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
 <meta property="og:url" content="https://apps.iyambae.fm/de/">
 <meta property="og:locale" content="de">
 <meta name="twitter:card" content="summary">
@@ -1197,20 +1197,20 @@ code {
           <span class="grossknopf__tat" data-text="auf.linux.tat">Für Linux laden</span>
           <span class="grossknopf__zusatz" data-text="auf.linux.zusatz">DEB · 43 KB · Debian 13 · PipeWire ab 0.3.60</span>
         </a>
-        <!-- Windows war bisher eine Sackgasse: drei Karten, und auf einer
-             stand sinngemäss „für dich nichts“. Jetzt bekommt auch dieser
-             Besucher etwas zu tun — den Grund in einem Satz und einen Weg,
-             sich merken zu lassen.
+        <!-- Windows war bis zur Freigabe des Installers eine Sackgasse:
+             Hier stand ein mailto mit „Bescheid geben, sobald es sie gibt“.
+             Der Installer liegt seither im Blob und hatte weiter unten
+             längst eine eigene Karte mit Knopf — nur die Kopfzone wusste
+             nichts davon. Wer mit Windows kam, wurde erkannt, bekam diesen
+             Zweig, und wurde als Einziger von der Datei weggeführt.
 
-             Der Betreff der Nachricht wird mitübersetzt: Wer auf Japanisch
-             liest, soll nicht plötzlich einen deutschen Betreff in seinem
-             Postfach stehen haben. Den Schlüssel dafür trägt
-             data-betreff. -->
-        <a class="grossknopf grossknopf--warten fuer fuer--win"
-           data-betreff="auf.win.betreff"
-           href="mailto:hello@infosys-consult.com?subject=IYAMBAE%20Tuner%20f%C3%BCr%20Windows%20%E2%80%94%20bitte%20Bescheid%20geben">
-          <span class="grossknopf__tat" data-text="auf.win.tat">Bescheid geben, sobald es sie gibt</span>
-          <span class="grossknopf__zusatz" data-text="auf.win.zusatz">Windows lässt Systemton mithören, aber nicht ersetzen — es fehlt das virtuelle Ausgabegerät.</span>
+             Der VORBEHALT bleibt und steht weiter dort, wo er hingehört:
+             Windows ersetzt den Systemton nur über ein virtuelles
+             Ausgabegerät. Das nimmt der Karte weiter unten niemand ab —
+             aber es ist kein Grund, den Knopf wegzulassen. -->
+        <a class="grossknopf fuer fuer--win" href="/herunterladen/iyambae-tuner-1.0.0-windows-setup.exe">
+          <span class="grossknopf__tat" data-text="auf.win.tat">Für Windows laden — Dateien umstimmen</span>
+          <span class="grossknopf__zusatz" data-text="auf.win.zusatz">EXE · 68 MB · Windows 10 und 11 · Systemton kommt noch, er braucht ein virtuelles Ausgabegerät.</span>
         </a>
         <a class="grossknopf grossknopf--warten fuer fuer--mobil" href="#fragen">
           <span class="grossknopf__tat" data-text="auf.mobil.tat">Dafür braucht es einen Rechner</span>
@@ -1224,9 +1224,9 @@ code {
         </a>
 
         <p class="nebenweg">
-          <span class="fuer fuer--mac" data-html="auf.neben.mac">Auch für <a href="#holen">Linux</a> · Windows <a href="#holen">noch nicht</a> · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
-          <span class="fuer fuer--linux" data-html="auf.neben.linux">Auch für <a href="#holen">macOS</a> · Windows <a href="#holen">noch nicht</a> · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
-          <span class="fuer fuer--win" data-html="auf.neben.win">Heute gibt es sie für <a href="#holen">macOS</a> und <a href="#holen">Linux</a>.</span>
+          <span class="fuer fuer--mac" data-html="auf.neben.mac">Auch für <a href="#holen">Linux</a> · <a href="#holen">Windows</a> stimmt Dateien um · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
+          <span class="fuer fuer--linux" data-html="auf.neben.linux">Auch für <a href="#holen">macOS</a> · <a href="#holen">Windows</a> stimmt Dateien um · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
+          <span class="fuer fuer--win" data-html="auf.neben.win">Den Systemton stimmen heute <a href="#holen">macOS</a> und <a href="#holen">Linux</a> um · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
           <span class="fuer fuer--mobil" data-html="auf.neben.mobil">Am Rechner: <a href="#holen">macOS</a> oder <a href="#holen">Linux</a>.</span>
           <span class="fuer fuer--alle" data-html="auf.neben.alle">Testausgabe 0.1.0 · kostenlos · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256 nachrechnen</a></span>
         </p>
@@ -1821,16 +1821,18 @@ code {
             hinterlassen, es sei nichts installiert worden.
           </p>
           <p data-html="frage.systeme.3">
-            <strong>Windows: noch nicht.</strong> Der Signalpfad läuft dort und
-            ist nachgemessen — beide Engines, 440 Hz hinein, 432,33 Hz heraus. Was
-            fehlt, ist die App darum herum, und die entsteht gerade.
+            <strong>Windows: Dateien ja, Systemton noch nicht.</strong> Es gibt
+            ein eigenes Fenster, ein Leistensymbol und einen Installer ohne
+            Administratorrechte. Umstimmen kann er dort Dateien. Den laufenden
+            Systemton nicht — dafür fehlt das virtuelle Ausgabegerät.
           </p>
           <p data-html="frage.systeme.4">
-            Der eigentliche Grund für die Reihenfolge ist aber technisch:
+            Der Grund für diese Reihenfolge ist technisch:
             <strong>Windows lässt Systemton mithören, aber nicht ersetzen.</strong>
-            Wer ihn wirklich ersetzen will, muss selbst zum Ausgabegerät werden —
-            es braucht ein virtuelles Audiogerät. Das ist der nächste Schritt, und
-            solange es fehlt, steht hier kein Knopf.
+            Wer ihn wirklich ersetzen will, muss selbst zum Ausgabegerät werden.
+            Auf macOS erledigt das die Aufnahmeschnittstelle, auf Linux die
+            Filterkette von PipeWire. Auf Windows braucht es ein virtuelles
+            Gerät — ein eigener Treiber ist der nächste Schritt.
           </p>
         </div>
       </details>

@@ -427,6 +427,11 @@ def jsonld(kuerzel, texte):
         "name": "IYAMBAE Tuner",
         "url": seite,
         "applicationCategory": "MultimediaApplication",
+        # Windows steht hier bewusst NICHT: operatingSystem beschreibt, wo
+        # das Beschriebene laeuft, und beschrieben ist das Umstimmen des
+        # Systemtons. Das kann die Windows-Fassung nicht. Wer sie hier
+        # auffuehrt, gibt Suchmaschinen eine Zusage, die das Programm
+        # nicht einloest.
         "operatingSystem": "macOS 14.4+, Linux (PipeWire 0.3.60+)",
         "softwareVersion": "0.1.0",
         "description": texte.get("seite.beschreibung", ""),
