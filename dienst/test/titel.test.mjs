@@ -133,6 +133,90 @@ test('ein Kuenstlername, der wie ein Platzhalter klingt, bleibt', () => {
                  'Offline Pizza Kartell - Live');
 });
 
+test('zwei Sternchen verwerfen die Zeile, statt sie zu kuerzen', () => {
+    /*
+      Gemessen bei Refuge Worldwide. Der Sendername steht davor, die
+      Systemmarke dahinter.
+
+      Wuerde erst gekuerzt und dann geprueft, bliebe „Repeats (Master
+      List)" stehen — etwas, das wie ein Titel aussieht und keiner ist.
+      Genau die Sorte Fehler, die aussieht wie ein Ergebnis.
+    */
+    assert.equal(saeubereTitel('Refuge Worldwide - ** Repeats (Master List)',
+                               'Refuge Worldwide'), null);
+    assert.equal(saeubereTitel('** Repeats (Master List)'), null);
+});
+
+test('der Sendername vorne faellt weg', () => {
+    assert.equal(saeubereTitel('Yammat FM - Maali - Someday', 'Yammat FM'),
+                 'Maali - Someday');
+});
+
+test('ein kurzer Sendername wird nicht abgeschnitten', () => {
+    // Bei einem Sender namens „Jazz" waere jeder Titel in Gefahr, der
+    // zufaellig so anfaengt. Unter fuenf Zeichen wird nicht geraten.
+    assert.equal(saeubereTitel('Jazz - Autumn Leaves', 'Jazz'),
+                 'Jazz - Autumn Leaves');
+});
+
+test('die Werbezeile hinten faellt weg', () => {
+    /*
+      Gemessen bei Classic Vinyl HD. Der Sendername steht dort in einer
+      anderen Form als im Katalog — erkannt wird deshalb die Netzadresse,
+      nicht der Name. Ein Musiktitel endet nicht auf einer Domain.
+    */
+    assert.equal(
+        saeubereTitel('Riders in the Sky by George Melachrino and his '
+                      + 'Orchestra - Classic Vinyl on walmradio.com',
+                      'Classic Vinyl HD'),
+        'Riders in the Sky by George Melachrino and his Orchestra');
+});
+
+test('eine Zahl mit Punkt ist keine Netzadresse', () => {
+    // Die Endungen stehen woertlich da, statt \w+ zu nehmen. Sonst fiele
+    // dieser Titel mit — und ein Filter, der echte Titel frisst, ist
+    // schlimmer als einer, der eine Werbezeile durchlaesst.
+    assert.equal(saeubereTitel('Sunday Morning - Live at Studio 4.0'),
+                 'Sunday Morning - Live at Studio 4.0');
+});
+
+test('was im Betrieb wirklich anfiel, am 22.08.2026 vom Brett gelesen', () => {
+    // Alle sechs gemessen, keiner ausgedacht.
+    const f = (t, n) => saeubereTitel(t, n);
+
+    // NDR Kultur: Name, Trennzeichen, Adresse — es bleibt nichts uebrig.
+    assert.equal(f('NDR Kultur - www.ndr.de/kultur', 'NDR Kultur'), null);
+    // dublab Deutschland, wenn dort nichts laeuft.
+    assert.equal(f('Currently offline', 'dublab Deutschland'), null);
+    // WBGO schiebt Werbung mit eigener Marke ein.
+    assert.equal(f('AD_INSERT - THIS STATION WILL CONTINUE AFTER THIS BREAK',
+                   'WBGO Jazz 88.3'), null);
+    // Venice Classic Radio haengt sie in geschweiften Klammern an.
+    assert.equal(f('Giuseppe Valentini - Concerto grosso op.7 (Ensemble 415) '
+                   + '{+info: veniceclassicradio.eu}', 'Venice Classic Radio'),
+                 'Giuseppe Valentini - Concerto grosso op.7 (Ensemble 415)');
+    // Frisky trennt mit senkrechten Strichen — die bleiben senkrecht.
+    assert.equal(f('FRISKY | Fatalist - DigitalDepartment | for tracklist '
+                   + 'and more: FRISKY.fm', 'Frisky Radio'),
+                 'FRISKY | Fatalist - DigitalDepartment');
+    // Und ein Titel, der nur so aussieht wie eine Adresse, bleibt.
+    assert.equal(f('Sunday Morning - Live at Studio 4.0', ''),
+                 'Sunday Morning - Live at Studio 4.0');
+});
+
+test('erst der Anhang, dann der Name', () => {
+    /*
+      Die Reihenfolge ist nicht beliebig. Andersherum faellt bei NDR Kultur
+      der Name weg, und was das Trennzeichen ihm vorher gab, faellt mit —
+      stehen bliebe die nackte Adresse. Ein Ergebnis, das aussieht wie
+      eines.
+    */
+    assert.equal(saeubereTitel('NDR Kultur - www.ndr.de/kultur', 'NDR Kultur'),
+                 null);
+    assert.equal(saeubereTitel('Yammat FM - Maali - Someday', 'Yammat FM'),
+                 'Maali - Someday');
+});
+
 test('leer und unbekannt sind dasselbe: null, nie ein leerer Text', () => {
     for (const w of [null, undefined, 42, {}, '', '  ', 'ab']) {
         assert.equal(saeubereTitel(w), null, JSON.stringify(w));

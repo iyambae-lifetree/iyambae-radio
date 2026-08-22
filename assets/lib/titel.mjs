@@ -41,23 +41,74 @@ const TAKT_MS = 20000;
 let laufend = null;
 let leitung = null;
 
-// Manche Haeuser tragen dort einen Platzhalter ein statt eines Titels.
-// Angezeigt waere er schlimmer als ein leeres Feld.
+/*
+ Manche Haeuser tragen dort einen Platzhalter ein statt eines Titels,
+ andere ihren eigenen Namen oder ihre Werbezeile. Angezeigt waeren sie
+ schlimmer als ein leeres Feld.
+
+ Dieselbe Saeuberung wie in `dienst/src/titel.mjs`, damit dieselbe Zeile
+ nicht anders aussieht, je nachdem welcher der beiden Wege sie gebracht
+ hat. Aendert sich hier etwas, aendert es sich auch dort.
+*/
 const PLATZHALTER = [
   /^now playing info goes here$/i,
   /^airtime\b.*\boffline$/i,
-  /^(unknown|unbekannt|n\/a|none|null)$/i,
+  /^(offline|currently offline|unknown|unbekannt|n\/a|none|null|no title|live|live stream|stream)$/i,
+  /^ad_insert\b/i,   // WBGO markiert seine Werbung so
   /^[\s\-–—.·]*$/,
-  /^\*\*/,                       // Sendeplaene: ** Repeats (Master List)
-  /\bwww\.|https?:\/\//i,        // Senderadresse statt Titel
 ];
 
-function sauber(x) {
+// Woertlich, nicht als Muster: ein /\w+\./ wuerde „Live at Studio 4.0"
+// mitverwerfen — und ein Filter, der echte Titel frisst, ist schlimmer
+// als einer, der eine Werbezeile durchlaesst.
+const ENDUNGEN = 'com|net|org|fm|de|at|ch|uk|ru|io|co|tv|radio|live|info|eu';
+
+// „Refuge Worldwide - ** Repeats" — der Name steht auf der Seite ohnehin
+// daneben und verdeckt hier, was fuer ein Text dahinter kommt. Nur der
+// volle Name, und erst ab fuenf Zeichen: bei einem Sender namens „Jazz"
+// waere jeder Titel in Gefahr, der zufaellig so anfaengt.
+function ohneSendername(t, name) {
+  if (typeof name !== 'string' || name.trim().length < 5) return t;
+  const flucht = name.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const kurz = t.replace(new RegExp(`^${flucht}\\s*[-–—:|]\\s*`, 'i'), '').trim();
+  return kurz.length >= 3 ? kurz : t;
+}
+
+// „... - Classic Vinyl on walmradio.com" — erkannt wird die Netzadresse,
+// nicht der Name: der steht dort oft anders als im Katalog. Ein
+// Musiktitel endet nicht auf einer Domain, eine Beilage fast immer.
+function ohneAnhang(t) {
+  const adresse = `(www\\.|[a-z0-9-]+\\.(${ENDUNGEN})\\b)`;
+  // Venice Classic Radio in geschweiften Klammern, die uebrigen hinter dem
+  // letzten Trennzeichen. Geschnitten mit `replace`, nicht `split`/`join`:
+  // Frisky trennt mit senkrechten Strichen, die sollen es bleiben.
+  let k = t.replace(new RegExp(`\\s*\\{[^}]*${adresse}[^}]*\\}\\s*$`, 'i'), '').trim();
+  k = k.replace(new RegExp(`\\s[-–—|]\\s[^-–—|]*${adresse}[^-–—|]*$`, 'i'), '').trim();
+  return k.length >= 3 ? k : t;
+}
+
+function sauber(x, name) {
   if (typeof x !== 'string') return null;
-  // Fuehrende Striche kommen vor, wenn der Kuenstler fehlt: „- Lil Uzi Vert"
-  const t = x.replace(/\s+/g, ' ').replace(/^[\s\-–—]+/, '').trim();
-  if (!t) return null;
-  return PLATZHALTER.some((m) => m.test(t)) ? null : t;
+  // Erst der Anhang, dann der Name: andersherum bliebe von
+  // „NDR Kultur - www.ndr.de/kultur" die nackte Adresse stehen.
+  let t = ohneSendername(ohneAnhang(x.replace(/\s+/g, ' ').trim()), name);
+
+  /*
+   Zwei Sternchen sind bei Shoutcast und Airtime die Marke fuer eine
+   Systemzeile. Die Pruefung steht VOR dem Abschneiden: schnitte man sie
+   erst weg, bliebe „Repeats (Master List)" stehen — etwas, das wie ein
+   Titel aussieht und keiner ist.
+  */
+  if (/^\*\*/.test(t)) return null;
+
+  // Ein fuehrender Strich heisst leeres Kuenstlerfeld: „- Lil Uzi Vert"
+  t = t.replace(/^[\s\-–—*·|]+/, '').trim();
+  if (t.length < 3) return null;
+  if (PLATZHALTER.some((m) => m.test(t))) return null;
+  // Bleibt nur der Sendername uebrig, ist nichts uebrig — er steht auf der
+  // Seite ohnehin daneben. Gemessen: „NDR Kultur - www.ndr.de/kultur".
+  if (name && t.toLowerCase() === String(name).trim().toLowerCase()) return null;
+  return t;
 }
 
 const paar = (a, b) => (a && b ? `${a} — ${b}` : b || a || null);
@@ -78,7 +129,7 @@ async function hole(adresse, wandle) {
      wie eine Antwort und keine ist.
     */
     if (!/json|text/i.test(a.headers.get('content-type') || '')) return null;
-    return sauber(wandle(await a.json()));
+    return wandle(await a.json());
   } catch { return null; }
 }
 
@@ -107,7 +158,7 @@ async function holeStand() {
 
 async function vomDienst(sender) {
   const alle = await holeStand();
-  return alle ? sauber(alle[sender.id]) : null;
+  return alle ? sauber(alle[sender.id], sender.name) : null;
 }
 
 // ── Die Wege, je nach Haus ────────────────────────────────────────
@@ -177,12 +228,13 @@ function vonIcecast(u) {
  kommt von selbst, sobald er wechselt. Das ist sparsamer als jede Abfrage
  und muss deshalb anders behandelt werden als die uebrigen Wege.
 */
-function ueberLeitung(mount, melde) {
+function ueberLeitung(mount, name, melde) {
   try {
     leitung = new EventSource(`https://api.zeno.fm/mounts/metadata/subscribe/${mount}`);
     leitung.onmessage = (e) => {
       let t = null;
-      try { t = sauber(JSON.parse(e.data)?.streamTitle); } catch { /* kein JSON */ }
+      try { t = JSON.parse(e.data)?.streamTitle; } catch { /* kein JSON */ }
+      t = sauber(t, name);
       if (t) melde(t);
     };
     leitung.onerror = () => haltAn();
@@ -232,7 +284,7 @@ export function beobachteTitel(sender, melde) {
 
     // Das Brett kennt ihn nicht — dann bei seinem Haus selbst nachfragen.
     for (const [weg, kuerzel] of wege) {
-      const titel = await weg(u, kuerzel);
+      const titel = sauber(await weg(u, kuerzel), sender.name);
       if (titel) return melde(titel);
     }
 
@@ -250,7 +302,8 @@ export function beobachteTitel(sender, melde) {
   };
 
   const zeno = /stream\.zeno\.fm\/([a-z0-9]+)/i.exec(sender.stream);
-  if (zeno && typeof EventSource === 'function' && ueberLeitung(zeno[1], melde)) {
+  if (zeno && typeof EventSource === 'function'
+      && ueberLeitung(zeno[1], sender.name, melde)) {
     // Die offene Leitung meldet von selbst — aber sie meldet erst beim
     // naechsten Wechsel. Bis dahin ans Brett halten.
     versuch();

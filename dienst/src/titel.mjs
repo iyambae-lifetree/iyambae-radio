@@ -135,6 +135,7 @@ export const KEINE_TITEL = new Set([
     'unknown',
     'unknown artist - unknown title',
     'no title',
+    'currently offline',
     'live',
     'live stream',
     'stream',
@@ -158,14 +159,98 @@ export const KEINE_TITEL = new Set([
  * leere Zeichenkette: Der Unterschied zwischen „kein Titel bekannt" und
  * „Titel ist leer" soll nicht erst beim Anzeigen entstehen.
  */
-export function saeubereTitel(roh) {
+export function saeubereTitel(roh, sender = '') {
     if (typeof roh !== 'string') return null;
     let t = roh.replace(/\s+/g, ' ').trim();
+
+    /*
+      Erst der Anhang, dann der Name — die Reihenfolge ist nicht beliebig.
+      Andersherum bliebe von `NDR Kultur - www.ndr.de/kultur` die nackte
+      Adresse stehen: Der Name faellt weg, und was das Trennzeichen ihm
+      vorher gab, faellt mit.
+    */
+    t = ohneSendername(ohneAnhang(t), sender);
+
+    /*
+      Zwei Sternchen sind bei Shoutcast und Airtime die Marke für eine
+      Systemzeile, keine Auszeichnung: `** Repeats (Master List)`.
+
+      Die Prüfung steht VOR dem Abschneiden, und das ist der ganze Punkt.
+      Schnitte man sie erst weg, bliebe „Repeats (Master List)" übrig —
+      etwas, das wie ein Titel aussieht und keiner ist. Ein Platzhalter,
+      den man als Platzhalter erkennt, ist harmlos; einer, der sich als
+      Titel ausgibt, nicht.
+    */
+    if (/^\*\*/.test(t)) return null;
+
+    /*
+      WBGO schiebt Werbung mit eigener Marke ein:
+      `AD_INSERT - THIS STATION WILL CONTINUE AFTER THIS BREAK`. Der Text
+      dahinter wechselt, die Marke nicht — deshalb sie und nicht der Satz.
+    */
+    if (/^ad_insert\b/i.test(t)) return null;
+
     // Führende Striche und Aufzählungszeichen, auch mehrere.
     t = t.replace(/^[\s\-–—*·|]+/, '').trim();
     if (t.length < 3) return null;
     if (KEINE_TITEL.has(t.toLowerCase())) return null;
+
+    /*
+      Bleibt am Ende nur der Sendername uebrig, ist nichts uebrig.
+      Gemessen bei NDR Kultur: `NDR Kultur - www.ndr.de/kultur` — die
+      Adresse faellt oben weg, und was dasteht, ist der Name des Senders,
+      der auf der Seite ohnehin danebensteht.
+    */
+    if (sender && t.toLowerCase() === sender.trim().toLowerCase()) return null;
     return t;
+}
+
+/*
+  Manche Häuser stellen ihren eigenen Namen vor den Titel:
+  `Refuge Worldwide - ** Repeats (Master List)`. Weg damit — er steht auf
+  der Seite ohnehin schon daneben, und er verdeckt hier, was dahinter für
+  ein Text kommt.
+
+  Nur der VOLLE Name, und nur mit Trennzeichen dahinter. „Jazz - Autumn
+  Leaves" bei einem Sender namens „Jazz" bliebe damit unangetastet, denn
+  drei Zeichen sind zu wenig, um sicher zu sein.
+*/
+function ohneSendername(t, sender) {
+    if (typeof sender !== 'string' || sender.trim().length < 5) return t;
+    const flucht = sender.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const gekuerzt = t.replace(new RegExp(`^${flucht}\\s*[-–—:|]\\s*`, 'i'), '').trim();
+    return gekuerzt.length >= 3 ? gekuerzt : t;
+}
+
+/*
+  Und manche hängen ihre Werbung hinten an:
+  `Riders in the Sky by George Melachrino - Classic Vinyl on walmradio.com`
+
+  Erkannt wird nicht der Sendername — der steht dort in einer anderen Form
+  als im Katalog („Classic Vinyl" gegen „Classic Vinyl HD") —, sondern die
+  Netzadresse. Ein Musiktitel endet nicht auf einer Domain; eine Beilage
+  des Hauses fast immer.
+
+  Die Endungen stehen wörtlich da, statt `\w+` zu nehmen. Sonst fiele
+  „Sunday Morning - Live at Studio 4.0" mit, und ein Filter, der echte
+  Titel frisst, ist schlimmer als einer, der eine Werbezeile durchlässt.
+*/
+const ENDUNGEN = 'com|net|org|fm|de|at|ch|uk|ru|io|co|tv|radio|live|info|eu';
+
+function ohneAnhang(t) {
+    const adresse = `(www\\.|[a-z0-9-]+\\.(${ENDUNGEN})\\b)`;
+
+    // Venice Classic Radio haengt sie in geschweiften Klammern an:
+    // `... {+info: veniceclassicradio.eu}`
+    let k = t.replace(new RegExp(`\\s*\\{[^}]*${adresse}[^}]*\\}\\s*$`, 'i'), '').trim();
+
+    /*
+      Und die uebrigen hinter dem letzten Trennzeichen. Geschnitten wird
+      mit `replace`, nicht mit `split`/`join`: Frisky trennt mit
+      senkrechten Strichen, und die sollen senkrechte Striche bleiben.
+    */
+    k = k.replace(new RegExp(`\\s[-–—|]\\s[^-–—|]*${adresse}[^-–—|]*$`, 'i'), '').trim();
+    return k.length >= 3 ? k : t;
 }
 
 /**
@@ -356,7 +441,7 @@ export function erzeugeTitel({
                         const s = reihe.shift();
                         if (!s) return;
                         const { titel } = await liesIcyTitel(s.stream, { holeStrom });
-                        const sauber = saeubereTitel(titel);
+                        const sauber = saeubereTitel(titel, s.name);
                         // Auch ein Fehlschlag setzt den Zeitstempel: Sonst
                         // stünde derselbe tote Sender bei jedem Zug wieder
                         // ganz oben und verdrängte die anderen.
