@@ -1888,9 +1888,9 @@ code {
       <!-- 3 -->
       <div class="umfrage__schritt" data-schritt="3">
         <p class="umfrage__frage">Was wäre dir ein Werkzeug wert, das deinen ganzen Rechner umstimmt?</p>
-        <p class="umfrage__zusatz">Einmalig, dauerhafte Lizenz, kein Abo. Es gibt auch ein kostenloses Konkurrenzprodukt — das darfst du einrechnen.</p>
+        <p class="umfrage__zusatz">Einmalig, dauerhafte Lizenz, kein Abo. Ohne Treiber, ohne Admin-Passwort — und es misst die Stimmung der Aufnahme, statt 440 anzunehmen.</p>
         <div class="umfrage__wahl" data-feld="preis">
-          <button class="umfrage__knopf" type="button" data-wert="0">Nichts — ich nehme das kostenlose, auch mit Treiberinstallation</button>
+          <button class="umfrage__knopf" type="button" data-wert="0">Nichts — mir reicht ein kostenloses<small>Es gibt eines. Dafür Treiber installieren, Admin-Passwort eingeben, und es rechnet stur von 440 aus — liegt die Aufnahme auf 443, landest du bei 435 statt bei 432.</small></button>
           <button class="umfrage__knopf" type="button" data-wert="19">Bis <b>19 €</b>, wenn es ohne Treiber läuft</button>
           <button class="umfrage__knopf" type="button" data-wert="39"><b>39 €</b> für treiberlos und genau</button>
           <button class="umfrage__knopf" type="button" data-wert="69"><b>69 €</b>, wenn es zusätzlich die Stimmung der Aufnahme misst<small>Damit landet man wirklich auf 432 und nicht auf 435</small></button>
@@ -2174,6 +2174,104 @@ code {
 })();
 </script>
 <script>
+/* ── Die Umfrage auf Englisch ────────────────────────────────────
+   Die Produktseite selbst gibt es nur auf Deutsch. Die Umfrage soll aber
+   in englischsprachige Foren verlinkt werden koennen, deshalb traegt sie
+   ihre eigenen Texte mit.
+
+   Umgeschaltet wird, wenn die Seite auf Englisch steht, wenn ?sprache=en
+   in der Adresse haengt — so laesst sich der Verweis gezielt setzen — oder
+   wenn der Browser kein Deutsch spricht. Das Letzte ist Absicht: Wer aus
+   einem englischen Forum kommt, soll nicht erst etwas anklicken muessen. */
+(() => {
+  const karte = document.getElementById('umfrageKarte');
+  if (!karte) return;
+
+  const wunsch = new URLSearchParams(location.search).get('sprache');
+  const spricht = (navigator.languages || [navigator.language || 'de']).join(',');
+  const englisch = wunsch === 'en'
+    || (wunsch !== 'de' && document.documentElement.lang === 'en')
+    || (wunsch !== 'de' && !/\bde\b|^de-/i.test(spricht));
+  if (!englisch) return;
+
+  const T = {
+    eyebrow: 'Four questions',
+    titel:   'What should we build next?',
+    vorspann: 'We would rather not guess. Four questions, no sign-up, no address — <strong>none of it can be traced back to you</strong>. One minute.',
+
+    f1:  'How do you listen at 432 Hz today?',
+    f1z: 'If at all — “not at all” is a valid answer.',
+    'heute.gar-nicht': 'Not at all, I have only just come across it',
+    'heute.handy':     'With an app on my phone',
+    'heute.dateien':   'I converted my music|Ran the files through once and kept the new ones',
+    'heute.browser':   'With a browser extension',
+    'heute.bastelei':  'Built it myself — driver, filter chain, audio units',
+    'heute.youtube':   'I listen to ready-made 432 Hz uploads, e.g. on YouTube',
+
+    f2:  'What do you miss most?',
+    f2z: 'The thing you keep running into.',
+    'fehlt.handy-systemton':  'On the phone it does not work at all|Spotify and YouTube cannot be retuned there',
+    'fehlt.sammlung':         'Retuning my whole library for good|Run it once, and everything is retuned afterwards',
+    'fehlt.andere-stimmungen':'Tunings other than 432|528 Hz, Solfeggio, historical pitches',
+    'fehlt.radio':            'More radio — more stations, better sorted',
+    'fehlt.qualitaet':        'Better sound quality when retuning',
+    'fehlt.einfacher':        'That it is finally simple|No driver, no admin password, no setup',
+
+    f3:  'What would a tool be worth to you that retunes your whole computer?',
+    f3z: 'One-time purchase, permanent licence, no subscription. No driver, no admin password — and it measures the tuning of the recording instead of assuming 440.',
+    'preis.0':  'Nothing — a free one is enough for me|There is one. But: install a driver, enter your admin password, and it computes from 440 regardless — if the recording sits at 443, you end up at 435 instead of 432.',
+    'preis.19': 'Up to <b>€19</b>, if it runs without a driver',
+    'preis.39': '<b>€39</b> for driverless and accurate',
+    'preis.69': '<b>€69</b>, if it also measures the tuning of the recording|So you actually land on 432 and not on 435',
+    'preis.99': '<b>€99</b> — for a tool I use every day that is fine',
+
+    f4:  'What would you build, if you could?',
+    f4z: 'Optional. The sentence that helps us most is usually here.',
+    platzhalter: 'One sentence is enough …',
+
+    danke:   'Thank you.',
+    schluss: 'This feeds into the decision about what gets built next.',
+    weiter:  'Continue',
+    zurueck: '← back',
+    springen:'skip',
+    leer:    'No problem — that is an answer too.',
+    fehler:  'It did not arrive, unfortunately — the service is not responding. If you like, tell us via the <a href="https://iyambae.fm/recht/impressum/">contact details in the imprint</a>.',
+  };
+
+  const setze = (el, wert) => {
+    if (!el || !wert) return;
+    const [haupt, klein] = wert.split('|');
+    el.innerHTML = haupt + (klein ? `<small>${klein}</small>` : '');
+  };
+
+  const abschnitt = document.getElementById('umfrage');
+  setze(abschnitt.querySelector('.eyebrow'), T.eyebrow);
+  setze(abschnitt.querySelector('h2'), T.titel);
+  setze(abschnitt.querySelector('.eng > p:not(.eyebrow)'), T.vorspann);
+
+  const schritte = [...karte.querySelectorAll('.umfrage__schritt')];
+  [['f1','f1z'], ['f2','f2z'], ['f3','f3z'], ['f4','f4z']].forEach(([f, z], i) => {
+    setze(schritte[i].querySelector('.umfrage__frage'), T[f]);
+    setze(schritte[i].querySelector('.umfrage__zusatz'), T[z]);
+  });
+  karte.querySelectorAll('.umfrage__wahl').forEach((wahl) => {
+    const feld = wahl.dataset.feld;
+    wahl.querySelectorAll('.umfrage__knopf').forEach((k) => setze(k, T[`${feld}.${k.dataset.wert}`]));
+  });
+
+  const feld = document.getElementById('umfrageText');
+  if (feld) feld.placeholder = T.platzhalter;
+  setze(schritte[4].querySelector('.umfrage__frage'), T.danke);
+  setze(document.getElementById('umfrageSchluss'), T.schluss);
+  setze(document.getElementById('umfrageWeiter'), T.weiter);
+  setze(document.getElementById('umfrageZurueck'), T.zurueck);
+  setze(document.getElementById('umfrageUeberspringen'), T.springen);
+
+  // Die beiden Saetze, die das Skript spaeter selbst einsetzt
+  window.__umfrageTexte = { leer: T.leer, fehler: T.fehler, sprache: 'en' };
+})();
+</script>
+<script>
 /* ═══════════════════════════════════════════════════════════════════
    Die Umfrage.
 
@@ -2245,9 +2343,9 @@ code {
     const schluss = document.getElementById('umfrageSchluss');
     // Nichts, was einer Person zuzuordnen waere. Die Sprache hilft beim
     // Auswerten und verraet niemanden.
-    const paket = { ...antworten, sprache: document.documentElement.lang || 'de' };
+    const paket = { ...antworten, sprache: window.__umfrageTexte?.sprache || document.documentElement.lang || 'de' };
     if (!Object.keys(antworten).length) {
-      schluss.textContent = 'Kein Problem — auch das ist eine Antwort.';
+      schluss.textContent = (window.__umfrageTexte?.leer) || 'Kein Problem — auch das ist eine Antwort.';
       return;
     }
     try {
@@ -2258,8 +2356,9 @@ code {
       });
       if (!antwort.ok) throw new Error(String(antwort.status));
     } catch {
-      schluss.innerHTML = 'Angekommen ist es leider nicht — der Dienst antwortet gerade nicht. '
-        + 'Wenn du magst, schreib es uns über die <a href="https://iyambae.fm/recht/impressum/">Kontaktdaten im Impressum</a>.';
+      schluss.innerHTML = (window.__umfrageTexte?.fehler)
+        || ('Angekommen ist es leider nicht — der Dienst antwortet gerade nicht. '
+          + 'Wenn du magst, schreib es uns über die <a href="https://iyambae.fm/recht/impressum/">Kontaktdaten im Impressum</a>.');
     }
   }
 
