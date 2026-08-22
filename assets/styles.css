@@ -230,17 +230,47 @@ body.stimmt-432 .stimmung__mehr {
    Zeile, kein Kasten, keine Umrandung. Er steht an der einzigen Stelle,
    an der er etwas erklaert — naemlich neben der Naeherung, die er
    ueberfluessig macht. */
-.stimmung__hinweis {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    font-family: var(--mono); font-size: 0.72rem;
-    color: var(--gold);
-    text-decoration: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
-    padding-bottom: 1px;
-    transition: border-color 0.2s ease;
+/* ── Der Abstand ─────────────────────────────────────────────────
+   Erscheint erst, wenn jemand 432 Hz eingeschaltet hat — also in dem
+   Moment, in dem er die Frage selbst gestellt hat.
+
+   Was hier steht, ist keine Anpreisung, sondern eine Messabweichung: Er
+   hat 432 verlangt und bekommt oft 435, weil der Browser die Stimmung
+   der Aufnahme nicht kennt. Das gehoert gesagt.
+
+   Und es gehoert LEISE gesagt. Kein Kasten, der aufpoppt, kein
+   Countdown, keine zweite Frage. Ein Absatz in der Farbe des Hauses, ein
+   Verweis, fertig. Wer weiterhoert, hoert weiter. */
+.abstand {
+    border-inline-start: 2px solid color-mix(in srgb, var(--gold) 40%, transparent);
+    padding-inline-start: 0.85rem;
+    max-width: 34rem;
 }
-.stimmung__hinweis:hover { border-bottom-color: var(--gold); }
-.stimmung__hinweis[hidden] { display: none; }
+.abstand__satz {
+    margin: 0 0 0.5rem;
+    font-size: 0.82rem; line-height: 1.5;
+    color: var(--text-leise);
+}
+.abstand__satz em { font-style: normal; color: var(--text); }
+.abstand__satz strong { color: var(--text); font-weight: 500; }
+.abstand__satz--loesung strong { color: var(--gold); font-weight: 500; }
+.abstand__leiste { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.7rem; }
+
+.abstand__weg {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+    border-radius: 999px;
+    color: var(--gold);
+    font-family: var(--mono); font-size: 0.74rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.abstand__weg:hover {
+    background: color-mix(in srgb, var(--gold) 12%, transparent);
+    border-color: var(--gold);
+}
+.abstand__weg[hidden] { display: none; }
 
 .messung {
     font-family: var(--mono); font-size: 0.72rem;

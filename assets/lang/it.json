@@ -148,5 +148,7 @@
   "einstellungen.nachwort": "Che cosa viene conservato, e per quanto tempo, è scritto nell'<a href=\"/recht/datenschutz/\" hreflang=\"de\">informativa sulla privacy</a> (in tedesco).",
   "einstellungen.messungAn": "La misurazione del pubblico è attiva.",
   "einstellungen.messungAus": "La misurazione del pubblico è disattivata.",
-  "stimmung.erklaerung": "La particolarità di questo posto: ogni stazione può suonare a 432 Hz invece dei soliti 440."
+  "stimmung.erklaerung": "La particolarità di questo posto: ogni stazione può suonare a 432 Hz invece dei soliti 440.",
+  "stimmung.abstand": "Questa pagina <em>indovina</em>: presume che ogni stazione sia a 440 Hz e abbassa tutto in blocco. Se una registrazione è a 443 — cosa comune oggi —, in questo momento stai ascoltando <strong>435 Hz, non 432</strong>.",
+  "stimmung.loesung": "L’<strong>IYAMBAE Tuner</strong> <em>misura</em> l’accordatura reale e arriva a <strong>432,33 Hz</strong> — su tutto il computer, non solo qui. Gratuito, senza account."
 }

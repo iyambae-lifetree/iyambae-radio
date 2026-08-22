@@ -148,5 +148,7 @@
   "einstellungen.nachwort": "何がどれだけの期間保存されるかは<a href=\"/recht/datenschutz/\" hreflang=\"de\">プライバシーポリシー</a>（ドイツ語）に書いてあります。",
   "einstellungen.messungAn": "利用状況の計測はオンです。",
   "einstellungen.messungAus": "利用状況の計測はオフです。",
-  "stimmung.erklaerung": "ここだけの特徴：どの局も、通常の 440 Hz ではなく 432 Hz で鳴らせます。"
+  "stimmung.erklaerung": "ここだけの特徴：どの局も、通常の 440 Hz ではなく 432 Hz で鳴らせます。",
+  "stimmung.abstand": "このページは<em>推測</em>しています。どの局も 440 Hz だと仮定して一律に下げています。録音が 443 Hz の場合（今日ではよくあります）、いま聞こえているのは <strong>432 Hz ではなく 435 Hz</strong> です。",
+  "stimmung.loesung": "<strong>IYAMBAE Tuner</strong> は実際の調律を<em>測定</em>し、<strong>432.33 Hz</strong> に合わせます。このページだけでなく、パソコン全体で。無料、アカウント不要。"
 }

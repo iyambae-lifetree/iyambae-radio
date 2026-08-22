@@ -148,5 +148,7 @@
   "einstellungen.nachwort": "What is stored and for how long is in the <a href=\"/recht/datenschutz/\" hreflang=\"de\">privacy policy</a>.",
   "einstellungen.messungAn": "Audience measurement is on.",
   "einstellungen.messungAus": "Audience measurement is off.",
-  "stimmung.erklaerung": "What makes this place different: every station can play at 432 Hz instead of the usual 440."
+  "stimmung.erklaerung": "What makes this place different: every station can play at 432 Hz instead of the usual 440.",
+  "stimmung.abstand": "This page <em>guesses</em>: it assumes every station sits at 440 Hz and pulls everything down by the same amount. If a recording sits at 443 — common today — what you are hearing right now is <strong>435 Hz, not 432</strong>.",
+  "stimmung.loesung": "The <strong>IYAMBAE Tuner</strong> <em>measures</em> the actual tuning and lands on <strong>432.33 Hz</strong> — across your whole computer, not just here. Free, no account."
 }

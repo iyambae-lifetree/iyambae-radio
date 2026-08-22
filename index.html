@@ -217,17 +217,44 @@
                 <p class="stimmung__erklaerung" data-text="stimmung.erklaerung">Das Besondere hier: Jeder Sender läuft auf Wunsch in 432 Hz statt in den üblichen 440.</p>
             </div>
 
+            <!-- Was erscheint, sobald jemand 432 Hz einschaltet.
+
+                 Es steht hier, weil in diesem Moment etwas Wahres gesagt
+                 werden muss: Der Besucher hat 432 verlangt und bekommt
+                 haeufig 435, weil diese Seite die Stimmung der Aufnahme
+                 nicht kennt, sondern 440 annimmt.
+
+                 Das ist keine Verkaufsmasche, sondern eine Messabweichung.
+                 Sie auszusprechen ehrt ihn — er erfaehrt, was er wirklich
+                 hoert, statt es fuer richtig zu halten. Und er darf danach
+                 entscheiden, dass ihm 435 reicht: Die Seite spielt weiter,
+                 nichts wird abgeschaltet, nichts fragt ein zweites Mal. -->
             <div class="stimmung__mehr">
                 <span class="messung" id="myRetunerMessung" hidden></span>
-                <button class="stimmung__frage" id="knopfMyRetuner" hidden data-titel="kopf.myretuner.titel"
-                        title="Fragt einmal nach, ob der IYAMBAE Tuner auf diesem Rechner läuft. Die App fragt dich dann um Erlaubnis.">
-                    <span data-text="kopf.myretuner.knopf">Ich habe den IYAMBAE Tuner</span>
-                </button>
-                <a class="stimmung__hinweis" id="knopfMyRetunerHolen" hidden
-                   href="https://apps.iyambae.fm" target="_blank" rel="noopener"
-                   data-titel="kopf.holen.titel" title="Diese Seite rät. Der IYAMBAE Tuner misst.">
-                    <span data-text="kopf.holen.knopf">Dauerhaft in 432 Hz — IYAMBAE Tuner</span>
-                </a>
+
+                <div class="abstand" id="stimmungAbstand">
+                    <p class="abstand__satz" data-html="stimmung.abstand">
+                        Diese Seite <em>rät</em>: Sie nimmt an, jeder Sender läge auf 440 Hz,
+                        und zieht pauschal herunter. Liegt eine Aufnahme auf 443 — heute
+                        weit verbreitet —, hörst du gerade <strong>435 Hz, nicht 432</strong>.
+                    </p>
+                    <p class="abstand__satz abstand__satz--loesung" data-html="stimmung.loesung">
+                        Der <strong>IYAMBAE Tuner</strong> <em>misst</em> die tatsächliche
+                        Stimmung und trifft <strong>432,33 Hz</strong> — auf dem ganzen
+                        Rechner, nicht nur hier. Kostenlos, ohne Konto.
+                    </p>
+                    <div class="abstand__leiste">
+                        <a class="abstand__weg" id="knopfMyRetunerHolen"
+                           href="https://apps.iyambae.fm" target="_blank" rel="noopener"
+                           data-titel="kopf.holen.titel" title="Diese Seite rät. Der IYAMBAE Tuner misst.">
+                            <span data-text="kopf.holen.knopf">Dauerhaft in 432 Hz — IYAMBAE Tuner</span>
+                        </a>
+                        <button class="stimmung__frage" id="knopfMyRetuner" hidden data-titel="kopf.myretuner.titel"
+                                title="Fragt einmal nach, ob der IYAMBAE Tuner auf diesem Rechner läuft. Die App fragt dich dann um Erlaubnis.">
+                            <span data-text="kopf.myretuner.knopf">Ich habe den IYAMBAE Tuner</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
