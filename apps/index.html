@@ -3,9 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln</title>
-<meta name="description" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<title data-text="seite.titel">IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln</title>
+<meta name="description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
 <meta name="theme-color" content="#0A0908">
+
+<!-- Vorschau in Foren und Boten. Der Anlass ist unmittelbar: Wer diese
+     Seite in ein englischsprachiges Forum stellt, bekommt dort eine Karte
+     mit Titel und Zeile — und ohne diese vier Angaben stünde in dieser
+     Karte Deutsch, egal welche Sprachfassung verlinkt wurde. og:url und
+     og:locale setzt Scripts/baue-apps-sprachen.py je Sprache. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IYAMBAE Tuner">
+<meta property="og:title" data-inhalt="seite.titel" content="IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln">
+<meta property="og:description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<meta property="og:url" content="https://apps.iyambae.fm/de/">
+<meta property="og:locale" content="de">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://apps.iyambae.fm/de/">
+
 <link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/schrift/schriften.css">
 
@@ -977,6 +992,158 @@ code {
   * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 
+/* ── Sprachumschalter ────────────────────────────────────────────── */
+/*
+   Echte Verweise in einem <details>, kein <select>. Ein Auswahlfeld
+   braucht JavaScript, um irgendwohin zu führen, und eine Suchmaschine
+   sieht darin keine Brücke zwischen den sieben Fassungen. Gebaut wird er
+   von Scripts/baue-apps-sprachen.py an der Marke im Kopfbereich; im
+   Gegensatz zum Radio zeichnet ihn kein Modul zur Laufzeit noch einmal
+   nach, weil diese Seite gar keinen zweiten Durchlauf hat.
+
+   Die Marke selbst steht ABSICHTLICH nicht in diesem Kommentar. Sie stand
+   hier einmal, und der Erzeuger fand sie zuerst — der ganze Umschalter
+   landete mitten im Stilblatt, unsichtbar, und die Kopfleiste blieb ohne
+   Sprachwahl. Deshalb besteht der Erzeuger jetzt darauf, dass es die Marke
+   GENAU EINMAL im Dokument gibt.
+
+   Er steht VOR den beiden anderen Knöpfen und verschwindet bei 30rem
+   nicht — anders als „zum Radio". Wer die Seite in der falschen Sprache
+   aufschlägt, braucht ihn genau dann, wenn der Bildschirm klein ist.
+*/
+.sprachwahl { position: relative; }
+.sprachwahl__knopf {
+  list-style: none; cursor: pointer;
+  font-family: var(--daten); font-size: .7rem; letter-spacing: .08em;
+  color: var(--leise); border: 1px solid var(--gravur-hell);
+  padding: .38rem .7rem; transition: color .18s, border-color .18s;
+}
+.sprachwahl__knopf::-webkit-details-marker { display: none; }
+.sprachwahl__knopf:hover { color: var(--text); border-color: var(--messing); }
+.sprachwahl__liste {
+  position: absolute; inset-inline-end: 0; top: calc(100% + .4rem); z-index: 40;
+  margin: 0; padding: .35rem; list-style: none; min-width: 9rem;
+  background: var(--blech); border: 1px solid var(--gravur-hell);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+}
+.sprachwahl__liste a {
+  display: block; padding: .4rem .6rem; text-decoration: none;
+  font-size: .84rem; color: var(--leise);
+}
+.sprachwahl__liste a:hover { color: var(--text); background: var(--gravur); }
+.sprachwahl__liste a[aria-current] { color: var(--messing-hell); }
+
+/* ── Rechts nach links ───────────────────────────────────────────── */
+/*
+   Das Stilblatt arbeitet fast durchweg mit logischen Angaben
+   (padding-block, inset-inline, border-inline-start) — deshalb steht hier
+   so wenig. Was bleibt, sind die Stellen, an denen es NICHT um Schrift
+   geht, sondern um eine Skala.
+
+   Eine Frequenzachse läuft von klein nach groß, und zwar in jeder Sprache
+   von links nach rechts. Sie zu spiegeln hieße, 415 rechts und 448 links
+   zu setzen — das liest niemand, auch kein arabischer Leser, denn es ist
+   ein Diagramm und kein Satz. Dasselbe gilt für die abgelesenen Zahlen:
+   „432,0 Hz" ist eine Zahl mit Einheit, keine arabische Wortfolge, und
+   ohne diese Regel stellt der Browser das Hz davor.
+
+   text-align: right hält sie trotzdem am Anfang der Zeile — bei dir=rtl
+   ist rechts der Anfang.
+*/
+[dir="rtl"] .ablesung__wert,
+[dir="rtl"] .skala,
+[dir="rtl"] .leiste,
+[dir="rtl"] .stimmungen,
+[dir="rtl"] .panel__gross,
+[dir="rtl"] .panel__balken,
+[dir="rtl"] input[type="range"] { direction: ltr; }
+
+[dir="rtl"] .ablesung__wert,
+[dir="rtl"] .panel__gross { text-align: right; }
+
+[dir="rtl"] .beweise > li > b,
+[dir="rtl"] .werte b,
+[dir="rtl"] .leiste-liste b,
+[dir="rtl"] .panel__werte dd,
+[dir="rtl"] .laden__groesse { direction: ltr; unicode-bidi: isolate; }
+
+/*
+   Kein Sperrsatz im Arabischen.
+
+   Die kleinen Marken dieser Seite stehen in gesperrten Versalien — das ist
+   ein lateinischer Kniff und im Arabischen ein Fehler: Die Schrift ist
+   verbunden, und `letter-spacing` zieht die Buchstaben aus ihren
+   Verbindungen. Es sieht dann nicht vornehm aus, sondern kaputt.
+
+   Aufgeführt sind nur die Klassen, deren Inhalt WIRKLICH übersetzt wird.
+   Wo immer nur Lateinisches steht — die Wortmarke, „macOS", die Zahlen an
+   der Skala, die Dateigrößen —, bleibt die Sperrung stehen; sie ist dort
+   Teil des Entwurfs und stört niemanden.
+*/
+[dir="rtl"] .eyebrow,
+[dir="rtl"] .kopfknopf,
+[dir="rtl"] .sprachwahl__knopf,
+[dir="rtl"] .grossknopf__tat,
+[dir="rtl"] .grossknopf__zusatz,
+[dir="rtl"] .geraet__titel,
+[dir="rtl"] .ablesung__marke,
+[dir="rtl"] .regler__marke,
+[dir="rtl"] .hoerknopf,
+[dir="rtl"] .panel__marke,
+[dir="rtl"] .panel__unter,
+[dir="rtl"] .schaubild figcaption,
+[dir="rtl"] .karte__wofuer,
+[dir="rtl"] .karte__deins,
+[dir="rtl"] .laden,
+[dir="rtl"] .hinterher h3,
+[dir="rtl"] .skalenblatt__kopf,
+[dir="rtl"] .leiste__heute-marke,
+[dir="rtl"] .ausschnitt__kopf,
+[dir="rtl"] .fremd .quelle,
+[dir="rtl"] h1,
+[dir="rtl"] h2 { letter-spacing: normal; }
+
+/*
+   Und keine Kursive im Arabischen.
+
+   Die arabische Schrift kennt keinen kursiven Schnitt. Was der Browser
+   daraus macht, ist eine schräg gestellte Kopie der aufrechten — das ist
+   kein Stilmittel, das ist ein verzerrter Buchstabe. Die Hervorhebung
+   tragen hier ohnehin schon die Serifenschrift, der Randstrich und die
+   Farbe; die Schräge ist entbehrlich.
+
+   Die kursiven <em> in den Überschriften bleiben unangetastet: dort steht
+   „432 Hz", also Lateinisches, und dafür gibt es einen echten Schnitt.
+*/
+[dir="rtl"] .merksatz,
+[dir="rtl"] .brief blockquote,
+[dir="rtl"] .brief figcaption em { font-style: normal; }
+
+/*
+   Und eine arabische Schrift dahinter.
+
+   Weder Inter noch JetBrains Mono noch Instrument Serif haben arabische
+   Zeichen; ohne diese Zeile fällt jedes arabische Wort auf die
+   Standardschrift des Browsers zurück — bei manchen Systemen eine
+   Serifenschrift, die neben dem Rest der Seite fremd wirkt.
+
+   Die arabischen Familien stehen HINTER den lateinischen, nicht davor.
+   Die Rückfallkette gilt je Zeichen: Ziffern und lateinische Wörter
+   bekommen weiterhin Inter beziehungsweise JetBrains Mono, arabische
+   Zeichen die erste Familie, die sie kennt.
+
+   Diese Schriften liegen NICHT im eigenen Haus — anders als beim Radio,
+   das IBM Plex Sans Arabic mitliefert. Genannt wird sie hier trotzdem
+   zuerst: Wer sie hat, bekommt dasselbe Bild wie im Radio. Alle anderen
+   bekommen die Systemschrift ihres Geräts, und es geht keine einzige
+   Anfrage an einen fremden Server.
+*/
+[dir="rtl"] {
+  --anzeige: 'Instrument Serif', 'IBM Plex Sans Arabic', 'Noto Naskh Arabic', 'Geeza Pro', 'Segoe UI', serif;
+  --grotesk: 'Inter', -apple-system, BlinkMacSystemFont, 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Geeza Pro', 'Segoe UI', sans-serif;
+  --daten: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Geeza Pro', 'Segoe UI', monospace;
+}
+
 /* ── Die Umfrage ─────────────────────────────────────────────────
    Vier Fragen, eine nach der anderen. Geführt und nicht als Formular,
    weil ein Bogen mit vier Blöcken aussieht wie Arbeit und eine einzelne
@@ -1057,14 +1224,6 @@ code {
 .umfrage__danke { text-align: center; padding: 1rem 0; }
 .umfrage__danke .umfrage__frage { margin-bottom: .6rem; }
 .umfrage__fehler { color: #E08B6A; font-size: .85rem; margin-top: .8rem; }
-
-/* Nur fuer Vorleseprogramme: Die Frage steht als Ueberschrift darueber,
-   das Feld braucht trotzdem eine eigene Beschriftung. */
-.nur-vorlesen {
-  position: absolute; width: 1px; height: 1px;
-  padding: 0; margin: -1px; overflow: hidden;
-  clip-path: inset(50%); white-space: nowrap; border: 0;
-}
 </style>
 </head>
 <body>
@@ -1076,8 +1235,13 @@ code {
       <span class="marke__wort">IYAMBAE <span>Tuner</span></span>
     </a>
     <nav class="kopf__wege">
-      <a class="kopfknopf" href="https://iyambae.fm" data-text="kopf.2">zum Radio</a>
-      <a class="kopfknopf kopfknopf--haupt" href="#holen" data-text="kopf.3">Holen</a>
+      <!-- Der Sprachumschalter wird hier eingesetzt, siehe
+           Scripts/baue-apps-sprachen.py. Er steht als Erstes, weil er der
+           einzige Knopf ist, den jemand sucht, der die Seite in der
+           falschen Sprache aufgeschlagen hat. -->
+      <!--SPRACHWAHL-->
+      <a class="kopfknopf" href="https://iyambae.fm" data-text="kopf.radio">zum Radio</a>
+      <a class="kopfknopf kopfknopf--haupt" href="#holen" data-text="kopf.holen">Holen</a>
     </nav>
   </div>
 </header>
@@ -1096,9 +1260,9 @@ code {
 <section class="rahmen aufmacher">
   <div class="aufmacher__satz">
     <div>
-      <p class="eyebrow" data-text="oben.4">Menüleisten-App · macOS · Linux · Windows</p>
-      <h1 data-html="oben.5">Spotify in <em>432 Hz</em>. Ohne eine einzige Datei umzuwandeln.</h1>
-      <p class="aufmacher__vorwort" data-text="oben.6">
+      <p class="eyebrow" data-text="auf.eyebrow">Menüleisten-App · macOS · Linux · Windows</p>
+      <h1 data-html="auf.titel">Spotify in <em>432 Hz</em>. Ohne eine einzige Datei umzuwandeln.</h1>
+      <p class="aufmacher__vorwort" data-text="auf.vorwort">
         Netflix, YouTube, dein Player genauso. Der Tuner sitzt im Systemton —
         nicht in der Datei.
       </p>
@@ -1106,40 +1270,46 @@ code {
       <div class="holzone">
         <!-- Fünf Knöpfe im Quelltext, immer genau einer im Bild. Welcher,
              entscheidet das Merkmal an <html>, das im Kopf gesetzt wurde. -->
-        <a class="grossknopf fuer fuer--mac" href="/herunterladen/iyambae-tuner-0.1.0-test.dmg" data-html="oben.7">
-          <span class="grossknopf__tat">Für macOS laden</span>
-          <span class="grossknopf__zusatz">DMG · 923 KB · ab macOS 14.4 · kein Konto</span>
+        <a class="grossknopf fuer fuer--mac" href="/herunterladen/iyambae-tuner-0.1.0-test.dmg">
+          <span class="grossknopf__tat" data-text="auf.mac.tat">Für macOS laden</span>
+          <span class="grossknopf__zusatz" data-text="auf.mac.zusatz">DMG · 923 KB · ab macOS 14.4 · kein Konto</span>
         </a>
-        <a class="grossknopf fuer fuer--linux" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb" data-html="oben.8">
-          <span class="grossknopf__tat">Für Linux laden</span>
-          <span class="grossknopf__zusatz">DEB · 43 KB · Debian 13 · PipeWire ab 0.3.60</span>
+        <a class="grossknopf fuer fuer--linux" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb">
+          <span class="grossknopf__tat" data-text="auf.linux.tat">Für Linux laden</span>
+          <span class="grossknopf__zusatz" data-text="auf.linux.zusatz">DEB · 43 KB · Debian 13 · PipeWire ab 0.3.60</span>
         </a>
         <!-- Windows war bisher eine Sackgasse: drei Karten, und auf einer
              stand sinngemäss „für dich nichts“. Jetzt bekommt auch dieser
              Besucher etwas zu tun — den Grund in einem Satz und einen Weg,
-             sich merken zu lassen. -->
+             sich merken zu lassen.
+
+             Der Betreff der Nachricht wird mitübersetzt: Wer auf Japanisch
+             liest, soll nicht plötzlich einen deutschen Betreff in seinem
+             Postfach stehen haben. Den Schlüssel dafür trägt
+             data-betreff. -->
         <a class="grossknopf grossknopf--warten fuer fuer--win"
-           href="mailto:hello@infosys-consult.com?subject=IYAMBAE%20Tuner%20f%C3%BCr%20Windows%20%E2%80%94%20bitte%20Bescheid%20geben" data-html="oben.9">
-          <span class="grossknopf__tat">Bescheid geben, sobald es sie gibt</span>
-          <span class="grossknopf__zusatz">Windows lässt Systemton mithören, aber nicht ersetzen — es fehlt das virtuelle Ausgabegerät.</span>
+           data-betreff="auf.win.betreff"
+           href="mailto:hello@infosys-consult.com?subject=IYAMBAE%20Tuner%20f%C3%BCr%20Windows%20%E2%80%94%20bitte%20Bescheid%20geben">
+          <span class="grossknopf__tat" data-text="auf.win.tat">Bescheid geben, sobald es sie gibt</span>
+          <span class="grossknopf__zusatz" data-text="auf.win.zusatz">Windows lässt Systemton mithören, aber nicht ersetzen — es fehlt das virtuelle Ausgabegerät.</span>
         </a>
-        <a class="grossknopf grossknopf--warten fuer fuer--mobil" href="#fragen" data-html="oben.10">
-          <span class="grossknopf__tat">Dafür braucht es einen Rechner</span>
-          <span class="grossknopf__zusatz">Am Telefon gibt keine App den Ton von Spotify oder Netflix heraus.</span>
+        <a class="grossknopf grossknopf--warten fuer fuer--mobil" href="#fragen">
+          <span class="grossknopf__tat" data-text="auf.mobil.tat">Dafür braucht es einen Rechner</span>
+          <span class="grossknopf__zusatz" data-text="auf.mobil.zusatz">Am Telefon gibt keine App den Ton von Spotify oder Netflix heraus.</span>
         </a>
         <!-- Kein JavaScript, oder ein System, das wir nicht kennen: dann
              alle drei gleichberechtigt, eine Bildschirmhöhe tiefer. -->
-        <a class="grossknopf fuer fuer--alle" href="#holen" data-html="oben.11">
-          <span class="grossknopf__tat">Herunterladen</span>
-          <span class="grossknopf__zusatz">macOS · Linux · Testausgabe 0.1.0 · kein Konto</span>
+        <a class="grossknopf fuer fuer--alle" href="#holen">
+          <span class="grossknopf__tat" data-text="auf.alle.tat">Herunterladen</span>
+          <span class="grossknopf__zusatz" data-text="auf.alle.zusatz">macOS · Linux · Testausgabe 0.1.0 · kein Konto</span>
         </a>
 
-        <p class="nebenweg" data-html="oben.12">
-          <span class="fuer fuer--mac">Auch für <a href="#holen">Linux</a> · Windows <a href="#holen">noch nicht</a> · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
-          <span class="fuer fuer--linux">Auch für <a href="#holen">macOS</a> · Windows <a href="#holen">noch nicht</a> · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
-          <span class="fuer fuer--win">Heute gibt es sie für <a href="#holen">macOS</a> und <a href="#holen">Linux</a>.</span>
-          <span class="fuer fuer--mobil">Am Rechner: <a href="#holen">macOS</a> oder <a href="#holen">Linux</a>.</span>
-          <span class="fuer fuer--alle">Testausgabe 0.1.0 · kostenlos · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256 nachrechnen</a></span>
+        <p class="nebenweg">
+          <span class="fuer fuer--mac" data-html="auf.neben.mac">Auch für <a href="#holen">Linux</a> · Windows <a href="#holen">noch nicht</a> · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
+          <span class="fuer fuer--linux" data-html="auf.neben.linux">Auch für <a href="#holen">macOS</a> · Windows <a href="#holen">noch nicht</a> · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
+          <span class="fuer fuer--win" data-html="auf.neben.win">Heute gibt es sie für <a href="#holen">macOS</a> und <a href="#holen">Linux</a>.</span>
+          <span class="fuer fuer--mobil" data-html="auf.neben.mobil">Am Rechner: <a href="#holen">macOS</a> oder <a href="#holen">Linux</a>.</span>
+          <span class="fuer fuer--alle" data-html="auf.neben.alle">Testausgabe 0.1.0 · kostenlos · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256 nachrechnen</a></span>
         </p>
       </div>
     </div>
@@ -1148,38 +1318,48 @@ code {
          Sekunden. Deshalb steht sie hier und nicht in der Mitte. ── -->
     <div class="geraet" id="probe">
       <div class="geraet__kopf">
-        <p class="geraet__titel" data-text="oben.13">Die Probe · kein Download nötig</p>
-        <p class="geraet__hilfe" data-text="oben.14">Ton an, dann von 440 auf 432 ziehen.</p>
+        <p class="geraet__titel" data-text="probe.titel">Die Probe · kein Download nötig</p>
+        <p class="geraet__hilfe" data-text="probe.hilfe">Ton an, dann von 440 auf 432 ziehen.</p>
       </div>
 
+      <!-- Die Einheiten hängen als data-einheit an den Feldern, weil der
+           Messer sie zur Laufzeit neu schreibt. Stünden sie im Programmtext,
+           spräche die Anzeige auf allen sieben Seiten deutsch. Hz bleibt Hz
+           — das ist ein SI-Zeichen und keine Vokabel; Cent dagegen ist ein
+           Fachwort und wird übersetzt. -->
       <div class="ablesung" aria-live="polite">
         <div class="ablesung__feld">
-          <span class="ablesung__marke">Kammerton</span>
-          <span class="ablesung__wert" id="anzeigeHz">432,0<small>Hz</small></span>
+          <span class="ablesung__marke" data-text="probe.marke.hz">Kammerton</span>
+          <span class="ablesung__wert" id="anzeigeHz" data-html="probe.wert.hz"
+                data-einheit="probe.einheit.hz|Hz">432,0<small>Hz</small></span>
         </div>
         <div class="ablesung__feld">
-          <span class="ablesung__marke">Abstand zu 440</span>
-          <span class="ablesung__wert" id="anzeigeCent">−31,8<small>Cent</small></span>
+          <span class="ablesung__marke" data-text="probe.marke.cent">Abstand zu 440</span>
+          <span class="ablesung__wert" id="anzeigeCent" data-html="probe.wert.cent"
+                data-einheit="probe.einheit.cent|Cent">−31,8<small>Cent</small></span>
         </div>
         <div class="ablesung__feld">
-          <span class="ablesung__marke">Schwebung</span>
-          <span class="ablesung__wert" id="anzeigeSchweb">8,0<small>/s</small></span>
+          <span class="ablesung__marke" data-text="probe.marke.schweb">Schwebung</span>
+          <span class="ablesung__wert" id="anzeigeSchweb" data-html="probe.wert.schweb"
+                data-einheit="probe.einheit.schweb|/s"
+                data-ruhig="probe.ruhig|keine">8,0<small>/s</small></span>
         </div>
       </div>
 
       <div class="sicht">
         <canvas id="schirm" width="1400" height="340" role="img"
+                data-aria="probe.schirm.aria"
                 aria-label="Sichtfenster: zeigt die Schwebung zwischen Referenzton und eingestelltem Kammerton als pulsierende Wellenform."></canvas>
         <noscript>
           <div class="sicht__ersatz">
-            <p data-html="oben.15"><strong>Die Probe braucht JavaScript.</strong> Worum es geht,
+            <p data-html="probe.ohne.1"><strong>Die Probe braucht JavaScript.</strong> Worum es geht,
             lässt sich aber auch rechnen:</p>
-            <p data-html="oben.16">440 minus 432 sind <strong>acht Hertz</strong>. Zwei Töne mit
+            <p data-html="probe.ohne.2">440 minus 432 sind <strong>acht Hertz</strong>. Zwei Töne mit
             acht Hertz Abstand löschen sich <strong>achtmal je Sekunde</strong>
             gegenseitig aus — dieses Pulsieren hört man, und daran stimmen
             Menschen seit Jahrhunderten Instrumente: Man wartet, bis es
             aufhört.</p>
-            <p data-text="oben.17">Der Tuner macht mit dem ganzen Systemton dasselbe, was der
+            <p data-html="probe.ohne.3">Der Tuner macht mit dem ganzen Systemton dasselbe, was der
             Regler hier mit zwei Tönen macht.</p>
           </div>
         </noscript>
@@ -1187,26 +1367,29 @@ code {
 
       <div class="bedienteil">
         <div>
-          <label class="regler__marke" for="regler" data-text="oben.18">Kammerton A₄</label>
+          <label class="regler__marke" for="regler" data-text="probe.regler">Kammerton A₄</label>
           <input type="range" id="regler" min="415" max="448" step="0.1" value="432">
           <div class="skala"><span>415</span><span>432</span><span>440</span><span>448</span></div>
         </div>
-        <button class="hoerknopf" id="hoerknopf" type="button" aria-pressed="false">Ton einschalten</button>
+        <button class="hoerknopf" id="hoerknopf" type="button" aria-pressed="false"
+                data-text="probe.ton.an"
+                data-an="probe.ton.an|Ton einschalten"
+                data-aus="probe.ton.aus|Ton ausschalten">Ton einschalten</button>
       </div>
 
-      <div class="stimmungen" role="group" aria-label="Historische Kammertöne">
-        <button class="stimmung" type="button" data-hz="415" data-html="oben.19"><b>415</b><span>Barock</span></button>
-        <button class="stimmung" type="button" data-hz="432" aria-pressed="true" data-html="oben.20"><b>432</b><span>Mailand 1880</span></button>
-        <button class="stimmung" type="button" data-hz="435" data-html="oben.21"><b>435</b><span>Paris 1859</span></button>
-        <button class="stimmung" type="button" data-hz="440" data-html="oben.22"><b>440</b><span>ISO 16</span></button>
-        <button class="stimmung" type="button" data-hz="443" data-html="oben.23"><b>443</b><span>D · A heute</span></button>
-        <button class="stimmung" type="button" data-hz="445" data-html="oben.24"><b>445</b><span>Karajan</span></button>
+      <div class="stimmungen" role="group" data-aria="probe.stimmungen.aria" aria-label="Historische Kammertöne">
+        <button class="stimmung" type="button" data-hz="415"><b>415</b><span data-text="probe.st.415">Barock</span></button>
+        <button class="stimmung" type="button" data-hz="432" aria-pressed="true"><b>432</b><span data-text="probe.st.432">Mailand 1880</span></button>
+        <button class="stimmung" type="button" data-hz="435"><b>435</b><span data-text="probe.st.435">Paris 1859</span></button>
+        <button class="stimmung" type="button" data-hz="440"><b>440</b><span data-text="probe.st.440">ISO 16</span></button>
+        <button class="stimmung" type="button" data-hz="443"><b>443</b><span data-text="probe.st.443">D · A heute</span></button>
+        <button class="stimmung" type="button" data-hz="445"><b>445</b><span data-text="probe.st.445">Karajan</span></button>
       </div>
 
       <!-- Kurz gehalten, weil dieser Absatz über der Falz steht. Alles,
            was hier länger würde, kostet Aufmerksamkeit an einer Stelle,
            an der der Besucher noch entscheidet. -->
-      <p class="geraet__fuss" data-text="oben.25">
+      <p class="geraet__fuss" data-text="probe.fuss">
         Zwei Sinustöne im Browser. Was pulsiert, ist die Schwebung — zwei nahe
         Töne löschen sich abwechselnd aus. So stimmt man Instrumente seit
         Jahrhunderten: Man wartet, bis es aufhört. Der Tuner selbst verschiebt
@@ -1218,19 +1401,19 @@ code {
 
 <!-- ══ 2 · Was es tut, in drei Zeilen ═══════════════════════════ -->
 <section class="rahmen teil teil--eng">
-  <h2 class="eyebrow" style="margin-bottom:1rem" data-text="quellen.26">Was es tut</h2>
+  <h2 class="eyebrow" style="margin-bottom:1rem" data-text="tut.eyebrow">Was es tut</h2>
   <div class="dreizeiler">
     <div>
-      <h3 data-text="quellen.27">Systemweit</h3>
-      <p data-text="quellen.28">Der Ton geht durch den Tuner, bevor er die Lautsprecher erreicht. Auf macOS und Linux.</p>
+      <h3 data-text="tut.1.titel">Systemweit</h3>
+      <p data-text="tut.1.text">Der Ton geht durch den Tuner, bevor er die Lautsprecher erreicht. Auf macOS und Linux.</p>
     </div>
     <div>
-      <h3 data-text="quellen.29">Jede App</h3>
-      <p data-text="quellen.30">Spotify, YouTube, Netflix, dein Player. Der Tuner sieht den fertigen Klang, nicht die Datei.</p>
+      <h3 data-text="tut.2.titel">Jede App</h3>
+      <p data-text="tut.2.text">Spotify, YouTube, Netflix, dein Player. Der Tuner sieht den fertigen Klang, nicht die Datei.</p>
     </div>
     <div>
-      <h3 data-text="quellen.31">Kein Umwandeln</h3>
-      <p data-text="quellen.32">Nichts wird konvertiert, nichts gespeichert. Das Tempo bleibt, wie es ist.</p>
+      <h3 data-text="tut.3.titel">Kein Umwandeln</h3>
+      <p data-text="tut.3.text">Nichts wird konvertiert, nichts gespeichert. Das Tempo bleibt, wie es ist.</p>
     </div>
   </div>
 </section>
@@ -1245,12 +1428,17 @@ code {
      Was stattdessen hier steht, ist besser: Zahlen, die jemand
      nachrechnen kann. Und neben jeder von ihnen die Folge — denn eine
      Zahl ohne Folge ist Angeberei, keine Auskunft.
+
+     WARUM AUCH DIE ZAHLEN SCHLÜSSEL HABEN: „0,09 %“ heisst auf Englisch
+     „0.09 %“. Das Dezimalzeichen ist keine Schreibweise, sondern Teil der
+     Sprache — eine unübersetzte Zahl liest sich für einen englischen
+     Leser als das Tausendfache.
      ═════════════════════════════════════════════════════════════ -->
 <section class="rahmen teil teil--linie" id="beweis">
   <div class="eng">
-    <p class="eyebrow" data-text="beweis.33">Nachprüfbar</p>
-    <h2 data-html="beweis.34">Keine Stimmen, keine Sterne. <em>Nur Messwerte.</em></h2>
-    <p data-html="beweis.35">
+    <p class="eyebrow" data-text="beweis.eyebrow">Nachprüfbar</p>
+    <h2 data-html="beweis.titel">Keine Stimmen, keine Sterne. <em>Nur Messwerte.</em></h2>
+    <p data-html="beweis.vorwort">
       Es gibt noch keinen einzigen Nutzer — also zitieren wir auch keinen.
       Was es gibt, sind Zahlen aus dem Bau und aus der Messung. Sie stehen
       hier mitsamt dem, <strong>warum</strong> sie zählen.
@@ -1258,56 +1446,57 @@ code {
   </div>
 
   <ul class="beweise">
-    <li data-html="beweis.36">
-      <b>11 ms</b>
-      <strong>Verzögerung mit der schnellen Engine</strong>
-      <span>Das ist die Grenze zwischen „geht bei Video“ und „geht nicht“: Der Ton bleibt an den Lippen. Wer lieber Klang als Gleichlauf will, schaltet auf die gute Engine — 240 ms, unbrauchbar bei Bild.</span>
+    <li>
+      <b data-text="beweis.1.zahl">11 ms</b>
+      <strong data-text="beweis.1.was">Verzögerung mit der schnellen Engine</strong>
+      <span data-text="beweis.1.warum">Das ist die Grenze zwischen „geht bei Video“ und „geht nicht“: Der Ton bleibt an den Lippen. Wer lieber Klang als Gleichlauf will, schaltet auf die gute Engine — 240 ms, unbrauchbar bei Bild.</span>
     </li>
-    <li data-html="beweis.37">
-      <b>0</b>
-      <strong>Allokationen im Echtzeitpfad</strong>
-      <span>Nicht behauptet, geprüft: Das Bauskript zerlegt die fertige Bibliothek und listet jeden Aufruf, der aus dem Echtzeitpfad herausführt. Es sind keine. Kein Speicher, kein Schloss — und damit nichts, was mitten im Stück knacken kann.</span>
+    <li>
+      <b data-text="beweis.2.zahl">0</b>
+      <strong data-text="beweis.2.was">Allokationen im Echtzeitpfad</strong>
+      <span data-text="beweis.2.warum">Nicht behauptet, geprüft: Das Bauskript zerlegt die fertige Bibliothek und listet jeden Aufruf, der aus dem Echtzeitpfad herausführt. Es sind keine. Kein Speicher, kein Schloss — und damit nichts, was mitten im Stück knacken kann.</span>
     </li>
-    <li data-html="beweis.38">
-      <b>88</b>
-      <strong>Tests, 436 Zusicherungen, null Fehler</strong>
-      <span>Gebaut auf macOS 26 mit Xcode 26.6. Die Zahl steht hier, weil sie bei jedem Bau neu entsteht — sie ist kein Abzeichen, sondern ein Messwert von heute.</span>
+    <li>
+      <b data-text="beweis.3.zahl">88</b>
+      <strong data-text="beweis.3.was">Tests, 436 Zusicherungen, null Fehler</strong>
+      <span data-text="beweis.3.warum">Gebaut auf macOS 26 mit Xcode 26.6. Die Zahl steht hier, weil sie bei jedem Bau neu entsteht — sie ist kein Abzeichen, sondern ein Messwert von heute.</span>
     </li>
-    <li data-html="beweis.39">
-      <b>432,33 Hz</b>
-      <strong>gemessen — drei Systeme, ein Ergebnis</strong>
-      <span>440 Hz hinein, Ziel 432: heraus kommen 432,33 Hz mit der schnellen und 432,09 Hz mit der guten Engine. Auf macOS, auf Linux und auf Windows. Abweichung untereinander: <strong>0,01 Cent</strong>.</span>
+    <li>
+      <b data-text="beweis.4.zahl">432,33 Hz</b>
+      <strong data-text="beweis.4.was">gemessen — drei Systeme, ein Ergebnis</strong>
+      <span data-html="beweis.4.warum">440 Hz hinein, Ziel 432: heraus kommen 432,33 Hz mit der schnellen und 432,09 Hz mit der guten Engine. Auf macOS, auf Linux und auf Windows. Abweichung untereinander: <strong>0,01 Cent</strong>.</span>
     </li>
-    <li data-html="beweis.40">
-      <b>0,09 %</b>
-      <strong>eines Prozessorkerns</strong>
-      <span>Das 1077-fache der Echtzeit. Der Lüfter merkt nicht, dass etwas läuft, und der Akku auch nicht — es gibt also keinen Grund, den Tuner zwischendurch auszuschalten.</span>
+    <li>
+      <b data-text="beweis.5.zahl">0,09 %</b>
+      <strong data-text="beweis.5.was">eines Prozessorkerns</strong>
+      <span data-text="beweis.5.warum">Das 1077-fache der Echtzeit. Der Lüfter merkt nicht, dass etwas läuft, und der Akku auch nicht — es gibt also keinen Grund, den Tuner zwischendurch auszuschalten.</span>
     </li>
-    <li data-html="beweis.41">
-      <b>0</b>
-      <strong>Anfragen an fremde Server</strong>
-      <span>Diese Seite lädt nichts nach: keine Schrift von Google, keine Messung, kein Cookie. Der Tuner verlangt kein Konto, keine E-Mail-Adresse und schickt nichts weg. Du lädst eine Datei, und das war es.</span>
+    <li>
+      <b data-text="beweis.6.zahl">0</b>
+      <strong data-text="beweis.6.was">Anfragen an fremde Server</strong>
+      <span data-text="beweis.6.warum">Diese Seite lädt nichts nach: keine Schrift von Google, keine Messung, kein Cookie. Der Tuner verlangt kein Konto, keine E-Mail-Adresse und schickt nichts weg. Du lädst eine Datei, und das war es.</span>
     </li>
   </ul>
 
   <figure class="schaubild beweis__bild">
-    <div class="panel" role="img" aria-label="Beispielrechnung: Eine Aufnahme steht auf 443,1 Hertz, Ziel ist 432,0 Hertz, das sind minus 43,9 Cent. Die schnelle Engine braucht dafür 11 Millisekunden.">
+    <div class="panel" role="img" data-aria="beweis.bild.aria"
+         aria-label="Beispielrechnung: Eine Aufnahme steht auf 443,1 Hertz, Ziel ist 432,0 Hertz, das sind minus 43,9 Cent. Die schnelle Engine braucht dafür 11 Millisekunden.">
       <div class="panel__kopf">
-        <span class="panel__marke">Beispielrechnung</span>
-        <span class="panel__lampe">443,1 → 432,0</span>
+        <span class="panel__marke" data-text="beweis.bild.marke">Beispielrechnung</span>
+        <span class="panel__lampe" data-text="beweis.bild.lampe">443,1 → 432,0</span>
       </div>
       <div class="panel__gross">
-        <span class="panel__zahl">432,0</span><span class="panel__einheit">Hz</span>
-        <span class="panel__unter">Kammerton a′</span>
+        <span class="panel__zahl" data-text="beweis.bild.zahl">432,0</span><span class="panel__einheit">Hz</span>
+        <span class="panel__unter" data-text="beweis.bild.unter">Kammerton a′</span>
       </div>
       <div class="panel__balken" aria-hidden="true"><span></span></div>
       <dl class="panel__werte">
-        <div><dt>erkannt</dt><dd>443,1 Hz</dd></div>
-        <div><dt>Verschiebung</dt><dd>−43,9 Cent</dd></div>
-        <div><dt>Engine</dt><dd>Delay-Line · 11 ms</dd></div>
+        <div><dt data-text="beweis.bild.dt1">erkannt</dt><dd data-text="beweis.bild.dd1">443,1 Hz</dd></div>
+        <div><dt data-text="beweis.bild.dt2">Verschiebung</dt><dd data-text="beweis.bild.dd2">−43,9 Cent</dd></div>
+        <div><dt data-text="beweis.bild.dt3">Engine</dt><dd data-text="beweis.bild.dd3">Delay-Line · 11 ms</dd></div>
       </dl>
     </div>
-    <figcaption data-html="beweis.42">
+    <figcaption data-html="beweis.bild.text">
       Eine Aufnahme auf 443,1 Hz — dem heute in Deutschland üblichen Wert —
       auf 432,0 gebracht. <strong>Kein Bildschirmfoto:</strong> gerechnet,
       nicht abfotografiert.
@@ -1318,80 +1507,80 @@ code {
 <!-- ══ 4 · Holen ════════════════════════════════════════════════ -->
 <section class="rahmen teil teil--linie" id="holen">
   <div class="eng">
-    <p class="eyebrow" data-text="holen.43">Testausgabe 0.1.0 · kostenlos · kein Konto</p>
-    <h2 class="kopf--holen" data-html="holen.44">Hol es dir. <em>Dann drei Schritte.</em></h2>
-    <h2 class="kopf--win" data-html="holen.45">Hol es dir. <em>Dann einmal durchwinken.</em></h2>
-    <h2 class="kopf--mobil" data-html="holen.46">Am Telefon geht es <em>nicht</em>. Hier steht, warum.</h2>
+    <p class="eyebrow" data-text="holen.eyebrow">Testausgabe 0.1.0 · kostenlos · kein Konto</p>
+    <h2 class="kopf--holen" data-html="holen.titel">Hol es dir. <em>Dann drei Schritte.</em></h2>
+    <h2 class="kopf--win" data-html="holen.titel.win">Hol es dir. <em>Dann einmal durchwinken.</em></h2>
+    <h2 class="kopf--mobil" data-html="holen.titel.mobil">Am Telefon geht es <em>nicht</em>. Hier steht, warum.</h2>
   </div>
 
   <div class="karten">
 
     <div class="karte karte--bereit karte--mac">
-      <span class="karte__deins fuer fuer--mac">dein System</span>
+      <span class="karte__deins fuer fuer--mac" data-text="karte.deins">dein System</span>
       <div class="karte__kopf">
         <span class="karte__name">macOS</span>
-        <span class="karte__wofuer">14.4 oder neuer</span>
+        <span class="karte__wofuer" data-text="karte.mac.wofuer">14.4 oder neuer</span>
       </div>
-      <p class="karte__was" data-text="holen.47">
+      <p class="karte__was" data-text="karte.mac.was">
         Die App selbst: Menüleiste, greift den Systemton ab und ersetzt ihn.
         Beim ersten Einschalten fragt macOS nach „Systemaudio aufnehmen“.
       </p>
       <div class="karte__fuellen"></div>
       <div class="karte__tat">
-        <a class="laden" href="/herunterladen/iyambae-tuner-0.1.0-test.dmg" data-html="holen.48">
-          <span>DMG laden</span><span class="laden__groesse">923 KB</span>
+        <a class="laden" href="/herunterladen/iyambae-tuner-0.1.0-test.dmg">
+          <span data-text="karte.mac.laden">DMG laden</span><span class="laden__groesse">923 KB</span>
         </a>
-        <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt" data-html="holen.49">
-          <span>SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
+        <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
+          <span data-text="holen.pruefsumme">SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
         </a>
       </div>
     </div>
 
     <div class="karte karte--bereit karte--linux">
-      <span class="karte__deins fuer fuer--linux">dein System</span>
+      <span class="karte__deins fuer fuer--linux" data-text="karte.deins">dein System</span>
       <div class="karte__kopf">
         <span class="karte__name">Linux</span>
-        <span class="karte__wofuer">PipeWire ab 0.3.60</span>
+        <span class="karte__wofuer" data-text="karte.linux.wofuer">PipeWire ab 0.3.60</span>
       </div>
-      <p class="karte__was" data-html="holen.50">
+      <p class="karte__was" data-html="karte.linux.was1">
         <strong>Symbol in der Leiste</strong> — Stimmungen unter Namen, Ein und
         Aus, Wahl der Engine, Start beim Anmelden. Darunter ein LADSPA-Plugin in
         PipeWires Filterkette. Gebaut für Debian 13.
       </p>
-      <p class="karte__was" data-html="holen.51">
+      <p class="karte__was" data-html="karte.linux.was2">
         Gemessen über D-Bus: Klick auf „Verdi-Stimmung“ → <strong>432,331 Hz</strong>
         am Ausgabegerät.
       </p>
       <div class="karte__fuellen"></div>
       <div class="karte__tat">
-        <a class="laden" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb" data-html="holen.52">
-          <span>DEB laden</span><span class="laden__groesse">43 KB</span>
+        <a class="laden" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb">
+          <span data-text="karte.linux.laden">DEB laden</span><span class="laden__groesse">43 KB</span>
         </a>
-        <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt" data-html="holen.53">
-          <span>SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
+        <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
+          <span data-text="holen.pruefsumme">SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
         </a>
       </div>
     </div>
 
     <div class="karte karte--win">
-      <span class="karte__deins fuer fuer--win">dein System</span>
+      <span class="karte__deins fuer fuer--win" data-text="karte.deins">dein System</span>
       <div class="karte__kopf">
         <span class="karte__name">Windows</span>
-        <span class="karte__wofuer">10 und 11 · x64</span>
+        <span class="karte__wofuer" data-text="karte.win.wofuer">10 und 11 · x64</span>
       </div>
-      <p class="karte__was" data-html="holen.54">
+      <p class="karte__was" data-html="karte.win.was1">
         Eigenes Fenster, Leistensymbol, Installer. <strong>Installiert ohne
         Administratorrechte</strong> — kein UAC-Fenster, kein Passwort.
       </p>
-      <p class="karte__was" data-text="holen.55">
+      <p class="karte__was" data-text="karte.win.was2">
         Dateien umstimmen läuft. Systemton läuft über ein virtuelles
         Audiogerät, wenn eines da ist — Windows lässt Mithören zu, aber nicht
         Ersetzen. Die App sagt dir, was sie auf deinem Rechner kann.
       </p>
       <div class="karte__fuellen"></div>
       <div class="karte__tat">
-        <a class="laden" href="/herunterladen/iyambae-tuner-1.0.0-windows-setup.exe" data-html="holen.56">
-          <span>Installer laden</span><span class="laden__groesse">68 MB</span>
+        <a class="laden" href="/herunterladen/iyambae-tuner-1.0.0-windows-setup.exe">
+          <span data-text="karte.win.laden">Installer laden</span><span class="laden__groesse">68 MB</span>
         </a>
       </div>
     </div>
@@ -1400,32 +1589,32 @@ code {
 
   <div class="hinterher">
     <div class="schritte">
-      <h3 data-text="holen.57">Was gleich passiert — auf dem Mac</h3>
+      <h3 data-text="schritte.titel">Was gleich passiert — auf dem Mac</h3>
       <!-- Jeder Schritt trägt seinen Text in EINEM Kind, nicht als Gemisch
            aus Textknoten und <strong>. Im Raster wird sonst jede freie
            Textstelle zu einem eigenen Rasterfeld — und ab dem zweiten
            landet sie in der 1,9rem schmalen Spalte der Ziffer. -->
       <ol>
-        <li><p>DMG öffnen, die App in „Programme“ ziehen, doppelklicken.</p></li>
-        <li><p>
+        <li><p data-text="schritte.1">DMG öffnen, die App in „Programme“ ziehen, doppelklicken.</p></li>
+        <li><p data-html="schritte.2">
           <strong>macOS weist sie ab. Das ist erwartet:</strong> Diese
           Testausgabe ist <strong>nicht signiert und nicht notarisiert</strong>,
           und der früher übliche Rechtsklick-Weg hilft seit August 2024 nicht
           mehr.
         </p></li>
-        <li><p>
+        <li><p data-html="schritte.3">
           <strong>Systemeinstellungen → Datenschutz &amp; Sicherheit → „Dennoch
           öffnen“.</strong> Ab da startet sie wie jede andere App. Beim ersten
           Einschalten fragt macOS nach „Systemaudio aufnehmen“.
         </p></li>
       </ol>
-      <p class="schritte__auch" data-html="holen.58">
+      <p class="schritte__auch" data-html="schritte.win">
         <strong>Auf Windows heisst dasselbe Fenster SmartScreen.</strong>
         Der Weg dort: „Weitere Informationen“, dann „Trotzdem ausführen“.
         Grund ist derselbe — die Ausgabe ist nicht signiert. Der Installer
         selbst braucht danach keine Administratorrechte.
       </p>
-      <p class="schritte__auch" data-html="holen.59">
+      <p class="schritte__auch" data-html="schritte.linux">
         <strong>Das Linux-Paket ist davon nicht betroffen.</strong>
         <code>apt install ./iyambae-tuner_0.1.0-1_amd64.deb</code> — danach steht
         das Symbol in der Leiste. Unter GNOME braucht es einmalig die
@@ -1435,18 +1624,18 @@ code {
     </div>
 
     <div class="pruefung">
-      <h3 data-text="holen.60">Bevor du sie startest</h3>
-      <p data-html="holen.61">
+      <h3 data-text="pruefung.titel">Bevor du sie startest</h3>
+      <p data-html="pruefung.1">
         Gebaut und geprüft — <strong>88 Tests, 436 Zusicherungen, null Fehler</strong>
         auf macOS 26 —, aber von einem Menschen noch nicht im Alltag benutzt. Das
         ist der ehrliche Stand einer Testausgabe.
       </p>
-      <p data-html="holen.62">
+      <p data-html="pruefung.2">
         Beide Dateien tragen ihre SHA-256-Summe. Rechne sie nach, statt uns zu
         glauben: <code>shasum -a 256</code> auf dem Mac,
         <code>sha256sum -c</code> unter Linux.
       </p>
-      <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt" data-html="holen.63">
+      <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
         <span>PRUEFSUMMEN.txt</span><span class="laden__groesse">↓</span>
       </a>
     </div>
@@ -1457,9 +1646,9 @@ code {
 <section class="papier" id="fragen">
   <div class="rahmen">
     <div class="eng">
-      <p class="eyebrow" data-text="frage.64">Wenn du fragst</p>
-      <h2 data-html="frage.65">Alles Weitere, <em>zusammengefaltet</em>.</h2>
-      <p data-text="frage.66">
+      <p class="eyebrow" data-text="fragen.eyebrow">Wenn du fragst</p>
+      <h2 data-html="fragen.titel">Alles Weitere, <em>zusammengefaltet</em>.</h2>
+      <p data-text="fragen.vorwort">
         Abrufbar für den, der fragt. Aus dem Weg für den, der laden will.
       </p>
     </div>
@@ -1467,14 +1656,14 @@ code {
     <div class="fragen">
 
       <details class="frage">
-        <summary data-text="frage.67">Was ist 432 Hz überhaupt?</summary>
+        <summary data-text="frage.hz.titel">Was ist 432 Hz überhaupt?</summary>
         <div class="antwort">
-          <p data-html="frage.68">
+          <p data-html="frage.hz.1">
             Ein Kammerton. Er legt fest, wo das a′ liegt, und alles andere folgt
             daraus. Die Norm sagt 440 Hz; 432 Hz liegt acht Hertz darunter, das
             sind <strong>−31,77 Cent</strong> oder knapp ein Drittel Halbton.
           </p>
-          <p data-text="frage.69">
+          <p data-text="frage.hz.2">
             Der Tuner verschiebt den ganzen Klang um genau diesen Abstand. Er
             greift keine einzelnen Töne heraus und verändert an der Musik nichts
             außer ihrer Höhe.
@@ -1483,57 +1672,187 @@ code {
       </details>
 
       <details class="frage">
-        <summary data-text="frage.70">Woher kommt dann 440 Hz?</summary>
-        <div class="antwort">
-          <p data-html="frage.71">
-            Aus einer Verabredung, nicht aus der Natur. Alexander J. Ellis trug
-            1885 fünfhundert Jahre europäischer Stimmtonhöhen zusammen; seine
-            Tabelle reichte <strong>von 370 bis 567 Hz</strong> — mehr als eine
-            Quinte Spannweite. Orgelpfeifen wurden nach dem örtlichen Längenmaß
-            gebaut, und der „Fuß“ war in Frankreich ein anderer als in Sachsen.
-          </p>
-          <p data-html="frage.72">
-            Festgelegt wurde 440 auf einer Konferenz im Mai 1939. Zur Wahl stand
-            auch 439 — es verlor, weil es eine Primzahl ist und sich aus dem
-            Quarzoszillator der BBC nicht durch Teilerketten erzeugen ließ.
-            <strong>Aus dieser Verlegenheit wurde eine Weltnorm.</strong>
-          </p>
+        <summary data-text="frage.440.titel">Woher kommt dann 440 Hz?</summary>
+        <div class="antwort antwort--breit">
+          <div class="eng">
+            <p data-html="frage.440.1">
+              Aus einer Verabredung, nicht aus der Natur. Als Alexander J. Ellis
+              1885 fünfhundert Jahre europäischer Stimmtonhöhen zusammentrug,
+              reichte seine Tabelle von 370 bis 567 Hz — <strong>mehr als eine
+              Quinte Spannweite</strong>. Der Grund war banal: Orgelpfeifen wurden
+              nach dem örtlichen Längenmaß gebaut, und der „Fuß“ war in Frankreich
+              ein anderer als in Sachsen. Zwischen der Pariser Stimmgabel von 1822
+              mit 432 Hz und der von 1855 mit 449 Hz liegen dreiunddreißig Jahre —
+              und dieselbe Stadt.
+            </p>
+            <p data-html="frage.440.2">
+              <strong>440 stammt von 1834</strong>, vorgeschlagen von Johann
+              Heinrich Scheibler, einem Krefelder Seidenfabrikanten. Sein Grund war
+              denkbar unspektakulär: 440 war der Mittelwert, um den Wiener Klaviere
+              zwischen Wärme und Kälte schwankten. Die Konferenz, die daraus 1939
+              eine Weltnorm machte, tagte im Hauptquartier der BBC und zog 440 der
+              439 vor, weil <strong>439 eine Primzahl ist</strong> und sich aus dem
+              Quarzoszillator der BBC nicht durch Teilerketten erzeugen ließ.
+            </p>
+          </div>
+
+          <figure class="skalenblatt">
+            <div class="skalenblatt__kopf">
+              <span data-text="skala.titel">Kammerton a′ im Wandel</span>
+              <span data-text="skala.quelle">nach Ellis 1885 · Haynes 2002</span>
+            </div>
+
+            <div class="leiste" role="img" data-aria="skala.gross.aria"
+                 aria-label="Skala der Stimmtonhöhen von 400 bis 480 Hertz mit vier Marken: Barock 415, Scheibler 1834 und London 1939 mit 440, Pariser Stimmgabel 1855 mit 449, Highland-Dudelsack 470 bis 480.">
+              <div class="leiste__band"></div>
+              <div class="leiste__heute" style="left:40%;width:16.25%">
+                <span class="leiste__heute-marke" data-text="skala.heute">wo heute gestimmt wird</span>
+              </div>
+
+              <div class="punkt punkt--unten" style="left:18.75%">
+                <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+                <div class="punkt__text"><span class="punkt__hz">415</span><span class="punkt__was" data-text="skala.415">Historische Aufführungspraxis, ein Halbton tiefer</span></div>
+              </div>
+              <div class="punkt punkt--oben punkt--stark" style="left:50%">
+                <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+                <div class="punkt__text"><span class="punkt__hz">440</span><span class="punkt__was" data-text="skala.440">Scheibler 1834 · London 1939 · ISO 16</span></div>
+              </div>
+              <div class="punkt punkt--unten" style="left:61.25%">
+                <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+                <div class="punkt__text"><span class="punkt__hz">449</span><span class="punkt__was" data-text="skala.449">Pariser Stimmgabel 1855</span></div>
+              </div>
+              <div class="punkt punkt--oben" style="left:90%">
+                <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+                <div class="punkt__text"><span class="punkt__hz">470–480</span><span class="punkt__was" data-text="skala.470">Highland-Dudelsack</span></div>
+              </div>
+
+              <div class="leiste__enden"><span>400 Hz</span><span>480 Hz</span></div>
+            </div>
+
+            <div class="ausschnitt__bruecke" aria-hidden="true"></div>
+
+            <div class="ausschnitt">
+              <p class="ausschnitt__kopf">
+                <span data-text="skala.aus.titel">Ausschnitt · 430 bis 450 Hz</span>
+                <span data-text="skala.aus.unter">hier spielt sich heute alles ab</span>
+              </p>
+              <div class="leiste" role="img" data-aria="skala.aus.aria"
+                   aria-label="Vergrößerter Ausschnitt von 430 bis 450 Hertz: Mailand 1880 mit 432, Diapason normal Paris 1859 mit 435, die Norm 440, Deutschland und Österreich heute 443, Berliner Philharmoniker unter Karajan 445.">
+                <div class="leiste__band"></div>
+
+                <div class="punkt punkt--oben punkt--stark" style="left:10%">
+                  <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+                  <div class="punkt__text"><span class="punkt__hz">432</span><span class="punkt__was" data-text="skala.432">Mailand 1880, Verdis Zahl</span></div>
+                </div>
+                <div class="punkt punkt--unten" style="left:25%">
+                  <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+                  <div class="punkt__text"><span class="punkt__hz">435</span><span class="punkt__was" data-text="skala.435">Diapason normal, Paris 1859</span></div>
+                </div>
+                <div class="punkt punkt--oben punkt--stark" style="left:50%">
+                  <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+                  <div class="punkt__text"><span class="punkt__hz">440</span><span class="punkt__was" data-text="skala.440.kurz">die Norm</span></div>
+                </div>
+                <div class="punkt punkt--unten" style="left:65%">
+                  <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+                  <div class="punkt__text"><span class="punkt__hz">443</span><span class="punkt__was" data-text="skala.443">Deutschland und Österreich, heute</span></div>
+                </div>
+                <div class="punkt punkt--oben" style="left:75%">
+                  <div class="punkt__strich"></div><div class="punkt__kugel"></div>
+                  <div class="punkt__text"><span class="punkt__hz">445</span><span class="punkt__was" data-text="skala.445">Berliner Philharmoniker unter Karajan</span></div>
+                </div>
+
+                <div class="leiste__enden"><span>430 Hz</span><span>450 Hz</span></div>
+              </div>
+            </div>
+
+            <ul class="leiste-liste">
+              <li><b>415</b><span data-text="skala.liste.415">Historische Aufführungspraxis — ein exakter Halbton tiefer</span></li>
+              <li><b>432</b><span data-text="skala.liste.432">Mailand 1880, die Zahl, für die Verdi eintrat</span></li>
+              <li><b>435</b><span data-text="skala.liste.435">Diapason normal, Paris 1859</span></li>
+              <li><b>440</b><span data-text="skala.liste.440">Scheibler 1834 · London 1939 · ISO 16</span></li>
+              <li><b>443</b><span data-text="skala.liste.443">Deutschland und Österreich, heute üblich</span></li>
+              <li><b>445</b><span data-text="skala.liste.445">Berliner Philharmoniker unter Karajan</span></li>
+              <li><b>449</b><span data-text="skala.liste.449">Pariser Stimmgabel 1855</span></li>
+              <li><b>470–480</b><span data-text="skala.liste.470">Highland-Dudelsack</span></li>
+            </ul>
+          </figure>
+
+          <div class="eng">
+            <figure class="brief">
+              <blockquote data-text="brief.zitat">„Eine Kinderei, die sich fast der Lächerlichkeit preisgäbe.“</blockquote>
+              <figcaption data-html="brief.quelle">
+                <b>Giuseppe Verdi an Arrigo Boito, 8. November 1885.</b> Boito
+                vertrat Italien auf der Wiener Stimmtonkonferenz. Verdi hielt die
+                864 Schwingungen — also 432 Hz — für die richtigeren, aber darauf
+                zu beharren wäre ihm lächerlich vorgekommen; Hauptzweck sei die
+                Einheit des Stimmtons. <em>Ihm war die Einheitlichkeit wichtiger
+                als die Zahl. Wir sehen das ähnlich — und überlassen die Zahl
+                deshalb dir.</em>
+              </figcaption>
+            </figure>
+          </div>
         </div>
       </details>
 
+      <!-- ══ DER STUDIENABSCHNITT ═══════════════════════════════════
+
+           HIER WIRD NICHTS VERSPROCHEN, IN KEINER SPRACHE.
+
+           Der Abschnitt sagt „unentschieden" — nicht mehr und nicht
+           weniger. Betreiberin ist eine gewerbliche Gesellschaft in den
+           USA; eine Wirkungsaussage wäre in Deutschland Heilmittelwerbung
+           (§ 3 HWG) und zugleich irreführende geschäftliche Handlung
+           (§ 5 UWG), und in den anderen sechs Sprachräumen gilt
+           Vergleichbares. Eine Übersetzung, die „hilft beim Entspannen"
+           daraus macht, ist kein Sprachfehler, sondern ein Rechtsverstoss.
+
+           Deshalb stehen frage.forschung.* in der Liste RUECKGRAT in
+           Scripts/baue-apps-sprachen.py: Fehlt einer dieser Sätze in
+           einer Sprache, bricht der Bau ab.
+           ═══════════════════════════════════════════════════════════ -->
       <details class="frage">
-        <summary data-text="frage.73">Was sagt die Forschung dazu?</summary>
+        <summary data-text="frage.forschung.titel">Was sagt die Forschung dazu?</summary>
         <div class="antwort">
-          <p data-html="frage.74">
+          <p data-html="frage.forschung.1">
             <strong>Kleine Studien, gemischte Ergebnisse, keine Metaanalyse,
             keine unabhängige Replikation — unentschieden.</strong> Das ist die
             Lage, und wir geben sie in beide Richtungen ungeschönt wieder.
           </p>
-          <p data-text="frage.75">
-            Aravena u. a. (2020) fanden vor einer Zahnextraktion beim
-            Speichel-Cortisol einen Vorteil für 432 Hz (0,49 gegenüber 1,35 und
-            1,59 µg/dL); bei der Angstskala war zwischen 432 und 440 kein
-            Unterschied. Jebabli u. a. (2025) fanden umgekehrt 440 Hz im
-            Vorteil — dort ging es um die anaerobe Leistung von Kickboxern beim
-            Aufwärmen, nicht ums Zuhören.
+          <p data-html="frage.forschung.2">
+            <strong>Aravena u. a. (2020)</strong> verglichen vor einer
+            Zahnextraktion 432 Hz, 440 Hz und keine Musik; 42 Personen in drei
+            Gruppen. Beim Speichel-Cortisol lag die 432-Hz-Gruppe signifikant
+            niedriger als <em>beide</em> anderen: 0,49 gegenüber 1,35 und 1,59
+            µg/dL. Die Autoren schließen, 432 Hz sei „effective in decreasing
+            salivary cortisol levels“. Auf der Angstskala unterschieden sich 432
+            und 440 dagegen <strong>nicht</strong> — dort schlug nur Musik das
+            Schweigen.
           </p>
-          <p data-html="frage.76">
-            Dass Musikhören entspannt, ist gut belegt. Dass es an der Stimmung
-            liegt, ist es nicht. <strong>Wir versprechen dir deshalb keine
-            Wirkung. Wir geben dir einen Regler.</strong>
+          <p data-html="frage.forschung.3">
+            Andere Arbeiten beantworten andere Fragen. <strong>Jebabli u. a.
+            (2025)</strong> maßen die anaerobe Leistung von Kickboxerinnen und
+            Kickboxern beim Aufwärmen; dort schnitt 440 Hz besser ab. Das ist eine
+            saubere Studie — aber wer wissen will, ob Musik beim <em>Zuhören</em>
+            entspannt, erfährt daraus nichts.
+          </p>
+          <p data-html="frage.forschung.4">
+            Was sich daraus sagen lässt: Dass Musikhören entspannt, ist gut
+            belegt. <strong>Dass es an der Stimmung liegt, ist offen.</strong>
+            Die Volltexte stehen unten unter „Was andere dazu schreiben“ — lies
+            sie selbst nach, statt uns zu glauben.
           </p>
         </div>
       </details>
 
       <details class="frage">
-        <summary data-text="frage.77">Ist das ein Medizinprodukt?</summary>
+        <summary data-text="frage.medizin.titel">Ist das ein Medizinprodukt?</summary>
         <div class="antwort">
-          <p data-html="frage.78">
+          <p data-html="frage.medizin.1">
             <strong>Nein.</strong> Der IYAMBAE Tuner ist kein Medizinprodukt, kein
             Heilmittel und kein Therapiegerät. Er ist ein Werkzeug, das Tonhöhe
             verschiebt.
           </p>
-          <p data-text="frage.79">
+          <p data-text="frage.medizin.2">
             Er ist nicht dazu bestimmt, eine Krankheit zu erkennen, zu behandeln
             oder zu lindern, und wir behaupten das nirgends. Wenn dir etwas fehlt,
             geh zur Ärztin.
@@ -1542,52 +1861,71 @@ code {
       </details>
 
       <details class="frage">
-        <summary data-text="frage.80">Was ist mit 528 Hz und den Solfeggio-Frequenzen?</summary>
+        <summary data-text="frage.528.titel">Was ist mit 528 Hz und den Solfeggio-Frequenzen?</summary>
         <div class="antwort">
-          <p data-html="frage.81">
+          <p data-text="frage.528.1">
             528 Hz ist kein Kammerton, sondern ein einzelner Ton — ungefähr ein
-            c″. Der Tuner verschiebt den ganzen Klang um ein Intervall und
-            stellt keinen Einzelton ein. <strong>Rechnen lässt es sich
-            trotzdem:</strong> Wer sein c″ bei 528 Hz haben will, stellt a′ auf
-            444,0 Hz — das kann der Regler.
+            c″. Ein Kammerton legt das a′ fest, alles andere folgt daraus. Der
+            Tuner verschiebt den ganzen Klang um ein Intervall; er stellt keinen
+            Einzelton ein.
           </p>
-          <p data-text="frage.82">
-            Über die Solfeggio-Frequenzen selbst sagen wir nichts. Es gibt dazu
-            keinen neutralen Lexikonartikel; was man findet, stammt überwiegend
-            von Anbietern.
+          <p data-html="frage.528.2">
+            Rechnen lässt es sich trotzdem: Wer sein c″ bei 528 Hz haben will,
+            stellt a′ auf <strong>444,0 Hz</strong> — das kann der Regler. Bei
+            a′ = 432 Hz liegt dasselbe c″ bei rund 513,7 Hz.
+          </p>
+          <p data-text="frage.528.3">
+            Über die Solfeggio-Reihe selbst sagen wir nichts. Wir kennen keine
+            Quelle dazu, die wir hier guten Gewissens weitergeben würden, und
+            behaupten deshalb weder, dass sie etwas bewirkt, noch dass sie es
+            nicht tut.
           </p>
         </div>
       </details>
 
       <details class="frage">
-        <summary data-text="frage.83">Welche Systeme werden unterstützt?</summary>
+        <summary data-text="frage.systeme.titel">Welche Systeme werden unterstützt?</summary>
         <div class="antwort">
-          <p data-html="frage.84">
+          <p data-html="frage.systeme.1">
             <strong>macOS ab 14.4</strong> — die vollständige App in der
-            Menüleiste, treiberlos.
-            <strong>Linux mit PipeWire ab 0.3.60</strong> — Symbol in der
-            Leiste, Stimmungen unter Namen, Wechsel im laufenden Betrieb.
+            Menüleiste. <strong>Linux mit PipeWire ab 0.3.60</strong> — seit
+            Kurzem ebenfalls mit Symbol in der Leiste: Stimmungen unter Namen,
+            Ein und Aus, Wahl der Engine, Start beim Anmelden. Darunter arbeitet
+            ein LADSPA-Plugin in der Filterkette. Nachgewiesen über D-Bus, der
+            Klick gemessen: „Verdi-Stimmung“ → 432,331 Hz am Ausgabegerät.
             Gebaut für Debian 13; für Ubuntu und Zorin muss neu gebaut werden.
           </p>
-          <p data-html="frage.85">
-            <strong>Windows</strong> hat eine App mit Fenster, Leistensymbol und
-            Dateiwerkzeug — aber noch keinen Systemton. Dafür müsste die
-            Software selbst zum Ausgabegerät werden; ein virtuelles Audiogerät
-            ist der nächste Schritt.
+          <p data-text="frage.systeme.2">
+            Unter GNOME braucht das Leistensymbol einmalig die
+            AppIndicator-Erweiterung. Das Paket empfiehlt sie, und das Programm
+            sagt es beim Start — statt unsichtbar zu bleiben und den Eindruck zu
+            hinterlassen, es sei nichts installiert worden.
+          </p>
+          <p data-html="frage.systeme.3">
+            <strong>Windows: noch nicht.</strong> Der Signalpfad läuft dort und
+            ist nachgemessen — beide Engines, 440 Hz hinein, 432,33 Hz heraus. Was
+            fehlt, ist die App darum herum, und die entsteht gerade.
+          </p>
+          <p data-html="frage.systeme.4">
+            Der eigentliche Grund für die Reihenfolge ist aber technisch:
+            <strong>Windows lässt Systemton mithören, aber nicht ersetzen.</strong>
+            Wer ihn wirklich ersetzen will, muss selbst zum Ausgabegerät werden —
+            es braucht ein virtuelles Audiogerät. Das ist der nächste Schritt, und
+            solange es fehlt, steht hier kein Knopf.
           </p>
         </div>
       </details>
 
       <details class="frage">
-        <summary data-text="frage.86">Warum nicht iOS oder Android?</summary>
+        <summary data-text="frage.telefon.titel">Warum nicht iOS oder Android?</summary>
         <div class="antwort">
-          <p data-text="frage.87">
+          <p data-text="frage.telefon.1">
             Weil dort die Grenze der Sandbox verläuft, nicht die des Aufwands. Auf
             iOS gibt es kein Gegenstück in irgendeiner Form. Auf Android darf man
             fremden Ton nur mitschneiden, wenn die abspielende App es gestattet —
             und Spotify, Netflix und YouTube gestatten es nicht.
           </p>
-          <p data-text="frage.88">
+          <p data-text="frage.telefon.2">
             Was möglich wäre, ist etwas anderes: ein eigener Abspieler, der die
             Musik selbst in die Hand nimmt. Daran wird gedacht.
           </p>
@@ -1595,66 +1933,75 @@ code {
       </details>
 
       <details class="frage">
-        <summary data-text="frage.89">Warum eine App und nicht einfach eine Webseite?</summary>
+        <summary data-text="frage.webseite.titel">Warum eine App und nicht einfach eine Webseite?</summary>
         <div class="antwort">
-          <p data-html="frage.90">
-            <strong>Weil eine Webseite raten muss und die App messen kann.</strong>
-            Eine Seite im Browser nimmt an, die Aufnahme liege auf 440 Hz, und
-            rechnet einen festen Faktor. Bei einer Aufnahme auf 443 — dem heute
-            in Deutschland üblichen Wert — landet man damit auf 435 statt auf
-            432.
+          <p data-text="frage.webseite.1">
+            Weil eine Webseite raten muss und die App messen kann. Eine Seite im
+            Browser nimmt an, die Aufnahme liege auf 440 Hz, rechnet den festen
+            Faktor 432⁄440 und wendet ihn auf alles an. Bei einer Aufnahme, die auf
+            443 liegt — dem heute in Deutschland üblichen Wert — landet man damit
+            auf 435 statt auf 432.
           </p>
-          <p data-text="frage.91">
-            Der Tuner bestimmt die tatsächliche Stimmung des laufenden Klangs
-            und rechnet den Abstand zum Ziel daraus. Dazu kommt der Zugriff:
-            Der Browser fasst nur an, was in ihm läuft. Die App fasst alles an.
+          <p data-text="frage.webseite.2">
+            Der Tuner bestimmt die tatsächliche Stimmung des laufenden Klangs und
+            rechnet den Abstand zum Ziel daraus. Was auf 443 liegt, wird um
+            443 → 432 verschoben, nicht um 440 → 432. Und er kommt an den
+            Systemton, nicht nur an einen Tab.
           </p>
+          <ul class="werte">
+            <li><b data-text="frage.webseite.w1.zahl">1,85 %</b><span data-text="frage.webseite.w1.was">So weit liegt der Zeitdehnungsfaktor von der Identität entfernt. Bei einer Oktave wären es 50 %.</span></li>
+            <li><b data-text="frage.webseite.w2.zahl">±0 %</b><span data-text="frage.webseite.w2.was">Das Tempo bleibt. Beim bloßen Langsamerabspielen würden aus 120 BPM 117,8.</span></li>
+            <li><b data-text="frage.webseite.w3.zahl">0,09 %</b><span data-text="frage.webseite.w3.was">eines Kerns bei der schnellen Engine — das 1077-fache der Echtzeit, auf Windows gemessen.</span></li>
+            <li><b data-text="frage.webseite.w4.zahl">0</b><span data-text="frage.webseite.w4.was">Allokationen im Echtzeit-Rückruf. Nicht behauptet: Das Bauskript zerlegt die DLL und listet jeden Aufruf, der herausführt. Es sind keine.</span></li>
+          </ul>
         </div>
       </details>
 
       <details class="frage">
-        <summary data-text="frage.92">Wie viel Verzögerung kostet das?</summary>
+        <summary data-text="frage.latenz.titel">Wie viel Verzögerung kostet das?</summary>
         <div class="antwort">
-          <p data-text="frage.93">
+          <p data-text="frage.latenz.1">
             Tonhöhe zu verschieben, ohne das Tempo anzutasten, kostet Zeit — und
             wie viel, hängt vom Verfahren ab. Du wählst.
           </p>
           <ul class="werte">
-            <li data-html="frage.94"><b>11 ms</b><span><strong>Delay-Line.</strong> Schnell genug für Video und fürs Mitspielen. Der Ton bleibt an den Lippen.</span></li>
-            <li data-html="frage.95"><b>240 ms</b><span><strong>High Quality</strong> (Signalsmith). Klingt besser, ist bei Video aber unbrauchbar — eine Viertelsekunde Versatz sieht man.</span></li>
+            <li><b data-text="frage.latenz.w1.zahl">11 ms</b><span data-html="frage.latenz.w1.was"><strong>Delay-Line.</strong> Schnell genug für Video und fürs Mitspielen. Der Ton bleibt an den Lippen.</span></li>
+            <li><b data-text="frage.latenz.w2.zahl">240 ms</b><span data-html="frage.latenz.w2.was"><strong>High Quality</strong> (Signalsmith). Klingt besser, ist bei Video aber unbrauchbar — eine Viertelsekunde Versatz sieht man.</span></li>
           </ul>
-          <p style="margin-top:1.2rem" data-text="frage.96">
+          <p style="margin-top:1.2rem" data-text="frage.latenz.2">
             Der Umschalter blendet über 25 ms über, damit der Wechsel nicht knackt.
           </p>
         </div>
       </details>
 
       <details class="frage">
-        <summary data-text="frage.97">Was hat das mit dem Radio zu tun?</summary>
+        <summary data-text="frage.radio.titel">Was hat das mit dem Radio zu tun?</summary>
         <div class="antwort">
-          <p data-html="frage.98">
+          <p data-html="frage.radio.1">
             Läuft der Tuner auf demselben Rechner, kann
-            <a href="https://iyambae.fm">IYAMBAE Radio</a> das bemerken und
-            seine eigene, ratende Umstimmung abschalten. Dann übernimmt die App,
-            die misst.
+            <a href="https://iyambae.fm">IYAMBAE Radio</a> das bemerken und seine
+            eigene, ratende Umstimmung abschalten. Dann übernimmt die App, die
+            misst.
           </p>
-          <p data-html="frage.99">
-            Gefragt wird zweimal — die Seite fragt nach, und der Tuner fragt
-            dich. <strong>Ohne deine Zustimmung erfährt keine Webseite, dass du
-            ihn benutzt</strong>, nicht einmal, dass er installiert ist.
+          <p data-html="frage.radio.2">
+            Gefragt wird dabei zweimal: Die Seite fragt einmal nach, und der Tuner
+            fragt dich. <strong>Ohne deine Zustimmung erfährt keine Webseite, dass
+            du ihn benutzt</strong> — auch nicht, dass er installiert ist. Eine
+            Liste erlaubter Webseiten im Programmtext wäre bequemer gewesen. Sie
+            hätte nur die falsche Frage beantwortet.
           </p>
         </div>
       </details>
 
       <details class="frage">
-        <summary data-text="frage.100">Was kostet es?</summary>
+        <summary data-text="frage.preis.titel">Was kostet es?</summary>
         <div class="antwort">
-          <p data-text="frage.101">
+          <p data-text="frage.preis.1">
             Diese Testausgabe kostet nichts. Sie verlangt kein Konto, keine
             E-Mail-Adresse und keine Zahlungsdaten — du lädst eine Datei, und das
             war es.
           </p>
-          <p data-text="frage.102">
+          <p data-text="frage.preis.2">
             Über einen Preis für eine spätere, fertige Fassung ist nichts
             entschieden. Wenn sich das ändert, steht es hier.
           </p>
@@ -1662,17 +2009,25 @@ code {
       </details>
 
       <details class="frage">
-        <summary data-text="frage.103">Was passiert mit meinen Daten?</summary>
+        <summary data-text="frage.daten.titel">Was passiert mit meinen Daten?</summary>
         <div class="antwort">
-          <p data-html="frage.104">
-            <strong>Diese Seite setzt keine Cookies, misst nichts und lädt
-            nichts von fremden Servern nach.</strong> Auch die Schriften liegen
-            hier — ein Verweis auf eine Schriftsammlung in den USA würde deine
-            IP-Adresse dorthin schicken, bevor du irgendwo geklickt hast.
+          <p data-html="frage.daten.1">
+            <strong>Diese Seite</strong> setzt keine Cookies, misst nichts und
+            lädt nichts von fremden Servern nach. Die Schriften liegen auf
+            demselben Server wie die Seite — ein Verweis auf eine Schriftsammlung
+            in den USA würde deine IP-Adresse dorthin schicken, bevor du irgendwo
+            geklickt hast.
           </p>
-          <p data-text="frage.105">
-            Der Tuner braucht kein Konto und schickt nichts weg. Er verarbeitet
-            den Ton auf deinem Rechner und schreibt ihn nirgends mit.
+          <p data-html="frage.daten.2">
+            <strong>Der Tuner</strong> braucht kein Konto und schickt nichts weg.
+            Er verarbeitet den Ton auf dem Rechner selbst und schreibt ihn nirgends
+            mit. Die einzige Schnittstelle nach außen ist der Dienst für das Radio
+            auf <code>127.0.0.1</code> — der verlässt deinen Rechner nicht und
+            antwortet nur, wenn du es erlaubst.
+          </p>
+          <p data-html="frage.daten.3">
+            Einzelheiten stehen in der
+            <a href="https://iyambae.fm/recht/datenschutz/">Datenschutzerklärung</a>.
           </p>
         </div>
       </details>
@@ -1680,7 +2035,6 @@ code {
     </div>
   </div>
 </section>
-
 
 <!-- ══ Umfrage · was als Nächstes gebaut wird ═══════════════════
 
@@ -1780,12 +2134,16 @@ code {
      machen. "Was andere dazu schreiben" beschreibt, was die Liste ist —
      eine Weitergabe, keine Empfehlung. Jeder Eintrag nennt nur, WAS die
      Quelle ist, nie, ob sie recht hat.
+
+     Die Titel der Quellen bleiben in ihrer eigenen Sprache stehen: Ein
+     übersetzter Aufsatztitel wäre ein Titel, unter dem sich der Aufsatz
+     nicht finden lässt. Übersetzt wird nur, was die Quelle IST.
      ═══════════════════════════════════════════════════════════════ -->
 <section class="rahmen teil teil--linie">
   <div class="eng">
-    <p class="eyebrow" data-text="quellen.106">Fremde Quellen</p>
-    <h2 data-text="quellen.107">Was andere dazu schreiben.</h2>
-    <p data-html="quellen.108">
+    <p class="eyebrow" data-text="fremd.eyebrow">Fremde Quellen</p>
+    <h2 data-text="fremd.titel">Was andere dazu schreiben.</h2>
+    <p data-html="fremd.vorwort">
       Fremde Seiten, <strong>ohne Bewertung</strong> weitergegeben. Wir machen
       uns ihren Inhalt nicht zu eigen; verantwortlich sind ihre Betreiber.
       Aufgerufen am 21. August 2026.
@@ -1795,27 +2153,27 @@ code {
       <li>
         <span class="quelle">de.wikipedia.org</span>
         <a href="https://de.wikipedia.org/wiki/Kammerton" target="_blank" rel="noopener nofollow external">Kammerton</a>
-        <p>Enzyklopädieartikel zur Geschichte des Stimmtons.</p>
+        <p data-text="fremd.1.was">Enzyklopädieartikel zur Geschichte des Stimmtons.</p>
       </li>
       <li>
         <span class="quelle">en.wikipedia.org</span>
         <a href="https://en.wikipedia.org/wiki/A440_(pitch_standard)" target="_blank" rel="noopener nofollow external">A440 (pitch standard)</a>
-        <p>Englischsprachiger Artikel zur Norm 440 Hz.</p>
+        <p data-text="fremd.2.was">Englischsprachiger Artikel zur Norm 440 Hz.</p>
       </li>
       <li>
-        <span class="quelle">pmc.ncbi.nlm.nih.gov · Volltext frei</span>
-        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7213780/" target="_blank" rel="noopener nofollow external">Aravena u. a., J Appl Oral Sci 28 (2020), e20190601</a>
-        <p>Randomisierte klinische Studie, 42 Personen, Zahnextraktion.</p>
+        <span class="quelle" data-text="fremd.volltext">pmc.ncbi.nlm.nih.gov · Volltext frei</span>
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7213780/" target="_blank" rel="noopener nofollow external" data-text="fremd.3.titel">Aravena u. a., J Appl Oral Sci 28 (2020), e20190601</a>
+        <p data-text="fremd.3.was">Randomisierte klinische Studie, 42 Personen, Zahnextraktion.</p>
       </li>
       <li>
-        <span class="quelle">pmc.ncbi.nlm.nih.gov · Volltext frei</span>
-        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11890291/" target="_blank" rel="noopener nofollow external">Jebabli u. a., PeerJ 13 (2025), e19084</a>
-        <p>Doppelblinde Crossover-Studie, Kickboxen, Aufwärmen.</p>
+        <span class="quelle" data-text="fremd.volltext">pmc.ncbi.nlm.nih.gov · Volltext frei</span>
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11890291/" target="_blank" rel="noopener nofollow external" data-text="fremd.4.titel">Jebabli u. a., PeerJ 13 (2025), e19084</a>
+        <p data-text="fremd.4.was">Doppelblinde Crossover-Studie, Kickboxen, Aufwärmen.</p>
       </li>
       <li>
-        <span class="quelle">pmc.ncbi.nlm.nih.gov · Volltext frei</span>
-        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12528442/" target="_blank" rel="noopener nofollow external">Jebabli u. a., Sci Rep 15 (2025), 36120</a>
-        <p>Doppelblinde Crossover-Studie, Athleten, Aufwärmen.</p>
+        <span class="quelle" data-text="fremd.volltext">pmc.ncbi.nlm.nih.gov · Volltext frei</span>
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12528442/" target="_blank" rel="noopener nofollow external" data-text="fremd.5.titel">Jebabli u. a., Sci Rep 15 (2025), 36120</a>
+        <p data-text="fremd.5.was">Doppelblinde Crossover-Studie, Athleten, Aufwärmen.</p>
       </li>
     </ul>
   </div>
@@ -1825,19 +2183,19 @@ code {
 
 <footer class="fuss">
   <div class="rahmen">
-    <blockquote class="merksatz" data-text="fuss.109">
+    <blockquote class="merksatz" data-text="fuss.merksatz">
       Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.
     </blockquote>
-    <p class="fuss__recht" data-html="fuss.110">
+    <p class="fuss__recht" data-html="fuss.recht">
       Der IYAMBAE Tuner ist <strong>kein Medizinprodukt</strong> und kein
       Heilmittel. Er verändert Tonhöhe, sonst nichts.
     </p>
     <div class="fuss__reihe">
-      <span>IYAMBAE — kuratiertes Webradio und Werkzeuge fürs Hören.</span>
+      <span data-text="fuss.zeile">IYAMBAE — kuratiertes Webradio und Werkzeuge fürs Hören.</span>
       <nav class="fuss__wege">
-        <a href="https://iyambae.fm" data-text="fuss.111">iyambae.fm</a>
-        <a href="https://iyambae.fm/recht/impressum/" data-text="fuss.112">Impressum</a>
-        <a href="https://iyambae.fm/recht/datenschutz/" data-text="fuss.113">Datenschutz</a>
+        <a href="https://iyambae.fm">iyambae.fm</a>
+        <a href="https://iyambae.fm/recht/impressum/" data-text="fuss.impressum">Impressum</a>
+        <a href="https://iyambae.fm/recht/datenschutz/" data-text="fuss.datenschutz">Datenschutz</a>
       </nav>
     </div>
   </div>
@@ -1877,18 +2235,40 @@ code {
   let hof = null, quelleA = null, quelleB = null, lautstaerke = null;
   let laeuft = false;
 
-  const zahl = (n, s = 1) => n.toFixed(s).replace('.', ',');
+  /* ── Die Woerter, die dieses Skript schreibt ──────────────────────
+
+     Sie stehen NICHT hier im Programmtext, sondern als data-Attribute an
+     den Elementen, die sie tragen. Scripts/baue-apps-sprachen.py setzt sie
+     beim Erzeugen der Sprachseite ein. Stuenden sie hier, spraeche die
+     Anzeige auf allen sieben Seiten deutsch — und zwar erst nach dem ersten
+     Zug am Regler, also genau dann, wenn niemand mehr hinschaut.
+
+     Der Rueckfall in Klammern gilt fuer die deutsche Vorlage selbst, die
+     bei der oertlichen Entwicklung ohne Erzeuger geoeffnet wird. */
+  const wort = (el, name, ersatz) => el.dataset[name] || ersatz;
+
+  /* Das Dezimalzeichen ist Sprache, keine Schreibweise: "0,09" heisst auf
+     Englisch "0.09", und wer das verwechselt, liest das Tausendfache.
+     data-zahlformat am <html> traegt die Kennung dafuer — beim Arabischen
+     mit "-u-nu-latn", damit die Anzeige dieselben Ziffern benutzt wie die
+     Skala daneben. Begruendung steht im Erzeuger. */
+  const ZAHLFORMAT = document.documentElement.dataset.zahlformat || 'de';
+  const zahl = (n, s = 1) => n.toLocaleString(ZAHLFORMAT, {
+    minimumFractionDigits: s, maximumFractionDigits: s, useGrouping: false });
   // Cent ist das logarithmische Mass fuer Tonhoehenabstand: 1200 je Oktave.
   const cent = (a, b) => 1200 * Math.log2(a / b);
 
   function zeigeWerte() {
     const df = Math.abs(hz - REFERENZ);
     const c  = cent(hz, REFERENZ);
-    felder.hz.innerHTML = `${zahl(hz)}<small>Hz</small>`;
-    felder.cent.innerHTML = `${c >= 0 ? '+' : '−'}${zahl(Math.abs(c))}<small>Cent</small>`;
+    felder.hz.innerHTML = `${zahl(hz)}<small>${wort(felder.hz, 'einheit', 'Hz')}</small>`;
+    felder.cent.innerHTML = `${c >= 0 ? '+' : '−'}${zahl(Math.abs(c))}`
+      + `<small>${wort(felder.cent, 'einheit', 'Cent')}</small>`;
 
     const ruhig = df < 0.05;
-    felder.schweb.innerHTML = ruhig ? 'keine' : `${zahl(df)}<small>/s</small>`;
+    felder.schweb.innerHTML = ruhig
+      ? wort(felder.schweb, 'ruhig', 'keine')
+      : `${zahl(df)}<small>${wort(felder.schweb, 'einheit', '/s')}</small>`;
     felder.schweb.classList.toggle('ablesung__wert--ruhig', ruhig);
     felder.cent.classList.toggle('ablesung__wert--ruhig', ruhig);
 
@@ -1931,11 +2311,17 @@ code {
     quelleA = quelleB = null;
   }
 
+  function beschrifteKnopf() {
+    knopf.setAttribute('aria-pressed', String(laeuft));
+    knopf.textContent = laeuft
+      ? wort(knopf, 'aus', 'Ton ausschalten')
+      : wort(knopf, 'an',  'Ton einschalten');
+  }
+
   knopf.addEventListener('click', async () => {
     if (laeuft) { tonAus(); laeuft = false; }
     else { laeuft = await tonAn(); }
-    knopf.setAttribute('aria-pressed', String(laeuft));
-    knopf.textContent = laeuft ? 'Ton ausschalten' : 'Ton einschalten';
+    beschrifteKnopf();
   });
 
   function setzeHz(neu) {
@@ -2015,8 +2401,7 @@ code {
       angefordert = null;
       if (laeuft) {
         tonAus(); laeuft = false;
-        knopf.setAttribute('aria-pressed', 'false');
-        knopf.textContent = 'Ton einschalten';
+        beschrifteKnopf();
       }
     } else if (!angefordert) {
       t0 = null; requestAnimationFrame(male);

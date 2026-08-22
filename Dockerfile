@@ -14,7 +14,7 @@ COPY . .
 # Katalog zeichengenau reproduzieren. Schlägt das fehl, bricht der Bau hier
 # ab — und nicht erst im Browser eines Besuchers.
 RUN python3 Scripts/baue-sprachen.py \
- && python3 Scripts/baue-recht.py \
+ && python3 Scripts/baue-recht.py \n && python3 Scripts/baue-apps-sprachen.py \
  && python3 Scripts/pruefe-shell-dateien.py
 
 # ── Stufe 2: ausliefern ─────────────────────────────────────────────
