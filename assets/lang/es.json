@@ -88,6 +88,8 @@
   "regalwand.titel": "Los cajones",
   "regalwand.zahl": "{faecher} cajones · {sender} emisoras",
   "regalwand.sender": "{anzahl} emisoras",
+  "katalog.titel": "Las {sender} emisoras en forma de lista",
+  "katalog.hinweis": "Las mismas emisoras de arriba, en texto plano — ordenadas por cajón, con lugar, operador y calidad de audio. Se lee también sin JavaScript.",
   "filter.bereich": "Filtrar emisoras",
   "filter.zuruecksetzen": "Quitar filtros",
   "karte.spielen": "Reproducir",

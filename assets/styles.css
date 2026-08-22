@@ -1466,6 +1466,93 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .leer__titel { font-size: 1.1rem; font-weight: 600; }
 .leer__hinweis { color: var(--text-leise); font-size: 0.88rem; margin-top: 0.3rem; }
 
+/* ── Textfassung des Katalogs ─────────────────────────────────────
+   Erzeugt von Scripts/baue-sprachen.py, eingeklappt in ein <details>.
+
+   Warum sie überhaupt im HTML steht, steht in index.html an der Stelle, an
+   der der Block eingesetzt wird. Hier geht es nur ums Aussehen, und das hat
+   eine einzige Aufgabe: leise sein. Der Block richtet sich an Crawler; ein
+   sehender Besucher soll ihn wahrnehmen können, aber nicht daran vorbei
+   müssen. Deshalb dieselbe Setzung wie die Rechtsverweise im Fuß — Mono,
+   klein, --text-leise.
+
+   KEIN display:none und keine ausgelagerte Absatzposition. Was nur für
+   Maschinen ausgeliefert wird und für Menschen unerreichbar ist, heißt
+   Cloaking. Zugeklappt ist etwas anderes als versteckt: Ein Klick, und es
+   steht da — für jeden gleich. */
+.katalogtext {
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+    margin-top: 2rem;
+}
+.katalogtext__auf {
+    border-top: 1px solid var(--rand);
+    padding-top: 1.2rem;
+}
+.katalogtext__knopf {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    cursor: pointer;
+    /* Das Dreieck des Browsers passt nicht zur übrigen Setzung; der eigene
+       Pfeil unten dreht sich mit [open]. */
+    list-style: none;
+    color: var(--text-leise);
+    transition: color 0.15s ease;
+}
+.katalogtext__knopf::-webkit-details-marker { display: none; }
+.katalogtext__knopf::after {
+    content: '';
+    width: 0.32rem; height: 0.32rem;
+    border-right: 1.4px solid currentColor;
+    border-bottom: 1.4px solid currentColor;
+    /* Physisch, nicht logisch: Ein Pfeil nach unten hat keine Leserichtung. */
+    transform: rotate(45deg) translate(-1px, -1px);
+    transition: transform 0.15s ease;
+}
+.katalogtext__auf[open] .katalogtext__knopf { color: var(--text); }
+.katalogtext__auf[open] .katalogtext__knopf::after {
+    transform: rotate(-135deg) translate(-1px, -1px);
+}
+/* Eine <h2> im <summary> ist gültig und richtig: Der Abschnitt braucht eine
+   Überschrift in der Gliederung, und die Zusammenfassung IST sie. Sie darf
+   nur nicht wie eine Überschrift aussehen. */
+.katalogtext__titel {
+    display: inline;
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.04em;
+}
+.katalogtext__hinweis {
+    max-width: 42rem;
+    margin-top: 0.9rem;
+    font-size: 0.82rem; color: var(--text-leise); line-height: 1.55;
+}
+.katalogtext__regal { margin-top: 1.6rem; }
+.katalogtext__name {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem;
+    font-size: 0.95rem; font-weight: 600;
+}
+.katalogtext__zahl {
+    font-family: var(--mono); font-size: 0.68rem; color: var(--text-leise);
+}
+.katalogtext__was {
+    font-size: 0.82rem; color: var(--text-leise);
+    margin-top: 0.15rem;
+}
+.katalogtext__liste {
+    list-style: none;
+    margin-top: 0.6rem;
+    display: grid; gap: 0.55rem;
+}
+.katalogtext__liste li {
+    font-size: 0.82rem; color: var(--text-leise); line-height: 1.5;
+    max-width: 52rem;
+    padding-inline-start: 0.8rem;
+    border-inline-start: 2px solid var(--rand);
+}
+.katalogtext__liste a { color: var(--text); text-decoration: none; font-weight: 600; }
+.katalogtext__liste a:hover { color: var(--pink-hell); text-decoration: underline; }
+/* Der Kärtchentext steht in einer eigenen Zeile, ohne <br> im Markup —
+   146-mal vier Bytes für etwas, das ins Stylesheet gehört. */
+.katalogtext__karte { display: block; margin-top: 0.15rem; opacity: 0.78; }
+
 /* ── Fuß ─────────────────────────────────────────────────────────── */
 .fuss {
     padding: 2.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
@@ -1850,6 +1937,23 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 
 /* „Öffnet woanders" zeigt in einer RTL-Oberfläche nach oben links. */
 [dir="rtl"] [data-symbol="extern"] svg { transform: scaleX(-1); }
+
+/* Die Textfassung des Katalogs: der RAHMEN bleibt arabisch, der INHALT ist
+   es nicht.
+
+   Regalnamen, Sendernamen, Betreiber, Orte, Codecs und die Kärtchentexte
+   sind lateinisch beziehungsweise deutsch — sie stehen so in
+   data/sender.json und werden nicht übersetzt. Erbten sie die Leserichtung
+   der Seite, wanderte der Satzpunkt an den Zeilenanfang und die Etiketten
+   sprängen vor den Sendernamen; gemessen an /ar/, genau so sah es aus.
+
+   Die Leserichtung gehört zum Inhalt, nicht zur Seite. Aufklapper,
+   Hinweistext und die Sender-Zählung bleiben deshalb arabisch gesetzt, die
+   Liste selbst wird lateinisch. */
+[dir="rtl"] .katalogtext__regal {
+    direction: ltr;
+    text-align: left;
+}
 
 /* Der Tonarm ragt 6 % ueber den Plattenspieler hinaus — richtig so, ein
    Tonarm sitzt am Rand. In der arabischen Fassung steht der Teller ab

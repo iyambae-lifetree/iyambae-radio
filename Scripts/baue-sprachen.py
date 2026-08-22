@@ -226,7 +226,7 @@ def setze_attribut(stueck, name, wert):
 RELATIV = re.compile(r'(\s(?:href|src)=")(?!https?:|/|#|data:|mailto:)')
 
 
-def erzeuge_seite(vorlage_quelle, kuerzel, texte, alle_kuerzel):
+def erzeuge_seite(vorlage_quelle, kuerzel, texte, alle_kuerzel, katalog):
     zerleger = Zerleger()
     zerleger.feed(vorlage_quelle)
     zerleger.close()
@@ -293,6 +293,18 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, alle_kuerzel):
     verweise += f'\n    <link rel="canonical" href="https://iyambae.fm/{kuerzel}/">'
     seite = seite.replace("</head>", verweise + "\n</head>", 1)
 
+    # Die Textfassung des Katalogs an ihren Anker. Fehlt der Anker, ist die
+    # Vorlage veraendert worden und der Block landete stillschweigend
+    # nirgends — dann lieber laut abbrechen.
+    if KATALOG_MARKE not in seite:
+        raise ValueError(f"{KATALOG_MARKE} steht nicht in index.html")
+    seite = seite.replace(KATALOG_MARKE, katalogtext(katalog, texte, kuerzel), 1)
+
+    # Die strukturierten Daten ans Ende des Rumpfes. Warum dorthin und nicht
+    # in den Kopf, steht als Kommentar an dieser Stelle in index.html.
+    seite = seite.replace("</body>", katalog_jsonld(katalog, texte, kuerzel)
+                          + "</body>", 1)
+
     return seite
 
 
@@ -330,6 +342,423 @@ def erzeuge_manifest(vorlage, kuerzel, texte):
             symbol["src"] = "/" + symbol["src"].lstrip("./")
 
     return json.dumps(m, ensure_ascii=False, indent=4) + "\n"
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Auffindbarkeit — Textfassung, JSON-LD, sitemap.xml, robots.txt
+#
+# Alles hier Erzeugte hat einen einzigen Zweck: Was app.js zur Laufzeit aus
+# data/sender.json zeichnet, soll auch dann lesbar sein, wenn niemand
+# JavaScript ausfuehrt. Google tut es, GPTBot, ClaudeBot, PerplexityBot und
+# Bing ueberwiegend nicht — fuer die war iyambae.fm eine Ueberschrift und
+# achtzehn leere Skelettkarten.
+#
+# Die Begruendung fuer die gewaehlte Form (Textfassung statt vorgerendertem
+# Raster, <details> statt <noscript>) steht in index.html an der Stelle, an
+# der der Block landet. Sie gehoert dorthin, wo jemand sie beim Lesen der
+# Vorlage findet.
+# ═══════════════════════════════════════════════════════════════════
+
+HAUS = "https://iyambae.fm"
+
+# Der Anker in index.html. Fehlt er, bricht der Lauf ab — eine Sprachseite
+# ohne Katalog waere genau der stille Rueckfall in den alten Zustand.
+KATALOG_MARKE = "<!--KATALOGTEXT-->"
+
+# Die Begruessungen, die bis zum 21.08.2026 als <h1> standen. Sie sind hier
+# aufgefuehrt, damit pruefe_seite() merkt, wenn eine davon zurueckkehrt: Eine
+# Ueberschrift, die "Willkommen" sagt, sagt nichts.
+ALTE_H1 = {"Willkommen", "Welcome", "Bienvenue", "Bienvenida", "Benvenuto",
+           "ようこそ", "أهلًا بك"}
+
+
+def fuelle(satz, **werte):
+    """{name} in einem Katalogsatz ersetzen.
+
+    Dieselbe Schreibweise wie t() in assets/lib/sprache.mjs. str.format()
+    scheidet aus: In den Saetzen stehen geschweifte Klammern, die keine
+    Platzhalter sind, und die brechen dort den Aufruf ab.
+    """
+    for name, wert in werte.items():
+        satz = satz.replace("{" + name + "}", str(wert))
+    return satz
+
+
+def guete(sender):
+    """"mp3 · 256 kbit/s" — oder nur den Codec, wo keine Bitrate feststeht.
+
+    Zehn Sender melden keine, meist verlustfreie mit veraenderlicher Rate.
+    Eine erfundene Zahl waere schlimmer als keine.
+    """
+    codec = sender.get("codec", "")
+    rate = sender.get("bitrate")
+    return f"{codec} · {rate} kbit/s" if rate else codec
+
+
+def katalogtext(katalog, texte, kuerzel):
+    """Die lesbare Textfassung des Katalogs, nach Regalen geordnet.
+
+    MIT DEN KAERTCHEN-TEXTEN, UND ZWAR HIER UND NUR HIER.
+
+    Sie sind das Einzige an diesem Katalog, was eine Frage wie "Internetradio
+    fuer Spiritual Jazz" beantwortet — 146 Namen und Laenderkuerzel tun das
+    nicht. Naheliegend waere gewesen, sie ins JSON-LD zu stecken; dort kosten
+    sie dasselbe. Sie stehen trotzdem im Fliesstext, weil die Ausleser der
+    KI-Abholer (Readability, trafilatura und ihre Verwandten) <script>
+    verwerfen, bevor sie ueberhaupt hinsehen — ausgerechnet die
+    Antwortmaschinen, um die es geht, laesen sie im JSON-LD nicht. Im Rumpf
+    liest sie jeder: Suchmaschine, Antwortmaschine und Mensch.
+
+    DIE SPRACHE: Die Kaertchen und die Regalbeschreibungen sind kuratierter
+    deutscher Inhalt und stehen in data/sender.json in EINER Sprache — genau
+    so zeichnet app.js sie heute schon in allen sieben Fassungen. Auf den
+    sechs nicht-deutschen Seiten bekommen sie deshalb ein lang="de". Das ist
+    kein Schmuck: Ohne die Angabe stuende auf der japanischen Seite ein
+    Drittel deutscher Text ohne Kennzeichnung, und das ist ein Sprachsignal
+    gegen das eigene hreflang. Mit der Angabe ist es ein ausgewiesenes Zitat.
+    """
+    def t(schluessel, rueckfall=None):
+        return texte.get(schluessel, rueckfall if rueckfall is not None else schluessel)
+
+    def esc(text):
+        return html.escape(str(text), quote=False)
+
+    # Auf der deutschen Seite waere lang="de" nur Ballast — 146-mal.
+    #
+    # dir="ltr" nur in der arabischen Fassung, und nicht als Schmuck: Ohne die
+    # Angabe erbt ein deutscher Satz die Leserichtung der Seite, und sein
+    # Punkt steht am Zeilenanfang. Das Aussehen richtet zwar schon styles.css,
+    # aber die Leserichtung ist eine Eigenschaft des Textes — sie muss auch
+    # dann stimmen, wenn kein Stylesheet geladen wird.
+    deutsch = "" if kuerzel == "de" else ' lang="de"'
+    if SPRACHEN[kuerzel][1] == "rtl":
+        deutsch += ' dir="ltr"'
+
+    sender = katalog["sender"]
+    teile = ['<section class="katalogtext" id="katalogtext">',
+             '<details class="katalogtext__auf">',
+             '<summary class="katalogtext__knopf"><h2 class="katalogtext__titel">'
+             + esc(fuelle(t("katalog.titel"), sender=len(sender)))
+             + "</h2></summary>",
+             f'<p class="katalogtext__hinweis">{esc(t("katalog.hinweis"))}</p>']
+
+    for regal in katalog["regale"]:
+        drin = [s for s in sender if s["regal"] == regal["id"]]
+        if not drin:
+            continue
+        # Die Regalnamen sind Eigennamen und bleiben in jeder Sprachfassung
+        # stehen — genauso, wie app.js sie zeichnet und wie sie in
+        # seite.beschreibung stehen.
+        teile.append('<div class="katalogtext__regal">')
+        teile.append(f'<h3 class="katalogtext__name">{esc(regal["name"])} '
+                     f'<span class="katalogtext__zahl">'
+                     f'{esc(fuelle(t("regalwand.sender"), anzahl=len(drin)))}</span></h3>')
+        teile.append(f'<p class="katalogtext__was"{deutsch}>'
+                     f'{esc(regal["beschreibung"])}</p>')
+        teile.append('<ul class="katalogtext__liste">')
+        for s in drin:
+            # Die Etiketten gibt es uebersetzt (etikett.*) — anders als die
+            # Kaertchen. Sie tragen also in jeder Sprache etwas bei.
+            etiketten = ", ".join(t(f"etikett.{e}", e) for e in s.get("etiketten", []))
+            angaben = f'{s["betreiber"]}, {s["ort"]} ({s["land"]}) · {guete(s)}'
+            if etiketten:
+                angaben += f" · {etiketten}"
+            teile.append(
+                f'<li><a href="{html.escape(s["homepage"], quote=True)}" rel="noopener">'
+                f"{esc(s['name'])}</a> — {esc(angaben)}"
+                f'<span class="katalogtext__karte"{deutsch}>{esc(s["kaertchen"])}</span></li>')
+        teile.append("</ul></div>")
+
+    teile.append("</details></section>")
+    return "\n".join(teile) + "\n"
+
+
+def katalog_jsonld(katalog, texte, kuerzel):
+    """Organization, WebSite und die ItemList aller Sender als RadioStation.
+
+    WARUM inLanguage AM WebSite UND NICHT AN DER ItemList: inLanguage ist eine
+    Eigenschaft von CreativeWork. ItemList ist ein Intangible und hat sie
+    nicht — sie dort hinzuschreiben waere kein Schoenheitsfehler, sondern
+    schlicht falsch, und ein Pruefwerkzeug meldet es.
+
+    WARUM knowsAbout FUERS REGAL: RadioStation erbt ueber LocalBusiness von
+    Organization, und knowsAbout ist dort zu Hause. `genre` waere das
+    naheliegende Wort, gilt aber fuer CreativeWork und nicht fuer eine
+    Organisation.
+
+    WARUM OHNE description JE SENDER: Die Kaertchen stehen im Fliesstext, ein
+    paar Zeilen weiter oben im selben Dokument. Sie hier zu wiederholen
+    kostete 31 kB je Sprachseite fuer nichts — der Block hier trueg dann
+    dieselben Saetze ein zweites Mal, und zwar an der Stelle, die die
+    Ausleser der KI-Abholer verwerfen. Siehe katalogtext().
+    """
+    def t(schluessel):
+        return texte.get(schluessel, schluessel)
+
+    sender = katalog["sender"]
+    regalname = {r["id"]: r["name"] for r in katalog["regale"]}
+    seite = f"{HAUS}/{kuerzel}/"
+
+    haus = {
+        "@type": "Organization",
+        "@id": f"{HAUS}/#haus",
+        "name": "IYAMBAE",
+        "url": f"{HAUS}/",
+        "logo": f"{HAUS}/icon-512.png",
+    }
+
+    website = {
+        "@type": "WebSite",
+        "@id": f"{seite}#seite",
+        "url": seite,
+        "name": "IYAMBAE Radio",
+        "description": t("seite.beschreibung"),
+        "inLanguage": kuerzel,
+        "publisher": {"@id": f"{HAUS}/#haus"},
+    }
+
+    eintraege = []
+    for platz, s in enumerate(sender, start=1):
+        stelle = {
+            "@type": "RadioStation",
+            "name": s["name"],
+            "url": s["homepage"],
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": s["ort"],
+                "addressCountry": s["land"],
+            },
+            "knowsAbout": regalname.get(s["regal"], s["regal"]),
+        }
+        eintraege.append({"@type": "ListItem", "position": platz, "item": stelle})
+
+    liste = {
+        "@type": "ItemList",
+        "@id": f"{seite}#katalog",
+        "name": fuelle(t("katalog.titel"), sender=len(sender)),
+        "numberOfItems": len(sender),
+        "itemListOrder": "https://schema.org/ItemListUnordered",
+        "mainEntityOfPage": seite,
+        "itemListElement": eintraege,
+    }
+
+    graph = {"@context": "https://schema.org", "@graph": [haus, website, liste]}
+    # separators ohne Leerzeichen: bei 146 Eintraegen sind das rund 4 kB je
+    # Sprachseite, die niemand liest.
+    roh = json.dumps(graph, ensure_ascii=False, separators=(",", ":"))
+    # Jedes "<" maskieren, nicht nur "</script>". Ein Kleinerzeichen in einem
+    # Sendertext beendete sonst im Zweifel das Skript-Element, und der Rest
+    # der Seite waere Text. < ist innerhalb einer JSON-Zeichenkette
+    # gueltig; ausserhalb kommt "<" in JSON gar nicht vor.
+    roh = roh.replace("<", "\\u003c")
+    return f'<script type="application/ld+json">{roh}</script>\n'
+
+
+def erzeuge_sitemap(alle_kuerzel, stand):
+    """Die sieben Sprachwurzeln, jede mit allen Alternativen.
+
+    Jeder Eintrag fuehrt ALLE sieben Fassungen auf, sich selbst
+    eingeschlossen — so verlangt es die Spezifikation von hreflang, und ohne
+    den Selbstverweis wird die Gruppe verworfen. x-default zeigt auf /, wo
+    die Spracherkennung von nginx sitzt.
+
+    lastmod kommt aus data/sender.json (_geprueft_am), nicht aus der Uhr:
+    Was hier steht, soll dem Stand entsprechen, den die Seite ausliefert.
+    """
+    zeilen = ['<?xml version="1.0" encoding="UTF-8"?>',
+              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
+              '        xmlns:xhtml="http://www.w3.org/1999/xhtml">']
+    for kuerzel in alle_kuerzel:
+        zeilen.append("  <url>")
+        zeilen.append(f"    <loc>{HAUS}/{kuerzel}/</loc>")
+        for k in alle_kuerzel:
+            zeilen.append(f'    <xhtml:link rel="alternate" hreflang="{k}" '
+                          f'href="{HAUS}/{k}/"/>')
+        zeilen.append(f'    <xhtml:link rel="alternate" hreflang="x-default" '
+                      f'href="{HAUS}/"/>')
+        zeilen.append(f"    <lastmod>{stand}</lastmod>")
+        zeilen.append("  </url>")
+    zeilen.append("</urlset>")
+    return "\n".join(zeilen) + "\n"
+
+
+def erzeuge_robots():
+    """robots.txt — und die Entscheidung, die darin steckt.
+
+    Sie steht als Kommentar in der Datei selbst und nicht nur hier: Wer
+    robots.txt prueft, liest die Datei, nicht dieses Skript.
+    """
+    kopf = """# robots.txt fuer iyambae.fm
+#
+# Erzeugt von Scripts/baue-sprachen.py. Eine von Hand geaenderte Fassung
+# ueberschreibt der naechste Bau.
+#
+# DIE ENTSCHEIDUNG: Kein einziges Verbot gegen einen KI-Abholer.
+#
+# Wir wollen gefunden werden — von Suchmaschinen UND von Antwortmaschinen.
+# Wer heute eine KI nach "Radio in 432 Hz" oder nach "Internetradio fuer
+# Spiritual Jazz" fragt, soll diesen Laden genannt bekommen. Ein Laden, den
+# niemand nennt, ist ein leerer Laden. Es gibt hier auch nichts zu schuetzen:
+# Der Katalog ist kuratierte Empfehlung, kein Bestand, der durch Nennung
+# weniger wert wird.
+#
+# Die grossen Abholer stehen einzeln da, obwohl "User-agent: *" sie schon
+# einschliesst. Der Grund ist nicht Technik, sondern Lesbarkeit: Wer diese
+# Datei prueft, soll sehen, dass die Frage gestellt und beantwortet wurde —
+# und nicht, dass sie vergessen wurde.
+#
+#   GPTBot           ChatGPT (OpenAI)
+#   OAI-SearchBot    die Suche in ChatGPT
+#   ChatGPT-User     was ChatGPT auf Zuruf eines Menschen abholt
+#   ClaudeBot        Claude (Anthropic)
+#   PerplexityBot    Perplexity
+#   CCBot            Common Crawl — die Quelle, aus der fast alles lernt
+#   Google-Extended  steuert NICHT das Krabbeln, sondern ob Gemini und die
+#                    KI-Uebersichten den Inhalt verwenden duerfen
+#   Applebot-Extended  dasselbe fuer Apple
+#   Bingbot          Bing und Copilot
+#
+# DAS EINZIGE VERBOT ist /api/: der Anmeldedienst. Er liefert JSON hinter
+# einer Anmeldung, keine Seiten, und antwortet ohne laufenden Sidecar mit
+# 503. Ihn zu krabbeln findet nichts und kostet beide Seiten Abrufe.
+"""
+    gruppen = ["*", "Googlebot", "Google-Extended", "Bingbot", "GPTBot",
+               "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "PerplexityBot",
+               "CCBot", "Applebot", "Applebot-Extended"]
+    teile = [kopf]
+    for name in gruppen:
+        teile.append(f"\nUser-agent: {name}\nAllow: /\nDisallow: /api/\n")
+    teile.append(f"\nSitemap: {HAUS}/sitemap.xml\n")
+    return "".join(teile)
+
+
+# ── Die neuen Pruefungen ────────────────────────────────────────────
+#
+# Sie laufen bei JEDEM Bau, auch bei --pruefe, und sie brechen ihn ab. Der
+# Grund ist derselbe wie bei pruefe_treue(): Eine Sprachseite, die ihren
+# Katalog still verloren hat, faellt sonst niemandem auf — sie sieht im
+# Browser genauso aus wie vorher.
+
+def pruefe_seite(kuerzel, seite, katalog, texte):
+    """Traegt die erzeugte Seite, was sie tragen soll?"""
+    fehler = []
+    anzahl = len(katalog["sender"])
+
+    # 1 · Genau eine <h1>, und nicht mehr die alte Begruessung.
+    ueberschriften = re.findall(r"<h1\b[^>]*>(.*?)</h1>", seite, re.S)
+    if len(ueberschriften) != 1:
+        fehler.append(f"{len(ueberschriften)} <h1> statt genau einer")
+    elif ueberschriften[0].strip() in ALTE_H1:
+        fehler.append(f'<h1> sagt wieder "{ueberschriften[0].strip()}"')
+    elif ueberschriften[0].strip() != html.escape(texte["hero.name.start"], quote=False):
+        fehler.append(f'<h1> steht nicht auf hero.name.start: '
+                      f'"{ueberschriften[0].strip()}"')
+
+    # 2 · Die Textfassung ist da und zaehlt so viele Sender wie der Katalog.
+    block = re.search(r'<section class="katalogtext".*?</section>', seite, re.S)
+    if not block:
+        fehler.append("keine Textfassung des Katalogs im HTML")
+    else:
+        gezaehlt = block.group(0).count("<li>")
+        if gezaehlt != anzahl:
+            fehler.append(f"Textfassung listet {gezaehlt} Sender, "
+                          f"data/sender.json kennt {anzahl}")
+
+    # 3 · JSON-LD: gueltiges JSON, und die erwarteten Felder stehen darin.
+    bloecke = re.findall(r'<script type="application/ld\+json">(.*?)</script>',
+                         seite, re.S)
+    if len(bloecke) != 1:
+        fehler.append(f"{len(bloecke)} JSON-LD-Bloecke statt genau einem")
+    else:
+        try:
+            daten = json.loads(bloecke[0])
+        except ValueError as fehl:
+            fehler.append(f"JSON-LD ist kein gueltiges JSON: {fehl}")
+        else:
+            knoten = {k.get("@type"): k for k in daten.get("@graph", [])}
+            for art in ("Organization", "WebSite", "ItemList"):
+                if art not in knoten:
+                    fehler.append(f"JSON-LD ohne {art}")
+            if daten.get("@context") != "https://schema.org":
+                fehler.append("JSON-LD ohne @context auf schema.org")
+            netz = knoten.get("WebSite", {})
+            if netz.get("inLanguage") != kuerzel:
+                fehler.append(f'WebSite meldet inLanguage '
+                              f'"{netz.get("inLanguage")}" statt "{kuerzel}"')
+            if netz.get("url") != f"{HAUS}/{kuerzel}/":
+                fehler.append(f'WebSite zeigt auf {netz.get("url")}')
+            liste = knoten.get("ItemList", {})
+            eintraege = liste.get("itemListElement", [])
+            if liste.get("numberOfItems") != anzahl:
+                fehler.append(f"ItemList meldet {liste.get('numberOfItems')} "
+                              f"Eintraege, data/sender.json kennt {anzahl}")
+            if len(eintraege) != anzahl:
+                fehler.append(f"ItemList enthaelt {len(eintraege)} Eintraege, "
+                              f"data/sender.json kennt {anzahl}")
+            unvollstaendig = [e for e in eintraege
+                              if e.get("item", {}).get("@type") != "RadioStation"
+                              or not e.get("item", {}).get("name")
+                              or not e.get("item", {}).get("url")]
+            if unvollstaendig:
+                fehler.append(f"{len(unvollstaendig)} ItemList-Eintraege ohne "
+                              f"RadioStation, Namen oder Adresse")
+
+    for satz in fehler:
+        print(f"  ✘ /{kuerzel}/: {satz}")
+    return not fehler
+
+
+def pruefe_sitemap(quelle, alle_kuerzel):
+    """Wohlgeformtes XML, sieben Eintraege, jeder mit allen Alternativen."""
+    import xml.etree.ElementTree as ET
+    fehler = []
+    try:
+        wurzel = ET.fromstring(quelle)
+    except ET.ParseError as fehl:
+        print(f"  ✘ sitemap.xml ist kein wohlgeformtes XML: {fehl}")
+        return False
+
+    raum = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+    xhtml = "{http://www.w3.org/1999/xhtml}"
+    adressen = wurzel.findall(f"{raum}url")
+    if len(adressen) != len(alle_kuerzel):
+        fehler.append(f"{len(adressen)} Eintraege statt {len(alle_kuerzel)}")
+
+    gefunden = set()
+    for eintrag in adressen:
+        ort = eintrag.findtext(f"{raum}loc")
+        gefunden.add(ort)
+        # Alle sieben plus x-default, der Selbstverweis eingeschlossen.
+        alternativen = eintrag.findall(f"{xhtml}link")
+        sprachen = {a.get("hreflang") for a in alternativen}
+        erwartet = set(alle_kuerzel) | {"x-default"}
+        if sprachen != erwartet:
+            fehler.append(f"{ort}: Alternativen {sorted(sprachen)} "
+                          f"statt {sorted(erwartet)}")
+    fehlt = {f"{HAUS}/{k}/" for k in alle_kuerzel} - gefunden
+    if fehlt:
+        fehler.append(f"nicht aufgefuehrt: {', '.join(sorted(fehlt))}")
+
+    for satz in fehler:
+        print(f"  ✘ sitemap.xml: {satz}")
+    return not fehler
+
+
+def pruefe_robots(quelle):
+    """Die Sitemap ist angemeldet, und nichts ist versehentlich gesperrt."""
+    fehler = []
+    if f"Sitemap: {HAUS}/sitemap.xml" not in quelle:
+        fehler.append("die Sitemap ist nicht angemeldet")
+    # "Disallow: /" allein sperrt die ganze Seite. Ein Tippfehler an dieser
+    # Stelle macht alles andere in dieser Datei wertlos.
+    if re.search(r"^Disallow:\s*/\s*$", quelle, re.M):
+        fehler.append("ein Disallow sperrt die ganze Seite")
+    for name in ("GPTBot", "ClaudeBot", "PerplexityBot", "CCBot", "Google-Extended"):
+        if not re.search(rf"^User-agent:\s*{name}\s*$", quelle, re.M):
+            fehler.append(f"{name} ist nicht ausdruecklich erlaubt")
+    for satz in fehler:
+        print(f"  ✘ robots.txt: {satz}")
+    return not fehler
 
 
 def pruefe_treue(vorlage_quelle):
@@ -386,31 +815,84 @@ def main():
             print(f"  ! {kuerzel}: {len(wenn_zuviel)} unbekannte Schluessel: "
                   f"{', '.join(wenn_zuviel[:5])}")
 
+    senderkatalog = json.loads(
+        io.open(ROOT / "data" / "sender.json", encoding="utf-8").read())
+
+    # Erst alles bauen und pruefen, dann schreiben. Ein halber Stand auf der
+    # Platte waere schlimmer als gar keiner: Die Sprachordner werden vorher
+    # geraeumt, und ein Abbruch mitten im Lauf liesse einige leer zurueck.
+    seiten, manifeste, gemessen = {}, {}, []
+    gut = True
+    for kuerzel in SPRACHEN:
+        texte = {**grund, **kataloge[kuerzel]}
+        seite = erzeuge_seite(vorlage_quelle, kuerzel, texte, list(SPRACHEN),
+                              senderkatalog)
+        seiten[kuerzel] = seite
+        manifeste[kuerzel] = erzeuge_manifest(manifest_quelle, kuerzel, texte)
+        if not pruefe_seite(kuerzel, seite, senderkatalog, texte):
+            gut = False
+
+        # Wie viel kostet die Auffindbarkeit? Gemessen, nicht geschaetzt: Die
+        # Textfassung und das JSON-LD werden aus der fertigen Seite
+        # herausgerechnet, statt eine zweite Seite ohne sie zu bauen.
+        block = re.search(r'<section class="katalogtext".*?</section>\n?', seite, re.S)
+        daten = re.search(r'<script type="application/ld\+json">.*?</script>\n?',
+                          seite, re.S)
+        zusatz = (len(block.group(0)) if block else 0) + \
+                 (len(daten.group(0)) if daten else 0)
+        gemessen.append((kuerzel, len(seite.encode("utf-8")),
+                         len(seite) - zusatz, zusatz))
+
+    sitemap = erzeuge_sitemap(list(SPRACHEN), senderkatalog.get("_geprueft_am", ""))
+    robots = erzeuge_robots()
+    if not pruefe_sitemap(sitemap, list(SPRACHEN)):
+        gut = False
+    if not pruefe_robots(robots):
+        gut = False
+
+    if not gut:
+        print("\n  Nichts geschrieben — der alte Stand bleibt stehen.")
+        return 1
+    print(f"  ✔ {len(SPRACHEN)} Sprachseiten, sitemap.xml und robots.txt "
+          f"bestehen die Pruefungen")
+
     if nur_pruefen:
         print("  ✔ nur geprueft, nichts geschrieben")
         return 0
 
     for kuerzel in SPRACHEN:
-        texte = {**grund, **kataloge[kuerzel]}
         ordner = ROOT / kuerzel
         # Alten Stand raeumen, damit ein entfernter Schluessel keine Leiche
         # hinterlaesst.
         if ordner.exists():
             shutil.rmtree(ordner)
         ordner.mkdir()
-
-        seite = erzeuge_seite(vorlage_quelle, kuerzel, texte, list(SPRACHEN))
-        io.open(ordner / "index.html", "w", encoding="utf-8", newline="\n").write(seite)
-
-        manifest = erzeuge_manifest(manifest_quelle, kuerzel, texte)
+        io.open(ordner / "index.html", "w", encoding="utf-8",
+                newline="\n").write(seiten[kuerzel])
         io.open(ordner / "manifest.webmanifest", "w", encoding="utf-8",
-                newline="\n").write(manifest)
+                newline="\n").write(manifeste[kuerzel])
 
-        rest = len(re.findall(r'data-(?:text|html|aria|titel|platzhalter|inhalt)="', seite))
-        print(f"  ✔ /{kuerzel}/  {len(seite):>6} Zeichen, {rest} Auszeichnungen "
-              f"fuer den zweiten Durchlauf, dir={SPRACHEN[kuerzel][1]}")
+    # robots.txt und sitemap.xml liegen in der Wurzel, nicht im Sprachordner:
+    # Es sind Dateien, keine Sprachfassungen. Sie stehen aus demselben Grund
+    # in .gitignore wie /de/ und /recht/ — sie sind erzeugt, nicht
+    # geschrieben, und im Repository waeren sie eine zweite Wahrheit.
+    io.open(ROOT / "sitemap.xml", "w", encoding="utf-8", newline="\n").write(sitemap)
+    io.open(ROOT / "robots.txt", "w", encoding="utf-8", newline="\n").write(robots)
 
-    print(f"\n  {len(SPRACHEN)} Sprachseiten und {len(SPRACHEN)} Manifeste erzeugt.")
+    for kuerzel, bytes_, ohne, zusatz in gemessen:
+        seite = seiten[kuerzel]
+        rest = len(re.findall(
+            r'data-(?:text|html|aria|titel|platzhalter|inhalt)="', seite))
+        print(f"  ✔ /{kuerzel}/  {len(seite):>6} Zeichen "
+              f"({bytes_:>6} Bytes), davon {zusatz:>5} fuer Katalogtext und "
+              f"JSON-LD — vorher {ohne}, also +{zusatz * 100 // ohne} %; "
+              f"{rest} Auszeichnungen fuer den zweiten Durchlauf, "
+              f"dir={SPRACHEN[kuerzel][1]}")
+
+    print(f"  ✔ /sitemap.xml  {len(sitemap):>6} Zeichen, {len(SPRACHEN)} Eintraege")
+    print(f"  ✔ /robots.txt   {len(robots):>6} Zeichen")
+    print(f"\n  {len(SPRACHEN)} Sprachseiten und {len(SPRACHEN)} Manifeste erzeugt, "
+          f"dazu sitemap.xml und robots.txt.")
     return 0
 
 

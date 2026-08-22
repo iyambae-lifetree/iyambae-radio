@@ -88,6 +88,8 @@
   "regalwand.titel": "Die Regale",
   "regalwand.zahl": "{faecher} Fächer · {sender} Sender",
   "regalwand.sender": "{anzahl} Sender",
+  "katalog.titel": "Alle {sender} Sender als Liste",
+  "katalog.hinweis": "Dieselben Sender wie oben, nur als Text — nach Regalen geordnet, mit Ort, Betreiber und Tonqualität. Auch ohne JavaScript lesbar.",
   "filter.bereich": "Sender filtern",
   "filter.zuruecksetzen": "Filter zurücksetzen",
   "karte.spielen": "Abspielen",

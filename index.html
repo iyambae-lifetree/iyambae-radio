@@ -377,6 +377,48 @@
     </section>
 </main>
 
+<!-- Hier setzt Scripts/baue-sprachen.py die Textfassung des Katalogs ein.
+
+     WARUM SIE ÜBERHAUPT INS HTML MUSS
+
+     Die 146 Sender holt assets/app.js zur Laufzeit aus data/sender.json.
+     Google führt dafür JavaScript aus und sieht sie. GPTBot, ClaudeBot,
+     PerplexityBot und Bing überwiegend nicht — für die war diese Seite eine
+     Überschrift und achtzehn leere Skelettkarten. Wer heute eine KI nach
+     „Radio in 432 Hz" fragt, bekam uns nicht genannt, weil nichts zu lesen
+     da war.
+
+     WARUM NICHT DAS GANZE RASTER VORGERENDERT
+
+     Es müsste zeichengenau dem entsprechen, was app.js danach zeichnet —
+     sonst springt der Inhalt sichtbar, sobald der zweite Durchlauf kommt.
+     Zwei Erzeuger für dasselbe Markup sind eine Wahrheit zu viel. Die
+     Textfassung dagegen ist erkennbar etwas anderes und muss mit nichts
+     übereinstimmen.
+
+     WARUM NICHT <noscript>
+
+     Zwei Gründe, und der erste ist technisch: In einem Browser MIT
+     JavaScript ist der Inhalt eines <noscript> ein einziger TEXT-Knoten —
+     das Markup darin wird nicht zu Elementen. Jeder Ausleser, der über
+     einen echten DOM geht (der Renderer von Google, der von Bing), findet
+     dort also keine Liste, sondern eine Zeichenkette voller spitzer
+     Klammern. Der zweite: Die gängigen Textausleser der KI-Abholer
+     (Readability, trafilatura) werfen noscript zusammen mit script und
+     style weg, bevor überhaupt jemand hinsieht. Ausgerechnet die
+     Antwortmaschinen, für die der Block gedacht ist, läsen ihn nicht.
+
+     WAS STATTDESSEN
+
+     Ein gewöhnlicher Abschnitt im Fluss des Dokuments, eingeklappt in ein
+     <details>. Das ist echtes Markup im DOM — jeder Crawler liest es, ohne
+     Programmcode und ohne Renderer. Für einen sehenden Besucher ist es eine
+     leise Zeile über dem Fuß, die er aufklappen kann. Kein display:none,
+     kein Text hinter Bildern, nichts, was ein Mensch nicht auch bekommt:
+     Was verborgen ausgeliefert wird und nur für Maschinen da ist, heißt
+     Cloaking und wird zu Recht bestraft. -->
+<!--KATALOGTEXT-->
+
 <footer class="fuss">
     <p class="fuss__hinweis" data-html="fuss.hinweis">
         Diese Seite <em>rät</em>. Sie nimmt an, jeder Sender sei auf 440 Hz gestimmt, und
@@ -509,5 +551,25 @@
   statt verschluckt, und dort steht die Nachfrage nach neuen Fassungen.
 -->
 <script type="module" src="/assets/app.js"></script>
+
+<!-- Hier setzt Scripts/baue-sprachen.py die strukturierten Daten ein:
+     Organization, WebSite und eine ItemList mit allen Sendern als
+     RadioStation.
+
+     WARUM AM ENDE DES RUMPFES UND NICHT IM KOPF
+
+     Der Block ist der größte Einzelposten der Seite. Im <head> läge er vor
+     jedem sichtbaren Element und hielte den Parser auf, bevor der Besucher
+     irgendetwas sieht. Suchmaschinen lesen JSON-LD an jeder Stelle des
+     Dokuments — der Kopf ist Gewohnheit, keine Vorschrift.
+
+     WARUM KEINE SearchAction
+
+     Die naheliegende Ergänzung am WebSite wäre eine SearchAction. Sie
+     verlangt eine Adresse, unter der eine Suchanfrage abgeschickt werden
+     kann. Die Suche dieser Seite läuft vollständig im Browser; es gibt
+     keinen Parameter, der sie über die Adresszeile auslöst. Eine
+     SearchAction anzugeben hieße, eine Adresse zu versprechen, die nicht
+     antwortet. -->
 </body>
 </html>

@@ -88,6 +88,8 @@
   "regalwand.titel": "The shelves",
   "regalwand.zahl": "{faecher} shelves · {sender} stations",
   "regalwand.sender": "{anzahl} stations",
+  "katalog.titel": "All {sender} stations as a list",
+  "katalog.hinweis": "The same stations as above, as plain text — ordered by shelf, with location, operator and audio quality. Readable without JavaScript.",
   "filter.bereich": "Filter stations",
   "filter.zuruecksetzen": "Clear filters",
   "karte.spielen": "Play",

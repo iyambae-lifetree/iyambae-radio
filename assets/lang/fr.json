@@ -88,6 +88,8 @@
   "regalwand.titel": "Les bacs",
   "regalwand.zahl": "{faecher} bacs · {sender} stations",
   "regalwand.sender": "{anzahl} stations",
+  "katalog.titel": "Les {sender} stations, en liste",
+  "katalog.hinweis": "Les mêmes stations que plus haut, en texte simple — classées par bac, avec le lieu, l'exploitant et la qualité audio. Lisible sans JavaScript.",
   "filter.bereich": "Filtrer les stations",
   "filter.zuruecksetzen": "Effacer les filtres",
   "karte.spielen": "Lire",

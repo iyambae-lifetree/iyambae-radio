@@ -88,6 +88,8 @@
   "regalwand.titel": "Gli scaffali",
   "regalwand.zahl": "{faecher} scomparti · {sender} stazioni",
   "regalwand.sender": "{anzahl} stazioni",
+  "katalog.titel": "Tutte le {sender} stazioni in elenco",
+  "katalog.hinweis": "Le stesse stazioni di sopra, in puro testo — ordinate per scaffale, con luogo, gestore e qualità audio. Leggibile anche senza JavaScript.",
   "filter.bereich": "Filtra le stazioni",
   "filter.zuruecksetzen": "Azzera i filtri",
   "karte.spielen": "Riproduci",
