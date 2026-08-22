@@ -976,6 +976,95 @@ code {
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* ── Die Umfrage ─────────────────────────────────────────────────
+   Vier Fragen, eine nach der anderen. Geführt und nicht als Formular,
+   weil ein Bogen mit vier Blöcken aussieht wie Arbeit und eine einzelne
+   Frage aussieht wie eine Frage.
+
+   OHNE ANMELDUNG, OHNE ADRESSE. Wer nichts erhebt, was einer Person
+   zuzuordnen ist, braucht keine Einwilligung und keinen Text darüber.
+   Das ist zugleich der ehrlichere Handel: Wir wollen wissen, was gebaut
+   werden soll, nicht, wer es gesagt hat. */
+.umfrage__karte {
+  margin-top: 2rem;
+  border: 1px solid var(--gravur-hell);
+  border-radius: .5rem;
+  background: linear-gradient(180deg, var(--blech-hoch), var(--blech));
+  padding: clamp(1.3rem, 4vw, 2rem);
+}
+.umfrage__balken { display: flex; gap: .35rem; margin-bottom: 1.4rem; }
+.umfrage__balken span {
+  height: 3px; flex: 1; border-radius: 2px;
+  background: var(--gravur-hell);
+  transition: background-color .3s ease;
+}
+.umfrage__balken span.ist-durch { background: var(--messing); }
+.umfrage__schritt { display: none; }
+.umfrage__schritt.ist-dran { display: block; animation: umfrageAuf .28s ease-out; }
+@keyframes umfrageAuf { from { opacity: 0; transform: translateY(.4rem); } }
+@media (prefers-reduced-motion: reduce) { .umfrage__schritt.ist-dran { animation: none; } }
+
+.umfrage__frage {
+  font-family: var(--anzeige); font-size: clamp(1.3rem, 3vw, 1.7rem);
+  line-height: 1.15; margin: 0 0 .4rem; color: var(--text);
+}
+.umfrage__zusatz { font-size: .85rem; color: var(--leiser); margin: 0 0 1.2rem; }
+
+.umfrage__wahl { display: grid; gap: .5rem; }
+.umfrage__knopf {
+  display: block; width: 100%; text-align: start;
+  padding: .8rem 1rem;
+  background: transparent;
+  border: 1px solid var(--gravur-hell);
+  border-radius: .4rem;
+  color: var(--text);
+  font-family: var(--grotesk); font-size: .95rem; line-height: 1.4;
+  cursor: pointer;
+  transition: border-color .16s ease, background-color .16s ease, transform .16s ease;
+}
+.umfrage__knopf:hover { border-color: var(--messing); transform: translateX(2px); }
+.umfrage__knopf.ist-gewaehlt { border-color: var(--messing); background: rgba(184,134,43,.12); }
+.umfrage__knopf small { display: block; color: var(--leiser); font-size: .78rem; margin-top: .15rem; }
+.umfrage__knopf b { color: var(--messing-hell); font-weight: 500; }
+
+.umfrage__feld {
+  width: 100%; min-height: 6rem;
+  padding: .8rem 1rem;
+  background: var(--nacht);
+  border: 1px solid var(--gravur-hell);
+  border-radius: .4rem;
+  color: var(--text);
+  font-family: var(--grotesk); font-size: .95rem; line-height: 1.5;
+  resize: vertical;
+}
+.umfrage__feld:focus { outline: 2px solid var(--messing); outline-offset: 1px; }
+
+.umfrage__leiste { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-top: 1.2rem; }
+.umfrage__weiter {
+  padding: .7rem 1.4rem; border: 0; border-radius: .4rem;
+  background: var(--messing); color: #14100A;
+  font-family: var(--grotesk); font-size: .95rem; font-weight: 600; cursor: pointer;
+}
+.umfrage__weiter:hover { background: var(--messing-hell); }
+.umfrage__zurueck {
+  padding: .7rem 1rem; border: 0; background: transparent;
+  color: var(--leise); font-family: var(--daten); font-size: .78rem; cursor: pointer;
+}
+.umfrage__zurueck:hover { color: var(--text); }
+.umfrage__ueberspringen { margin-inline-start: auto; }
+
+.umfrage__danke { text-align: center; padding: 1rem 0; }
+.umfrage__danke .umfrage__frage { margin-bottom: .6rem; }
+.umfrage__fehler { color: #E08B6A; font-size: .85rem; margin-top: .8rem; }
+
+/* Nur fuer Vorleseprogramme: Die Frage steht als Ueberschrift darueber,
+   das Feld braucht trotzdem eine eigene Beschriftung. */
+.nur-vorlesen {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; border: 0;
+}
 </style>
 </head>
 <body>
@@ -1742,6 +1831,97 @@ code {
   </div>
 </section>
 
+
+<!-- ══ Umfrage · was als Nächstes gebaut wird ═══════════════════
+
+     WARUM SIE HIER STEHT: Nach den Fragen, vor den fremden Quellen —
+     also an der Stelle, an der jemand angekommen ist, der sich wirklich
+     dafür interessiert. Wer nur laden wollte, ist längst oben abgebogen.
+
+     WARUM OHNE ADRESSE: Es wird nichts erhoben, was einer Person
+     zuzuordnen wäre. Damit braucht es keine Einwilligung, keinen
+     Hinweistext und kein Konto — und wir bekommen ehrlichere Antworten,
+     weil niemand befürchten muss, dafür Post zu bekommen.
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="rahmen teil teil--linie" id="umfrage">
+  <div class="eng">
+    <p class="eyebrow">Vier Fragen</p>
+    <h2>Was sollen wir als Nächstes bauen?</h2>
+    <p>
+      Wir raten ungern. Vier Fragen, keine Anmeldung, keine Adresse —
+      <strong>nichts davon lässt sich dir zuordnen</strong>. Eine Minute.
+    </p>
+
+    <div class="umfrage__karte" id="umfrageKarte">
+      <div class="umfrage__balken" aria-hidden="true">
+        <span class="ist-durch"></span><span></span><span></span><span></span>
+      </div>
+
+      <!-- 1 -->
+      <div class="umfrage__schritt ist-dran" data-schritt="1">
+        <p class="umfrage__frage">Wie hörst du heute in 432 Hz?</p>
+        <p class="umfrage__zusatz">Falls überhaupt — „gar nicht“ ist eine gültige Antwort.</p>
+        <div class="umfrage__wahl" data-feld="heute">
+          <button class="umfrage__knopf" type="button" data-wert="gar-nicht">Gar nicht, ich bin gerade erst darauf gestoßen</button>
+          <button class="umfrage__knopf" type="button" data-wert="handy">Mit einer App auf dem Handy</button>
+          <button class="umfrage__knopf" type="button" data-wert="dateien">Ich habe meine Musik umgewandelt<small>Dateien einmal durchgerechnet und die neuen behalten</small></button>
+          <button class="umfrage__knopf" type="button" data-wert="browser">Mit einer Erweiterung im Browser</button>
+          <button class="umfrage__knopf" type="button" data-wert="bastelei">Selbst gebaut — Treiber, Filterkette, Audio-Units</button>
+          <button class="umfrage__knopf" type="button" data-wert="youtube">Ich höre fertige 432-Hz-Aufnahmen, etwa auf YouTube</button>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="umfrage__schritt" data-schritt="2">
+        <p class="umfrage__frage">Was fehlt dir am meisten?</p>
+        <p class="umfrage__zusatz">Das, woran du am häufigsten hängenbleibst.</p>
+        <div class="umfrage__wahl" data-feld="fehlt">
+          <button class="umfrage__knopf" type="button" data-wert="handy-systemton">Auf dem Handy geht es gar nicht<small>Spotify und YouTube lassen sich dort nicht umstimmen</small></button>
+          <button class="umfrage__knopf" type="button" data-wert="sammlung">Meine ganze Sammlung dauerhaft umstimmen<small>Einmal durchlaufen lassen, danach ist alles umgestimmt</small></button>
+          <button class="umfrage__knopf" type="button" data-wert="andere-stimmungen">Andere Stimmungen als 432<small>528 Hz, Solfeggio, historische Kammertöne</small></button>
+          <button class="umfrage__knopf" type="button" data-wert="radio">Mehr Radio — mehr Sender, besser sortiert</button>
+          <button class="umfrage__knopf" type="button" data-wert="qualitaet">Bessere Klangqualität beim Umstimmen</button>
+          <button class="umfrage__knopf" type="button" data-wert="einfacher">Dass es endlich einfach ist<small>Kein Treiber, kein Admin-Passwort, kein Einrichten</small></button>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="umfrage__schritt" data-schritt="3">
+        <p class="umfrage__frage">Was wäre dir ein Werkzeug wert, das deinen ganzen Rechner umstimmt?</p>
+        <p class="umfrage__zusatz">Einmalig, dauerhafte Lizenz, kein Abo. Es gibt auch ein kostenloses Konkurrenzprodukt — das darfst du einrechnen.</p>
+        <div class="umfrage__wahl" data-feld="preis">
+          <button class="umfrage__knopf" type="button" data-wert="0">Nichts — ich nehme das kostenlose, auch mit Treiberinstallation</button>
+          <button class="umfrage__knopf" type="button" data-wert="19">Bis <b>19 €</b>, wenn es ohne Treiber läuft</button>
+          <button class="umfrage__knopf" type="button" data-wert="39"><b>39 €</b> für treiberlos und genau</button>
+          <button class="umfrage__knopf" type="button" data-wert="69"><b>69 €</b>, wenn es zusätzlich die Stimmung der Aufnahme misst<small>Damit landet man wirklich auf 432 und nicht auf 435</small></button>
+          <button class="umfrage__knopf" type="button" data-wert="99"><b>99 €</b> — für ein Werkzeug, das ich täglich benutze, ist das in Ordnung</button>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="umfrage__schritt" data-schritt="4">
+        <p class="umfrage__frage">Was würdest du bauen, wenn du könntest?</p>
+        <p class="umfrage__zusatz">Freiwillig. Der Satz, der uns am meisten hilft, steht meistens hier.</p>
+        <label class="nur-vorlesen" for="umfrageText">Dein Vorschlag</label>
+        <textarea class="umfrage__feld" id="umfrageText" maxlength="600"
+                  placeholder="Ein Satz genügt …"></textarea>
+      </div>
+
+      <!-- Danke -->
+      <div class="umfrage__schritt umfrage__danke" data-schritt="5">
+        <p class="umfrage__frage">Danke.</p>
+        <p class="umfrage__zusatz" id="umfrageSchluss">Das fließt in die Entscheidung ein, was als Nächstes gebaut wird.</p>
+      </div>
+
+      <div class="umfrage__leiste" id="umfrageLeiste">
+        <button class="umfrage__zurueck" type="button" id="umfrageZurueck" hidden>← zurück</button>
+        <button class="umfrage__weiter" type="button" id="umfrageWeiter" hidden>Weiter</button>
+        <button class="umfrage__zurueck umfrage__ueberspringen" type="button" id="umfrageUeberspringen">überspringen</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ══ 6 · Fremde Quellen, ohne Bewertung ═══════════════════════
 
      WARUM DIE ÜBERSCHRIFT SO HEISST UND NICHT ANDERS: Wer fremde
@@ -1993,5 +2173,99 @@ code {
   });
 })();
 </script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   Die Umfrage.
+
+   Vier Schritte, eine Frage je Schritt. Wer auf eine Antwort tippt,
+   rueckt weiter — ohne „Weiter" zu druecken. Das spart bei drei von vier
+   Fragen einen Klick, und die Umfrage fuehlt sich dadurch kuerzer an,
+   als sie ist.
+
+   ABGESCHICKT WIRD ERST AM ENDE, IN EINEM STUECK. Zwischenstaende zu
+   senden waere bequemer auszuwerten, wuerde aber Leute erfassen, die
+   abgebrochen haben — und wer abbricht, hat nicht zugestimmt.
+
+   WAS PASSIERT, WENN DER ENDPUNKT FEHLT: Dann steht da, dass es nicht
+   angekommen ist. Ein „Danke" zu zeigen und die Antwort wegzuwerfen,
+   waere eine Luege an der Stelle, an der jemand gerade geholfen hat.
+   ═══════════════════════════════════════════════════════════════════ */
+(() => {
+  const karte = document.getElementById('umfrageKarte');
+  if (!karte) return;
+
+  const ZIEL = '/api/umfrage';
+  const schritte = [...karte.querySelectorAll('.umfrage__schritt')];
+  const balken   = [...karte.querySelectorAll('.umfrage__balken span')];
+  const weiter   = document.getElementById('umfrageWeiter');
+  const zurueck  = document.getElementById('umfrageZurueck');
+  const springen = document.getElementById('umfrageUeberspringen');
+  const leiste   = document.getElementById('umfrageLeiste');
+  const antworten = {};
+  let dran = 0;
+
+  const zeige = (i) => {
+    dran = Math.max(0, Math.min(schritte.length - 1, i));
+    schritte.forEach((s, k) => s.classList.toggle('ist-dran', k === dran));
+    balken.forEach((b, k) => b.classList.toggle('ist-durch', k <= dran));
+    const letzter = dran === schritte.length - 1;
+    leiste.hidden = letzter;
+    zurueck.hidden = dran === 0 || letzter;
+    // „Weiter" braucht nur der Freitext — die Auswahlfragen ruecken selbst vor.
+    weiter.hidden = !(dran === 3);
+    springen.hidden = letzter;
+  };
+
+  karte.addEventListener('click', (e) => {
+    const knopf = e.target.closest('.umfrage__knopf');
+    if (!knopf) return;
+    const feld = knopf.closest('.umfrage__wahl').dataset.feld;
+    antworten[feld] = knopf.dataset.wert;
+    knopf.closest('.umfrage__wahl').querySelectorAll('.umfrage__knopf')
+      .forEach((k) => k.classList.toggle('ist-gewaehlt', k === knopf));
+    // Kurz stehenlassen, damit man die eigene Wahl noch sieht
+    setTimeout(() => zeige(dran + 1), 220);
+  });
+
+  weiter.addEventListener('click', () => {
+    const text = document.getElementById('umfrageText').value.trim();
+    if (text) antworten.vorschlag = text.slice(0, 600);
+    schicke();
+  });
+
+  springen.addEventListener('click', () => {
+    if (dran === 3) return schicke();
+    zeige(dran + 1);
+  });
+
+  zurueck.addEventListener('click', () => zeige(dran - 1));
+
+  async function schicke() {
+    zeige(schritte.length - 1);
+    const schluss = document.getElementById('umfrageSchluss');
+    // Nichts, was einer Person zuzuordnen waere. Die Sprache hilft beim
+    // Auswerten und verraet niemanden.
+    const paket = { ...antworten, sprache: document.documentElement.lang || 'de' };
+    if (!Object.keys(antworten).length) {
+      schluss.textContent = 'Kein Problem — auch das ist eine Antwort.';
+      return;
+    }
+    try {
+      const antwort = await fetch(ZIEL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(paket),
+      });
+      if (!antwort.ok) throw new Error(String(antwort.status));
+    } catch {
+      schluss.innerHTML = 'Angekommen ist es leider nicht — der Dienst antwortet gerade nicht. '
+        + 'Wenn du magst, schreib es uns über die <a href="https://iyambae.fm/recht/impressum/">Kontaktdaten im Impressum</a>.';
+    }
+  }
+
+  zeige(0);
+})();
+</script>
+
 </body>
 </html>
