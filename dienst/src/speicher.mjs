@@ -41,6 +41,22 @@ export const TABELLE_KONTEN = 'konten';
 export const TABELLE_VERWEISE = 'verweise';
 
 /*
+  Die dritte Tabelle, und sie steht mit Absicht NEBEN den beiden anderen.
+
+  In `konten` und `verweise` haengt jede Zeile an einer Person — ueber die
+  kontoId oder ueber den Abdruck einer Kennung. In `umfrage` haengt keine
+  Zeile an irgendetwas: kein Konto, keine Kennung, kein Netz, kein Abdruck.
+
+  Deshalb darf sie dort nicht hinein. Zwei Arten von Zeilen in einer Tabelle
+  bekommen frueher oder spaeter ein gemeinsames Feld, ueber das sie sich
+  verbinden lassen — genau so ist der Fehler entstanden, den wir bei der
+  Reichweitenmessung wieder herausgenommen haben (siehe
+  `assets/lib/messung.mjs`). Eine eigene Tabelle kann dieses Feld gar nicht
+  erst bekommen.
+*/
+export const TABELLE_UMFRAGE = 'umfrage';
+
+/*
   Fehler, bei denen ein zweiter Versuch Sinn ergibt: Table Storage drosselt
   (503 ServerBusy), die Verbindung bricht weg, oder die Anfrage laeuft in
   ihre Zeitgrenze. Alles andere — 401, 403, 404, ein kaputter Schluessel —
