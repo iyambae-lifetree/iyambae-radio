@@ -147,7 +147,7 @@ a { color: var(--pink-hell); }
 }
 .schalter.ist-an .schalter__punkt { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
 
-/* Hinweis auf die App — die Voreinstellung für alle, die MyRetuner nicht
+/* Hinweis auf die App — die Voreinstellung für alle, die den IYAMBAE Tuner nicht
    haben, und das sind die allermeisten Besucher. Deshalb sichtbar, aber
    nicht laut: dieselbe Pillenform wie die Schalter daneben, nur mit einem
    Anflug Gold. Wer die App hat, sieht sie nach dem ersten Mal nie wieder. */

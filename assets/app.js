@@ -8,7 +8,8 @@
 
 import { waehleUeberraschung } from './lib/gewichtung.mjs';
 import { findeVerwandten } from './lib/verwandt.mjs';
-import { frageMyRetuner, wartAufEinwilligung, anzeigeStimmung, anzeigeQuelle, ZUSTAND }
+import { frageMyRetuner, wartAufEinwilligung, frageBerechtigung,
+         anzeigeStimmung, anzeigeQuelle, ZUSTAND, AUSGANG }
   from './lib/myretuner.mjs';
 import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
 import { senderbild, labelbild, hatEigenesLogo, regalton, REGALTON, MARKE, LABEL_MARKE, huellenzeilen,
@@ -162,7 +163,7 @@ class AudioEngine {
     this._frequenzDaten = null;
     this.analyseEcht = false;
 
-    // MyRetuners Signalkern als WebAssembly. Steht erst zur Verfügung, wenn
+    // Der Signalkern des IYAMBAE Tuners als WebAssembly. Steht erst zur Verfügung, wenn
     // der Graph aufgebaut ist und das Modul geladen wurde — bis dahin und
     // bei jedem Fehlschlag bleibt es beim Weg über playbackRate.
     this._retuner = null;
@@ -211,11 +212,11 @@ class AudioEngine {
   }
 
   /*
-   MyRetuners Signalkern als WebAssembly in den Graphen hängen.
+   Den Signalkern des IYAMBAE Tuners als WebAssembly in den Graphen hängen.
 
    Der Unterschied zum bisherigen Weg ist nicht kosmetisch: `playbackRate`
    ändert Tonhöhe *und* Tempo — ein Stück läuft dabei 1,8 % langsamer. Der
-   Signalkern ändert nur die Tonhöhe, so wie MyRetuner auf dem Rechner.
+   Signalkern ändert nur die Tonhöhe, so wie der IYAMBAE Tuner auf dem Rechner.
 
    Gilt nur für Sender mit CORS-Freigabe: Ohne sie kommt der Strom gar nicht
    erst in den Graphen (siehe Kommentar im Konstruktor), und es bleibt beim
@@ -307,8 +308,8 @@ class AudioEngine {
     /*
      Zwei Wege, je nachdem welches Element gerade spielt:
 
-     Sender MIT CORS laufen durch den Graphen — dort macht MyRetuners
-     Signalkern die Arbeit, exakt und ohne Tempoänderung. `playbackRate`
+     Sender MIT CORS laufen durch den Graphen — dort macht der Signalkern
+     des IYAMBAE Tuners die Arbeit, exakt und ohne Tempoänderung. `playbackRate`
      bleibt auf 1.
 
      Sender OHNE CORS erreichen den Graphen nicht (siehe Konstruktor). Für sie
@@ -1654,14 +1655,14 @@ class App {
     this._suchteSchon = !leer;
   }
 
-  // ── MyRetuner ────────────────────────────────────────────────────
+  // ── IYAMBAE Tuner ────────────────────────────────────────────────
   // Stufe 1: von Hand geschaltet. In Runde 3 ruft die Erkennung dieselbe
   // Funktion mit quelle='erkannt' auf — die Oberfläche bleibt identisch.
   setzeMyRetuner(istAn, quelle = 'nutzer') {
     this.myRetunerAktiv = !!istAn;
     if (quelle === 'nutzer') speicher.schreib(SCHLUESSEL.myretuner, this.myRetunerAktiv);
 
-    // Läuft MyRetuner systemweit und die Seite verstimmt zusätzlich,
+    // Läuft der IYAMBAE Tuner systemweit und die Seite verstimmt zusätzlich,
     // landet man bei rund 424 Hz — doppelt heruntergezogen.
     if (this.myRetunerAktiv) this.engine.setze432(false);
 
@@ -1675,14 +1676,14 @@ class App {
     }
     /*
      Frueher stand hier die Beschriftung des zweiten Knopfes. Der ist kein
-     Umschalter mehr, sondern heisst „Ich habe MyRetuner" und ist nur im
-     Zustand `unbekannt` ueberhaupt sichtbar — siehe `_zeigeZugang`. Wuerde
-     hier weiterhin geschrieben, ueberschriebe der Aufruf beim Start die
-     neue Beschriftung mit „MyRetuner aus".
+     Umschalter mehr, sondern heisst „Ich habe den IYAMBAE Tuner" und ist
+     ueberall ausser im Zustand `erlaubt` sichtbar — siehe `_zeigeZugang`.
+     Wuerde hier weiterhin geschrieben, ueberschriebe der Aufruf beim Start
+     die neue Beschriftung mit „Tuner aus".
     */
   }
 
-  // ── MyRetuner Stufe 2: Erkennung ─────────────────────────────────
+  // ── IYAMBAE Tuner, Stufe 2: Erkennung ────────────────────────────
   // Einmal beim Laden, danach alle fuenf Sekunden waehrend Musik laeuft.
   // Schlaegt die Abfrage fehl, faellt alles still auf den Handschalter
   // zurueck — der Besucher merkt nichts.
@@ -1703,8 +1704,36 @@ class App {
       const daten = await frageMyRetuner();
       this._zeigeMyRetuner(daten);
     };
-    abfragen();
-    setInterval(() => { if (this.engine.laeuft || this.myRetunerErkannt) abfragen(); }, 5000);
+
+    /*
+     Auch hier wird NICHT blind losgefragt.
+
+     Chrome zeigt seinen Berechtigungsdialog ohne Nutzergeste — eine Abfrage
+     beim Laden kann also unvermittelt einen Dialog aufziehen, den der
+     Besucher nicht erwartet. Und drei weggeklickte Dialoge sperren die
+     Herkunft dauerhaft. Eine solche Abfrage waere genau das, was das
+     Einwilligungsmodell ausschliesst.
+
+     Nur `granted` ist eine Erlaubnis. `denied` sowieso nicht — und `prompt`
+     auch nicht: Es bedeutet „es wuerde gefragt", also gerade den Fall, den
+     wir vermeiden. Bleibt `unbekannt` (Firefox, Safari, alles ohne diesen
+     Berechtigungsnamen): Dort gibt es keinen bekannten Browserdialog, und
+     die Einwilligung fuer diese Herkunft liegt ja bereits vor.
+    */
+    (async () => {
+      const stand = await frageBerechtigung();
+      if (stand === 'denied' || stand === 'prompt') return;
+
+      abfragen();
+
+      // Nur EIN Takt. Nach einer erfolgreichen Einwilligung ruft
+      // frageMyRetunerAn() diese Funktion noch einmal auf; ohne die Sperre
+      // liefe danach ein zweiter Zeitgeber mit, und der Tuner bekaeme
+      // dauerhaft die doppelte Zahl an Anfragen.
+      if (this._mrTakt) return;
+      this._mrTakt = setInterval(
+        () => { if (this.engine.laeuft || this.myRetunerErkannt) abfragen(); }, 5000);
+    })();
   }
 
   /*
@@ -1715,16 +1744,43 @@ class App {
   async frageMyRetunerAn() {
     const knopf = document.getElementById('knopfMyRetuner');
     const feld  = document.getElementById('myRetunerMessung');
-    if (knopf) knopf.disabled = true;
-    if (feld) {
-      feld.textContent = t('myretuner.warte');
-      feld.hidden = false;
-    }
 
-    const daten = await wartAufEinwilligung();
+    /*
+     Sperre gegen schnelles Wiederklicken.
+
+     Chrome sperrt eine Herkunft VON SELBST UND DAUERHAFT, wenn sein Dialog
+     dreimal weggeklickt wird. Wer den Knopf dreimal drueckt, ohne im Dialog
+     zu antworten, haette sich die Bruecke also verbaut, ohne es zu merken —
+     und ohne dass wir es rueckgaengig machen koennten.
+
+     Die Sperre lebt im Arbeitsspeicher und NICHT im oertlichen Speicher:
+     Etwas auf dem Endgeraet abzulegen loest § 25 TDDDG aus, und dafuer ist
+     eine Klicksperre es nicht wert. Sie ueberlebt kein Neuladen — das ist in
+     Ordnung, denn Neuladen ist keine Klickfolge.
+    */
+    if (Date.now() < (this._mrSperreBis ?? 0)) return;
+
+    const zeige = (schluessel) => {
+      if (feld) { feld.textContent = t(schluessel); feld.hidden = false; }
+    };
+
+    if (knopf) knopf.disabled = true;
+    zeige('myretuner.warteBrowser');
+
+    /*
+     Das Warten darf lange dauern und darf dabei NICHT nach Fehler aussehen.
+     Der Besucher schaut in diesem Moment auf Chromes Dialog, nicht auf
+     unsere Seite — deshalb sagt der Text, wo seine Antwort hingehoert, und
+     wechselt mit, sobald der Browser durch ist und nur noch die App fragt.
+    */
+    const { ausgang, daten } = await wartAufEinwilligung(
+      undefined, undefined,
+      (phase) => zeige(phase === 'browser' ? 'myretuner.warteBrowser'
+                                           : 'myretuner.warte'));
+
     if (knopf) knopf.disabled = false;
 
-    if (daten) {
+    if (ausgang === AUSGANG.da) {
       speicher.schreib(SCHLUESSEL.mrZustand, ZUSTAND.erlaubt);
       this._zeigeZugang(ZUSTAND.erlaubt);
       this._zeigeMyRetuner(daten);
@@ -1732,10 +1788,26 @@ class App {
       return;
     }
 
-    // Abgelehnt, weggeklickt, nicht installiert, Berechtigung verweigert —
-    // alles dasselbe. Kein Fehler des Nutzers, also auch keine Fehlermeldung.
+    this._mrSperreBis = Date.now() + 30000;
+
+    /*
+     Zwei Ausgaenge, zwei Saetze — und der Unterschied ist wichtig.
+
+     `browserSperrt` heisst: Die Berechtigung steht auf `denied`. Das ist der
+     EINZIGE Stand, auf den man sich verlassen kann (`granted` und `prompt`
+     sagen nichts darueber, ob eine Anfrage durchkaeme). Hier ist ein
+     Handgriff moeglich, also wird er genannt.
+
+     `keinTuner` ist der NORMALFALL, nicht der Fehlerfall: Die allermeisten
+     Besucher haben die App schlicht nicht. Ein Satz, kein Vorwurf, keine
+     Anleitung. Die Seite stimmt weiter selbst um, ratend, wie immer.
+
+     Das ersetzt ausserdem eine stille Sackgasse: Frueher wurde hier
+     `abgelehnt` geschrieben und der Knopf danach fuer immer verborgen.
+    */
     speicher.schreib(SCHLUESSEL.mrZustand, ZUSTAND.abgelehnt);
-    if (feld) feld.hidden = true;
+    zeige(ausgang === AUSGANG.browserSperrt ? 'myretuner.browserSperrt'
+                                            : 'myretuner.nichtErreicht');
     this._zeigeZugang(ZUSTAND.abgelehnt);
   }
 
@@ -1744,12 +1816,22 @@ class App {
 
      unbekannt   Knopf ja,   Hinweis ja    erster Besuch
      erlaubt     Knopf nein, Hinweis nein  die Messung spricht fuer sich
-     abgelehnt   Knopf nein, Hinweis ja    nicht noch einmal fragen
+     abgelehnt   Knopf ja,   Hinweis ja    ein zweiter Versuch bleibt moeglich
+
+   `abgelehnt` verbarg den Knopf frueher auf Dauer. Das war als „nicht
+   nachbohren" gemeint und wurde zur Falle: Ein Fehlversuch hat viele
+   Ursachen, die haeufigste — die Herkunft ist im Tuner noch nicht
+   freigegeben — behebt der Besucher in zehn Sekunden, und danach gab es
+   keinen Weg zurueck.
+
+   Genervt wird trotzdem niemand: Von SELBST fragt die Seite in diesem
+   Zustand nie (siehe starteMyRetunerErkennung). Der Knopf ist ein Angebot,
+   keine Rueckfrage.
   */
   _zeigeZugang(zustand) {
     const knopf   = document.getElementById('knopfMyRetuner');
     const werbung = document.getElementById('knopfMyRetunerHolen');
-    if (knopf)   knopf.hidden   = (zustand !== ZUSTAND.unbekannt);
+    if (knopf)   knopf.hidden   = (zustand === ZUSTAND.erlaubt);
     if (werbung) werbung.hidden = (zustand === ZUSTAND.erlaubt);
   }
 

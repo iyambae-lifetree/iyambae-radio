@@ -4,7 +4,7 @@
 
  Die Frage beim ersten Besuch zu stellen wäre falsch: Sie beträfe etwas, das
  vielleicht nie passiert, und stünde zwischen Besucher und Musik. Deshalb
- dasselbe Muster wie bei der MyRetuner-Brücke — einmal fragen, im richtigen
+ dasselbe Muster wie bei der Brücke zum IYAMBAE Tuner — einmal fragen, im richtigen
  Moment, Antwort merken, jederzeit widerrufbar.
 
  **Wohin die Berichte gehen:** an `/fehler` auf derselben Adresse. Von dort
