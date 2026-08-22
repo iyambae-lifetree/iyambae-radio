@@ -101,16 +101,42 @@ a { color: var(--pink-hell); }
 }
 .logo__wort span { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.3em; color: var(--blau-hell); }
 
+/* Zugeklappt ist die Suche eine Lupe, aufgeklappt ein Feld. Der Uebergang
+   laeuft ueber die Breite, damit die Nachbarn in der Kopfzeile mitwandern
+   statt zu springen. */
 .kopf__suche {
-    flex: 1 1 14rem;
     display: flex; align-items: center; gap: 0.5rem;
-    padding: 0.45rem 0.85rem;
-    background: var(--karte); border: 1px solid var(--rand); border-radius: var(--rund);
+    padding: 0.45rem;
+    background: transparent; border: 1px solid transparent; border-radius: var(--rund);
+    transition: flex-basis 0.24s ease, padding 0.24s ease,
+                background-color 0.24s ease, border-color 0.24s ease;
+    flex: 0 0 auto;
 }
+.kopf__suche.ist-offen {
+    flex: 1 1 14rem;
+    padding: 0.45rem 0.85rem;
+    background: var(--karte); border-color: var(--rand);
+}
+.kopf__lupe {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.6rem; height: 1.6rem; flex: none;
+    padding: 0; border: 0; background: none;
+    color: var(--text-leise); cursor: pointer;
+    transition: color 0.2s ease;
+}
+.kopf__lupe:hover { color: var(--text); }
+.kopf__suche.ist-offen .kopf__lupe { cursor: default; }
+
 .kopf__suche input {
-    flex: 1; min-width: 0;
+    flex: 1; min-width: 0; width: 0;
     background: none; border: 0; outline: none;
     color: var(--text); font-family: inherit; font-size: 0.9rem;
+}
+/* Zugeklappt ist das Feld nicht nur unsichtbar, sondern auch nicht
+   erreichbar — sonst springt die Tabulatortaste in ein Feld, das niemand
+   sieht. */
+.kopf__suche:not(.ist-offen) input {
+    width: 0; padding: 0; opacity: 0; pointer-events: none;
 }
 .kopf__suche input::placeholder { color: var(--text-leise); }
 

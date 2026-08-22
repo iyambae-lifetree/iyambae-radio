@@ -1943,6 +1943,32 @@ class App {
     if (el) el.textContent = anzahl ? t('griff.meine.zahl', { anzahl }) : t('griff.meine.leer');
   }
 
+  /*
+   Die Suche auf- und zuklappen.
+
+   Sie schliesst sich wieder, wenn sie leer ist und den Blickpunkt verliert —
+   ein Feld, das offen bleibt, obwohl niemand darin steht, hat den Platz
+   umsonst genommen. Steht etwas drin, bleibt sie offen: Sonst verschwaende
+   das Wegklicken die Eingabe.
+  */
+  oeffneSuche() {
+    const kasten = document.getElementById('kopfSuche');
+    const feld = document.getElementById('suche');
+    const lupe = document.getElementById('lupe');
+    if (!kasten || !feld) return;
+    kasten.classList.add('ist-offen');
+    lupe?.setAttribute('aria-expanded', 'true');
+    feld.focus();
+  }
+
+  schliesseSuche() {
+    const kasten = document.getElementById('kopfSuche');
+    const feld = document.getElementById('suche');
+    if (!kasten || !feld || feld.value.trim()) return;
+    kasten.classList.remove('ist-offen');
+    document.getElementById('lupe')?.setAttribute('aria-expanded', 'false');
+  }
+
   // ── Suche ────────────────────────────────────────────────────────
   suche(eingabe) {
     // Fuettert denselben Filterzustand wie die Knoepfe. Vorher zeichnete die
@@ -2271,6 +2297,15 @@ class App {
 
     const suchfeld = document.getElementById('suche');
     suchfeld?.addEventListener('input', (e) => this.suche(e.target.value));
+    suchfeld?.addEventListener('blur', () => this.schliesseSuche());
+    suchfeld?.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      // Erst leeren, dann zuklappen — zweimal Escape statt einmal, damit
+      // niemand versehentlich seine Eingabe verliert.
+      if (suchfeld.value) { suchfeld.value = ''; this.suche(''); }
+      else { suchfeld.blur(); this.schliesseSuche(); }
+    });
+    document.getElementById('lupe')?.addEventListener('click', () => this.oeffneSuche());
 
     const regler = document.getElementById('lautstaerke');
     if (regler) {
@@ -2285,7 +2320,7 @@ class App {
         if (ziel === 'meine') return this.zeigeMeinePlatten();
         if (ziel === 'suche') {
           window.scrollTo({ top: 0, behavior: 'smooth' });
-          suchfeld?.focus();
+          this.oeffneSuche();
           return;
         }
         document.getElementById('auslage')?.scrollIntoView({ behavior: 'smooth' });
