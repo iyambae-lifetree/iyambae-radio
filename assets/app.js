@@ -22,6 +22,36 @@ import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 import { beobachteFehler, einwilligungsstand, widerrufeEinwilligung }
   from './lib/fehlerbericht.mjs';
 import { miss, messungLaeuft, setzeMessung } from './lib/messung.mjs';
+
+/*
+ Abspielfehler: einmal je Sender, Zweig und Sitzung.
+
+ Saemi-Ras Auflage, und sie ist richtig: Ohne sie zaehlt ein hartnaeckiger
+ Besucher denselben Ausfall zwanzigmal, und die Zahl saegt mehr ueber ihn
+ als ueber den Sender.
+
+ DAS GEDAECHTNIS LIEGT IN EINER MODULVARIABLEN, nicht im Geraetespeicher.
+ Das ist kein Umweg, sondern der Grund, warum diese Messung ohne
+ Einwilligungsbanner auskommt: § 25 TDDDG haengt am Speichern auf dem
+ Endgeraet. Ein Set, das mit dem Schliessen des Reiters verschwindet, ist
+ keines — und ueber Sitzungen hinweg waere es nebenbei ein
+ Wiedererkennungswert.
+
+ `zurueckgefallen` merkt sich getrennt davon, welche Sender den Umweg
+ genommen haben; daran erkennt der 'start'-Rueckruf den geglueckten Umweg.
+*/
+const gemeldeteFehler = new Set();
+const zurueckgefallen = new Set();
+
+function meldeAbspielfehler(senderId, zweig, code) {
+  if (!senderId) return;
+  if (zweig === 'analyse-gescheitert') zurueckgefallen.add(senderId);
+  const schluessel = senderId + '|' + zweig;
+  if (gemeldeteFehler.has(schluessel)) return;
+  gemeldeteFehler.add(schluessel);
+  miss('abspielfehler', { sender: senderId, zweig, code });
+}
+
 import { beobachteTitel, haltAn as haltTitelAn } from './lib/titel.mjs';
 import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t }
   from './lib/sprache.mjs';
@@ -1615,6 +1645,22 @@ class App {
     this._verdrahte();
 
     this.engine.bei('start', () => {
+      /*
+       Der geglueckte Umweg — und der ist der wichtigste der drei Zweige.
+
+       Er ist kein Fehler: Der Sender spielt. Er sagt aber, dass er es nur
+       auf dem zweiten Weg tut, und genau daraus laesst sich der Katalog
+       nachziehen. Ohne diese Zeile weiss man, dass die Selbstheilung gebaut
+       ist, aber nicht, ob sie traegt.
+
+       Erkannt daran, dass der Sender vorher zurueckgefallen ist und jetzt
+       auf dem direkten Element spielt.
+      */
+      const s = this.engine.aktuellerSender;
+      if (s && zurueckgefallen.has(s.id)
+          && this.engine.audio === this.engine.audioDirekt) {
+        meldeAbspielfehler(s.id, 'ohne-analyse-gelungen');
+      }
       this.ui.zeigeSpielzustand(true);
       this.ui.zeigeStatus('live', this.engine.statusText());
       this.ui.raeumeAusfallAuf();
@@ -1648,7 +1694,17 @@ class App {
       if (guete && sender) {
         guete.textContent = guete.textContent.replace(t('hero.pegel.live'), t('hero.pegel.simuliert'));
       }
-      miss('ohne-zugriff', { sender: sender?.id });
+      /*
+       'ohne-zugriff' stand nicht in der Erlaubnisliste von messung.mjs und
+       hat deshalb NIE etwas gesendet — miss() gab still false zurueck. Die
+       Liste hat getan, wofuer sie da ist; die Absicht dahinter ging trotzdem
+       ins Leere.
+
+       Jetzt: 'abspielfehler', Zweig 'analyse-gescheitert'. Das ist die
+       Auskunft „cors steht im Katalog falsch", nicht „Sender kaputt".
+      */
+      meldeAbspielfehler(sender?.id, 'analyse-gescheitert',
+                         this.engine.audioAnalyse?.error?.code);
     });
 
     // Kein automatisches Weiterspringen mehr. Früher wechselte die App alle
@@ -1661,6 +1717,9 @@ class App {
       this.ui.zeigeStatus('fehler', t('karte.stumm'));
       this.ui.markiereStumm(sender.id);
       zaehleFehlschlag(sender.id);
+      // Kein Weg fuehrte zum Ton — weder mit Analyse noch ohne.
+      meldeAbspielfehler(sender.id, 'ganz-gescheitert',
+                         this.engine.audio?.error?.code);
       const ersatz = findeVerwandten(sender, this.ui.sender.filter(s => !istWackelig(s.id)), new Set([sender.id]));
       if (ersatz) this.ui.zeigeVorschlag(sender, ersatz);
     });

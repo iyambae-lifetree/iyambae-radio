@@ -9,13 +9,19 @@
 # ── Stufe 1: die Sprachseiten erzeugen ──────────────────────────────
 FROM python:3.12-alpine AS erzeuger
 WORKDIR /bau
+# node nur für Scripts/pruefe-messung.mjs, das die Erlaubnisliste der
+# Messung tatsächlich AUSFÜHRT statt sie zu lesen. Diese Stufe wird
+# verworfen; im ausgelieferten Abbild steckt kein node.
+RUN apk add --no-cache nodejs
 COPY . .
 # Der Erzeuger prüft sich selbst: Er muss index.html mit dem deutschen
 # Katalog zeichengenau reproduzieren. Schlägt das fehl, bricht der Bau hier
 # ab — und nicht erst im Browser eines Besuchers.
 RUN python3 Scripts/baue-sprachen.py \
- && python3 Scripts/baue-recht.py \n && python3 Scripts/baue-apps-sprachen.py \
- && python3 Scripts/pruefe-shell-dateien.py
+ && python3 Scripts/baue-recht.py \
+ && python3 Scripts/baue-apps-sprachen.py \
+ && python3 Scripts/pruefe-shell-dateien.py \
+ && node Scripts/pruefe-messung.mjs
 
 # ── Stufe 2: ausliefern ─────────────────────────────────────────────
 #
