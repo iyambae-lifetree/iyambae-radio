@@ -1737,14 +1737,15 @@ code {
 
       <!-- 3 -->
       <div class="umfrage__schritt" data-schritt="3">
-        <p class="umfrage__frage">Was wäre dir ein Werkzeug wert, das deinen ganzen Rechner umstimmt?</p>
-        <p class="umfrage__zusatz">Einmalig, dauerhafte Lizenz, kein Abo. Ohne Treiber, ohne Admin-Passwort — und es misst die Stimmung der Aufnahme, statt 440 anzunehmen.</p>
-        <div class="umfrage__wahl" data-feld="preis">
-          <button class="umfrage__knopf" type="button" data-wert="0">Nichts — mir reicht ein kostenloses<small>Es gibt eines. Dafür Treiber installieren, Admin-Passwort eingeben, und es rechnet stur von 440 aus — liegt die Aufnahme auf 443, landest du bei 435 statt bei 432.</small></button>
-          <button class="umfrage__knopf" type="button" data-wert="19">Bis <b>19 €</b>, wenn es ohne Treiber läuft</button>
-          <button class="umfrage__knopf" type="button" data-wert="39"><b>39 €</b> für treiberlos und genau</button>
-          <button class="umfrage__knopf" type="button" data-wert="69"><b>69 €</b>, wenn es zusätzlich die Stimmung der Aufnahme misst<small>Damit landet man wirklich auf 432 und nicht auf 435</small></button>
-          <button class="umfrage__knopf" type="button" data-wert="99"><b>99 €</b> — für ein Werkzeug, das ich täglich benutze, ist das in Ordnung</button>
+        <p class="umfrage__frage">Hast du für 432-Hz-Software schon einmal Geld ausgegeben?</p>
+        <p class="umfrage__zusatz">Gefragt ist, was war — nicht, was wäre. Erinnerungen sind belastbarer als Absichten.</p>
+        <div class="umfrage__wahl" data-feld="bezahlt">
+          <button class="umfrage__knopf" type="button" data-wert="nie">Noch nie<small>Nur Kostenloses, oder ich fange gerade erst an</small></button>
+          <button class="umfrage__knopf" type="button" data-wert="bis15">Bis 15 €<small>Die Größenordnung einer Handy-App</small></button>
+          <button class="umfrage__knopf" type="button" data-wert="bis50">15 bis 50 €<small>Ein Programm für den Rechner</small></button>
+          <button class="umfrage__knopf" type="button" data-wert="bis120">50 bis 120 €<small>Mehrere Programme, oder eines mit Zubehör</small></button>
+          <button class="umfrage__knopf" type="button" data-wert="ueber120">Mehr als 120 €</button>
+          <button class="umfrage__knopf" type="button" data-wert="abo">Ein Abo, monatlich oder jährlich</button>
         </div>
       </div>
 
@@ -2067,13 +2068,14 @@ code {
     'fehlt.qualitaet':        'Better sound quality when retuning',
     'fehlt.einfacher':        'That it is finally simple|No driver, no admin password, no setup',
 
-    f3:  'What would a tool be worth to you that retunes your whole computer?',
-    f3z: 'One-time purchase, permanent licence, no subscription. No driver, no admin password — and it measures the tuning of the recording instead of assuming 440.',
-    'preis.0':  'Nothing — a free one is enough for me|There is one. But: install a driver, enter your admin password, and it computes from 440 regardless — if the recording sits at 443, you end up at 435 instead of 432.',
-    'preis.19': 'Up to <b>€19</b>, if it runs without a driver',
-    'preis.39': '<b>€39</b> for driverless and accurate',
-    'preis.69': '<b>€69</b>, if it also measures the tuning of the recording|So you actually land on 432 and not on 435',
-    'preis.99': '<b>€99</b> — for a tool I use every day that is fine',
+    f3:  'Have you ever paid for 432 Hz software?',
+    f3z: 'Asking what was, not what would be. Memories hold up better than intentions.',
+    'bezahlt.nie':      'Never|Only free ones, or I am just starting out',
+    'bezahlt.bis15':    'Up to €15|About what a phone app costs',
+    'bezahlt.bis50':    '€15 to €50|A program for the computer',
+    'bezahlt.bis120':   '€50 to €120|Several programs, or one with extras',
+    'bezahlt.ueber120': 'More than €120',
+    'bezahlt.abo':      'A subscription, monthly or yearly',
 
     f4:  'What would you build, if you could?',
     f4z: 'Optional. The sentence that helps us most is usually here.',
