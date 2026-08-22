@@ -1,0 +1,21 @@
+# Die Sprachseiten unter apps/<kuerzel>/ erzeugt
+# Scripts/baue-apps-sprachen.py aus apps/index.html und
+# apps/assets/lang/*.json — beim Bauen des Containers, nicht von Hand.
+#
+# Im Repository waeren sie eine zweite Wahrheit, die beim naechsten
+# Textwechsel still veraltet. Dieselbe Regel wie fuer /de/ … /ar/ des
+# Radios, siehe .gitignore in der Wurzel.
+/de/
+/en/
+/fr/
+/es/
+/it/
+/ja/
+/ar/
+
+# robots.txt und sitemap.xml erzeugt derselbe Lauf. Sie stehen aus
+# demselben Grund hier: Die Sitemap fuehrt die sieben Sprachwurzeln auf,
+# und von Hand gepflegt veraltete sie still — eine veraltete Sitemap ist
+# schlechter als keine.
+/robots.txt
+/sitemap.xml
