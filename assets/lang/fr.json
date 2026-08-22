@@ -154,5 +154,11 @@
   "stimmung.erklaerung": "La particularité d'ici : chaque station peut jouer en 432 Hz au lieu des 440 habituels.",
   "stimmung.abstand": "Cette page <em>devine</em> : elle suppose que chaque station est à 440 Hz et baisse tout d’autant. Si un enregistrement est à 443 — courant aujourd’hui —, vous entendez en ce moment <strong>435 Hz, pas 432</strong>.",
   "stimmung.loesung": "L’<strong>IYAMBAE Tuner</strong> <em>mesure</em> l’accord réel et atteint <strong>432,33 Hz</strong> — sur tout l’ordinateur, pas seulement ici. Gratuit, sans compte.",
-  "stimmung.abstandLangsam": "Cette station ne laisse pas le navigateur accéder à son flux. La page ne peut la réaccorder qu’en la ralentissant — la musique tourne en ce moment <strong>1,8 % plus lentement</strong> qu’à l’antenne."
+  "stimmung.abstandLangsam": "Cette station ne laisse pas le navigateur accéder à son flux. La page ne peut la réaccorder qu’en la ralentissant — la musique tourne en ce moment <strong>1,8 % plus lentement</strong> qu’à l’antenne.",
+  "teilen.satz": "{anzahl} disques dans votre bac.",
+  "teilen.knopf": "Lien à transmettre",
+  "teilen.kopiert": "Lien copié",
+  "teilen.empfangen": "Quelqu’un vous a envoyé {anzahl} stations.",
+  "teilen.uebernehmen": "Ajouter à mes disques",
+  "teilen.uebernommen": "{anzahl} stations ajoutées."
 }

@@ -93,6 +93,11 @@ const speicher = {
   },
 };
 
+// Beim Laden gemerkt: Ein weitergegebener Link steht hinter dem
+// Rautezeichen, und wer ihn spaeter auswerten will, findet ihn dort nicht
+// mehr zuverlaessig. Also gleich festhalten.
+const GETEILTE_PLATTEN = (/[#&]platten=([a-z0-9.\-]+)/i.exec(location.hash) || [])[1] || '';
+
 const ladeGehoert  = () => speicher.lies(SCHLUESSEL.gehoert, {});
 const ladeZuletzt  = () => speicher.lies(SCHLUESSEL.zuletzt, []);
 
@@ -1549,6 +1554,7 @@ class App {
     setzeSymbole();
 
     this.folgeAdressZiel();
+    this.pruefeGeteilteAdresse();
 
     /*
      Aktualisierung ueberwachen. Spielt gerade Musik, wird nicht von selbst
@@ -1726,7 +1732,88 @@ class App {
       return;
     }
     this.ui.zeichneRegale(meine);
+    this._zeigeTeilleiste(favoriten);
     document.getElementById('regale').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /*
+   ═══ Platten weitergeben ═══════════════════════════════════════════
+
+   Die Merkliste steckt in der Adresse HINTER dem Rautezeichen. Was dort
+   steht, schickt der Browser nicht an den Server — kein Protokolleintrag,
+   keine Tabelle, kein Konto. Wer seine Platten weitergibt, gibt sie dem
+   Empfaenger und niemandem sonst.
+
+   Das ist derselbe Handel wie ueberall hier: kein Login und kein Driss.
+   Der Preis dafuer ist, dass eine Liste nur so lange lebt wie der Link.
+   Das ist in Ordnung — es ist eine Empfehlung, kein Konto.
+  */
+  _zeigeTeilleiste(favoriten) {
+    const behaelter = document.getElementById('regale');
+    if (!behaelter || !favoriten.length) return;
+    document.querySelector('.teilen')?.remove();
+
+    const leiste = document.createElement('div');
+    leiste.className = 'teilen';
+    leiste.innerHTML = `
+      <span class="teilen__satz">${t('teilen.satz', { anzahl: favoriten.length })}</span>
+      <button class="knopf knopf--leise" type="button">${t('teilen.knopf')}</button>`;
+    leiste.querySelector('button').addEventListener('click', async (e) => {
+      const adresse = this.baueTeilAdresse(favoriten);
+      try {
+        await navigator.clipboard.writeText(adresse);
+        e.target.textContent = t('teilen.kopiert');
+        this.ui.meldung(t('teilen.kopiert'), 'info');
+      } catch {
+        // Kein Zugriff auf die Zwischenablage — dann eben zum Abschreiben.
+        const feld = document.createElement('input');
+        feld.className = 'teilen__feld';
+        feld.value = adresse;
+        feld.readOnly = true;
+        leiste.appendChild(feld);
+        feld.select();
+      }
+      miss('teilen', { anzahl: favoriten.length });
+    });
+    behaelter.before(leiste);
+  }
+
+  baueTeilAdresse(favoriten) {
+    const ids = favoriten.map(s => s.id).join('.');
+    return `${location.origin}${location.pathname}#platten=${ids}`;
+  }
+
+  /*
+   Die Gegenseite: Jemand oeffnet einen weitergegebenen Link.
+
+   Es wird NICHTS ungefragt uebernommen. Die Seite zeigt, was drin ist, und
+   fragt. Eine fremde Liste stillschweigend in die eigene zu schreiben waere
+   ein Uebergriff — und der Empfaenger haette hinterher zwanzig Sender im
+   Fach, die er nie gewaehlt hat.
+  */
+  pruefeGeteilteAdresse() {
+    if (!GETEILTE_PLATTEN) return;
+    const ids = GETEILTE_PLATTEN.split('.').filter(Boolean);
+    const sender = ids.map(id => this.ui.senderMitId(id)).filter(Boolean);
+    history.replaceState(null, '', location.pathname + location.search);
+    if (!sender.length) return;
+
+    this.ui.zeichneRegale(sender);
+    const behaelter = document.getElementById('regale');
+    const leiste = document.createElement('div');
+    leiste.className = 'teilen teilen--empfangen';
+    leiste.innerHTML = `
+      <span class="teilen__satz">${t('teilen.empfangen', { anzahl: sender.length })}</span>
+      <button class="knopf" type="button">${t('teilen.uebernehmen')}</button>`;
+    leiste.querySelector('button').addEventListener('click', () => {
+      for (const s of sender) if (!this.ui.istFavorit(s.id)) this.ui.toggleFavorit(s.id);
+      leiste.remove();
+      this.ui.meldung(t('teilen.uebernommen', { anzahl: sender.length }), 'info');
+      miss('teilen-uebernommen', { anzahl: sender.length });
+    });
+    document.querySelector('.teilen')?.remove();
+    behaelter.before(leiste);
+    leiste.scrollIntoView({ block: 'start' });
   }
 
   aktualisiereGriff() {

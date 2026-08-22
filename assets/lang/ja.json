@@ -154,5 +154,11 @@
   "stimmung.erklaerung": "ここだけの特徴：どの局も、通常の 440 Hz ではなく 432 Hz で鳴らせます。",
   "stimmung.abstand": "このページは<em>推測</em>しています。どの局も 440 Hz だと仮定して一律に下げています。録音が 443 Hz の場合（今日ではよくあります）、いま聞こえているのは <strong>432 Hz ではなく 435 Hz</strong> です。",
   "stimmung.loesung": "<strong>IYAMBAE Tuner</strong> は実際の調律を<em>測定</em>し、<strong>432.33 Hz</strong> に合わせます。このページだけでなく、パソコン全体で。無料、アカウント不要。",
-  "stimmung.abstandLangsam": "この局はブラウザに音声を触らせません。このページは速度を落とすことでしか調律できず、いま音楽は放送より <strong>1.8 % 遅く</strong> 再生されています。"
+  "stimmung.abstandLangsam": "この局はブラウザに音声を触らせません。このページは速度を落とすことでしか調律できず、いま音楽は放送より <strong>1.8 % 遅く</strong> 再生されています。",
+  "teilen.satz": "棚に {anzahl} 枚。",
+  "teilen.knopf": "共有リンク",
+  "teilen.kopiert": "リンクをコピーしました",
+  "teilen.empfangen": "{anzahl} 局が届いています。",
+  "teilen.uebernehmen": "自分の棚に入れる",
+  "teilen.uebernommen": "{anzahl} 局を追加しました。"
 }

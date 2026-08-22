@@ -2000,3 +2000,25 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
        41 px Ueberstand unveraendert stehen. */
     [dir="rtl"] .plattenspieler { margin-inline-start: 3rem; }
 }
+
+/* ── Platten weitergeben ─────────────────────────────────────────
+   Die Leiste steht ueber dem Ergebnis, nicht darunter: Wer sein Fach
+   ansieht, soll den Weg zum Weitergeben sehen, ohne zu suchen. */
+.teilen {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem;
+    margin: 0 clamp(1rem, 4vw, 2.5rem) 1.2rem;
+    padding: 0.8rem 1rem;
+    background: var(--karte);
+    border: 1px solid var(--rand);
+    border-radius: 0.5rem;
+}
+.teilen--empfangen { border-color: color-mix(in srgb, var(--gold) 45%, transparent); }
+.teilen__satz { font-size: 0.9rem; color: var(--text-leise); }
+.teilen--empfangen .teilen__satz { color: var(--text); }
+.teilen__feld {
+    flex: 1 1 16rem; min-width: 0;
+    padding: 0.45rem 0.6rem;
+    background: var(--grund); color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: 0.35rem;
+    font-family: var(--mono); font-size: 0.72rem;
+}
