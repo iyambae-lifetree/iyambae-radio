@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title data-text="seite.titel">IYAMBAE Radio — ein Plattenladen zum Zuhören</title>
-    <meta name="description" data-inhalt="seite.beschreibung" content="IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 146 Sender aus 31 Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.">
+    <title data-text="seite.titel">IYAMBAE Radio — ein Plattenladen zum Zuhören, in 432 Hz</title>
+    <meta name="description" data-inhalt="seite.beschreibung" content="IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 157 Sender aus 35 Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.">
     <meta name="theme-color" content="#F2B705">
     <link rel="manifest" href="/de/manifest.webmanifest">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -24,6 +24,54 @@
          sechs von sieben Seiten geschnitten hat.
 
          Erzeugt von Scripts/hole-schriften.py. -->
+
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+
+    <!-- Strukturierte Daten. Sie sind das, woraus Google seine Ergebnisse baut
+         und woraus Antwortmaschinen zitieren — und anders als der Katalog
+         stehen sie ohne einen einzigen Programmschritt im HTML.
+
+         Bewusst sprachneutral: Diese Datei ist die Vorlage fuer alle sieben
+         Fassungen, und Scripts/baue-sprachen.py setzt nur die data-Attribute
+         um. Was hier an deutschem Text staende, staende sechsmal falsch da.
+
+         Der Katalog der Sender gehoert ebenfalls hierher, aber je Sprache
+         erzeugt — siehe 432hz-radio#3. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://iyambae.fm/#haus",
+          "name": "IYAMBAE",
+          "url": "https://iyambae.fm/",
+          "logo": "https://iyambae.fm/assets/logo/iyambae-radio.svg"
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://iyambae.fm/#seite",
+          "name": "IYAMBAE FM",
+          "alternateName": "IYAMBAE Radio",
+          "url": "https://iyambae.fm/",
+          "publisher": { "@id": "https://iyambae.fm/#haus" },
+          "inLanguage": ["de", "en", "fr", "es", "it", "ja", "ar"],
+          "about": [
+            { "@type": "Thing", "name": "432 Hz" },
+            { "@type": "Thing", "name": "Internet radio" }
+          ],
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://iyambae.fm/?suche={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        }
+      ]
+    }
+    </script>
     <link rel="stylesheet" href="/assets/schrift/schriften.css">
     <link rel="stylesheet" href="/assets/styles.css">
 </head>
@@ -51,20 +99,6 @@
          setzt assets/lib/sprache.mjs. -->
     <details class="sprachwahl" id="sprachwahl"></details>
 
-    <div class="kopf__schalter">
-        <button class="schalter" id="knopf432" data-titel="kopf.432.titel" title="432-Hz-Stimmung ein- und ausschalten">
-            <span class="schalter__punkt"></span><span data-text="kopf.432.an">432 Hz an</span>
-        </button>
-        <button class="schalter" id="knopfMyRetuner" hidden data-titel="kopf.myretuner.titel" title="Fragt einmal nach, ob der IYAMBAE Tuner auf diesem Rechner läuft. Die App fragt dich dann um Erlaubnis.">
-            <span class="schalter__punkt"></span><span data-text="kopf.myretuner.knopf">Ich habe den IYAMBAE Tuner</span>
-        </button>
-        <a class="schalter schalter--werbung" id="knopfMyRetunerHolen" hidden
-           href="https://apps.iyambae.fm" target="_blank" rel="noopener"
-           data-titel="kopf.holen.titel" title="Diese Seite rät. Der IYAMBAE Tuner misst.">
-            <span data-text="kopf.holen.knopf">Dauerhaft in 432 Hz — IYAMBAE Tuner</span>
-        </a>
-        <span class="messung" id="myRetunerMessung" hidden></span>
-    </div>
 </header>
 
 <section class="hero" id="hero">
@@ -127,15 +161,24 @@
                     <path class="tonarm__rohr" d="M 88 15 C 76 26, 64 40, 52 55"/>
                     <!-- Headshell mit Tonabnehmer und Nadel -->
                     <g class="tonarm__kopf" transform="translate(52 55) rotate(-38)">
-                        <path class="tonarm__shell" d="M -5.5 -3 L 5.5 -3 L 4 6 L -4 6 Z"/>
-                        <rect class="tonarm__system" x="-2.6" y="4" width="5.2" height="3.4" rx="0.8"/>
-                        <line class="tonarm__nadel" x1="0" y1="7" x2="0" y2="10"/>
+                        <!-- Das Headshell ist schmaler als frueher: gemessen an
+                             einer Aufnahme von oben ist es rund zweieinhalbmal
+                             so breit wie das Rohr, nicht viermal. -->
+                        <path class="tonarm__shell" d="M -3.4 -3 L 3.4 -3 L 2.6 5.4 L -2.6 5.4 Z"/>
+                        <path class="tonarm__griff" d="M -3.4 -3 L -5.6 -5.4 L -4.4 -6.2 L -2.4 -3.4 Z"/>
+                        <rect class="tonarm__system" x="-1.9" y="3.6" width="3.8" height="3.2" rx="0.7"/>
+                        <line class="tonarm__nadel" x1="0" y1="6.6" x2="0" y2="9.4"/>
                     </g>
                 </g>
 
                 <!-- Das Lager, um das der Arm schwenkt -->
-                <circle class="tonarm__lager" cx="88" cy="16" r="7"/>
-                <circle class="tonarm__lagerkern" cx="88" cy="16" r="2.6"/>
+                <!-- Unter dem Lager sitzt ein Teller, der es in die Zarge
+                     einfasst — auf jeder Aufnahme von oben deutlich zu sehen. -->
+                <circle class="tonarm__lagerteller" cx="88" cy="16" r="10"/>
+                <circle class="tonarm__lager" cx="88" cy="16" r="5.6"/>
+                <circle class="tonarm__lagerkern" cx="88" cy="16" r="2"/>
+                <!-- Der Lifthebel, mit dem man den Arm absenkt -->
+                <rect class="tonarm__lift" x="76" y="14.2" width="9" height="1.8" rx="0.9"/>
             </svg>
 
             <!-- Bedienelemente, wie an einem DJ-Deck -->
@@ -148,16 +191,80 @@
     <div class="hero__text">
         <p class="hero__guete" id="heroGuete" data-text="hero.guete.bereit">bereit</p>
         <h1 class="hero__name" id="heroName" data-text="hero.name.start">Radio in 432 Hz</h1>
-        <p class="hero__ort" id="heroOrt" data-text="hero.ort.start">146 Sender aus 31 Ländern, in elf Regalen</p>
+        <p class="hero__ort" id="heroOrt" data-text="hero.ort.start">157 Sender aus 35 Ländern, in elf Regalen</p>
+        <!-- Was gerade laeuft. Bleibt leer, wenn der Sender es nicht
+             mitschickt — und das tun laengst nicht alle. -->
+        <p class="hero__titel" id="heroTitel" hidden></p>
         <p class="hero__kaertchen" id="heroKaertchen" data-text="hero.kaertchen.start">Leg eine Platte auf — oder lass die Nadel fallen und sieh, wo sie landet.</p>
         <div class="hero__knoepfe">
             <button class="knopf knopf--gross" id="heroPlay"><span id="heroPlayIcon" data-symbol="abspielen"></span><span data-text="hero.knopf.abspielen">Abspielen</span></button>
             <button class="knopf" id="heroFavorit"><span data-symbol="merken" data-symbol-groesse="17"></span><span data-text="hero.knopf.merken">Merken</span></button>
             <a class="knopf knopf--leise" id="heroLink" href="#" target="_blank" rel="noopener"><span data-text="allgemein.senderseite">Senderseite</span><span data-symbol="extern" data-symbol-groesse="15"></span></a>
         </div>
+
+        <!-- Die Stimmung gehoert an den Spieler, nicht in die Kopfzeile.
+             Sie ist eine Einstellung des Abspielens; man versteht sie erst,
+             wenn Musik laeuft. Oben rechts stand sie drei Knoepfe breit da,
+             bevor der Besucher einen Ton gehoert hatte.
+
+             Was darunter erscheint, erscheint erst, wenn er 432 Hz
+             tatsaechlich einschaltet — dann ist die Frage nach dem IYAMBAE Tuner
+             beantwortbar, vorher ist sie nur ein Raetsel. -->
+        <div class="stimmung" id="stimmung">
+            <div class="stimmung__zeile">
+                <button class="stimmung__schalter" id="knopf432" role="switch" aria-checked="false"
+                        data-titel="kopf.432.titel" title="432-Hz-Stimmung ein- und ausschalten">
+                    <span class="stimmung__wippe" aria-hidden="true"><span class="stimmung__punkt"></span></span>
+                    <span class="stimmung__wort" data-text="kopf.432.an">432 Hz an</span>
+                </button>
+                <p class="stimmung__erklaerung" data-text="stimmung.erklaerung">Das Besondere hier: Jeder Sender läuft auf Wunsch in 432 Hz statt in den üblichen 440.</p>
+            </div>
+
+            <!-- Was erscheint, sobald jemand 432 Hz einschaltet.
+
+                 Es steht hier, weil in diesem Moment etwas Wahres gesagt
+                 werden muss: Der Besucher hat 432 verlangt und bekommt
+                 haeufig 435, weil diese Seite die Stimmung der Aufnahme
+                 nicht kennt, sondern 440 annimmt.
+
+                 Das ist keine Verkaufsmasche, sondern eine Messabweichung.
+                 Sie auszusprechen ehrt ihn — er erfaehrt, was er wirklich
+                 hoert, statt es fuer richtig zu halten. Und er darf danach
+                 entscheiden, dass ihm 435 reicht: Die Seite spielt weiter,
+                 nichts wird abgeschaltet, nichts fragt ein zweites Mal. -->
+            <div class="stimmung__mehr">
+                <span class="messung" id="myRetunerMessung" hidden></span>
+
+                <div class="abstand" id="stimmungAbstand">
+                    <p class="abstand__satz" data-html="stimmung.abstand">
+                        Diese Seite <em>rät</em>: Sie nimmt an, jeder Sender läge auf 440 Hz,
+                        und zieht pauschal herunter. Liegt eine Aufnahme auf 443 — heute
+                        weit verbreitet —, hörst du gerade <strong>435 Hz, nicht 432</strong>.
+                    </p>
+                    <p class="abstand__satz abstand__satz--loesung" data-html="stimmung.loesung">
+                        Der <strong>IYAMBAE Tuner</strong> <em>misst</em> die tatsächliche
+                        Stimmung und trifft <strong>432,33 Hz</strong> — auf dem ganzen
+                        Rechner, nicht nur hier. Kostenlos, ohne Konto.
+                    </p>
+                    <div class="abstand__leiste">
+                        <a class="abstand__weg" id="knopfMyRetunerHolen"
+                           href="https://apps.iyambae.fm" target="_blank" rel="noopener"
+                           data-titel="kopf.holen.titel" title="Diese Seite rät. Der IYAMBAE Tuner misst.">
+                            <span data-text="kopf.holen.knopf">Dauerhaft in 432 Hz — IYAMBAE Tuner</span>
+                        </a>
+                        <button class="stimmung__frage" id="knopfMyRetuner" hidden data-titel="kopf.myretuner.titel"
+                                title="Fragt einmal nach, ob der IYAMBAE Tuner auf diesem Rechner läuft. Die App fragt dich dann um Erlaubnis.">
+                            <span data-text="kopf.myretuner.knopf">Ich habe den IYAMBAE Tuner</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
-
+<!-- Die Kategorieübersicht. Steht vor der Filterleiste, weil sie die Frage
+     „was gibt es hier überhaupt?" beantwortet — und ein Klick darauf setzt
+     genau den Regalfilter, der darunter klebt. -->
 <section class="griffe" data-aria="griff.bereich" aria-label="Zugänge">
     <button class="griff griff--vertraut" id="griffMeinePlatten">
         <span class="griff__icon" data-symbol="meine" data-symbol-groesse="26"></span>
@@ -169,20 +276,6 @@
         <span class="griff__titel" data-text="griff.nadel.titel">Nadel fallen lassen</span>
         <span class="griff__unter" data-text="griff.nadel.unter">Zufall aus zehn Regalen</span>
     </button>
-</section>
-
-<!-- Die Kategorieübersicht. Steht vor der Filterleiste, weil sie die Frage
-     „was gibt es hier überhaupt?" beantwortet — und ein Klick darauf setzt
-     genau den Regalfilter, der darunter klebt. -->
-<section class="regalwand" id="regalwand" data-aria="regalwand.bereich" aria-label="Regale">
-    <div class="regalwand__kopf">
-        <h2 class="regalwand__titel" data-text="regalwand.titel">Die Regale</h2>
-        <span class="regalwand__zahl" id="regalwandZahl"></span>
-    </div>
-    <!-- Neun Platzhalter, weil es neun Regale sind. Die Hoehe ist damit vor
-         dem ersten Programmschritt richtig, und nichts darunter rutscht,
-         wenn die echten Faecher kommen. -->
-    <div class="regalwand__raster" id="regalwandRaster"><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><div class="regalfach__mosaik skelett"></div><div class="regalfach__text"><span class="skelett" style="height:2.4em"></span><span class="skelett skelett--kurz"></span></div></button></div>
 </section>
 
 <section class="tipp" id="tipp" data-aria="tipp.bereich" aria-label="Sender der Woche" hidden>
@@ -205,6 +298,17 @@
             <div class="tipp__dazuListe" id="tippDazu"></div>
         </div>
     </div>
+</section>
+
+<section class="regalwand" id="regalwand" data-aria="regalwand.bereich" aria-label="Regale">
+    <div class="regalwand__kopf">
+        <h2 class="regalwand__titel" data-text="regalwand.titel">Die Regale</h2>
+        <span class="regalwand__zahl" id="regalwandZahl"></span>
+    </div>
+    <!-- Elf Platzhalter, weil es elf Regale sind. Die Hoehe stimmt damit
+         schon vor dem ersten Programmschritt, und nichts darunter rutscht,
+         wenn die echten Schilder kommen. -->
+    <div class="regalwand__raster" id="regalwandRaster"><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button><button class="regalfach regalfach--skelett" aria-hidden="true" tabindex="-1"><span class="skelett skelett--kurz"></span></button></div>
 </section>
 
 <section class="auslage" id="auslage" data-aria="auslage.bereich" aria-label="Auslage">
@@ -307,7 +411,7 @@
 
      WARUM SIE ÜBERHAUPT INS HTML MUSS
 
-     Die 146 Sender holt assets/app.js zur Laufzeit aus data/sender.json.
+     Die Sender holt assets/app.js zur Laufzeit aus data/sender.json.
      Google führt dafür JavaScript aus und sieht sie. GPTBot, ClaudeBot,
      PerplexityBot und Bing überwiegend nicht — für die war diese Seite eine
      Überschrift und achtzehn leere Skelettkarten. Wer heute eine KI nach
@@ -447,6 +551,7 @@
     <div class="spieler__info">
         <div class="spieler__name" id="barName" data-text="spieler.kein">Kein Sender</div>
         <div class="spieler__regal" id="barRegal"></div>
+        <div class="spieler__titel" id="barTitel" hidden></div>
     </div>
     <div class="spieler__mitte">
         <button class="knopf-rund" id="barPlay" data-aria="spieler.knopf.hinweis" aria-label="Abspielen oder pausieren"><span id="barPlayIcon" data-symbol="abspielen"></span></button>

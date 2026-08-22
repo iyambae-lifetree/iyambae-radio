@@ -22,6 +22,7 @@ import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 import { beobachteFehler, einwilligungsstand, widerrufeEinwilligung }
   from './lib/fehlerbericht.mjs';
 import { miss, messungLaeuft, setzeMessung } from './lib/messung.mjs';
+import { beobachteTitel, haltAn as haltTitelAn } from './lib/titel.mjs';
 import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t }
   from './lib/sprache.mjs';
 
@@ -93,6 +94,11 @@ const speicher = {
   },
 };
 
+// Beim Laden gemerkt: Ein weitergegebener Link steht hinter dem
+// Rautezeichen, und wer ihn spaeter auswerten will, findet ihn dort nicht
+// mehr zuverlaessig. Also gleich festhalten.
+const GETEILTE_PLATTEN = (/[#&]platten=([a-z0-9.\-]+)/i.exec(location.hash) || [])[1] || '';
+
 const ladeGehoert  = () => speicher.lies(SCHLUESSEL.gehoert, {});
 const ladeZuletzt  = () => speicher.lies(SCHLUESSEL.zuletzt, []);
 
@@ -155,7 +161,7 @@ class AudioEngine {
     this.istStumm = false;
     this.vorherigeLautstaerke = 0.7;
     this._simDaten = new Float32Array(128);
-    this._rueckrufe = { start: [], fehler: [], laden: [], puffern: [] };
+    this._rueckrufe = { start: [], fehler: [], laden: [], puffern: [], ohneZugriff: [], titel: [] };
 
     this._audioCtx = null;
     this._analyse = null;
@@ -183,7 +189,7 @@ class AudioEngine {
     el.addEventListener('waiting',  () => { if (el === this.audio) this._rufe('puffern'); });
   }
 
-  _rufe(art) { this._rueckrufe[art].forEach(fn => fn()); }
+  _rufe(art, ...was) { this._rueckrufe[art].forEach(fn => fn(...was)); }
   bei(art, fn) { this._rueckrufe[art].push(fn); }
 
   // Baut den Analysegraphen — nur einmal, und nur um das Analyse-Element.
@@ -279,7 +285,7 @@ class AudioEngine {
       }
       this.audio = zielElement;
       this.analyseEcht = sender.cors ? this._richteAnalyseEin() : false;
-      this.audio.src = sender.stream;
+      await this._haengeQuelleAn(sender);
     }
 
     if (this.audio === this.audioAnalyse && this._audioCtx?.state === 'suspended') {
@@ -291,12 +297,123 @@ class AudioEngine {
     try {
       await this.audio.play();
       this.laeuft = true;
+      this._wacheUeberStille();
     } catch (e) {
       if (e.name !== 'AbortError') this._rufe('fehler');
     }
   }
 
-  pausiere() { this.audio.pause(); this.laeuft = false; }
+  /*
+   ═══ HLS ═══════════════════════════════════════════════════════════
+
+   Die meisten Sender schicken einen einzigen, endlosen Strom. Manche
+   zerhacken ihn stattdessen in Haeppchen von wenigen Sekunden und fuehren
+   eine Liste darueber (.m3u8). Das kommt durch Firmennetze, laesst sich in
+   der Qualitaet umschalten — und der Browser kann es nicht von selbst.
+
+   AUSSER SAFARI. Der versteht es eingebaut, und dann ist die Bibliothek
+   ueberfluessig. Deshalb wird zuerst gefragt und erst dann geladen.
+
+   GELADEN WIRD SIE NUR HIER. 371 KB sind viel fuer eine Seite, die sonst
+   nichts nachlaedt; die 157 gewoehnlichen Sender kosten davon nichts. Und
+   sie liegt im eigenen Haus, nicht auf einem Auslieferungsnetz — dieselbe
+   Ueberlegung wie bei den Schriften.
+  */
+  async _haengeQuelleAn(sender) {
+    this._loeseHlsAb();
+    const istHls = /\.m3u8(\?|$)/i.test(sender.stream);
+
+    if (!istHls || this.audio.canPlayType('application/vnd.apple.mpegurl')) {
+      this.audio.src = sender.stream;
+      return;
+    }
+
+    try {
+      const { default: Hls } = await import('./lib/hls.light.min.mjs');
+      if (!Hls.isSupported()) { this.audio.src = sender.stream; return; }
+      // Der Sender kann waehrend des Ladens gewechselt haben.
+      if (this.aktuellerSender !== sender) return;
+
+      this._hls = new Hls({ enableWorker: true, lowLatencyMode: false, backBufferLength: 30 });
+      this._hls.attachMedia(this.audio);
+      this._hls.loadSource(sender.stream);
+      this._hls.on(Hls.Events.ERROR, (_, daten) => {
+        if (daten.fatal) { this._loeseHlsAb(); this._rufe('fehler'); }
+      });
+      /*
+       HLS traegt die Titelangabe im Strom mit, als ID3 zwischen den
+       Haeppchen. Wer sie liest, weiss ohne eine zweite Adresse, was gerade
+       laeuft — bei gewoehnlichen Stroemen geht das nicht.
+      */
+      this._hls.on(Hls.Events.FRAG_PARSING_METADATA, (_, daten) => {
+        for (const probe of daten.samples ?? []) {
+          const text = new TextDecoder('utf-8', { fatal: false }).decode(probe.data ?? new Uint8Array());
+          const titel = (/TIT2|StreamTitle/.test(text) ? text : '')
+            .replace(/[\x00-\x1f]+/g, ' ').replace(/^.*?(TIT2|StreamTitle)/, '').trim();
+          if (titel.length > 2) this._rufe('titel', titel.slice(0, 120));
+        }
+      });
+    } catch {
+      this.audio.src = sender.stream;   // Bibliothek nicht da: der uebliche Weg
+    }
+  }
+
+  _loeseHlsAb() {
+    if (!this._hls) return;
+    try { this._hls.destroy(); } catch {}
+    this._hls = null;
+  }
+
+  /*
+   ═══ Die Stillewache ═══════════════════════════════════════════════
+
+   Ein Element im Web-Audio-Graphen, dessen Quelle den Kopfeintrag
+   `access-control-allow-origin` NICHT mitschickt, gibt STILLE aus. Kein
+   Fehler, kein Ereignis — die Zeit laeuft weiter, der Balkenkranz zappelt,
+   und der Besucher hoert nichts.
+
+   WARUM DER KATALOG DAS NICHT LOESEN KANN: Der Wert steht dort als `cors`
+   und ist gemessen. Aber er ist nicht stabil. Dreimal hintereinander
+   gemessen ergab bei Kiosk Radio `true,true,false` und bei Classic Vinyl HD
+   `false,true,true` — offenbar ein Verteiler, bei dem nur ein Teil der
+   Knoten den Eintrag mitschickt. Von 40 geprueften Sendern mit cors:true
+   antworteten VIER nicht zuverlaessig.
+
+   Welcher Wert im Katalog steht, ist damit Glueckssache. Die Seite muss es
+   selbst merken.
+
+   WIE: Nach dem Start zwei Sekunden lang in den Analysator sehen. Laeuft die
+   Zeit und bleibt der Pegel bei exakt null, ist es diese Stille — echte
+   Musik hat immer Rauschen. Dann still auf das direkte Element umschalten
+   und den Sender fuer diese Sitzung als „ohne Zugriff" merken.
+
+   Der Besucher merkt davon eine Verzoegerung von zwei Sekunden und sonst
+   nichts. Das ist besser als Stille, und es ist besser, als ihn eine
+   Fehlermeldung lesen zu lassen, mit der er nichts anfangen kann.
+  */
+  _wacheUeberStille() {
+    clearTimeout(this._stilleWache);
+    if (this.audio !== this.audioAnalyse || !this.analyseEcht || !this._analyse) return;
+    const sender = this.aktuellerSender;
+    const begonnen = this.audio.currentTime;
+    const daten = new Uint8Array(this._analyse.frequencyBinCount);
+
+    this._stilleWache = setTimeout(() => {
+      if (!this.laeuft || this.aktuellerSender !== sender) return;
+      // Die Zeit muss gelaufen sein — sonst puffert er nur, und das ist
+      // keine Stille, sondern eine langsame Leitung.
+      if (this.audio.currentTime - begonnen < 0.5) return this._wacheUeberStille();
+      this._analyse.getByteFrequencyData(daten);
+      if (daten.some((w) => w > 0)) return;          // es kommt Ton, alles gut
+
+      // Stille trotz laufender Zeit: der Graph ist vergiftet.
+      sender.cors = false;
+      this._rufe('ohneZugriff', sender);
+      this.spiele(sender);
+    }, 2000);
+  }
+
+  pausiere() { clearTimeout(this._stilleWache); this.audio.pause(); this.laeuft = false; }
 
   wechsle() {
     if (this.laeuft) this.pausiere();
@@ -491,6 +608,16 @@ class UI {
     this.favoriten = new Set(speicher.lies(SCHLUESSEL.favoriten, []));
   }
 
+  zeigeTitel(titel) {
+    const sauber = (titel ?? '').replace(/\s+/g, ' ').trim();
+    for (const id of ['heroTitel', 'barTitel']) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      el.textContent = sauber;
+      el.hidden = !sauber;
+    }
+  }
+
   senderMitId(id) { return this.sender.find(s => s.id === id) ?? null; }
   istFavorit(id)  { return this.favoriten.has(id); }
 
@@ -658,17 +785,13 @@ class UI {
     const faecher = this.regale.filter(r => (proRegal.get(r.id) ?? []).length);
     raster.innerHTML = faecher.map(r => {
       const drin = proRegal.get(r.id);
-      const bilder = regalmosaik(drin);
+      // Nur die blanke Zahl. Sie braucht keine Uebersetzung und steht in
+      // jeder der sieben Sprachen richtig da.
       return `
         <button class="regalfach" data-regal="${r.id}" style="--regalton:${REGALTON[r.id] ?? REGALTON.grenzgaenger}"
                 title="${r.beschreibung ?? ''}">
-          <div class="regalfach__mosaik">
-            ${bilder.map(b => `<img src="${b}" alt="" loading="lazy" width="256" height="256">`).join('')}
-          </div>
-          <div class="regalfach__text">
-            <span class="regalfach__name">${r.name}</span>
-            <span class="regalfach__zahl">${t('regalwand.sender', { anzahl: drin.length })}</span>
-          </div>
+          <span class="regalfach__name">${r.name}</span>
+          <span class="regalfach__zahl">${drin.length}</span>
         </button>`;
     }).join('');
 
@@ -677,13 +800,40 @@ class UI {
 
     raster.onclick = (e) => {
       const fach = e.target.closest('.regalfach');
-      if (!fach) return;
-      this.setzeRegalFilter(fach.dataset.regal);
-      // Zum Ergebnis fuehren, aber unter die klebende Leiste — sonst steht
-      // die erste Reihe Huellen dahinter.
-      document.getElementById('regale')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (fach) this.springZuRegal(fach.dataset.regal);
     };
+  }
+
+  /*
+   Ein Regalknopf filtert nicht — er fuehrt hin.
+
+   Vorher blendete ein Druck alle anderen Sender aus. Im Plattenladen
+   verschwinden die anderen Tische aber nicht, wenn man sich vor einen
+   stellt; man geht hinueber und sieht die uebrigen weiter aus dem
+   Augenwinkel. Genau das soll der Knopf tun.
+
+   Steht noch ein Filter, wird er vorher aufgehoben: Sonst fuehrt der Knopf
+   an eine Stelle, die es gerade nicht gibt.
+  */
+  springZuRegal(id) {
+    miss('regal', { regal: id });
+    const hin = () => {
+      const reihe = document.querySelector(`#regale .regal[data-regal="${id}"]`);
+      if (!reihe) return;
+      // Wer reduzierte Bewegung eingestellt hat, will nicht durch drei
+      // Bildschirmhoehen gefahren werden — der springt.
+      const magBewegung = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      reihe.scrollIntoView({ behavior: magBewegung ? 'smooth' : 'auto', block: 'start' });
+      reihe.classList.remove('wird-angesteuert');
+      void reihe.offsetWidth;            // erzwingt den Neustart der Animation
+      reihe.classList.add('wird-angesteuert');
+    };
+    if (this.istGefiltert?.() ?? false) {
+      this.filterZuruecksetzen();
+      requestAnimationFrame(() => requestAnimationFrame(hin));
+    } else {
+      hin();
+    }
   }
 
   // ── Regale ───────────────────────────────────────────────────────
@@ -1246,6 +1396,7 @@ class UI {
   }
 
   zeigeSender(sender) {
+    this.zeigeTitel('');
     // Das Plattenlabel: Logo des Senders, sonst bleibt die IYAMBAE-Marke.
     const label = document.getElementById('labelBild');
     if (label && label.dataset.senderId !== sender.id) {
@@ -1272,6 +1423,19 @@ class UI {
                 : t('hero.guete.bitrate', { codec: sender.codec.toUpperCase(), bitrate: sender.bitrate ?? '?' });
     // Ehrlich benennen, ob der Balkenkranz das echte Signal zeigt.
     const pegel = sender.cors ? t('hero.pegel.live') : t('hero.pegel.simuliert');
+    /*
+     Und ebenso ehrlich benennen, was beim Umstimmen wirklich passiert.
+
+     Achtzehn Sender lassen den Browser nicht an ihren Ton. Fuer die faellt
+     die Seite auf playbackRate zurueck, und das zieht Tonhoehe und Tempo
+     gemeinsam herunter — die Musik laeuft dort 1,8 Prozent langsamer.
+
+     Das steht als cors im Katalog, ist gemessen und gilt je Sender. Anders
+     als die Stimmung einer Aufnahme, die von Titel zu Titel wechselt und
+     ueber die wir deshalb nichts behaupten.
+    */
+    const abstand = document.querySelector('.abstand__satz:not(.abstand__satz--loesung)');
+    if (abstand) abstand.innerHTML = t(sender.cors ? 'stimmung.abstand' : 'stimmung.abstandLangsam');
     document.getElementById('heroGuete').textContent = guete + pegel;
     document.getElementById('heroLink').href = sender.homepage;
     document.getElementById('barName').textContent = sender.name;
@@ -1424,6 +1588,31 @@ class App {
 
     this.engine.bei('laden',   () => this.ui.zeigeStatus('laden', t('status.verbinden')));
     this.engine.bei('puffern', () => this.ui.zeigeStatus('laden', t('status.puffern')));
+    /*
+     Die Stillewache hat umgeschaltet: Der Sender stand als „Browser darf
+     zugreifen" im Katalog, tat es aber nicht. Jetzt laeuft er ueber den
+     direkten Weg — also gilt der andere Satz im Abstandsfeld, und der
+     Balkenkranz zeigt kein echtes Signal mehr.
+    */
+    /*
+     Was gerade laeuft. Die Rueckmeldung eines Testers am 22.08.2026: „Schade
+     auch, dass man nicht weiss, was man da gerade hoert." Er vermutete
+     richtig — manche Sender schicken es mit, viele nicht.
+
+     Deshalb: anzeigen, wenn es kommt, und sonst nichts. Ein Feld, das
+     meistens „unbekannt" sagt, ist schlimmer als kein Feld.
+    */
+    this.engine.bei('titel', (titel) => this.ui.zeigeTitel(titel));
+
+    this.engine.bei('ohneZugriff', (sender) => {
+      const feld = document.querySelector('.abstand__satz:not(.abstand__satz--loesung)');
+      if (feld) feld.innerHTML = t('stimmung.abstandLangsam');
+      const guete = document.getElementById('heroGuete');
+      if (guete && sender) {
+        guete.textContent = guete.textContent.replace(t('hero.pegel.live'), t('hero.pegel.simuliert'));
+      }
+      miss('ohne-zugriff', { sender: sender?.id });
+    });
 
     // Kein automatisches Weiterspringen mehr. Früher wechselte die App alle
     // 2,5 s zum nächsten Sender und warf jedes Mal eine rote Meldung — bei
@@ -1448,6 +1637,7 @@ class App {
     setzeSymbole();
 
     this.folgeAdressZiel();
+    this.pruefeGeteilteAdresse();
 
     /*
      Aktualisierung ueberwachen. Spielt gerade Musik, wird nicht von selbst
@@ -1489,6 +1679,7 @@ class App {
 
   // ── Wiedergabe ───────────────────────────────────────────────────
   async spieleSender(sender, optionen = {}) {
+    beobachteTitel(sender, (titel) => this.ui.zeigeTitel(titel));
     this.ui.aktuelleId = sender.id;
     this.engine.aktuellerSender = sender;
     this.ui.zeigeSender(sender);
@@ -1625,7 +1816,88 @@ class App {
       return;
     }
     this.ui.zeichneRegale(meine);
+    this._zeigeTeilleiste(favoriten);
     document.getElementById('regale').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /*
+   ═══ Platten weitergeben ═══════════════════════════════════════════
+
+   Die Merkliste steckt in der Adresse HINTER dem Rautezeichen. Was dort
+   steht, schickt der Browser nicht an den Server — kein Protokolleintrag,
+   keine Tabelle, kein Konto. Wer seine Platten weitergibt, gibt sie dem
+   Empfaenger und niemandem sonst.
+
+   Das ist derselbe Handel wie ueberall hier: kein Login und kein Driss.
+   Der Preis dafuer ist, dass eine Liste nur so lange lebt wie der Link.
+   Das ist in Ordnung — es ist eine Empfehlung, kein Konto.
+  */
+  _zeigeTeilleiste(favoriten) {
+    const behaelter = document.getElementById('regale');
+    if (!behaelter || !favoriten.length) return;
+    document.querySelector('.teilen')?.remove();
+
+    const leiste = document.createElement('div');
+    leiste.className = 'teilen';
+    leiste.innerHTML = `
+      <span class="teilen__satz">${t('teilen.satz', { anzahl: favoriten.length })}</span>
+      <button class="knopf knopf--leise" type="button">${t('teilen.knopf')}</button>`;
+    leiste.querySelector('button').addEventListener('click', async (e) => {
+      const adresse = this.baueTeilAdresse(favoriten);
+      try {
+        await navigator.clipboard.writeText(adresse);
+        e.target.textContent = t('teilen.kopiert');
+        this.ui.meldung(t('teilen.kopiert'), 'info');
+      } catch {
+        // Kein Zugriff auf die Zwischenablage — dann eben zum Abschreiben.
+        const feld = document.createElement('input');
+        feld.className = 'teilen__feld';
+        feld.value = adresse;
+        feld.readOnly = true;
+        leiste.appendChild(feld);
+        feld.select();
+      }
+      miss('teilen', { anzahl: favoriten.length });
+    });
+    behaelter.before(leiste);
+  }
+
+  baueTeilAdresse(favoriten) {
+    const ids = favoriten.map(s => s.id).join('.');
+    return `${location.origin}${location.pathname}#platten=${ids}`;
+  }
+
+  /*
+   Die Gegenseite: Jemand oeffnet einen weitergegebenen Link.
+
+   Es wird NICHTS ungefragt uebernommen. Die Seite zeigt, was drin ist, und
+   fragt. Eine fremde Liste stillschweigend in die eigene zu schreiben waere
+   ein Uebergriff — und der Empfaenger haette hinterher zwanzig Sender im
+   Fach, die er nie gewaehlt hat.
+  */
+  pruefeGeteilteAdresse() {
+    if (!GETEILTE_PLATTEN) return;
+    const ids = GETEILTE_PLATTEN.split('.').filter(Boolean);
+    const sender = ids.map(id => this.ui.senderMitId(id)).filter(Boolean);
+    history.replaceState(null, '', location.pathname + location.search);
+    if (!sender.length) return;
+
+    this.ui.zeichneRegale(sender);
+    const behaelter = document.getElementById('regale');
+    const leiste = document.createElement('div');
+    leiste.className = 'teilen teilen--empfangen';
+    leiste.innerHTML = `
+      <span class="teilen__satz">${t('teilen.empfangen', { anzahl: sender.length })}</span>
+      <button class="knopf" type="button">${t('teilen.uebernehmen')}</button>`;
+    leiste.querySelector('button').addEventListener('click', () => {
+      for (const s of sender) if (!this.ui.istFavorit(s.id)) this.ui.toggleFavorit(s.id);
+      leiste.remove();
+      this.ui.meldung(t('teilen.uebernommen', { anzahl: sender.length }), 'info');
+      miss('teilen-uebernommen', { anzahl: sender.length });
+    });
+    document.querySelector('.teilen')?.remove();
+    behaelter.before(leiste);
+    leiste.scrollIntoView({ block: 'start' });
   }
 
   aktualisiereGriff() {
@@ -1669,10 +1941,22 @@ class App {
     const knopf432 = document.getElementById('knopf432');
     if (knopf432) {
       knopf432.disabled = this.myRetunerAktiv;
-      knopf432.querySelector('span:last-child').textContent =
+      knopf432.querySelector('.stimmung__wort').textContent =
         this.myRetunerAktiv ? t('kopf.432.myretuner')
                             : t(this.engine.ist432An ? 'kopf.432.an' : 'kopf.432.aus');
-      knopf432.classList.toggle('ist-an', this.engine.ist432An && !this.myRetunerAktiv);
+      const an = this.engine.ist432An && !this.myRetunerAktiv;
+      knopf432.classList.toggle('ist-an', an);
+      knopf432.setAttribute('aria-checked', String(an));
+      /*
+       Erst wenn die Stimmung wirklich an ist, wird darunter etwas sichtbar.
+       Vorher ist „Ich habe MyRetuner" eine Frage nach einem Ding, von dem
+       der Besucher noch nie gehoert hat — und ein Hinweis auf eine App die
+       Antwort auf eine Frage, die er nicht gestellt hat.
+
+       Angezeigt wird auch, solange MyRetuner selbst stimmt: Dann steht dort
+       die gemessene Tonhoehe, und die ist der eigentliche Beleg.
+      */
+      document.body.classList.toggle('stimmt-432', an || this.myRetunerAktiv);
     }
     /*
      Frueher stand hier die Beschriftung des zweiten Knopfes. Der ist kein

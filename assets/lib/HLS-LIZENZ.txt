@@ -1,0 +1,17 @@
+hls.js — Fassung 1.7.1, „light"-Bau, verkleinert
+https://github.com/video-dev/hls.js
+
+Copyright (c) 2017 Dailymotion (http://www.dailymotion.com)
+Lizenziert unter der Apache-Lizenz, Fassung 2.0.
+Der vollstaendige Text: https://www.apache.org/licenses/LICENSE-2.0
+
+Warum die Datei hier liegt und nicht von einem fremden Server kommt:
+Dieselbe Ueberlegung wie bei den Schriften. Ein Verweis auf ein
+Auslieferungsnetz schickte die Adresse jedes Besuchers dorthin, bevor er
+etwas angeklickt hat.
+
+Warum die „light"-Fassung: Sie laesst alles weg, was mit Bild, Untertiteln
+und alternativen Tonspuren zu tun hat. Hier laeuft nur Ton.
+
+Geladen wird sie erst, wenn wirklich ein HLS-Sender gestartet wird — die
+uebrigen Sender kosten davon nichts.

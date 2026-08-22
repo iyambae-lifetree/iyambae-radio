@@ -114,53 +114,169 @@ a { color: var(--pink-hell); }
 }
 .kopf__suche input::placeholder { color: var(--text-leise); }
 
-.kopf__schalter { display: flex; align-items: center; gap: 0.5rem; }
-/* Die gemessene Stimmung ist eine Klangangabe — blauer Reiter wie die
-   Klanggrade auf der Huelle und in der Filterleiste. */
+/* ── Die Stimmung ────────────────────────────────────────────────
+   Frueher standen hier drei Knoepfe oben rechts in der Kopfzeile: der
+   432-Hz-Schalter, die Frage „Ich habe MyRetuner" und ein Hinweis auf die
+   App. Drei Flaechen zu einem Thema, von dem ein neuer Besucher noch nie
+   gehoert hat — und das, bevor er einen Ton gehoert hatte.
+
+   Jetzt steht dort nichts mehr. Die Stimmung ist eine Einstellung des
+   Abspielens und sitzt deshalb am Spieler, direkt unter Abspielen und
+   Merken. Ein einziger Schalter, wie ein Lichtschalter gebaut, damit man
+   ohne Text sieht, ob er an ist.
+
+   Und alles Weitere kommt erst, wenn er an ist: Wer 432 Hz einschaltet,
+   hat die Frage gestellt, auf die MyRetuner die Antwort ist. Vorher waere
+   es eine Antwort auf eine Frage, die niemand gestellt hat. */
+/* Der Kasten ist Absicht. Sāmi-Ra: „Die Seite soll von Anfang an zu
+   erkennen geben, dass sie keine gewoehnliche Radiothek ist." Ein blosser
+   Schalter tut das nicht — er sieht aus wie eine Einstellung, an der man
+   vorbeiliest. Ein abgesetztes Feld mit einem Satz daneben sagt, worum es
+   geht, bevor man es anfasst.
+
+   Die goldene Kante ist dieselbe Farbe wie der Abspielknopf: Sie sagt
+   „hier ist etwas los", ohne zu blinken. */
+.stimmung {
+    margin-top: 1.2rem;
+    max-width: 34rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--gold) 26%, transparent);
+    border-inline-start: 3px solid var(--gold);
+    border-radius: 0.6rem;
+    background: linear-gradient(100deg,
+        color-mix(in srgb, var(--gold) 9%, transparent) 0%,
+        transparent 62%);
+}
+.stimmung__zeile {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 0.55rem 0.85rem;
+}
+.stimmung__erklaerung {
+    flex: 1 1 14rem;
+    margin: 0;
+    font-size: 0.82rem; line-height: 1.45;
+    color: #d8cfe6;
+}
+
+.stimmung__schalter {
+    display: inline-flex; align-items: center; gap: 0.6rem; flex: none;
+    padding: 0.5rem 1rem 0.5rem 0.55rem;
+    background: var(--karte-hoch);
+    border: 1px solid var(--rand-hell);
+    border-radius: 999px;
+    color: var(--text);
+    font-family: var(--mono); font-size: 0.82rem;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.stimmung__schalter:hover:not(:disabled) { border-color: var(--rand-hell); color: var(--text); }
+.stimmung__schalter:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Die Wippe: zwei Zustaende, ohne dass man das Wort daneben lesen muss. */
+.stimmung__wippe {
+    position: relative;
+    width: 2.1rem; height: 1.15rem; flex: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: inset 0 0 0 1px var(--rand);
+    transition: background-color 0.22s ease, box-shadow 0.22s ease;
+}
+.stimmung__punkt {
+    position: absolute; top: 50%; left: 0.18rem;
+    width: 0.8rem; height: 0.8rem;
+    border-radius: 50%;
+    background: var(--text-leise);
+    transform: translateY(-50%);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.22s ease;
+}
+.stimmung__schalter.ist-an { color: var(--text); border-color: color-mix(in srgb, var(--pink) 45%, transparent); }
+.stimmung__schalter.ist-an .stimmung__wippe {
+    background: color-mix(in srgb, var(--pink) 30%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pink) 55%, transparent);
+}
+.stimmung__schalter.ist-an .stimmung__punkt {
+    transform: translateY(-50%) translateX(0.95rem);
+    background: var(--pink);
+    box-shadow: 0 0 8px var(--pink);
+}
+.stimmung__wort { letter-spacing: 0.04em; }
+
+/* Was unter dem Schalter liegt, gibt es erst, wenn er an ist. */
+.stimmung__mehr { display: none; }
+body.stimmt-432 .stimmung__mehr {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+    margin-top: 0.65rem;
+    animation: stimmungAuf 0.3s ease-out;
+}
+@keyframes stimmungAuf { from { opacity: 0; transform: translateY(-0.3rem); } }
+@media (prefers-reduced-motion: reduce) {
+    body.stimmt-432 .stimmung__mehr { animation: none; }
+}
+
+.stimmung__frage {
+    padding: 0.4rem 0.8rem;
+    background: var(--karte);
+    border: 1px solid var(--rand);
+    border-radius: 999px;
+    color: var(--text-leise);
+    font-family: var(--mono); font-size: 0.72rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+.stimmung__frage:hover { border-color: var(--rand-hell); color: var(--text); }
+.stimmung__frage[hidden] { display: none; }
+
+/* Der Hinweis auf die App ist bewusst leise gehalten: ein Satz in einer
+   Zeile, kein Kasten, keine Umrandung. Er steht an der einzigen Stelle,
+   an der er etwas erklaert — naemlich neben der Naeherung, die er
+   ueberfluessig macht. */
+/* ── Der Abstand ─────────────────────────────────────────────────
+   Erscheint erst, wenn jemand 432 Hz eingeschaltet hat — also in dem
+   Moment, in dem er die Frage selbst gestellt hat.
+
+   Was hier steht, ist keine Anpreisung, sondern eine Messabweichung: Er
+   hat 432 verlangt und bekommt oft 435, weil der Browser die Stimmung
+   der Aufnahme nicht kennt. Das gehoert gesagt.
+
+   Und es gehoert LEISE gesagt. Kein Kasten, der aufpoppt, kein
+   Countdown, keine zweite Frage. Ein Absatz in der Farbe des Hauses, ein
+   Verweis, fertig. Wer weiterhoert, hoert weiter. */
+.abstand {
+    border-inline-start: 2px solid color-mix(in srgb, var(--gold) 40%, transparent);
+    padding-inline-start: 0.85rem;
+    max-width: 34rem;
+}
+.abstand__satz {
+    margin: 0 0 0.5rem;
+    font-size: 0.82rem; line-height: 1.5;
+    color: var(--text-leise);
+}
+.abstand__satz em { font-style: normal; color: var(--text); }
+.abstand__satz strong { color: var(--text); font-weight: 500; }
+.abstand__satz--loesung strong { color: var(--gold); font-weight: 500; }
+.abstand__leiste { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.7rem; }
+
+.abstand__weg {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+    border-radius: 999px;
+    color: var(--gold);
+    font-family: var(--mono); font-size: 0.74rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.abstand__weg:hover {
+    background: color-mix(in srgb, var(--gold) 12%, transparent);
+    border-color: var(--gold);
+}
+.abstand__weg[hidden] { display: none; }
+
 .messung {
-    border-inline-start: 3px solid var(--blau-hell);
-    padding: 0.35rem 0.7rem;
-    background: rgba(42, 124, 199, 0.16);
-    border: 1px solid rgba(62, 146, 214, 0.4);
-    border-radius: var(--rund);
-    font-family: var(--mono); font-size: 0.7rem; color: var(--blau-hell);
-    white-space: nowrap;
+    font-family: var(--mono); font-size: 0.72rem;
+    color: var(--gruen);
 }
 .messung[hidden] { display: none; }
-.schalter {
-    display: inline-flex; align-items: center; gap: 0.45rem;
-    padding: 0.45rem 0.8rem;
-    background: var(--karte); color: var(--text-leise);
-    border: 1px solid var(--rand); border-radius: var(--rund);
-    font-family: var(--mono); font-size: 0.72rem; cursor: pointer;
-    transition: all 0.2s ease; white-space: nowrap;
-}
-.schalter:hover:not(:disabled) { border-color: var(--rand-hell); color: var(--text); }
-.schalter:disabled { opacity: 0.5; cursor: not-allowed; }
-.schalter__punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--text-leise); transition: all 0.2s ease; }
-/* Laeuft die Umstimmung, traegt der Schalter denselben goldenen Reiter wie
-   alles andere, was zur Marke gehoert. */
-.schalter.ist-an {
-    color: var(--text);
-    border-color: rgba(242, 183, 5, 0.5);
-    border-inline-start: 3px solid var(--pink);
-}
-.schalter.ist-an .schalter__punkt { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
-
-/* Hinweis auf die App — die Voreinstellung für alle, die den IYAMBAE Tuner nicht
-   haben, und das sind die allermeisten Besucher. Deshalb sichtbar, aber
-   nicht laut: dieselbe Pillenform wie die Schalter daneben, nur mit einem
-   Anflug Gold. Wer die App hat, sieht sie nach dem ersten Mal nie wieder. */
-.schalter--werbung {
-    text-decoration: none;
-    color: var(--text);
-    border-color: rgba(242, 183, 5, 0.35);
-    background: linear-gradient(180deg, rgba(242, 183, 5, 0.10), rgba(242, 183, 5, 0.03));
-}
-.schalter--werbung:hover {
-    border-color: rgba(242, 183, 5, 0.6);
-    background: linear-gradient(180deg, rgba(242, 183, 5, 0.16), rgba(242, 183, 5, 0.06));
-}
 
 /* ── Kopfbereich ─────────────────────────────────────────────────── */
 .hero {
@@ -422,7 +538,13 @@ a { color: var(--pink-hell); }
     transform: rotate(-30deg);
     transition: transform 1.6s cubic-bezier(0.35, 1.0, 0.4, 1);
 }
-.tonarm__rohr        { fill: none; stroke: url(#rohrMetall); stroke-width: 3.8; stroke-linecap: round; }
+/* Gemessen an einer Aufnahme von oben: Das Rohr ist rund ein
+   Zweiundzwanzigstel der Armlaenge dick. Vorher war es doppelt so
+   fett — der haeufigste Fehler an gezeichneten Tonarmen. */
+.tonarm__rohr        { fill: none; stroke: url(#rohrMetall); stroke-width: 2.4; stroke-linecap: round; }
+.tonarm__griff       { fill: #b9b3c6; stroke: #8a839a; stroke-width: 0.3; }
+.tonarm__lagerteller { fill: #1b1725; stroke: rgba(255,255,255,0.07); stroke-width: 0.6; }
+.tonarm__lift        { fill: #2a2534; stroke: rgba(255,255,255,0.12); stroke-width: 0.4; }
 .tonarm__gewicht     { fill: url(#gewichtMetall); stroke: rgba(255,255,255,0.14); stroke-width: 0.5; }
 .tonarm__gewichtring { fill: rgba(255, 255, 255, 0.13); }
 .tonarm__shell       { fill: #d8d3e2; stroke: #9c96ab; stroke-width: 0.4; }
@@ -618,198 +740,92 @@ body.spielt .platte { animation-play-state: running; }
 @media (min-width: 1900px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 
 /* ── Regalwand ───────────────────────────────────────────────────
-   Die Kategorieübersicht.
+   Die Regale als Knoepfe, nicht als Bildkacheln.
 
-   Bisher gab es die Regale nur als Überschriften mitten im Fluss — man musste
-   an ihnen vorbeiscrollen, um zu erfahren, dass es sie gibt. Neun Fächer, neun
-   Bilder, ein Blick.
+   Vorher stand hier ein Mosaik aus je vier Senderlogos. Es sah aus wie eine
+   Sammlung, war aber vor allem laut: sechsunddreissig fremde Logos, bevor man
+   ueberhaupt beim ersten Sender ist. Was man an dieser Stelle sucht, ist der
+   Name des Regals und wie viel darin steht — mehr nicht.
 
-   Zu den Bildern: Erzeugt, aber nicht erfunden. Jedes Fach zeigt vier echte
-   Cover aus seinem Bestand als Mosaik — genau der Griff, mit dem Spotify und
-   Apple Music ihre Sammlungen bebildern. Ein gemaltes Fantasiebild wäre
-   hübscher und würde lügen: Es zeigte nicht, was im Fach steht. Das Mosaik
-   zeigt es, und es bleibt richtig, wenn morgen ein Sender dazukommt. */
-.regalwand { padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0.5rem; }
+   Die Form ist die der Trennkarten in einer Plattenkiste: schmale Schilder in
+   der Farbe ihres Fachs, nebeneinander in einer Reihe, die umbricht. Man
+   ueberfliegt sie in einem Zug.
+
+   Und sie filtern nicht. Ein Druck fuehrt zum Regal, so wie man im Laden zu
+   einem Tisch hinuebergeht — die anderen Tische bleiben, wo sie sind. */
+.regalwand { padding: clamp(1.2rem, 3.5vw, 2rem) clamp(1rem, 4vw, 2.5rem) 0.5rem; }
 .regalwand__kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
 .regalwand__titel { font-family: var(--anzeige); font-size: 1.15rem; font-weight: 600; }
 .regalwand__zahl { font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise); }
+
 .regalwand__raster {
-    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem;
+    display: flex; flex-wrap: wrap;
+    gap: 0.55rem;
 }
-@media (min-width: 560px)  { .regalwand__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 900px)  { .regalwand__raster { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; } }
-@media (min-width: 1200px) { .regalwand__raster { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 
 .regalfach {
     position: relative;
-    display: flex; flex-direction: column;
-    width: 100%; padding: 0;
-    background: var(--karte);
-    border: 1px solid var(--rand);
+    display: inline-flex; align-items: center; gap: 0.55rem;
+    padding: 0.62rem 0.85rem 0.62rem 0.75rem;
+    border-radius: 0.7rem;
+    background:
+        linear-gradient(150deg,
+            color-mix(in srgb, var(--regalton) 26%, transparent) 0%,
+            color-mix(in srgb, var(--regalton) 9%, transparent) 58%,
+            transparent 100%),
+        var(--karte);
+    border: 1px solid color-mix(in srgb, var(--regalton) 34%, transparent);
     color: var(--text);
-    font-family: inherit; text-align: start; cursor: pointer;
-    transition: border-color 0.18s ease, transform 0.18s ease,
-                box-shadow 0.18s ease, background-color 0.18s ease;
+    font-family: inherit; cursor: pointer;
+    transition: transform 0.16s ease, border-color 0.16s ease,
+                box-shadow 0.16s ease, background-color 0.16s ease;
+}
+/* Der farbige Punkt macht das Fach auch dann unterscheidbar, wenn jemand
+   die Namen nur ueberfliegt — und fuer Farbenblinde steht der Name daneben. */
+.regalfach::before {
+    content: '';
+    width: 0.5rem; height: 0.5rem; flex: none;
+    border-radius: 50%;
+    background: var(--regalton);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--regalton) 70%, transparent);
 }
 .regalfach:hover {
-    transform: translateY(-3px);
-    background: var(--karte-hoch);
-    border-color: color-mix(in srgb, var(--regalton) 60%, transparent);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--regalton) 70%, transparent);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
 }
-.regalfach.ist-aktiv {
-    border-color: var(--regalton);
-    box-shadow: 0 0 0 1px var(--regalton),
-                0 0 20px color-mix(in srgb, var(--regalton) 35%, transparent);
-}
-
-.regalfach__mosaik {
-    position: relative;
-    aspect-ratio: 1;
-    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
-    background: #0d0916;
-    overflow: hidden;
-    /* Sonst mischt sich der Regalton mit dem Seitenhintergrund statt mit dem
-       Mosaik darunter. */
-    isolation: isolate;
-}
-.regalfach__mosaik img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    transition: transform 0.4s ease;
-}
-.regalfach:hover .regalfach__mosaik img { transform: scale(1.05); }
-
-/* Der Regalton faerbt das Mosaik ein — die Helligkeit der Cover bleibt, die
-   Farbe wird die des Fachs. Ohne das sind neun Faecher nebeneinander ein
-   Flickenteppich aus sechsunddreissig Logos statt neun unterscheidbarer
-   Faecher. Mit ihm liest man die Wand wie farbige Trennkarten im Regal. */
-.regalfach__mosaik::after {
-    content: '';
-    position: absolute; inset: 0; z-index: 1;
-    background: var(--regalton);
-    mix-blend-mode: color;
-    opacity: 0.9;
-    pointer-events: none;
-}
-/* Und darueber etwas Tiefe, damit die Kachel nicht flach leuchtet. */
-.regalfach__mosaik::before {
-    content: '';
-    position: absolute; inset: 0; z-index: 2;
-    background: linear-gradient(155deg,
-        rgba(5, 2, 10, 0.10), rgba(5, 2, 10, 0.62));
-    pointer-events: none;
-}
-
-/* Der Name steht UNTER dem Bild, nicht darin. Im Bild lag er auf mal hellen,
-   mal dunklen Covern und stiess bei zwei Zeilen ueber die Kante. */
-.regalfach__text {
-    display: grid; gap: 0.1rem;
-    padding: 0.6rem 0.7rem 0.7rem;
-    border-top: 1px solid var(--rand);
+.regalfach:focus-visible {
+    outline: 2px solid var(--regalton);
+    outline-offset: 2px;
 }
 .regalfach__name {
-    font-family: var(--anzeige); font-weight: 700;
-    font-size: 0.85rem; line-height: 1.2;
-    letter-spacing: 0.01em;
-    text-wrap: balance;
-    /* Zwei Zeilen fest: "Japan" braucht eine, "Jazz & Verwandtes" zwei. Ohne
-       feste Hoehe sind die neun Faecher unterschiedlich hoch, und der
-       Platzhalter kann die Hoehe nicht vorher reservieren. */
-    min-height: 2.4em;
+    font-family: var(--anzeige);
+    font-size: 0.95rem; font-weight: 600;
+    white-space: nowrap;
 }
 .regalfach__zahl {
-    font-family: var(--mono); font-size: 0.62rem;
-    color: color-mix(in srgb, var(--regalton) 75%, #ffffff);
+    font-family: var(--mono);
+    font-size: 0.7rem; line-height: 1;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.35rem;
+    background: color-mix(in srgb, var(--regalton) 24%, rgba(0, 0, 0, 0.35));
+    color: var(--text);
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   DER REITER — das eine Prinzip, das alles zusammenhält
-
-   Vorher hatte diese Seite drei Formensprachen nebeneinander: Pillen mit
-   999 px Rundung für die Filter, scharfkantige Quadrate für die Hüllen,
-   gerundete Kästen für alles andere. Ich hatte das einmal damit begründet,
-   ein Aufkleber sei nun mal rund. Das war eine Ausrede dafür, die Arbeit
-   nicht zu machen — drei Sprachen in einem Bild sind keine Absicht, sondern
-   ein Versäumnis, und genau daran erkennt man erzeugte Oberflächen.
-
-   Was einen echten Plattenladen lesbar macht, ist die TRENNKARTE: ein
-   Stück Karton in der Kiste, hochkant, mit einer farbigen Kante. Die Farbe
-   sagt, in welchem Abschnitt man gerade wühlt. Nichts daran ist rund.
-
-   Also trägt hier jedes Element, das eine Kategorie bezeichnet, dieselbe
-   3-px-Kante am Zeilenanfang — und die Farbe sagt, welche Art:
-
-     Gold   Marke, Merkliste, das eigene Regal
-     Blau   Klang — dieselbe Farbe wie die Güteangabe auf der Hülle
-     Weiß   Wofür, die Anlässe
-     Grau   Wo, die Weltregion
-
-   Die Kante gibt es schon an zwei Stellen: an der Klangangabe im Etikett
-   und am Regalkopf. Sie war der Ansatz, dem der Rest jetzt folgt.
-   ═══════════════════════════════════════════════════════════════════ */
-
-.chip {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.34rem 0.7rem;
-    border: 1px solid var(--rand);
-    border-inline-start: 3px solid var(--reiter, var(--rand-hell));
-    border-radius: var(--rund);
-    background: var(--karte);
-    color: var(--text-leise);
-    font-family: var(--mono); font-size: 0.72rem;
-    line-height: 1.2;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background-color 0.18s ease, color 0.18s ease,
-                border-color 0.18s ease, opacity 0.18s ease;
+/* Wohin der Knopf fuehrt, soll man sehen: Das angesteuerte Regal blinkt
+   einmal kurz in seiner Farbe auf. Ohne das landet man irgendwo und weiss
+   nicht, ob man richtig ist. */
+.regal { scroll-margin-top: 5.5rem; }
+.regal.wird-angesteuert .regal__kopf { animation: regalGefunden 1.4s ease-out; }
+@keyframes regalGefunden {
+    0%   { box-shadow: inset 0 0 0 0 transparent; }
+    18%  { box-shadow: -0.6rem 0 0 -0.35rem var(--regalton); }
+    100% { box-shadow: -0.6rem 0 0 -0.35rem transparent; }
 }
-.chip span {
-    font-size: 0.65rem;
-    opacity: 0.55;
-    font-variant-numeric: tabular-nums;
+@media (prefers-reduced-motion: reduce) {
+    .regal.wird-angesteuert .regal__kopf { animation: none; }
+    .regalfach:hover { transform: none; }
 }
-.chip:hover:not(:disabled) { color: var(--text); background: var(--karte-hoch); }
-
-/* Aktiv heißt: die Reiterfarbe füllt den ganzen Chip. Ein Zustand, eine
-   Farbe — nicht Farbe plus Rahmen plus Fettung plus Haken. */
-.chip.ist-aktiv {
-    background: var(--reiter);
-    border-color: var(--reiter);
-    color: var(--grund);
-    font-weight: 700;
-}
-.chip.ist-aktiv span { opacity: 0.65; }
-
-/* Ein Chip, der zu null Treffern führte, bleibt stehen und wird stumpf.
-   Ihn zu verstecken wäre schlimmer: Dann wüsste niemand, dass es diesen
-   Filter gibt, und die Leiste spränge bei jedem Klick um. */
-.chip.ist-stumpf, .chip:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    text-decoration: line-through;
-    text-decoration-thickness: 1px;
-}
-
-.chip--klang  { --reiter: var(--blau-hell); }
-.chip--wofuer { --reiter: rgba(255, 255, 255, 0.55); }
-.chip--wo     { --reiter: var(--text-leise); }
-.chip--meine  { --reiter: var(--pink); }
-
-/* Der aktive Filter in der Leiste. Trägt sein Kreuz nach, weil sein Klick
-   entfernt statt hinzufügt — dasselbe Aussehen wäre bei umgekehrter Wirkung
-   eine Falle. */
-.chip--aktiv {
-    --reiter: var(--pink);
-    background: var(--pink);
-    border-color: var(--pink);
-    color: var(--grund);
-    font-weight: 700;
-}
-.chip--aktiv span {
-    opacity: 0.7; font-size: 0.85rem; line-height: 1;
-    margin-inline-start: 0.05rem;
-}
-.chip--aktiv:hover { background: var(--pink-hell); color: var(--grund); }
 
 /* ── Filterleiste ────────────────────────────────────────────────
    Klebt unter dem Kopf. Sie zeigt bewusst wenig: den Knopf zum Panel, drei
@@ -1134,10 +1150,7 @@ body.spielt .platte { animation-play-state: running; }
 .skelett--marken { height: 0.85rem; width: 64%; margin-top: auto; }
 .karte--skelett .karte__etikett > .skelett { flex: none; }
 .regal--skelett .regal__kopf { padding-block-end: 0.9rem; }
-.regalfach--skelett { pointer-events: none; }
-.regalfach--skelett .regalfach__mosaik::before,
-.regalfach--skelett .regalfach__mosaik::after { display: none; }
-.regalfach--skelett .regalfach__text { display: grid; gap: 0.4rem; }
+.regalfach--skelett { pointer-events: none; min-width: 8rem; }
 
 /* Der Wochentipp erscheint erst, wenn der Katalog da ist. Frueher stand er
    auf hidden und schob beim Auftauchen alles darunter um rund 300 px nach
@@ -1778,8 +1791,10 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
        er auf 390 px Breite um 100 px ueber den Rand — sichtbar abgeschnitten,
        weil body overflow-x versteckt. Eigene Zeile statt Kuerzung: Der Satz
        ist das Angebot, ein Kuerzel waere keins. */
-    .kopf__schalter { order: 4; flex: 1 1 100%; justify-content: flex-start; flex-wrap: wrap; }
-    .schalter { font-size: 0.66rem; padding: 0.35rem 0.6rem; }
+    /* Auf dem Handy hat die Kopfzeile jetzt nur noch Marke, Suche und
+       Sprache — die Stimmung sitzt unten beim Spieler. */
+    .stimmung__schalter { font-size: 0.72rem; }
+    .stimmung__mehr, .stimmung__frage, .stimmung__hinweis { font-size: 0.68rem; }
 
     .hero { padding-top: 1rem; }
     .griffe { grid-template-columns: 1fr 1fr; }
@@ -1922,9 +1937,6 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
         linear-gradient(225deg, rgba(242, 183, 5, 0.07), rgba(42, 124, 199, 0.05)),
         var(--karte);
 }
-[dir="rtl"] .regalfach__mosaik::before {
-    background: linear-gradient(205deg, rgba(5, 2, 10, 0.10), rgba(5, 2, 10, 0.62));
-}
 [dir="rtl"] .huelle {
     background: linear-gradient(212deg,
         color-mix(in srgb, var(--regalton) 30%, #0d0916) 0%,
@@ -1988,3 +2000,48 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
        41 px Ueberstand unveraendert stehen. */
     [dir="rtl"] .plattenspieler { margin-inline-start: 3rem; }
 }
+
+/* ── Platten weitergeben ─────────────────────────────────────────
+   Die Leiste steht ueber dem Ergebnis, nicht darunter: Wer sein Fach
+   ansieht, soll den Weg zum Weitergeben sehen, ohne zu suchen. */
+.teilen {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem;
+    margin: 0 clamp(1rem, 4vw, 2.5rem) 1.2rem;
+    padding: 0.8rem 1rem;
+    background: var(--karte);
+    border: 1px solid var(--rand);
+    border-radius: 0.5rem;
+}
+.teilen--empfangen { border-color: color-mix(in srgb, var(--gold) 45%, transparent); }
+.teilen__satz { font-size: 0.9rem; color: var(--text-leise); }
+.teilen--empfangen .teilen__satz { color: var(--text); }
+.teilen__feld {
+    flex: 1 1 16rem; min-width: 0;
+    padding: 0.45rem 0.6rem;
+    background: var(--grund); color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: 0.35rem;
+    font-family: var(--mono); font-size: 0.72rem;
+}
+
+/* ── Was gerade laeuft ───────────────────────────────────────────
+   Steht unter dem Sendernamen und verschwindet, sobald nichts mehr
+   kommt. Kein Platzhalter, keine drei Punkte: Ein Feld, das meistens
+   „unbekannt" sagt, ist schlimmer als keins. */
+.hero__titel {
+    margin: 0.35rem 0 0;
+    font-size: 0.92rem;
+    color: var(--gold);
+    display: flex; align-items: baseline; gap: 0.45rem;
+}
+.hero__titel[hidden] { display: none; }
+.hero__titel::before {
+    content: '♪';
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+.spieler__titel {
+    font-family: var(--mono); font-size: 0.68rem;
+    color: var(--gold);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.spieler__titel[hidden] { display: none; }
