@@ -362,7 +362,7 @@ einzeln abschalten:
 
 - **Fehlerberichte** (Abschnitt 4) — Widerruf deiner Einwilligung nach Art. 7 Abs. 3 DSGVO.
 - **Reichweitenmessung** (Abschnitt 3) — Widerspruch nach Art. 21 Abs. 1 DSGVO. Du musst dafür keinen Grund nennen; wir fragen auch nicht nach einem.
-- **Die MyRetuner-Abfrage** (Abschnitt 9) — Widerruf deiner Einwilligung.
+- **Die Abfrage an den IYAMBAE Tuner** (Abschnitt 9) — Widerruf deiner Einwilligung.
 
 Beides wirkt ab dem Klick und für die Zukunft. Deine Entscheidung wird auf
 deinem Gerät gespeichert, sonst wäre sie beim nächsten Besuch wieder weg — dafür
@@ -381,7 +381,7 @@ Der Reihe nach:
 - **Was auf deinem Gerät gespeichert wird** (Abschnitt 8) — Merkliste, Lautstärke, Sprachwahl, Zwischenspeicher der App — ist unbedingt erforderlich für den Dienst, den du ausdrücklich verlangt hast. § 25 Abs. 2 Nr. 2 TDDDG nimmt genau das von der Einwilligung aus.
 - **Die Zugriffsprotokolle** (Abschnitt 2) entstehen auf dem Server. Auf deinem Gerät passiert dabei nichts, also greift § 25 TDDDG nicht.
 - **Die Reichweitenmessung** (Abschnitt 3) speichert nichts auf deinem Gerät und liest nichts von dort — auch das Sprachkürzel nicht, das kommt aus dem Pfad. Auch hier greift § 25 TDDDG nicht, und die DSGVO trägt sie über Art. 6 Abs. 1 lit. f — mit dem Widerspruchsschalter als Gegengewicht.
-- **Die zwei Dinge, für die es wirklich eine Einwilligung braucht** — Fehlerberichte und die MyRetuner-Abfrage — werden **in dem Moment** erfragt, in dem sie anstehen: der eine, wenn ein Fehler auftritt, die andere, wenn du auf „Ich habe MyRetuner" klickst. Das ist eine bessere Frage als eine im Voraus, weil du in dem Moment weißt, worum es geht.
+- **Die zwei Dinge, für die es wirklich eine Einwilligung braucht** — Fehlerberichte und die Abfrage an den IYAMBAE Tuner — werden **in dem Moment** erfragt, in dem sie anstehen: der eine, wenn ein Fehler auftritt, die andere, wenn du auf „Ich habe IYAMBAE Tuner" klickst. Das ist eine bessere Frage als eine im Voraus, weil du in dem Moment weißt, worum es geht.
 
 **Und der Grund, warum wir keinen Banner bauen, obwohl er einfacher wäre:** Ein
 Banner, der Einwilligung erbittet, wo keine nötig ist, erweckt den Eindruck, die
@@ -514,7 +514,7 @@ nirgendwohin.
 | `hz_fehlschlaege` | welche Sender nicht ansprangen (ab dem dritten Mal rutscht ein Sender ans Regalende) |
 | `hz_lautstaerke` | die Stellung des Reglers |
 | `hz_pitch432` | ob die Umstimmung im Browser an ist |
-| `hz_myretuner`, `hz_mr_zustand` | ob MyRetuner erkannt wurde und wie du auf die Frage geantwortet hast |
+| `hz_myretuner`, `hz_mr_zustand` | ob der IYAMBAE Tuner erkannt wurde und wie du auf die Frage geantwortet hast |
 | `hz_fehlerbericht` | deine Antwort auf die Fehlerbericht-Frage |
 | `hz_messung` | **nur, wenn** du die Reichweitenmessung abgeschaltet hast (Abschnitt 5) |
 | `hz_sprache` | deine gewählte Sprache |
@@ -565,22 +565,41 @@ nicht sehen.
 
 ---
 
-## 9. Die Abfrage an deinen eigenen Rechner (MyRetuner)
+## 9. Die Abfrage an deinen eigenen Rechner (IYAMBAE Tuner)
 
-**Was passiert.** MyRetuner ist ein Programm für macOS, das die Systemwiedergabe
+**Was passiert.** Der IYAMBAE Tuner ist ein Programm für macOS, das die Systemwiedergabe
 in Echtzeit umstimmt. Läuft es, kann diese Seite ihre eigene, ungenauere
-Umstimmung abschalten und MyRetuner das Feld überlassen. Um das zu erkennen,
+Umstimmung abschalten und dem IYAMBAE Tuner das Feld überlassen. Um das zu erkennen,
 fragt die Seite eine Adresse auf **deinem eigenen Rechner** ab:
-`http://127.0.0.1:47432/status`, mit einer halben Sekunde Zeitlimit.
+`http://127.0.0.1:47432/status`.
+
+Die laufende Abfrage im Hintergrund bricht nach einer halben Sekunde ab, damit
+die Seite nicht an ihr hängt. **Für den Versuch direkt nach deinem Klick gilt
+das ausdrücklich nicht.** In dieser Zeit stehen zwei Rückfragen an, die du
+beantworten sollst: erst die deines Browsers, dann die der App. Solange dein
+Browser fragt, wartet die Anfrage — und sie wartet, bis du geantwortet hast.
+Die Obergrenze von einer Minute ist keine Antwortzeit, sondern nur die
+Sicherung dagegen, dass ein unbeantworteter Aufruf für immer offen bleibt.
+
+**Wir lesen dabei einen Berechtigungsstand.** Bevor gefragt wird und noch
+einmal danach, sieht die Seite nach, ob dein Browser ihr den Zugriff auf
+Programme auf deinem Gerät erlaubt (`navigator.permissions`). Das löst keinen
+Dialog aus, es liest nur den Stand — und es ist nötig, weil sich „dein Browser
+lässt uns nicht" sonst nicht von „die App läuft nicht" unterscheiden lässt:
+Beides sieht für die Seite identisch aus. Der Stand verlässt dein Gerät nicht.
 
 `127.0.0.1` ist dein Gerät selbst. Diese Anfrage verlässt deinen Rechner nicht.
 Sie geht nicht ins Internet, nicht an uns, an niemanden.
 
-**Wann sie stattfindet.** Nur, wenn du vorher auf „Ich habe MyRetuner" geklickt
+**Wann sie stattfindet.** Nur, wenn du vorher auf „Ich habe den IYAMBAE Tuner" geklickt
 hast und die Abfrage einmal erfolgreich war. Ist das der Fall, wird beim Laden
 der Seite und danach alle fünf Sekunden nachgefragt, solange Musik läuft — damit
-die Anzeige stimmt, auch wenn du MyRetuner zwischendurch beendest. Hast du nicht
-geklickt oder abgelehnt, wird **nicht** gefragt. Deine Antwort steht in
+die Anzeige stimmt, auch wenn du den IYAMBAE Tuner zwischendurch beendest. Hast du nicht
+geklickt, oder blieb der Versuch ohne Ergebnis, wird **nicht** von selbst
+gefragt — der Knopf bleibt aber stehen, damit du es noch einmal versuchen
+kannst. Auch im Fall „einmal erlaubt" wird vorher der Berechtigungsstand
+gelesen: Steht er nicht auf *erlaubt*, unterbleibt die Abfrage, damit dich
+kein Dialog überrascht, den du nicht angefordert hast. Deine Antwort steht in
 `hz_mr_zustand` auf deinem Gerät.
 
 Ein Browser kann nicht von sich aus sehen, welche Programme auf deinem Rechner
@@ -588,7 +607,7 @@ laufen — das wäre eine Sicherheitslücke. Deshalb dieser Umweg: Die App muss 
 melden, und du musst das beiden Seiten erlauben — erst dem Browser, dann der App
 selbst, die noch einmal nachfragt.
 
-**Was die Seite dabei erfährt.** Ob MyRetuner läuft, die eingestellte
+**Was die Seite dabei erfährt.** Ob der IYAMBAE Tuner läuft, die eingestellte
 Zielstimmung (etwa „432" oder „528"), die gemessene Ausgangsstimmung des
 laufenden Stücks und wie sicher die App bei dieser Messung ist. Mehr gibt die
 App nicht heraus.
@@ -600,7 +619,7 @@ einzige Spur ist der Zustand in deinem örtlichen Speicher.
 **Rechtsgrundlage.** Art. 6 Abs. 1 lit. a DSGVO für den Klick, mit dem du das
 freischaltest, und § 25 Abs. 1 TDDDG für den Zugriff auf Informationen in deinem
 Endgerät. Zurücknehmen kannst du es im Einstellungsbereich in der Fußzeile
-(Abschnitt 5), indem du MyRetuner beendest oder die Websitedaten für iyambae.fm
+(Abschnitt 5), indem du den IYAMBAE Tuner beendest oder die Websitedaten für iyambae.fm
 löschst.
 
 **Empfänger, Drittland, Speicherdauer:** keine, keins, keine. Es verlässt dein
@@ -779,7 +798,7 @@ bearbeiten es gleich.
 - **Einschränkung der Verarbeitung** (Art. 18 DSGVO).
 - **Datenübertragbarkeit** (Art. 20 DSGVO): Deine Kontodaten bekommst du in einem maschinenlesbaren Format.
 - **Widerspruch** (Art. 21 DSGVO): Gegen jede Verarbeitung, die auf Art. 6 Abs. 1 lit. f gestützt ist — Zugriffsprotokolle, Reichweitenmessung, Schriftauslieferung, das Starten von Audioströmen — kannst du aus Gründen, die sich aus deiner besonderen Situation ergeben, Widerspruch einlegen. **Für die Reichweitenmessung brauchst du dafür keine Nachricht und keinen Grund: Der Schalter in der Fußzeile genügt** (Abschnitt 5).
-- **Widerruf einer Einwilligung** (Art. 7 Abs. 3 DSGVO): jederzeit, mit Wirkung für die Zukunft. Betrifft die Fehlerberichte und die MyRetuner-Abfrage — beides ebenfalls über die Fußzeile.
+- **Widerruf einer Einwilligung** (Art. 7 Abs. 3 DSGVO): jederzeit, mit Wirkung für die Zukunft. Betrifft die Fehlerberichte und die Abfrage an den IYAMBAE Tuner — beides ebenfalls über die Fußzeile.
 
 **Bei den Rechten gibt es eine ehrliche Grenze.** Für die Zugriffsprotokolle
 können wir dir kaum Auskunft geben — wir wissen nicht, welche der gekürzten

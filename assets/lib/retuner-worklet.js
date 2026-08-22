@@ -1,5 +1,5 @@
 /*
- MyRetuners Signalkern im Audio-Thread des Browsers.
+ Der Signalkern des IYAMBAE Tuners im Audio-Thread des Browsers.
 
  Dieselbe C-Datei, die auf dem Mac das Systemaudio umstimmt, hier als
  WebAssembly. Damit rät die Seite nicht mehr: `playbackRate` ändert Tonhöhe

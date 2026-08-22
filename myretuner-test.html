@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>MyRetuner-Anbindung prüfen</title>
+<title>IYAMBAE-Tuner-Anbindung prüfen</title>
 <style>
   body { font-family: -apple-system, system-ui, sans-serif; max-width: 44rem;
          margin: 2rem auto; padding: 0 1.2rem; line-height: 1.6; color: #1a1a1a; }
@@ -19,9 +19,9 @@
 </style>
 </head>
 <body>
-<h1>Kommt die MyRetuner-Erkennung durch?</h1>
+<h1>Kommt die Erkennung des IYAMBAE Tuners durch?</h1>
 <p class="klein">Diese Seite fragt einmal <code>http://127.0.0.1:47432/status</code> ab und
-sagt, was dabei herauskommt. MyRetuner muss laufen.</p>
+sagt, was dabei herauskommt. Der IYAMBAE Tuner muss laufen.</p>
 
 <div class="kasten warten" id="ergebnis">
   <div class="titel">Wird geprüft …</div>
@@ -48,16 +48,16 @@ async function pruefe() {
     const daten = await antwort.json();
     const dauer = Math.round(performance.now() - begonnen);
 
-    if (daten.app !== 'myretuner') {
+    if (daten.app !== 'iyambae-tuner' && daten.app !== 'myretuner') {
       kasten.className = 'kasten schlecht';
       kasten.innerHTML = '<div class="titel">Da antwortet etwas anderes</div>' +
-        '<p>Der Anschluss ist belegt, aber nicht von MyRetuner.</p>';
+        '<p>Der Anschluss ist belegt, aber nicht vom IYAMBAE Tuner.</p>';
       return;
     }
 
     kasten.className = 'kasten gut';
     kasten.innerHTML = '<div class="titel">✓ Die Erkennung funktioniert in diesem Browser</div>' +
-      '<p>MyRetuner hat nach ' + dauer + ' ms geantwortet. Damit greift die automatische ' +
+      '<p>Der IYAMBAE Tuner hat nach ' + dauer + ' ms geantwortet. Damit greift die automatische ' +
       'Erkennung auf der Radioseite — der Schalter springt von allein um.</p>';
     const einleitung = document.createElement('p');
     einleitung.className = 'klein';
@@ -70,7 +70,7 @@ async function pruefe() {
      <img onerror=…> würde feuern.
 
      Und diese Antwort ist Fremdtext: Auf Port 47432 antwortet, wer sich
-     zuerst daran gebunden hat. Das muss nicht MyRetuner sein.
+     zuerst daran gebunden hat. Das muss nicht der IYAMBAE Tuner sein.
     */
     const rohtext = document.createElement('pre');
     rohtext.textContent = JSON.stringify(daten, null, 2);
@@ -102,7 +102,7 @@ async function pruefe() {
     const liste = document.createElement('ol');
 
     const grund1 = document.createElement('li');
-    grund1.innerHTML = '<b>MyRetuner läuft nicht.</b> Starten und nochmal prüfen.';
+    grund1.innerHTML = '<b>Der IYAMBAE Tuner läuft nicht.</b> Starten und nochmal prüfen.';
 
     const grund2 = document.createElement('li');
     grund2.innerHTML = '<b>Du hast dieser Seite noch nichts erlaubt.</b> ' +

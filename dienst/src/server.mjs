@@ -57,6 +57,7 @@ import {
     saeubereVerlauf, verschmelzeVerlauf,
 } from './abgleich.mjs';
 import { erzeugeFremdanmeldung } from './fremd.mjs';
+import { saeubereAbgabe, legeAbgabeAb } from './umfrage.mjs';
 
 const PORT = Number(process.env.PORT ?? 8081);
 const HOECHSTER_KOERPER = Number(process.env.HOECHSTER_KOERPER ?? 32 * 1024);
@@ -881,6 +882,76 @@ export function baueDienst({ speicher, versender, drossel = erzeugeDrossel(), fr
             }
             await loescheKonto(speicher, sitzung.kontoId);
             return { status: 204, kopf: { 'Set-Cookie': baueLoeschPlaetzchen() } };
+        },
+
+        /*
+          Die Umfrage. DER EINZIGE SCHREIBENDE WEG OHNE SITZUNG.
+
+          Das ist kein Versehen und keine Bequemlichkeit: Eine Umfrage hinter
+          einer Anmeldung misst die Angemeldeten, und gefragt wird gerade
+          nach dem Preis fuer ein Werkzeug, das jemand kaufen wuerde, der
+          hier noch nie ein Konto hatte. Die Begruendung im Langen steht oben
+          in umfrage.mjs.
+
+          WEIL ER OFFEN IST, IST DIE DROSSEL DIE EINZIGE VERTEIDIGUNG. Sie
+          hat hier nur zwei Achsen, und die Achse „Adresse" fehlt nicht,
+          sondern gibt es nicht — es wird keine erhoben.
+
+          DIE ZAHLEN SIND KEINE NEUEN. Es sind die von
+          /api/passwort/vergessen, dem einzigen bestehenden Weg mit
+          derselben Form: unangemeldet, selten, hoechstens einmal je Mensch.
+          Eine eigene Zahl waere eine, die man kuenftig mitpflegen und
+          begruenden muesste, und sie waere geraten.
+
+          WIE MEHRFACHABGABEN OHNE KENNUNG BEGRENZT WERDEN, und das ist die
+          Stelle, an der es sich entscheidet: Die Achse „Netz" zaehlt je /24
+          bzw. /32 — und dieser Zaehler liegt AUSSCHLIESSLICH im
+          Arbeitsspeicher, laeuft von selbst wieder voll und wird nirgendwo
+          hingeschrieben. Er ist keine Kennung, weil er nichts ueberdauert
+          und in keiner Zeile auftaucht. Die gespeicherte Antwort traegt
+          weder das Netz noch einen Abdruck davon; die beiden Dinge sind
+          nicht verbindbar, auch nicht von uns.
+
+          KEIN `aufBoden`. Der Zeitboden schuetzt davor, aus der Antwortdauer
+          zu lesen, ob eine Adresse bekannt ist. Hier wird nichts
+          nachgeschlagen, es gibt nichts zu erraten — und eine Viertelsekunde
+          gehaltene Verbindung je Abgabe waere Kosten ohne Gegenwert.
+        */
+        'POST /api/umfrage': async ({ koerper, netz, start }) => {
+            drossle([
+                ['netz', 'umfr:' + netz, 10, 30 * 60_000],
+                ['global', 'umfr:*', 60, 60_000],
+            ]);
+
+            const antworten = saeubereAbgabe(koerper);
+
+            /*
+              Nichts hat die Erlaubnisliste ueberlebt. Dann wird auch keine
+              leere Zeile angelegt — und die Seite erfaehrt es, statt ein
+              „Danke" zu zeigen. Genau darum bittet der Kommentar in der
+              Oberflaeche: Ein Danke zu zeigen und die Antwort wegzuwerfen
+              waere eine Luege an der Stelle, an der jemand gerade geholfen
+              hat.
+            */
+            if (!Object.keys(antworten).length) {
+                protokolliere({ art: 'umfrage', ergebnis: 'abgelehnt', grund: 'nichts_erkannt' });
+                return { status: 400, koerper: { fehler: 'nichts_erkannt' } };
+            }
+
+            await legeAbgabeAb(speicher, antworten);
+
+            /*
+              `anzahl` ist die Zahl der beantworteten Fragen, nicht deren
+              Inhalt. WELCHE Antwort jemand gegeben hat, steht in der
+              Tabelle und hat im Protokoll nichts verloren — dieselbe Regel
+              wie bei /api/verlauf/abgleich, wo die Anzahl ins Protokoll geht
+              und der Sender nicht.
+            */
+            protokolliere({
+                art: 'umfrage', ergebnis: 'ok',
+                anzahl: Object.keys(antworten).length, dauer: Date.now() - start,
+            });
+            return { status: 204 };
         },
 
         /*

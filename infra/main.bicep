@@ -140,7 +140,7 @@ param mailDomaene string = 'mail.iyambae.fm'
 param datenOrt string = 'Germany'
 
 @description('Erlaubte Ursprünge für den Anmeldedienst. Grundlage der Herkunftsprüfung UND des Passwortlinks.')
-param erlaubteUrspruenge string = 'https://iyambae.fm,https://www.iyambae.fm'
+param erlaubteUrspruenge string = 'https://iyambae.fm,https://www.iyambae.fm,https://apps.iyambae.fm'
 
 /*
   Die RP-ID für Passkeys MUSS die registrierbare Domain sein, nicht der
@@ -515,6 +515,21 @@ resource tabellendienst 'Microsoft.Storage/storageAccounts/tableServices@2023-05
 resource tabelleKonten 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
   parent: tabellendienst
   name: 'konten'
+}
+
+/*
+  Die Umfrage bekommt eine EIGENE Tabelle, ausdruecklich nicht konten oder
+  verweise.
+
+  Dort haengt jede Zeile an einer Person. Hier haengt sie an nichts — kein
+  Konto, keine Kennung, keine Adresse. Zwei Arten Zeilen in einer Tabelle
+  bekommen frueher oder spaeter ein gemeinsames Feld, und dann ist die
+  Umfrage einer Person zuzuordnen. Genau dieser Fehler ist uns heute bei der
+  Reichweitenmessung schon einmal begegnet.
+*/
+resource tabelleUmfrage 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
+  parent: tabellendienst
+  name: 'umfrage'
 }
 
 /*

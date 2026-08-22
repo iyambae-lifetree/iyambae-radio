@@ -79,7 +79,7 @@ const SHELL_FILES = [
     '/assets/lib/sprache.mjs',
     '/assets/lib/aktualisierung.mjs',
     '/assets/lib/fehlerbericht.mjs',
-    // MyRetuners Signalkern. Der Worklet wird nicht importiert, sondern per
+    // Der Signalkern des IYAMBAE Tuners. Der Worklet wird nicht importiert, sondern per
     // addModule geladen, und die .wasm per fetch — beides sieht der
     // import-Ausdruck nicht. Scripts/pruefe-shell-dateien.py prueft deshalb
     // auch diese beiden Wege.

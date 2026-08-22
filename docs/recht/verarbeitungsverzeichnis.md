@@ -101,7 +101,7 @@ zwingt dazu, einmal aufzuschreiben, was man eigentlich tut.
 | V4 | Einbindung von Schriftarten (Google Fonts) | **entfallen am 21.08.2026** | — |
 | V5 | Vermittlung von Audioströmen Dritter | aktiv | Art. 6 I f |
 | V6 | Speicherung auf dem Endgerät | aktiv | § 25 II Nr. 2 TDDDG; Art. 6 I f |
-| V7 | Abfrage der örtlichen MyRetuner-Schnittstelle | aktiv | Art. 6 I a; § 25 I TDDDG |
+| V7 | Abfrage der örtlichen IYAMBAE-Tuner-Schnittstelle | aktiv | Art. 6 I a; § 25 I TDDDG |
 | V8 | Kontaktaufnahme und Betroffenenanfragen | aktiv | Art. 6 I c, f |
 | V9 | Benutzerkonten | **geplant** | Art. 6 I b |
 | V10 | Versand von Transaktionsmails | **geplant** | Art. 6 I b |
@@ -234,19 +234,19 @@ gehören mit ins Repository und ins Abbild — siehe HINWEISE.md.
 
 ---
 
-## V7 — Abfrage der örtlichen MyRetuner-Schnittstelle
+## V7 — Abfrage der örtlichen IYAMBAE-Tuner-Schnittstelle
 
 | Feld | Inhalt |
 |---|---|
 | **Bezeichnung** | Erkennung einer auf dem Endgerät laufenden Anwendung |
-| **Zweck** | Feststellen, ob MyRetuner läuft, um die eigene, ungenauere Umstimmung im Browser abzuschalten und die gemessene Stimmung anzuzeigen |
-| **Rechtsgrundlage** | Art. 6 Abs. 1 lit. a DSGVO (Klick auf „Ich habe MyRetuner"); § 25 Abs. 1 TDDDG für den Zugriff auf Informationen im Endgerät |
-| **Kategorien betroffener Personen** | Besucher, die MyRetuner installiert haben **und** die Abfrage freigeschaltet haben |
-| **Kategorien personenbezogener Daten** | Laufzustand der Anwendung; eingestellte Zielstimmung; gemessene Ausgangsstimmung; Vertrauenswert der Messung. Auf dem Endgerät gespeichert: `hz_mr_zustand` (einer von drei Werten) |
+| **Zweck** | Feststellen, ob der IYAMBAE Tuner läuft, um die eigene, ungenauere Umstimmung im Browser abzuschalten und die gemessene Stimmung anzuzeigen |
+| **Rechtsgrundlage** | Art. 6 Abs. 1 lit. a DSGVO (Klick auf „Ich habe den IYAMBAE Tuner"); § 25 Abs. 1 TDDDG für den Zugriff auf Informationen im Endgerät |
+| **Kategorien betroffener Personen** | Besucher, die den IYAMBAE Tuner installiert haben **und** die Abfrage freigeschaltet haben |
+| **Kategorien personenbezogener Daten** | Laufzustand der Anwendung; eingestellte Zielstimmung; gemessene Ausgangsstimmung; Vertrauenswert der Messung; Stand der Browserberechtigung für den Zugriff auf das eigene Gerät (nur gelesen, <code>navigator.permissions</code>). Auf dem Endgerät gespeichert: `hz_mr_zustand` (einer von drei Werten) |
 | **Empfänger** | **keine.** Die Anfrage geht an `http://127.0.0.1:47432/status`, also an das Gerät des Besuchers selbst, und verlässt es nicht. Es wird nichts an den Server übertragen |
 | **Drittlandübermittlung** | nein |
 | **Löschfrist** | keine Speicherung beim Verantwortlichen. Auf dem Endgerät bis zum Löschen der Websitedaten |
-| **TOM** | Keine automatische Abfrage vor Freischaltung; doppelte Zustimmung (Browserberechtigung und Nachfrage der Anwendung selbst); Zeitlimit 500 ms, damit die Seite nicht hängt; jede Fehlerantwort wird gleich behandelt („nicht installiert"), damit kein Ausspähkanal entsteht |
+| **TOM** | Keine automatische Abfrage vor Freischaltung; doppelte Zustimmung (Browserberechtigung und Nachfrage der Anwendung selbst); Zeitlimit 500 ms für die Abfrage im Hintergrund, damit die Seite nicht hängt; für den Versuch nach dem Klick bewusst KEIN kurzes Limit, sondern eine Obergrenze von 60 s allein als Schutz vor einem dauerhaft offenen Aufruf — ein kurzes Limit bräche die Anfrage ab, während der Browserdialog noch steht; keine automatische Abfrage, solange der Berechtigungsstand nicht auf <code>granted</code> steht; Klicksperre von 30 s nach einem Fehlversuch, nur im Arbeitsspeicher, weil eine Ablage auf dem Endgerät dafür nicht verhältnismäßig wäre; jede Fehlerantwort wird gleich behandelt („nicht installiert"), damit kein Ausspähkanal entsteht |
 | **Widerruf** | Einstellungsbereich in der Fußzeile — mit V11 zusammen eingerichtet |
 | **Fundstellen** | `assets/lib/myretuner.mjs`, `assets/app.js` (`starteMyRetunerErkennung`) |
 

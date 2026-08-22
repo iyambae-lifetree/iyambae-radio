@@ -22,6 +22,7 @@ eingetragen.
 | `src/passwort.mjs` | Argon2id hinter einer Schranke, NIST-Regeln, Leak-Abgleich |
 | `src/mail.mjs` | ACS-Versand mit Warteschlange und eigener Ratenbegrenzung |
 | `src/abgleich.mjs` | Verschmelzen von Merkliste und Verlauf — reine Rechnung |
+| `src/umfrage.mjs` | die vier Fragen: Erlaubnisliste, Freitextsaeuberung, Ablage |
 | `src/protokoll.mjs` | eine JSON-Zeile je Ereignis nach stdout, ohne Personenbezug |
 
 Das Warum steht jeweils oben in der Datei, nicht hier. Diese Seite sagt, wie
@@ -252,7 +253,42 @@ Sprachen, der Dienst keine. Ein deutscher Satz aus dem Server waere auf
 | `POST /api/verlauf/abgleich` | 200 · 401 | dito |
 | `GET /api/konto/ausfuhr` | 200 · 401 | Anhang `iyambae-konto.json` |
 | `DELETE /api/konto` | 204 · 400 · 401 | verlangt `{bestaetigung:"loeschen"}` |
+| `POST /api/umfrage` | 204 · 400 · 413 · 429 | — bzw. `{fehler:'nichts_erkannt'}` |
 | `GET /api/leben` | 204 | ohne Sitzung, ohne Protokolleintrag |
+
+### `POST /api/umfrage` — der einzige schreibende Weg ohne Sitzung
+
+Alle vier Felder sind **freiwillig**; wer ueberspringt, schickt sie nicht mit.
+Was nicht in dieser Tabelle steht, wird still verworfen — Feldnamen **und**
+Werte sind abschliessend.
+
+| Feld | Erlaubte Werte |
+|---|---|
+| `heute` | `gar-nicht` · `handy` · `dateien` · `browser` · `bastelei` · `youtube` |
+| `fehlt` | `handy-systemton` · `sammlung` · `andere-stimmungen` · `radio` · `qualitaet` · `einfacher` |
+| `preis` | `0` · `19` · `39` · `69` · `99` (Stufen, keine Betraege — deshalb Zeichenketten) |
+| `sprache` | `de` · `en` · `fr` · `es` · `it` · `ja` · `ar` |
+| `vorschlag` | Freitext, hoechstens 600 Zeichen — das einzige offene Feld |
+
+Bleibt nach der Erlaubnisliste **nichts** uebrig, wird keine Zeile angelegt
+und der Dienst antwortet 400. Ein „Danke" zu zeigen und die Antwort
+wegzuwerfen waere eine Luege an der Stelle, an der jemand gerade geholfen hat.
+
+**Gespeichert wird** eine Zeile in der Tabelle `umfrage`: Partitionsschluessel
+ist der Tag (`JJJJ-MM-TT`, UTC), Zeilenschluessel ein `randomUUID`, dazu die
+erlaubten Felder. **Nicht gespeichert wird**: Kennung, Plaetzchen, Sitzung,
+Adresse, Netz, Abdruck davon.
+
+**Mehrfachabgaben** begrenzt allein die Drossel, mit den Zahlen von
+`/api/passwort/vergessen` (10 je Netz und halber Stunde, 60 global je Minute).
+Der Netzzaehler liegt ausschliesslich im Arbeitsspeicher, laeuft von selbst
+wieder voll und taucht in keiner Zeile auf — er ist deshalb keine Kennung,
+und Zaehler und Antwort sind nicht verbindbar.
+
+Der Freitext ist das einzige Feld, das gesaeubert wird: Adressen und lange
+Zeichenfolgen mit Ziffern werden geschwaerzt, spitze Klammern und
+Steuerzeichen fallen weg, danach wird auf 600 Zeichen gekuerzt. Das Warum
+steht in `src/umfrage.mjs`.
 
 **Gruende bei `code_ungueltig`:** `form` (keine sechs Ziffern — zaehlt nicht
 gegen die fuenf Versuche), `kein_code`, `abgelaufen`, `falsch` (mit `uebrig`),
@@ -455,6 +491,26 @@ Anmeldedienstes auch das Radio weg.
 
 ## Was offen bleibt
 
+- **Die Tabelle `umfrage` ist in `infra/main.bicep` noch nicht angelegt.**
+  Ohne sie antwortet `POST /api/umfrage` gegen Azure mit 503. Der Eintrag
+  gehoert neben `tabelleKonten` und `tabelleVerweise`, gleiche Bauart, Name
+  `umfrage` — fremde Datei, hier nicht angefasst.
+- **`apps.iyambae.fm` reicht `/api/` gar nicht weiter.** Der Serverblock in
+  `deploy/nginx.conf` hat nur `location /`, und dessen `try_files` faellt auf
+  `index.html` zurueck. `POST /api/umfrage` bekaeme von dort **200 mit einer
+  HTML-Seite** — die Umfrage prueft nur `antwort.ok`, zeigte also „Danke" und
+  wuerfe die Antwort weg. Das ist schlimmer als ein Fehler, weil es niemand
+  merkt. Der Block gehoert kopiert wie bei `iyambae.fm`; fremde Datei, hier
+  nicht angefasst.
+- **`ERLAUBTE_URSPRUENGE` enthaelt `https://apps.iyambae.fm` nicht.** Sobald
+  der Block oben steht, wird jeder POST von dort mit 403 `herkunft_fremd`
+  abgewiesen. Die Variable gehoert um diesen Ursprung erweitert. Sie ist
+  zugleich Grundlage des Passwortlinks; der erste Eintrag muss
+  `https://iyambae.fm` bleiben.
+- **Die Umfrageantworten werden nie wieder weggeraeumt.** Es gibt keine Frist
+  und keinen Durchgang. Weil die Zeilen niemandem zuzuordnen sind, verlangt
+  auch niemand eine Loeschung — wer sie trotzdem will, loescht ganze
+  Tagespartitionen.
 - **Der Ratenzaehler gilt je Replik.** `main.bicep` laesst bis zu drei zu;
   aus „5 Versuche je Minute" werden dann 15. Ein gemeinsamer Zaehler kostete
   einen Schreibvorgang je Anfrage und damit die Leerlaufabrechnung. Solange
