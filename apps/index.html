@@ -89,7 +89,7 @@
    in der FAQ, abrufbar für den, der fragt.
 
    DER RHYTHMUS AUS HELL UND DUNKEL BLEIBT DAS MITTEL.
-   Dunkel ist die Welt des Geräts: schwarz lackiertes Blech, Messing, ein
+   Dunkel ist die Welt des Geräts: der Grund der App, der Farbklang, ein
    Schirm. Hell ist die Welt des Papiers: dort wird erzählt. Die FAQ ist
    jetzt die helle Welt — genau der Ort, an den das Erzählen gehört, und
    die Kammerton-Skala steht damit weiter auf dem Papier, für das sie
@@ -101,32 +101,45 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Die dunkle Welt: schwarz lackiertes Blech mit einem Hauch Braun.
-     Reines Neutralgrau sieht neben Messing schmutzig aus. */
-  --nacht:        #0A0908;
-  --blech:        #13110F;
-  --blech-hoch:   #1B1815;
-  --gravur:       #262220;
-  --gravur-hell:  #383230;
+  /* Der Grund, wie ihn die App traegt: docs/erscheinungsbild.md im
+     MyRetuner-Repo legt #38393F oben und #121216 unten fest. Die Werte
+     stehen hier ZEICHENGLEICH, damit Seite und Programm nicht auseinander-
+     laufen — bis zum 23.08.2026 trug diese Seite Messing, waehrend beide
+     Fassungen laengst den Regenbogen trugen. */
+  --nacht:        #0B0B0E;
+  --grund:        #121216;
+  --grund-hoch:   #1C1D23;
+  --kante:        #2A2B33;
+  --kante-hell:   #38393F;
 
-  /* Die helle Welt: Papier, wie es in einem Katalog von 1900 lag.
-     Tinte und Messing sind gegenüber der vorigen Fassung abgedunkelt —
-     die alten Werte lagen auf diesem Papier unter 4,5:1. */
-  --papier:       #EDE7DC;
-  --tinte:        #201C18;
-  --tinte-leise:  #5F574D;
-  --linie-hell:   #CFC5B2;
-  --tinte-messing: #7A560E;
+  /* Die helle Welt. Kuehl statt papierwarm, sonst kippt der Regenbogen
+     darauf ins Schmutzige. */
+  --papier:       #F2F1F4;
+  --tinte:        #121216;
+  --tinte-leise:  #5A5B66;
+  --linie-hell:   #D6D4DC;
+  --tinte-akzent: #6B3FA0;
 
-  --messing:      #B8862B;
-  --messing-hell: #E3B25C;
-  --kalt:         #7C8FA3;
+  /* Die fuenf Farben des Erscheinungsbilds, 45 Grad. Sie gehoeren dem
+     Zeichen und der einen gewaehlten Flaeche — nicht dem Fliesstext:
+     auf hellem Grund traegt keine von ihnen genug Kontrast fuer Schrift
+     (gerechnet: Violett 3,32:1, Gelb 1,67:1 gegen Weiss). */
+  --r1: #FF5252;
+  --r2: #FABF33;
+  --r3: #4CD973;
+  --r4: #4C9EFA;
+  --r5: #B866FA;
+  --regenbogen: linear-gradient(45deg, #FF5252, #FABF33, #4CD973, #4C9EFA, #B866FA);
 
-  /* Auch hier heller als vorher: --leise trägt jetzt den Fliesstext in
-     den dunklen Abschnitten und muss lesbar sein, nicht nur dezent. */
-  --text:         #EDE9E1;
-  --leise:        #A9A093;
-  --leiser:       #7C7468;
+  /* Wo eine einzelne Farbe noetig ist, wo der Verlauf nicht passt:
+     der mittlere Ton. Auf dem dunklen Grund 8,1:1. */
+  --akzent:       #4CD973;
+  --akzent-hell:  #7DE89A;
+  --kalt:         #8B93A8;
+
+  --text:         #ECECF0;
+  --leise:        #A6A7B2;
+  --leiser:       #74757F;
 
   --anzeige: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
   --grotesk: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -156,15 +169,15 @@ body {
 .rahmen { max-width: 70rem; margin: 0 auto; padding-inline: clamp(1.1rem, 4vw, 2.5rem); }
 .eng    { max-width: 42rem; }
 
-a { color: var(--messing-hell); text-underline-offset: .2em; }
+a { color: var(--akzent-hell); text-underline-offset: .2em; }
 a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible {
-  outline: 2px solid var(--messing-hell); outline-offset: 3px;
+  outline: 2px solid var(--akzent-hell); outline-offset: 3px;
 }
 strong { font-weight: 600; }
 
 .eyebrow {
   font-family: var(--daten); font-size: .68rem; letter-spacing: .22em;
-  text-transform: uppercase; color: var(--messing); margin: 0 0 1.3rem;
+  text-transform: uppercase; color: var(--akzent); margin: 0 0 1.3rem;
   font-weight: 400;
 }
 
@@ -173,7 +186,7 @@ strong { font-weight: 600; }
   position: sticky; top: 0; z-index: 30;
   background: color-mix(in srgb, var(--nacht) 90%, transparent);
   backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--gravur);
+  border-bottom: 1px solid var(--kante);
 }
 .kopfleiste__inhalt {
   display: flex; align-items: center; justify-content: space-between;
@@ -190,21 +203,21 @@ strong { font-weight: 600; }
 .kopfknopf {
   font-family: var(--daten); font-size: .7rem; letter-spacing: .08em;
   color: var(--leise); text-decoration: none;
-  border: 1px solid var(--gravur-hell); padding: .38rem .85rem;
+  border: 1px solid var(--kante-hell); padding: .38rem .85rem;
   transition: color .18s, border-color .18s; white-space: nowrap;
 }
-.kopfknopf:hover { color: var(--text); border-color: var(--messing); }
+.kopfknopf:hover { color: var(--text); border-color: var(--akzent); }
 .kopfknopf--haupt {
-  background: var(--messing-hell); border-color: var(--messing-hell);
+  background: var(--akzent-hell); border-color: var(--akzent-hell);
   color: var(--nacht); font-weight: 700;
 }
-.kopfknopf--haupt:hover { background: var(--messing); border-color: var(--messing); color: var(--nacht); }
+.kopfknopf--haupt:hover { background: var(--akzent); border-color: var(--akzent); color: var(--nacht); }
 @media (max-width: 30rem) { .kopfknopf:not(.kopfknopf--haupt) { display: none; } }
 
 /* ── Aufmacher ───────────────────────────────────────────────────── */
 /* Oben knapper als vorher. Jede Zeile Luft über der Falz kostet eine
    Zeile Inhalt darunter, und was oben stand, war nur Luft. */
-.aufmacher { padding-block: clamp(2rem, 5vw, 3.2rem) clamp(1.5rem, 4vw, 2.5rem); }
+.aufmacher { padding-block: clamp(1.6rem, 3.5vw, 2.4rem) clamp(1.5rem, 4vw, 2.5rem); }
 
 /* Zwei Spalten: das Versprechen links, die PROBE rechts.
 
@@ -218,9 +231,14 @@ strong { font-weight: 600; }
    einer Spalte steht der Knopf oben und die Probe direkt darunter — auch
    das ist die richtige Reihenfolge. */
 .aufmacher__satz {
-  display: grid; gap: clamp(2rem, 5vw, 3.2rem);
+  display: grid;
+  gap: clamp(1.4rem, 3vw, 2.2rem) clamp(2rem, 5vw, 3.2rem);
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
-  align-items: center;
+  /* start statt center: Zentriert schob die linke Spalte rund 200 Pixel
+     Leere ueber die Ueberschrift und die Ladezone damit unter die Falz.
+     Auf einer Erklaerseite war das eine ruhige Komposition; auf einer
+     Landeseite ist der Knopf, den man nicht sieht, kein Knopf. */
+  align-items: start;
 }
 @media (max-width: 64rem) { .aufmacher__satz { grid-template-columns: minmax(0, 1fr); } }
 
@@ -236,7 +254,21 @@ strong { font-weight: 600; }
   line-height: 1.02; letter-spacing: -.015em;
   margin: 0 0 1rem; text-wrap: balance;
 }
-.aufmacher h1 em { font-style: italic; color: var(--messing-hell); }
+.aufmacher h1 em {
+  font-style: italic;
+  /* Der eine grosse Moment der Seite. Der Verlauf laeuft durch die
+     Schrift, nicht dahinter — deshalb background-clip und nicht etwa
+     ein Kasten. Faellt der Browser darauf zurueck, bleibt die Farbe
+     lesbar stehen (color unter dem transparenten Text). */
+  color: var(--akzent-hell);
+  background: var(--regenbogen);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+@supports not (background-clip: text) {
+  .aufmacher h1 em { -webkit-text-fill-color: currentColor; color: var(--akzent-hell); }
+}
 
 .aufmacher__vorwort {
   font-size: clamp(1.02rem, 2vw, 1.2rem);
@@ -267,11 +299,11 @@ html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
   flex-direction: column; align-items: flex-start; gap: .3rem;
   max-width: 27rem; text-decoration: none;
   padding: 1.05rem 1.6rem;
-  color: var(--nacht); background: var(--messing-hell);
-  border: 1px solid var(--messing-hell);
+  color: var(--nacht); background: var(--akzent-hell);
+  border: 1px solid var(--akzent-hell);
   transition: background .18s, border-color .18s;
 }
-.grossknopf:hover { background: var(--messing); border-color: var(--messing); color: var(--nacht); }
+.grossknopf:hover { background: var(--akzent); border-color: var(--akzent); color: var(--nacht); }
 .grossknopf__tat {
   font-family: var(--daten); font-size: clamp(.82rem, 2.2vw, .95rem);
   font-weight: 700; letter-spacing: .05em; text-transform: uppercase; line-height: 1.15;
@@ -281,13 +313,17 @@ html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
   line-height: 1.35; opacity: .8;
 }
 
-/* Windows und Telefon bekommen denselben Platz, aber kein Messing.
+/* Das Telefon bekommt denselben Platz, aber keinen Farbklang.
 
    Ein Knopf, hinter dem keine Datei liegt, darf nicht aussehen wie einer,
    hinter dem eine liegt. Das ist kein Gestaltungsgeschmack, das ist der
-   Unterschied zwischen einem Hinweis und einer Enttäuschung. */
+   Unterschied zwischen einem Hinweis und einer Enttäuschung.
+
+   BERICHTIGT AM 23.08.2026: Hier stand „Windows und Telefon". Für Windows
+   stimmt das nicht mehr — seit dem 21.08. liegt dort ein Installer, seit
+   heute in 1.1.0. Übrig bleibt das Telefon, und dort ist es weiter wahr. */
 .grossknopf--warten {
-  background: transparent; color: var(--text); border-color: var(--gravur-hell);
+  background: transparent; color: var(--text); border-color: var(--kante-hell);
 }
 .grossknopf--warten:hover { background: transparent; color: var(--text); border-color: var(--kalt); }
 .grossknopf--warten .grossknopf__zusatz { opacity: 1; color: var(--leise); }
@@ -297,22 +333,22 @@ html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
 .nebenweg { margin: .9rem 0 0; font-size: .84rem; color: var(--leiser); }
 .nebenweg .fuer { --fuer-anzeige: inline; }
 .nebenweg a { color: var(--leise); text-decoration: underline; }
-.nebenweg a:hover { color: var(--messing-hell); }
+.nebenweg a:hover { color: var(--akzent-hell); }
 
 /* ── Das eine Bild: das Menüleisten-Fenster ──────────────────────── */
 .schaubild { margin: 0; }
 .panel {
-  border: 1px solid var(--gravur-hell);
-  background: linear-gradient(180deg, var(--blech-hoch), var(--blech));
+  border: 1px solid var(--kante-hell);
+  background: linear-gradient(180deg, var(--grund-hoch), var(--grund));
   max-width: 23rem; margin-inline: auto;
 }
 .panel__kopf {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  padding: .8rem 1.1rem; border-bottom: 1px solid var(--gravur);
+  padding: .8rem 1.1rem; border-bottom: 1px solid var(--kante);
   font-family: var(--daten); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase;
 }
 .panel__marke { color: var(--leise); }
-.panel__lampe { color: var(--messing-hell); display: inline-flex; align-items: center; gap: .4rem; }
+.panel__lampe { color: var(--akzent-hell); display: inline-flex; align-items: center; gap: .4rem; }
 .panel__lampe::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
 .panel__gross { padding: 1.4rem 1.1rem .3rem; }
@@ -332,20 +368,20 @@ html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
    aria-hidden. Ein Element, das aussieht wie ein Bedienteil und keines ist,
    darf für die Sprachausgabe nicht existieren. */
 .panel__balken {
-  position: relative; height: 2px; background: var(--gravur-hell);
+  position: relative; height: 2px; background: var(--kante-hell);
   margin: 1.2rem 1.1rem 1.4rem;
 }
 .panel__balken span {
   position: absolute; top: -12px; left: 38%; width: 13px; height: 26px;
-  background: linear-gradient(180deg, var(--messing-hell), var(--messing));
+  background: linear-gradient(180deg, var(--akzent-hell), var(--akzent));
   box-shadow: 0 0 0 1px rgba(0,0,0,.6);
 }
-.panel__werte { margin: 0; border-top: 1px solid var(--gravur); }
+.panel__werte { margin: 0; border-top: 1px solid var(--kante); }
 .panel__werte > div {
   display: flex; justify-content: space-between; gap: 1rem;
   padding: .55rem 1.1rem; font-family: var(--daten); font-size: .72rem;
 }
-.panel__werte > div + div { border-top: 1px solid var(--gravur); }
+.panel__werte > div + div { border-top: 1px solid var(--kante); }
 .panel__werte dt { color: var(--leiser); }
 .panel__werte dd { margin: 0; color: var(--text); font-variant-numeric: tabular-nums; }
 
@@ -359,10 +395,10 @@ html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
 .dreizeiler {
   display: grid; gap: 1px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  background: var(--gravur); border: 1px solid var(--gravur);
+  background: var(--kante); border: 1px solid var(--kante);
 }
 @media (max-width: 58rem) { .dreizeiler { grid-template-columns: minmax(0, 1fr); } }
-.dreizeiler > div { background: var(--blech); padding: 1.5rem 1.6rem; }
+.dreizeiler > div { background: var(--grund); padding: 1.5rem 1.6rem; }
 .dreizeiler h3 {
   font-family: var(--anzeige); font-weight: 400; font-size: 1.5rem;
   margin: 0 0 .4rem; color: var(--text); line-height: 1.1;
@@ -378,7 +414,7 @@ html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: center;
   gap: .7rem; padding: clamp(1rem, 3vw, 1.8rem);
-  background: var(--blech);
+  background: var(--grund);
   font-size: .92rem; line-height: 1.55; color: var(--leise);
 }
 .sicht__ersatz p { margin: 0; }
@@ -404,7 +440,7 @@ html[data-os="mobil"] .kopf--mobil { display: block; }
 
 /* ── Die dunklen Abschnitte ──────────────────────────────────────── */
 .teil { padding-block: clamp(3rem, 8vw, 5rem); }
-.teil--linie { border-top: 1px solid var(--gravur); }
+.teil--linie { border-top: 1px solid var(--kante); }
 .teil--eng { padding-block: clamp(1.5rem, 4vw, 2.5rem); }
 
 h2 {
@@ -412,7 +448,7 @@ h2 {
   font-size: clamp(1.9rem, 4.6vw, 3.1rem); line-height: 1.05;
   letter-spacing: -.012em; margin: 0 0 1.2rem; text-wrap: balance;
 }
-h2 em { font-style: italic; color: var(--messing-hell); }
+h2 em { font-style: italic; color: var(--akzent-hell); }
 .teil p { color: var(--leise); margin: 0 0 1.1rem; }
 .teil p:last-child { margin-bottom: 0; }
 .teil strong { color: var(--text); font-weight: 500; }
@@ -430,13 +466,13 @@ h2 em { font-style: italic; color: var(--messing-hell); }
    drücken. */
 .geraet {
   margin-top: clamp(2rem, 5vw, 3rem);
-  border: 1px solid var(--gravur-hell);
-  background: linear-gradient(180deg, var(--blech-hoch), var(--blech));
+  border: 1px solid var(--kante-hell);
+  background: linear-gradient(180deg, var(--grund-hoch), var(--grund));
   position: relative;
 }
 .geraet::before, .geraet::after {
   content: ""; position: absolute; width: 5px; height: 5px; top: 10px;
-  border-radius: 50%; background: var(--gravur-hell);
+  border-radius: 50%; background: var(--kante-hell);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
 }
 .geraet::before { left: 10px; }
@@ -456,7 +492,7 @@ h2 em { font-style: italic; color: var(--messing-hell); }
 .ablesung {
   display: flex; gap: clamp(1.4rem, 5vw, 3.5rem); flex-wrap: wrap;
   margin: 1.2rem clamp(1rem, 3vw, 2rem) 0;
-  padding-bottom: 1rem; border-bottom: 1px solid var(--gravur);
+  padding-bottom: 1rem; border-bottom: 1px solid var(--kante);
   font-family: var(--daten); font-variant-numeric: tabular-nums;
 }
 .ablesung__feld { display: flex; flex-direction: column; gap: .25rem; }
@@ -473,10 +509,14 @@ h2 em { font-style: italic; color: var(--messing-hell); }
 .ablesung__wert--ruhig { color: var(--kalt); }
 
 .sicht {
-  position: relative; margin: 1rem clamp(1rem, 3vw, 2rem);
-  border: 1px solid var(--gravur); background: #060505; overflow: hidden;
+  position: relative; margin: .8rem clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--kante); background: #060505; overflow: hidden;
 }
-.sicht canvas { display: block; width: 100%; height: 180px; }
+/* 180 auf 132: Das Sichtfenster war das hoechste Einzelstueck der
+   Kopfzone und drueckte die drei Ladeknoepfe unter die Falz. Die
+   Schwebung bleibt bei 132 Pixeln klar erkennbar — nachgesehen, nicht
+   geschaetzt. */
+.sicht canvas { display: block; width: 100%; height: 132px; }
 @media (max-width: 40rem) { .sicht canvas { height: 140px; } }
 
 .bedienteil {
@@ -494,17 +534,17 @@ input[type="range"] {
   width: 100%; height: 26px; background: transparent; cursor: grab; margin: 0;
 }
 input[type="range"]:active { cursor: grabbing; }
-input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--gravur-hell); }
-input[type="range"]::-moz-range-track { height: 2px; background: var(--gravur-hell); }
+input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--kante-hell); }
+input[type="range"]::-moz-range-track { height: 2px; background: var(--kante-hell); }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
   width: 13px; height: 26px; margin-top: -12px; border: 0;
-  background: linear-gradient(180deg, var(--messing-hell), var(--messing));
+  background: linear-gradient(180deg, var(--akzent-hell), var(--akzent));
   box-shadow: 0 0 0 1px rgba(0,0,0,.6);
 }
 input[type="range"]::-moz-range-thumb {
   width: 13px; height: 26px; border: 0; border-radius: 0;
-  background: linear-gradient(180deg, var(--messing-hell), var(--messing));
+  background: linear-gradient(180deg, var(--akzent-hell), var(--akzent));
 }
 .skala {
   display: flex; justify-content: space-between;
@@ -515,27 +555,82 @@ input[type="range"]::-moz-range-thumb {
   font-family: var(--daten); font-size: .72rem; letter-spacing: .1em;
   text-transform: uppercase; font-weight: 700;
   padding: .78rem 1.5rem; cursor: pointer; white-space: nowrap;
-  color: var(--nacht); background: var(--messing-hell); border: 1px solid var(--messing-hell);
+  color: var(--nacht); background: var(--akzent-hell); border: 1px solid var(--akzent-hell);
   transition: background .18s, color .18s;
 }
-.hoerknopf[aria-pressed="true"] { background: transparent; color: var(--messing-hell); }
-.hoerknopf:hover { background: var(--messing); border-color: var(--messing); color: var(--nacht); }
+.hoerknopf[aria-pressed="true"] { background: transparent; color: var(--akzent-hell); }
+.hoerknopf:hover { background: var(--akzent); border-color: var(--akzent); color: var(--nacht); }
+
+/* ── Die drei Plattformknoepfe ──────────────────────────────────
+   Eine Reihe auf breiten Schirmen, gestapelt auf schmalen. Kein
+   Rasterzwang: bei drei Elementen kostet flex-wrap nichts und haelt
+   die Knoepfe auch dann zusammen, wenn eine Uebersetzung laenger
+   ausfaellt als die deutsche.
+
+   Die Zeichen sind einfarbig und erben ueber currentColor den Ton des
+   Knopfs — deshalb steht hier keine einzige Farbe fuer sie.        */
+.holzone { grid-column: 1 / -1; }
+.plattformen {
+  display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.8rem;
+}
+.plattform {
+  flex: 1 1 13rem; min-width: 0;
+  display: flex; flex-direction: column; gap: .45rem;
+  padding: 1rem 1.1rem 1.05rem;
+  border: 1px solid var(--kante-hell); border-radius: 2px;
+  background: var(--grund-hoch); color: var(--text); text-decoration: none;
+  transition: border-color .16s, background .16s, transform .16s;
+}
+.plattform:hover { border-color: var(--akzent); background: var(--kante); }
+.plattform:focus-visible { outline: 2px solid var(--akzent-hell); outline-offset: 3px; }
+.plattform__zeichen { color: var(--leise); }
+.plattform:hover .plattform__zeichen { color: var(--akzent-hell); }
+.plattform__tat {
+  font-family: var(--daten); font-size: .78rem; font-weight: 500;
+  letter-spacing: .02em; line-height: 1.25;
+}
+.plattform__zusatz { font-size: .74rem; line-height: 1.45; color: var(--leiser); }
+
+/* Das erkannte System steht vor, es verdraengt die anderen aber nicht.
+   Ohne Erkennung — kein JavaScript, unbekanntes System — bleiben alle
+   drei gleichberechtigt, und das ist ein brauchbarer Zustand, kein
+   Notfall. */
+html[data-os="mac"]   .plattform[data-fuer="mac"],
+html[data-os="win"]   .plattform[data-fuer="win"],
+html[data-os="linux"] .plattform[data-fuer="linux"] {
+  border-color: var(--akzent); background: var(--kante);
+  order: -1;
+}
+html[data-os="mac"]   .plattform[data-fuer="mac"]   .plattform__zeichen,
+html[data-os="win"]   .plattform[data-fuer="win"]   .plattform__zeichen,
+html[data-os="linux"] .plattform[data-fuer="linux"] .plattform__zeichen {
+  color: var(--akzent-hell);
+}
+@media (prefers-reduced-motion: reduce) { .plattform { transition: none; } }
 
 .stimmungen { display: flex; flex-wrap: wrap; gap: .4rem; padding: 0 clamp(1rem, 3vw, 2rem) 1.4rem; }
 .stimmung {
   font-family: var(--daten); font-size: .66rem; padding: .4rem .75rem; cursor: pointer;
-  background: transparent; color: var(--leise); border: 1px solid var(--gravur-hell);
+  background: transparent; color: var(--leise); border: 1px solid var(--kante-hell);
   transition: color .16s, border-color .16s;
 }
 .stimmung:hover { color: var(--text); border-color: var(--kalt); }
-.stimmung[aria-pressed="true"] { color: var(--messing-hell); border-color: var(--messing); }
+/* Genau der Griff, den die App auf ihrer gewaehlten Pille anwendet
+   (docs/erscheinungsbild.md). Dunkle Tinte auf dem Verlauf, gerechnet
+   5,62:1 bis 11,18:1 — die Schwelle ist 4,5. */
+.stimmung[aria-pressed="true"] {
+  background: var(--regenbogen);
+  color: var(--tinte);
+  border-color: transparent;
+  font-weight: 700;
+}
 .stimmung b { font-weight: 700; }
 .stimmung span { color: var(--leiser); margin-inline-start: .4em; }
-.stimmung[aria-pressed="true"] span { color: var(--messing); }
+.stimmung[aria-pressed="true"] span { color: var(--tinte); opacity: .72; }
 
 .geraet__fuss {
-  border-top: 1px solid var(--gravur); padding: .85rem clamp(1rem, 3vw, 2rem);
-  font-size: .8rem; color: var(--leiser); margin: 0;
+  border-top: 1px solid var(--kante); padding: .7rem clamp(1rem, 3vw, 2rem);
+  font-size: .76rem; line-height: 1.5; color: var(--leiser); margin: 0;
 }
 
 /* Die engere Fassung fürs Kopfende der Seite. */
@@ -552,16 +647,16 @@ input[type="range"]::-moz-range-thumb {
 .karten {
   display: grid; gap: 1px; margin-top: 2.2rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  background: var(--gravur); border: 1px solid var(--gravur);
+  background: var(--kante); border: 1px solid var(--kante);
 }
 @media (max-width: 62rem) { .karten { grid-template-columns: minmax(0, 1fr); } }
 .karte {
-  background: var(--blech); padding: clamp(1.4rem, 3vw, 2rem);
+  background: var(--grund); padding: clamp(1.4rem, 3vw, 2rem);
   display: flex; flex-direction: column; gap: .8rem;
 }
 /* Die Karte, an der etwas dran ist, trägt mehr Licht. Ein Akzent, der auf
    allen dreien läge, wäre keiner. */
-.karte--bereit { background: var(--blech-hoch); }
+.karte--bereit { background: var(--grund-hoch); }
 
 .karte__kopf { display: flex; align-items: baseline; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
 .karte__name {
@@ -569,7 +664,7 @@ input[type="range"]::-moz-range-thumb {
   font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: .95;
   color: var(--text); letter-spacing: -.01em;
 }
-.karte--bereit .karte__name { color: var(--messing-hell); }
+.karte--bereit .karte__name { color: var(--akzent-hell); }
 .karte__wofuer {
   font-family: var(--daten); font-size: .62rem; letter-spacing: .1em;
   color: var(--leiser); white-space: nowrap;
@@ -584,15 +679,15 @@ input[type="range"]::-moz-range-thumb {
   text-decoration: none; padding: .85rem 1.15rem;
   font-family: var(--daten); font-size: .78rem; font-weight: 700;
   letter-spacing: .06em; text-transform: uppercase;
-  color: var(--nacht); background: var(--messing-hell);
-  border: 1px solid var(--messing-hell);
+  color: var(--nacht); background: var(--akzent-hell);
+  border: 1px solid var(--akzent-hell);
   transition: background .18s, border-color .18s;
 }
-.laden:hover { background: var(--messing); border-color: var(--messing); color: var(--nacht); }
+.laden:hover { background: var(--akzent); border-color: var(--akzent); color: var(--nacht); }
 .laden__groesse { font-weight: 400; opacity: .75; letter-spacing: .02em; text-transform: none; }
 .laden--leise {
   background: transparent; color: var(--leise);
-  border-color: var(--gravur-hell); font-weight: 400; text-transform: none;
+  border-color: var(--kante-hell); font-weight: 400; text-transform: none;
   letter-spacing: .02em; font-size: .76rem;
 }
 .laden--leise:hover { background: transparent; color: var(--text); border-color: var(--kalt); }
@@ -603,7 +698,7 @@ input[type="range"]::-moz-range-thumb {
    Knopf: Ein Knopf, hinter dem etwas liegt, das nach dem Doppelklick
    nichts tut, kostet mehr Vertrauen als ein fehlender Knopf. */
 .karte__stand {
-  border: 1px dashed var(--gravur-hell); padding: .9rem 1.1rem;
+  border: 1px dashed var(--kante-hell); padding: .9rem 1.1rem;
   font-family: var(--daten); font-size: .7rem; line-height: 1.7; color: var(--leise);
 }
 .karte__stand b {
@@ -621,7 +716,7 @@ input[type="range"]::-moz-range-thumb {
   --fuer-anzeige: inline-block; align-self: flex-start;
   font-family: var(--daten); font-size: .56rem; letter-spacing: .16em;
   text-transform: uppercase; font-weight: 700;
-  color: var(--nacht); background: var(--messing-hell); padding: .22rem .55rem;
+  color: var(--nacht); background: var(--akzent-hell); padding: .22rem .55rem;
 }
 
 /* Erkanntes System nach vorn. `order` verschiebt nur die Darstellung —
@@ -632,11 +727,15 @@ html[data-os="win"]   .karte--win   { order: -1; }
 /* Auf Windows gibt es nichts zu holen — aber die Karte, die den Besucher
    angeht, soll trotzdem die hellere sein. Sonst wirkt sein System wie
    eine Fussnote. */
-html[data-os="win"]   .karte--win   { background: var(--blech-hoch); }
+html[data-os="win"]   .karte--win   { background: var(--grund-hoch); }
 html[data-os="win"]   .karte--win .karte__name { color: var(--kalt); }
-/* Auf der Windows-Karte liegt nichts zum Laden. Ihre Marke trägt deshalb
-   Kalt und kein Messing — Messing ist auf dieser Seite die Farbe der
-   Dinge, die man mitnehmen kann. */
+/* BERICHTIGT AM 23.08.2026. Hier stand: „Auf der Windows-Karte liegt
+   nichts zum Laden." Das war bis zum 21.08. richtig und ist es nicht mehr.
+
+   Die Regeln bleiben trotzdem stehen, aber aus einem anderen Grund: Die
+   Windows-Fassung stimmt Dateien um, nicht den Systemton. Der kühle Ton
+   sagt jetzt „kann weniger", nicht mehr „gibt es nicht" — und genau das
+   ist der Vorbehalt, den Sāmi-Ra ausdrücklich benannt haben wollte. */
 html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
 
 /* ── Was gleich passiert: die drei Schritte ──────────────────────── */
@@ -659,14 +758,14 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
 
 .hinterher h3 {
   font-family: var(--daten); font-size: .66rem; letter-spacing: .18em;
-  text-transform: uppercase; color: var(--messing); font-weight: 400;
+  text-transform: uppercase; color: var(--akzent); font-weight: 400;
   margin: 0 0 1rem;
 }
 
 .schritte ol { list-style: none; margin: 0; padding: 0; counter-reset: schritt; }
 .schritte li {
   display: grid; grid-template-columns: 1.9rem minmax(0, 1fr); gap: .9rem;
-  padding: .95rem 0; border-top: 1px solid var(--gravur);
+  padding: .95rem 0; border-top: 1px solid var(--kante);
   font-size: .92rem; color: var(--leise);
 }
 .schritte li::before {
@@ -674,19 +773,19 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
   display: flex; align-items: center; justify-content: center;
   width: 1.9rem; height: 1.9rem;
   font-family: var(--daten); font-size: .78rem; font-weight: 700;
-  color: var(--messing-hell); border: 1px solid var(--gravur-hell);
+  color: var(--akzent-hell); border: 1px solid var(--kante-hell);
 }
 .schritte li p { margin: 0; }
 .schritte li strong { color: var(--text); font-weight: 600; }
 .schritte__auch {
   margin: 1.3rem 0 0; padding-top: 1.3rem;
-  border-top: 1px solid var(--gravur);
+  border-top: 1px solid var(--kante);
   font-size: .88rem; color: var(--leiser);
 }
 .schritte__auch strong { color: var(--leise); font-weight: 600; }
 
 .pruefung {
-  border: 1px solid var(--gravur); background: var(--blech);
+  border: 1px solid var(--kante); background: var(--grund);
   padding: 1.4rem clamp(1.2rem, 3vw, 1.6rem);
 }
 .pruefung p { margin: 0 0 1rem; font-size: .87rem; color: var(--leise); }
@@ -706,18 +805,18 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
   list-style: none; margin: clamp(2rem, 5vw, 3rem) 0 0; padding: 0;
   display: grid; gap: 1px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  background: var(--gravur); border: 1px solid var(--gravur);
+  background: var(--kante); border: 1px solid var(--kante);
 }
 @media (max-width: 62rem) { .beweise { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 40rem) { .beweise { grid-template-columns: minmax(0, 1fr); } }
 .beweise li {
-  background: var(--blech); padding: 1.5rem clamp(1.2rem, 3vw, 1.6rem);
+  background: var(--grund); padding: 1.5rem clamp(1.2rem, 3vw, 1.6rem);
   display: flex; flex-direction: column; gap: .35rem;
 }
 .beweise b {
   font-family: var(--daten); font-weight: 700; line-height: 1;
   font-size: clamp(1.85rem, 4.2vw, 2.4rem); letter-spacing: -.02em;
-  color: var(--messing-hell); font-variant-numeric: tabular-nums;
+  color: var(--akzent-hell); font-variant-numeric: tabular-nums;
 }
 .beweise strong { font-size: .88rem; color: var(--text); font-weight: 600; line-height: 1.35; }
 .beweise span { font-size: .86rem; color: var(--leise); }
@@ -738,18 +837,18 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
      hier Kostüm und kostete Kilobyte. */
   background-image:
     radial-gradient(ellipse 80% 50% at 20% 0%, rgba(255,255,255,.55), transparent 70%),
-    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(184,134,43,.07), transparent 70%);
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(76,217,115,.07), transparent 70%);
   padding-block: clamp(3rem, 8vw, 5.5rem);
 }
 .papier h2 { color: var(--tinte); }
-.papier h2 em { color: var(--tinte-messing); font-style: italic; }
+.papier h2 em { color: var(--tinte-akzent); font-style: italic; }
 .papier p { color: var(--tinte-leise); margin: 0 0 1.1rem; }
 .papier p:last-child { margin-bottom: 0; }
 .papier strong { color: var(--tinte); font-weight: 600; }
-.papier .eyebrow { color: var(--tinte-messing); }
-.papier a { color: var(--tinte-messing); }
+.papier .eyebrow { color: var(--tinte-akzent); }
+.papier a { color: var(--tinte-akzent); }
 .papier a:focus-visible, .papier summary:focus-visible {
-  outline: 2px solid var(--tinte-messing); outline-offset: 3px;
+  outline: 2px solid var(--tinte-akzent); outline-offset: 3px;
 }
 .papier code {
   font-family: var(--daten); font-size: .86em; color: var(--tinte);
@@ -770,10 +869,10 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
 .frage > summary::after {
   content: "+"; position: absolute; inset-inline-end: 0; top: 50%;
   transform: translateY(-50%);
-  font-family: var(--daten); font-size: 1.15rem; color: var(--tinte-messing);
+  font-family: var(--daten); font-size: 1.15rem; color: var(--tinte-akzent);
 }
 .frage[open] > summary::after { content: "–"; }
-.frage > summary:hover { color: var(--tinte-messing); }
+.frage > summary:hover { color: var(--tinte-akzent); }
 
 .antwort { padding-bottom: 1.8rem; max-width: 42rem; }
 .antwort--breit { max-width: none; }
@@ -788,7 +887,7 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
 }
 @media (max-width: 30rem) { .werte li { grid-template-columns: minmax(0, 1fr); } }
 .werte b {
-  font-family: var(--daten); font-weight: 700; color: var(--tinte-messing);
+  font-family: var(--daten); font-weight: 700; color: var(--tinte-akzent);
   font-variant-numeric: tabular-nums;
 }
 .werte span { color: var(--tinte-leise); }
@@ -813,8 +912,8 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
 /* Der schmale Bereich, den heute niemand mehr verlässt */
 .leiste__heute {
   position: absolute; top: 5.3rem; height: 5.2rem;
-  background: rgba(184,134,43,.16);
-  border-inline: 1px solid rgba(122,86,14,.45);
+  background: rgba(76,217,115,.16);
+  border-inline: 1px solid rgba(107,63,160,.45);
 }
 /* Die Beschriftung steht IM getoenten Feld, unten.
 
@@ -824,7 +923,7 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
 .leiste__heute-marke {
   position: absolute; bottom: .4rem; inset-inline-start: .4rem;
   font-family: var(--daten); font-size: .56rem; letter-spacing: .12em;
-  text-transform: uppercase; color: var(--tinte-messing); white-space: nowrap;
+  text-transform: uppercase; color: var(--tinte-akzent); white-space: nowrap;
 }
 
 /* Eine Marke auf der Skala.
@@ -861,8 +960,8 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
 .punkt--unten .punkt__kugel  { top: calc(2.1rem - 6px); transform: translateX(-50%); }
 .punkt--unten .punkt__text   { top: 2.9rem; }
 
-.punkt--stark .punkt__kugel { background: var(--tinte-messing); border-color: var(--tinte-messing); }
-.punkt--stark .punkt__hz    { color: var(--tinte-messing); }
+.punkt--stark .punkt__kugel { background: var(--tinte-akzent); border-color: var(--tinte-akzent); }
+.punkt--stark .punkt__hz    { color: var(--tinte-akzent); }
 
 .leiste__enden {
   position: absolute; inset-inline: 0; top: 12rem;
@@ -888,7 +987,7 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
 }
 .ausschnitt__kopf {
   font-family: var(--daten); font-size: .6rem; letter-spacing: .16em;
-  text-transform: uppercase; color: var(--tinte-messing); margin: 0 0 1.6rem;
+  text-transform: uppercase; color: var(--tinte-akzent); margin: 0 0 1.6rem;
   display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; justify-content: space-between;
 }
 .ausschnitt__kopf span:last-child { color: var(--tinte-leise); }
@@ -946,18 +1045,18 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
 
 /* ── Fremde Quellen ──────────────────────────────────────────────── */
 .fremd { margin: 2rem 0 0; padding: 0; list-style: none; }
-.fremd li { border-top: 1px solid var(--gravur); padding: 1rem 0; }
+.fremd li { border-top: 1px solid var(--kante); padding: 1rem 0; }
 .fremd .quelle {
   font-family: var(--daten); font-size: .62rem; letter-spacing: .1em;
   text-transform: uppercase; color: var(--leiser); display: block; margin-bottom: .3rem;
 }
-.fremd a { font-size: 1rem; text-decoration: none; border-bottom: 1px solid var(--gravur-hell); }
-.fremd a:hover { border-bottom-color: var(--messing); }
+.fremd a { font-size: 1rem; text-decoration: none; border-bottom: 1px solid var(--kante-hell); }
+.fremd a:hover { border-bottom-color: var(--akzent); }
 .fremd p { margin: .35rem 0 0; font-size: .86rem; color: var(--leiser); }
 
 .merksatz {
   margin: 0 0 1.4rem; padding-inline-start: 1.5rem;
-  border-inline-start: 2px solid var(--messing);
+  border-inline-start: 2px solid var(--akzent);
   font-family: var(--anzeige); font-style: italic;
   font-size: clamp(1.3rem, 3.4vw, 1.9rem); line-height: 1.3; color: var(--text);
 }
@@ -967,14 +1066,14 @@ html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
    Seite waagerecht auf — und waagerechtes Scrollen bricht jede Seite. */
 code {
   font-family: var(--daten); font-size: .86em; color: var(--text);
-  background: var(--gravur); border: 1px solid var(--gravur-hell); padding: .05em .4em;
+  background: var(--kante); border: 1px solid var(--kante-hell); padding: .05em .4em;
   overflow-wrap: anywhere;
 }
 .papier code { overflow-wrap: anywhere; }
 
 /* ── Fuß ─────────────────────────────────────────────────────────── */
 .fuss {
-  border-top: 1px solid var(--gravur); padding-block: clamp(2.5rem, 6vw, 3.5rem) 3rem;
+  border-top: 1px solid var(--kante); padding-block: clamp(2.5rem, 6vw, 3.5rem) 3rem;
   font-size: .84rem; color: var(--leiser);
 }
 .fuss__recht { max-width: 42rem; margin: 0 0 2.2rem; color: var(--leise); }
@@ -982,7 +1081,7 @@ code {
 .fuss__reihe {
   display: flex; flex-wrap: wrap; gap: .6rem 1.6rem;
   align-items: center; justify-content: space-between;
-  border-top: 1px solid var(--gravur); padding-top: 1.4rem;
+  border-top: 1px solid var(--kante); padding-top: 1.4rem;
 }
 .fuss a { color: var(--leise); text-decoration: none; }
 .fuss a:hover { color: var(--text); text-decoration: underline; }
@@ -1015,23 +1114,23 @@ code {
 .sprachwahl__knopf {
   list-style: none; cursor: pointer;
   font-family: var(--daten); font-size: .7rem; letter-spacing: .08em;
-  color: var(--leise); border: 1px solid var(--gravur-hell);
+  color: var(--leise); border: 1px solid var(--kante-hell);
   padding: .38rem .7rem; transition: color .18s, border-color .18s;
 }
 .sprachwahl__knopf::-webkit-details-marker { display: none; }
-.sprachwahl__knopf:hover { color: var(--text); border-color: var(--messing); }
+.sprachwahl__knopf:hover { color: var(--text); border-color: var(--akzent); }
 .sprachwahl__liste {
   position: absolute; inset-inline-end: 0; top: calc(100% + .4rem); z-index: 40;
   margin: 0; padding: .35rem; list-style: none; min-width: 9rem;
-  background: var(--blech); border: 1px solid var(--gravur-hell);
+  background: var(--grund); border: 1px solid var(--kante-hell);
   box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
 }
 .sprachwahl__liste a {
   display: block; padding: .4rem .6rem; text-decoration: none;
   font-size: .84rem; color: var(--leise);
 }
-.sprachwahl__liste a:hover { color: var(--text); background: var(--gravur); }
-.sprachwahl__liste a[aria-current] { color: var(--messing-hell); }
+.sprachwahl__liste a:hover { color: var(--text); background: var(--kante); }
+.sprachwahl__liste a[aria-current] { color: var(--akzent-hell); }
 
 /* ── Rechts nach links ───────────────────────────────────────────── */
 /*
@@ -1155,18 +1254,18 @@ code {
    werden soll, nicht, wer es gesagt hat. */
 .umfrage__karte {
   margin-top: 2rem;
-  border: 1px solid var(--gravur-hell);
+  border: 1px solid var(--kante-hell);
   border-radius: .5rem;
-  background: linear-gradient(180deg, var(--blech-hoch), var(--blech));
+  background: linear-gradient(180deg, var(--grund-hoch), var(--grund));
   padding: clamp(1.3rem, 4vw, 2rem);
 }
 .umfrage__balken { display: flex; gap: .35rem; margin-bottom: 1.4rem; }
 .umfrage__balken span {
   height: 3px; flex: 1; border-radius: 2px;
-  background: var(--gravur-hell);
+  background: var(--kante-hell);
   transition: background-color .3s ease;
 }
-.umfrage__balken span.ist-durch { background: var(--messing); }
+.umfrage__balken span.ist-durch { background: var(--akzent); }
 .umfrage__schritt { display: none; }
 .umfrage__schritt.ist-dran { display: block; animation: umfrageAuf .28s ease-out; }
 @keyframes umfrageAuf { from { opacity: 0; transform: translateY(.4rem); } }
@@ -1183,37 +1282,37 @@ code {
   display: block; width: 100%; text-align: start;
   padding: .8rem 1rem;
   background: transparent;
-  border: 1px solid var(--gravur-hell);
+  border: 1px solid var(--kante-hell);
   border-radius: .4rem;
   color: var(--text);
   font-family: var(--grotesk); font-size: .95rem; line-height: 1.4;
   cursor: pointer;
   transition: border-color .16s ease, background-color .16s ease, transform .16s ease;
 }
-.umfrage__knopf:hover { border-color: var(--messing); transform: translateX(2px); }
-.umfrage__knopf.ist-gewaehlt { border-color: var(--messing); background: rgba(184,134,43,.12); }
+.umfrage__knopf:hover { border-color: var(--akzent); transform: translateX(2px); }
+.umfrage__knopf.ist-gewaehlt { border-color: var(--akzent); background: rgba(76,217,115,.12); }
 .umfrage__knopf small { display: block; color: var(--leiser); font-size: .78rem; margin-top: .15rem; }
-.umfrage__knopf b { color: var(--messing-hell); font-weight: 500; }
+.umfrage__knopf b { color: var(--akzent-hell); font-weight: 500; }
 
 .umfrage__feld {
   width: 100%; min-height: 6rem;
   padding: .8rem 1rem;
   background: var(--nacht);
-  border: 1px solid var(--gravur-hell);
+  border: 1px solid var(--kante-hell);
   border-radius: .4rem;
   color: var(--text);
   font-family: var(--grotesk); font-size: .95rem; line-height: 1.5;
   resize: vertical;
 }
-.umfrage__feld:focus { outline: 2px solid var(--messing); outline-offset: 1px; }
+.umfrage__feld:focus { outline: 2px solid var(--akzent); outline-offset: 1px; }
 
 .umfrage__leiste { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-top: 1.2rem; }
 .umfrage__weiter {
   padding: .7rem 1.4rem; border: 0; border-radius: .4rem;
-  background: var(--messing); color: #14100A;
+  background: var(--akzent); color: #14100A;
   font-family: var(--grotesk); font-size: .95rem; font-weight: 600; cursor: pointer;
 }
-.umfrage__weiter:hover { background: var(--messing-hell); }
+.umfrage__weiter:hover { background: var(--akzent-hell); }
 .umfrage__zurueck {
   padding: .7rem 1rem; border: 0; background: transparent;
   color: var(--leise); font-family: var(--daten); font-size: .78rem; cursor: pointer;
@@ -1267,51 +1366,6 @@ code {
         nicht in der Datei.
       </p>
 
-      <div class="holzone">
-        <!-- Fünf Knöpfe im Quelltext, immer genau einer im Bild. Welcher,
-             entscheidet das Merkmal an <html>, das im Kopf gesetzt wurde. -->
-        <a class="grossknopf fuer fuer--mac" href="/herunterladen/IYAMBAE-Tuner-0.7.0.dmg">
-          <span class="grossknopf__tat" data-text="auf.mac.tat">Für macOS laden</span>
-          <span class="grossknopf__zusatz" data-text="auf.mac.zusatz">DMG · 1,3 MB · ab macOS 14.4 · kein Konto · Testfassung bis 1.10.2026</span>
-        </a>
-        <a class="grossknopf fuer fuer--linux" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb">
-          <span class="grossknopf__tat" data-text="auf.linux.tat">Für Linux laden</span>
-          <span class="grossknopf__zusatz" data-text="auf.linux.zusatz">DEB · 43 KB · Debian 13 · PipeWire ab 0.3.60</span>
-        </a>
-        <!-- Windows war bis zur Freigabe des Installers eine Sackgasse:
-             Hier stand ein mailto mit „Bescheid geben, sobald es sie gibt“.
-             Der Installer liegt seither im Blob und hatte weiter unten
-             längst eine eigene Karte mit Knopf — nur die Kopfzone wusste
-             nichts davon. Wer mit Windows kam, wurde erkannt, bekam diesen
-             Zweig, und wurde als Einziger von der Datei weggeführt.
-
-             Der VORBEHALT bleibt und steht weiter dort, wo er hingehört:
-             Windows ersetzt den Systemton nur über ein virtuelles
-             Ausgabegerät. Das nimmt der Karte weiter unten niemand ab —
-             aber es ist kein Grund, den Knopf wegzulassen. -->
-        <a class="grossknopf fuer fuer--win" href="/herunterladen/iyambae-tuner-1.1.0-windows-setup.exe">
-          <span class="grossknopf__tat" data-text="auf.win.tat">Für Windows laden — Dateien umstimmen</span>
-          <span class="grossknopf__zusatz" data-text="auf.win.zusatz">EXE · 68 MB · Windows 10 und 11 · Systemton kommt noch, er braucht ein virtuelles Ausgabegerät.</span>
-        </a>
-        <a class="grossknopf grossknopf--warten fuer fuer--mobil" href="#fragen">
-          <span class="grossknopf__tat" data-text="auf.mobil.tat">Dafür braucht es einen Rechner</span>
-          <span class="grossknopf__zusatz" data-text="auf.mobil.zusatz">Am Telefon gibt keine App den Ton von Spotify oder Netflix heraus.</span>
-        </a>
-        <!-- Kein JavaScript, oder ein System, das wir nicht kennen: dann
-             alle drei gleichberechtigt, eine Bildschirmhöhe tiefer. -->
-        <a class="grossknopf fuer fuer--alle" href="#holen">
-          <span class="grossknopf__tat" data-text="auf.alle.tat">Herunterladen</span>
-          <span class="grossknopf__zusatz" data-text="auf.alle.zusatz">macOS · Linux · Testausgabe 0.1.0 · kein Konto</span>
-        </a>
-
-        <p class="nebenweg">
-          <span class="fuer fuer--mac" data-html="auf.neben.mac">Auch für <a href="#holen">Linux</a> · <a href="#holen">Windows</a> stimmt Dateien um · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
-          <span class="fuer fuer--linux" data-html="auf.neben.linux">Auch für <a href="#holen">macOS</a> · <a href="#holen">Windows</a> stimmt Dateien um · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
-          <span class="fuer fuer--win" data-html="auf.neben.win">Den Systemton stimmen heute <a href="#holen">macOS</a> und <a href="#holen">Linux</a> um · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256</a></span>
-          <span class="fuer fuer--mobil" data-html="auf.neben.mobil">Am Rechner: <a href="#holen">macOS</a> oder <a href="#holen">Linux</a>.</span>
-          <span class="fuer fuer--alle" data-html="auf.neben.alle">Testausgabe 0.1.0 · kostenlos · <a href="/herunterladen/PRUEFSUMMEN.txt">SHA-256 nachrechnen</a></span>
-        </p>
-      </div>
     </div>
 
     <!-- ── Die Probe. Sie verlangt keinen Download und dauert acht
@@ -1396,6 +1450,45 @@ code {
         den fertigen Klang, ohne das Tempo anzutasten.
       </p>
     </div>
+
+    <!-- Die Ladezone liegt bewusst UNTER beiden Spalten und ueber die
+         volle Breite. Damit ist sie das breiteste Element der Seite —
+         auf einer Landeseite gehoert dem, was der Besucher tun soll,
+         die meiste Flaeche, nicht dem, was er lesen soll. -->
+      <div class="holzone">
+        <!-- Drei Knoepfe, immer alle drei.
+
+             Bis zum 23.08.2026 stand hier genau EINER — der fuer das
+             erkannte System, die uebrigen vier lagen unsichtbar daneben.
+             Fuer eine Erklaerseite war das richtig: weniger Auswahl,
+             weniger Zoegern. Fuer eine Landeseite ist es falsch. Wer
+             hierher kommt, will zuerst sehen, DASS es sein System gibt —
+             und wer auf dem Telefon liest, aber am Rechner laedt, bekam
+             bisher gar keinen Knopf zu Gesicht.
+
+             Die Erkennung entscheidet jetzt nur noch, welcher hervorsteht.
+             Faellt sie aus, stehen drei gleichberechtigte Knoepfe da statt
+             eines Ersatztextes. -->
+        <div class="plattformen">
+          <a class="plattform" data-fuer="mac" href="/herunterladen/IYAMBAE-Tuner-0.7.0.dmg">
+            <img class="plattform__zeichen" src="assets/plattform-mac.svg" alt="" width="24" height="24">
+            <span class="plattform__tat" data-text="auf.mac.tat">Für macOS laden</span>
+            <span class="plattform__zusatz" data-text="auf.mac.zusatz">DMG · 1,3 MB · ab macOS 14.4 · kein Konto · Testfassung bis 1.10.2026</span>
+          </a>
+          <a class="plattform" data-fuer="win" href="/herunterladen/iyambae-tuner-1.1.0-windows-setup.exe">
+            <img class="plattform__zeichen" src="assets/plattform-win.svg" alt="" width="24" height="24">
+            <span class="plattform__tat" data-text="auf.win.tat">Für Windows laden — Dateien umstimmen</span>
+            <span class="plattform__zusatz" data-text="auf.win.zusatz">EXE · 68 MB · Windows 10 und 11 · Systemton kommt noch, er braucht ein virtuelles Ausgabegerät.</span>
+          </a>
+          <a class="plattform" data-fuer="linux" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb">
+            <img class="plattform__zeichen" src="assets/plattform-linux.svg" alt="" width="24" height="24">
+            <span class="plattform__tat" data-text="auf.linux.tat">Für Linux laden</span>
+            <span class="plattform__zusatz" data-text="auf.linux.zusatz">DEB · 43 KB · Debian 13 · PipeWire ab 0.3.60</span>
+          </a>
+        </div>
+
+        <p class="nebenweg fuer fuer--mobil" data-text="auf.mobil.zusatz">Am Telefon gibt keine App den Ton von Spotify oder Netflix heraus.</p>
+      </div>
   </div>
 </section>
 
@@ -2213,7 +2306,7 @@ code {
    schlicht df. Alles nachrechenbar, nichts behauptet.
 
    DER RUHEZUSTAND WIRD NICHT GEFEIERT: Bei 440 blinkt nichts gruen. Die
-   Welle hoert auf zu pulsieren, die Kurve wird kalt statt messing, und wo
+   Welle hoert auf zu pulsieren, die Kurve wird kalt statt gruen, und wo
    eine Zahl stand, steht "keine". So fuehlt sich Stimmen an — der Lohn ist,
    dass etwas aufhoert.
    ═══════════════════════════════════════════════════════════════════ */
@@ -2361,7 +2454,7 @@ code {
     const df = Math.abs(hz - REFERENZ);
 
     strich.clearRect(0, 0, B, H);
-    strich.strokeStyle = '#262220';
+    strich.strokeStyle = '#2A2B33';
     strich.lineWidth = 1;
     strich.beginPath(); strich.moveTo(0, M); strich.lineTo(B, M); strich.stroke();
 
@@ -2371,14 +2464,14 @@ code {
     const hoehe = H * 0.36;
     const huelle = (x) => Math.abs(Math.cos(Math.PI * df * (t + (x / B) * FENSTER)));
 
-    strich.strokeStyle = 'rgba(184, 134, 43, 0.30)';
+    strich.strokeStyle = 'rgba(76, 217, 115, 0.28)';
     for (let x = 0; x < B; x += 2) {
       const a = huelle(x) * hoehe;
       strich.beginPath(); strich.moveTo(x, M - a); strich.lineTo(x, M + a); strich.stroke();
     }
 
     strich.lineWidth = 2;
-    strich.strokeStyle = df < 0.05 ? '#7C8FA3' : '#E3B25C';
+    strich.strokeStyle = df < 0.05 ? '#8B93A8' : '#7DE89A';
     for (const vz of [-1, 1]) {
       strich.beginPath();
       for (let x = 0; x <= B; x += 2) {

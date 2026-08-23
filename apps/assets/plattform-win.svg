@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" role="img" aria-hidden="true" focusable="false">
+  <!--
+    Vier Quadrate — die Form, die Windows seit 11 traegt. Die frueheren
+    Fassungen kippten die Flaechen perspektivisch; das ist seit 2021
+    ueberholt und wuerde die Fassung falsch benennen, fuer die diese
+    Datei geladen wird (Windows 10 und 11).
+
+    RECHTLICHER STAND, festgehalten am 23.08.2026: eingetragene Marke der
+    Microsoft Corporation. Microsoft lizenziert die Verwendung; auf
+    Downloadseiten wird sie weithin geduldet. Micha wurde vor der
+    Entscheidung darauf hingewiesen. Umkehrbar durch Austausch dieser Datei.
+  -->
+  <path d="M2.5 2.5h8.4v8.4H2.5zM13.1 2.5h8.4v8.4h-8.4zM2.5 13.1h8.4v8.4H2.5zM13.1 13.1h8.4v8.4h-8.4z"/>
+</svg>
