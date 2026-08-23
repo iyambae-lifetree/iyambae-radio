@@ -1524,6 +1524,34 @@ class UI {
       if (el) el.innerHTML = symbol(laeuft ? 'pause' : 'abspielen', 20);
     }
     document.body.classList.toggle('spielt', laeuft);
+    this.setzeTonarm(laeuft);
+  }
+
+  /*
+   Der Tonarm ist ein Bild, kein SVG mehr — geschwenkt wird es mit
+   `transform`. Die Ruhelage steht im Stylesheet; hier wird nur das
+   langsame Wandern nach innen gesetzt, das kein CSS abbilden kann.
+
+   Wie bei einer echten Platte: von 2° bis 9° in gut zwoelf Minuten.
+   Kaum sichtbar, aber vorhanden — und wer eine Weile zuhoert, sieht die
+   Nadel naeher an der Mitte stehen als beim Auflegen.
+  */
+  setzeTonarm(liegtAuf) {
+    const arm = document.getElementById('tonarm');
+    if (!arm) return;
+    clearInterval(this._armWandern);
+    if (!liegtAuf) {
+      // Zurueck ans Stylesheet: die Ruhelage steht dort, nicht hier.
+      arm.style.transform = '';
+      return;
+    }
+    let winkel = 2;
+    arm.style.transform = 'rotate(2deg)';
+    this._armWandern = setInterval(() => {
+      winkel = Math.min(9, winkel + 0.06);
+      arm.style.transform = `rotate(${winkel.toFixed(2)}deg)`;
+      if (winkel >= 9) clearInterval(this._armWandern);
+    }, 6500);
   }
 
   // ── Ausfall ──────────────────────────────────────────────────────

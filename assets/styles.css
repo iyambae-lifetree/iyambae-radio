@@ -411,6 +411,32 @@ body.stimmt-432 .stimmung__mehr {
     z-index: 1;
 }
 
+/* Der Tonarm — dieselbe Aufnahme, nur herausgeschnitten.
+
+   Er liegt als eigene Ebene deckungsgleich ueber dem Deck und schwenkt um
+   sein Lager. Der Drehpunkt ist am Foto abgemessen: 85,33 % / 25,35 %.
+
+   Was darunter lag, ist im Deckbild ersetzt: die Platte durch eine um 60°
+   gedrehte Kopie ihrer selbst (sie ist kreisrund, das passt fugenlos), die
+   Zarge zeilenweise zwischen den Raendern interpoliert. */
+.tonarm {
+    position: absolute; inset: 0;
+    width: 100%; height: auto;
+    transform-origin: 85.33% 25.35%;
+    /* Ruhe: nach aussen geschwenkt. Beim Auflegen faehrt er in gut einer
+       Sekunde herein — schneller waere hektisch, langsamer waere Warten. */
+    transform: rotate(-24deg);
+    transition: transform 1.1s cubic-bezier(0.33, 0.9, 0.4, 1);
+    pointer-events: none;
+    z-index: 5;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
+}
+body.spielt .tonarm { transform: rotate(2deg); }
+
+@media (prefers-reduced-motion: reduce) {
+    .tonarm { transition: none; }
+}
+
 /* Gedreht wird nur, wenn Ton läuft. 33⅓ Umdrehungen je Minute wären
    1,8 Sekunden — hier langsamer, sonst flimmert das Label. */
 .platte { animation: dreht 3.6s linear infinite; animation-play-state: paused; }
