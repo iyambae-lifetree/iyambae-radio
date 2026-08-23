@@ -1,6 +1,6 @@
 {
   "seite.titel": "IYAMBAE Radio — la cabina d'ascolto di un negozio di dischi, a 432 Hz",
-  "seite.beschreibung": "IYAMBAE Radio — un negozio di dischi scelto a mano, da attraversare ascoltando. 165 stazioni da 37 paesi: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
+  "seite.beschreibung": "IYAMBAE Radio — un negozio di dischi scelto a mano, da attraversare ascoltando. {senderzahl} stazioni da {laenderzahl} paesi: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
   "laden.hinweis": "Si apre il negozio di dischi …",
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "Stazione, luogo, parola chiave …",
@@ -19,7 +19,7 @@
   "hero.pegel.live": " · livelli in tempo reale",
   "hero.pegel.simuliert": " · livelli approssimati",
   "hero.name.start": "Radio a 432 Hz",
-  "hero.ort.start": "165 stazioni da 37 paesi, su undici scaffali",
+  "hero.ort.start": "{senderzahl} stazioni da {laenderzahl} paesi, su {regalzahl} scaffali",
   "hero.kaertchen.start": "Metti su un disco — oppure lascia cadere la puntina e guarda dove finisce.",
   "hero.knopf.abspielen": "Riproduci",
   "hero.knopf.merken": "Salva",

@@ -372,6 +372,37 @@ ALTE_H1 = {"Willkommen", "Welcome", "Bienvenue", "Bienvenida", "Benvenuto",
            "ようこそ", "أهلًا بك"}
 
 
+def kennzahlen(katalog):
+    """Die Zahlen, die im Text stehen, aus den Daten rechnen.
+
+    WARUM DAS NOETIG WURDE: Am 23.08.2026 stand "165 Sender aus 37 Laendern,
+    in elf Regalen" an fuenf Stellen fest im Text — in index.html und in
+    sieben Katalogen. Die Zahlen stimmten zufaellig noch. Wer einen Sender
+    aufnimmt, muesste sie an acht Stellen nachziehen, und niemand merkt es,
+    wenn er es vergisst: Die Seite sieht danach genauso aus.
+
+    ZIFFERN STATT ZAHLWOERTERN. Deutsch schrieb "elf", Englisch "eleven",
+    Franzoesisch "onze". Ein Zahlwort je Sprache liesse sich nur mit einer
+    Tabelle fuer jede Sprache erzeugen — und ein ausgeschriebenes Zahlwort,
+    das veraltet, ist schlimmer als eine Ziffer, die stimmt.
+    """
+    sender = katalog["sender"]
+    return {
+        "senderzahl":  len(sender),
+        "laenderzahl": len({s["land"] for s in sender if s.get("land")}),
+        "regalzahl":   len(katalog["regale"]),
+    }
+
+
+# Schluessel, in denen eine gerechnete Zahl stehen MUSS. Steht dort eine
+# Ziffer statt des Platzhalters, hat jemand die Rechnung ueberschrieben —
+# und der Bau bricht ab, statt eine veraltende Zahl auszuliefern.
+GERECHNET = {
+    "seite.beschreibung": ("{senderzahl}", "{laenderzahl}"),
+    "hero.ort.start":     ("{senderzahl}", "{laenderzahl}", "{regalzahl}"),
+}
+
+
 def fuelle(satz, **werte):
     """{name} in einem Katalogsatz ersetzen.
 
@@ -850,8 +881,23 @@ def main():
     # geraeumt, und ein Abbruch mitten im Lauf liesse einige leer zurueck.
     seiten, manifeste, gemessen = {}, {}, []
     gut = True
+    zahlen = kennzahlen(senderkatalog)
+
+    # Bevor irgendein Text benutzt wird: pruefen, dass die gerechneten
+    # Stellen noch Platzhalter tragen. Danach einsetzen.
+    for kuerzel in SPRACHEN:
+        for schluessel, noetig in GERECHNET.items():
+            wert = kataloge[kuerzel].get(schluessel, grund.get(schluessel, ""))
+            fehlend = [pl for pl in noetig if pl not in wert]
+            if fehlend:
+                print(f"  ✘ {kuerzel}: {schluessel} traegt keine Rechnung mehr — "
+                      f"es fehlt {', '.join(fehlend)}")
+                gut = False
+
     for kuerzel in SPRACHEN:
         texte = {**grund, **kataloge[kuerzel]}
+        texte = {k: fuelle(v, **zahlen) if isinstance(v, str) else v
+                 for k, v in texte.items()}
         seite = erzeuge_seite(vorlage_quelle, kuerzel, texte, list(SPRACHEN),
                               senderkatalog)
         seiten[kuerzel] = seite
