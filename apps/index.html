@@ -569,6 +569,66 @@ input[type="range"]::-moz-range-thumb {
 
    Die Zeichen sind einfarbig und erben ueber currentColor den Ton des
    Knopfs — deshalb steht hier keine einzige Farbe fuer sie.        */
+/* ── Zugeklappte Abschnitte ─────────────────────────────────────
+   Der Abschnitt IST das Klappelement — <section> wurde zu <details>,
+   ein Tausch der Huelle, keine zusaetzliche Verpackung. Klassen und id
+   bleiben, also greifen alle vorhandenen Regeln weiter und die
+   Sprungmarken (#beweis, #holen, #fragen) funktionieren wie bisher.
+
+   <details> statt eigener Mechanik: Tastatur, Vorleser-Rolle und
+   Zustand bringt der Browser mit, und ohne JavaScript klappt es
+   trotzdem auf. Suchmaschinen und der Ausdruck bekommen den Inhalt
+   ebenfalls — details verbirgt ihn nicht vor dem Dokument.
+
+   Der Griff ist die vorhandene Ueberschrift. Eine zweite Zeile
+   darueber, die dasselbe noch einmal sagt, waere genau das
+   Wortgeklingel, das hier weg soll — und muesste in sieben Sprachen
+   stehen. */
+.klappe > .klappe__griff { list-style: none; cursor: pointer; }
+.klappe > .klappe__griff::-webkit-details-marker { display: none; }
+.klappe > .klappe__griff .eng {
+  display: flex; align-items: baseline; gap: 1.2rem;
+  padding-block: 1.5rem;
+}
+/* Zugeklappt traegt der Abschnitt nur noch eine Zeile — der Randabstand
+   eines vollen Abschnitts laesst dazwischen Loecher stehen. Offen kehrt
+   er zurueck. */
+.klappe:not([open]) { padding-block: 0; }
+.klappe:not([open]).papier { padding-block: .6rem; }
+.klappe > .klappe__griff .eng > * { margin: 0; }
+.klappe > .klappe__griff h2 { flex: 1 1 auto; }
+.klappe > .klappe__griff .eyebrow { flex: 0 0 auto; }
+
+/* Das Zeichen sagt den Zustand, nicht die Handlung. Ein Wort wie
+   „aufklappen" saehe aus wie ein Knopf und muesste uebersetzt werden;
+   der Winkel sagt dasselbe in jeder Sprache. */
+.klappe > .klappe__griff .eng::after {
+  content: ""; flex: 0 0 auto; align-self: center; margin-inline-start: auto;
+  width: .6rem; height: .6rem;
+  border-right: 2px solid var(--leise); border-bottom: 2px solid var(--leise);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform .18s, border-color .18s;
+}
+.klappe[open] > .klappe__griff .eng::after { transform: rotate(-135deg) translate(-1px, -1px); }
+.klappe > .klappe__griff:hover .eng::after { border-color: var(--akzent); }
+.klappe > .klappe__griff:focus-visible { outline: 2px solid var(--akzent-hell); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  .klappe > .klappe__griff .eng::after { transition: none; }
+}
+
+/* ── Das Bild ───────────────────────────────────────────────────
+   Rahmen und Grund wie bei einem Geraet, nicht wie bei einem Foto:
+   Was hier steht, ist eine Oberflaeche, kein Motiv. */
+.bildteil__figur { margin: .9rem 0 0; }
+.bildteil__bild {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--kante-hell); border-radius: 3px;
+  background: var(--grund);
+}
+.bildteil__zeile {
+  margin-top: .7rem; font-size: .76rem; line-height: 1.5; color: var(--leiser);
+}
+
 .holzone { grid-column: 1 / -1; }
 .plattformen {
   display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.8rem;
@@ -1493,6 +1553,30 @@ code {
 </section>
 
 <!-- ══ 2 · Was es tut, in drei Zeilen ═══════════════════════════ -->
+<!-- ══ Das Bild · echt, nicht gerechnet ═════════════════════════
+
+     Ein Bildschirmfoto der laufenden Fassung, am 23.08.2026 mit
+     PrintWindow vom Fenster selbst abgenommen — nicht vom Bildschirm
+     abfotografiert und nicht nachgezeichnet.
+
+     WARUM NUR EINES: macOS laesst sich auf Michas Rechner nicht bauen,
+     und Linux ist ein Leistensymbol, an dem es kaum etwas zu zeigen
+     gibt. Ein erfundenes Bild einer Oberflaeche, die so nicht
+     existiert, waere genau die Sorte Angabe, gegen die diese Seite
+     sonst antritt. Die Stelle bleibt frei, bis es ein echtes gibt.
+     ═════════════════════════════════════════════════════════════ -->
+<section class="rahmen teil teil--eng bildteil">
+  <p class="eyebrow" data-text="bild.eyebrow">So sieht sie aus</p>
+  <figure class="bildteil__figur">
+    <img class="bildteil__bild" src="assets/bild/tuner-windows.webp"
+         width="1024" height="712" loading="lazy" decoding="async"
+         data-alt="bild.alt"
+         alt="Das Fenster des IYAMBAE Tuners unter Windows: eine Reihe Kammertöne von 415 bis 445 Hertz, die gewählte Stimmung 432 im Farbklang hervorgehoben, darunter eine Fläche zum Ablegen von Musikdateien.">
+    <figcaption class="bildteil__zeile" data-text="bild.hinweis">Die Windows-Fassung 1.1.0. macOS und Linux tragen dieselben Farben, aber die Bedienelemente ihres Systems.</figcaption>
+  </figure>
+</section>
+
+
 <section class="rahmen teil teil--eng">
   <h2 class="eyebrow" style="margin-bottom:1rem" data-text="tut.eyebrow">Was es tut</h2>
   <div class="dreizeiler">
@@ -1527,10 +1611,14 @@ code {
      Sprache — eine unübersetzte Zahl liest sich für einen englischen
      Leser als das Tausendfache.
      ═════════════════════════════════════════════════════════════ -->
-<section class="rahmen teil teil--linie" id="beweis">
+<details class="rahmen teil teil--linie klappe" id="beweis">
+  <summary class="klappe__griff">
+    <div class="eng">
+      <p class="eyebrow" data-text="beweis.eyebrow">Nachprüfbar</p>
+      <h2 data-html="beweis.titel">Keine Stimmen, keine Sterne. <em>Nur Messwerte.</em></h2>
+    </div>
+  </summary>
   <div class="eng">
-    <p class="eyebrow" data-text="beweis.eyebrow">Nachprüfbar</p>
-    <h2 data-html="beweis.titel">Keine Stimmen, keine Sterne. <em>Nur Messwerte.</em></h2>
     <p data-html="beweis.vorwort">
       Es gibt noch keinen einzigen Nutzer — also zitieren wir auch keinen.
       Was es gibt, sind Zahlen aus dem Bau und aus der Messung. Sie stehen
@@ -1595,15 +1683,19 @@ code {
       nicht abfotografiert.
     </figcaption>
   </figure>
-</section>
+</details>
 
 <!-- ══ 4 · Holen ════════════════════════════════════════════════ -->
-<section class="rahmen teil teil--linie" id="holen">
+<details class="rahmen teil teil--linie klappe" id="holen">
+  <summary class="klappe__griff">
+    <div class="eng">
+      <p class="eyebrow" data-text="holen.eyebrow">Testausgabe 0.1.0 · kostenlos · kein Konto</p>
+      <h2 class="kopf--holen" data-html="holen.titel">Hol es dir. <em>Dann drei Schritte.</em></h2>
+      <h2 class="kopf--win" data-html="holen.titel.win">Hol es dir. <em>Dann einmal durchwinken.</em></h2>
+      <h2 class="kopf--mobil" data-html="holen.titel.mobil">Am Telefon geht es <em>nicht</em>. Hier steht, warum.</h2>
+    </div>
+  </summary>
   <div class="eng">
-    <p class="eyebrow" data-text="holen.eyebrow">Testausgabe 0.1.0 · kostenlos · kein Konto</p>
-    <h2 class="kopf--holen" data-html="holen.titel">Hol es dir. <em>Dann drei Schritte.</em></h2>
-    <h2 class="kopf--win" data-html="holen.titel.win">Hol es dir. <em>Dann einmal durchwinken.</em></h2>
-    <h2 class="kopf--mobil" data-html="holen.titel.mobil">Am Telefon geht es <em>nicht</em>. Hier steht, warum.</h2>
   </div>
 
   <div class="karten">
@@ -1733,14 +1825,21 @@ code {
       </a>
     </div>
   </div>
-</section>
+</details>
 
 <!-- ══ 5 · Die FAQ — die helle Welt ═════════════════════════════ -->
-<section class="papier" id="fragen">
+<details class="papier klappe" id="fragen">
+  <summary class="klappe__griff">
+    <!-- Dieser Abschnitt liegt eine Ebene tiefer als die uebrigen:
+         papier > rahmen > eng. Ohne das rahmen-div haengt die
+         Augenbraue am Bildschirmrand. -->
+    <div class="rahmen"><div class="eng">
+        <p class="eyebrow" data-text="fragen.eyebrow">Wenn du fragst</p>
+        <h2 data-html="fragen.titel">Alles Weitere, <em>zusammengefaltet</em>.</h2>
+    </div></div>
+  </summary>
   <div class="rahmen">
     <div class="eng">
-      <p class="eyebrow" data-text="fragen.eyebrow">Wenn du fragst</p>
-      <h2 data-html="fragen.titel">Alles Weitere, <em>zusammengefaltet</em>.</h2>
       <p data-text="fragen.vorwort">
         Abrufbar für den, der fragt. Aus dem Weg für den, der laden will.
       </p>
@@ -2129,7 +2228,7 @@ code {
 
     </div>
   </div>
-</section>
+</details>
 
 <!-- ══ Umfrage · was als Nächstes gebaut wird ═══════════════════
 
@@ -2142,10 +2241,14 @@ code {
      Hinweistext und kein Konto — und wir bekommen ehrlichere Antworten,
      weil niemand befürchten muss, dafür Post zu bekommen.
      ═══════════════════════════════════════════════════════════════ -->
-<section class="rahmen teil teil--linie" id="umfrage">
+<details class="rahmen teil teil--linie klappe" id="umfrage">
+  <summary class="klappe__griff">
+    <div class="eng">
+      <p class="eyebrow">Vier Fragen</p>
+      <h2>Was sollen wir als Nächstes bauen?</h2>
+    </div>
+  </summary>
   <div class="eng">
-    <p class="eyebrow">Vier Fragen</p>
-    <h2>Was sollen wir als Nächstes bauen?</h2>
     <p>
       Wir raten ungern. Vier Fragen, keine Anmeldung, keine Adresse —
       <strong>nichts davon lässt sich dir zuordnen</strong>. Eine Minute.
@@ -2220,7 +2323,7 @@ code {
       </div>
     </div>
   </div>
-</section>
+</details>
 
 <!-- ══ 6 · Fremde Quellen, ohne Bewertung ═══════════════════════
 
@@ -2234,10 +2337,14 @@ code {
      übersetzter Aufsatztitel wäre ein Titel, unter dem sich der Aufsatz
      nicht finden lässt. Übersetzt wird nur, was die Quelle IST.
      ═══════════════════════════════════════════════════════════════ -->
-<section class="rahmen teil teil--linie">
+<details class="rahmen teil teil--linie klappe">
+  <summary class="klappe__griff">
+    <div class="eng">
+      <p class="eyebrow" data-text="fremd.eyebrow">Fremde Quellen</p>
+      <h2 data-text="fremd.titel">Was andere dazu schreiben.</h2>
+    </div>
+  </summary>
   <div class="eng">
-    <p class="eyebrow" data-text="fremd.eyebrow">Fremde Quellen</p>
-    <h2 data-text="fremd.titel">Was andere dazu schreiben.</h2>
     <p data-html="fremd.vorwort">
       Fremde Seiten, <strong>ohne Bewertung</strong> weitergegeben. Wir machen
       uns ihren Inhalt nicht zu eigen; verantwortlich sind ihre Betreiber.
@@ -2272,7 +2379,7 @@ code {
       </li>
     </ul>
   </div>
-</section>
+</details>
 
 </main>
 
