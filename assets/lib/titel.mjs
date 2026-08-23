@@ -279,14 +279,31 @@ export function beobachteTitel(sender, melde) {
   let leer = 0;
 
   const versuch = async () => {
-    const vomBrett = await vomDienst(sender);
-    if (vomBrett) return melde(vomBrett);
+    /*
+     ZUERST DAS HAUS SELBST, DANN DAS BRETT — und diese Reihenfolge ist
+     die Umkehrung dessen, womit ich angefangen habe.
 
-    // Das Brett kennt ihn nicht — dann bei seinem Haus selbst nachfragen.
+     Gemessen am 23.08.2026 gegen den laufenden Strom: 51 von 117 Titeln
+     auf dem Brett waren veraltet. Es fuellt sich reihum, und bei 117
+     Sendern zu zehn je Zug dauert eine Runde rund zwanzig Minuten. Fuer
+     ein Stueck von vier Minuten heisst das: meistens der vorletzte Titel.
+     Sāmi-Ra hat es an ByteFM gehoert, bevor irgendeine Zahl es zeigte.
+
+     Die Nebenadresse des Hauses ist dagegen immer jetzt. Und sie verraet
+     nichts: Wir laden von diesem Server ohnehin gerade den Ton — dass wir
+     ihn hoeren, weiss er laengst.
+
+     Das Brett bleibt fuer die uebrigen rund hundert Sender, die keine
+     solche Adresse haben. Dort ist ein Titel von vor zehn Minuten immer
+     noch besser als keiner.
+    */
     for (const [weg, kuerzel] of wege) {
       const titel = sauber(await weg(u, kuerzel), sender.name);
       if (titel) return melde(titel);
     }
+
+    const vomBrett = await vomDienst(sender);
+    if (vomBrett) return melde(vomBrett);
 
     /*
      Gibt es das Brett, lohnt Geduld: Es fuellt sich erst, wenn jemand den
