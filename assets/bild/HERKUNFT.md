@@ -18,4 +18,23 @@ nicht laufen und den Tonarm nicht wandern; was sich sichtbar dreht, ist das
 Etikett in der Mitte. Genau das dreht sich hier — und darauf liegt die
 IYAMBAE-Marke oder das Logo des Senders.
 
-Keine Nachbildung mehr, kein Freistellen, kein Zusammensetzen.
+## Zwei Dateien statt einer
+
+| | |
+|---|---|
+| `plattenspieler.webp` | das Deck **ohne** Arm |
+| `tonarm.webp` | nur der Arm, freigestellt |
+
+Der Arm liegt als eigene Ebene darueber und schwenkt um sein Lager — bei
+85,33 % / 25,35 % der Bildbreite und -hoehe. **Wer das Foto tauscht, muss
+diese Zahlen neu messen**, sonst dreht der Arm um einen falschen Punkt.
+
+Was der Arm im Original verdeckte, ist ersetzt:
+
+- **die Platte samt Tellerrand** durch eine um 60° gedrehte Kopie ihrer
+  selbst. Beides ist kreisrund und konzentrisch, deshalb passt es fugenlos.
+- **die Zarge** zeilenweise zwischen den Raendern interpoliert
+- **der Lagerteller** weichgezeichnet, dort ist nur dunkle Flaeche
+
+Die Spur des Arms wurde nicht geschaetzt, sondern gemessen: zeilenweise
+nach dem hellen Grat mit dunklen Raendern gesucht.
