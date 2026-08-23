@@ -7,6 +7,7 @@
 // ═══════════════════════════════════════════════════════════════════
 
 import { waehleUeberraschung } from './lib/gewichtung.mjs';
+import { merkeGehoert, verlaufsliste } from './lib/verlauf.mjs';
 import { findeVerwandten } from './lib/verwandt.mjs';
 import { frageMyRetuner, wartAufEinwilligung, frageBerechtigung,
          anzeigeStimmung, anzeigeQuelle, ZUSTAND, AUSGANG }
@@ -139,8 +140,7 @@ function zaehleGehoert(senderId) {
 }
 
 function merkeZuletzt(senderId) {
-  const liste = [senderId, ...ladeZuletzt().filter(id => id !== senderId)].slice(0, 20);
-  speicher.schreib(SCHLUESSEL.zuletzt, liste);
+  speicher.schreib(SCHLUESSEL.zuletzt, merkeGehoert(ladeZuletzt(), senderId));
 }
 
 function zaehleFehlschlag(senderId) {
@@ -1230,8 +1230,15 @@ class UI {
     const reihe = document.getElementById('verlaufReihe');
     if (!abschnitt || !reihe) return;
 
-    const ids = [...new Set(ladeZuletzt().slice().reverse())];
-    const sender = ids.map(id => this.senderMitId(id)).filter(Boolean).slice(0, 12);
+    /*
+     Die Reihenfolge kommt so, wie merkeZuletzt() sie geschrieben hat:
+     neueste zuerst. Hier stand frueher ein reverse() — und damit standen
+     die AELTESTEN vorne. Wer auf eine Huelle in diesem Regal klickte, sah
+     sie deshalb im selben Augenblick verschwinden: Der eben gehoerte Sender
+     rutschte ans Ende der Reihe, ab dreizehn gehoerten Sendern aus den
+     gezeigten zwoelf sogar ganz heraus.
+    */
+    const sender = verlaufsliste(ladeZuletzt(), (id) => this.senderMitId(id));
 
     abschnitt.hidden = sender.length < 2;
     if (abschnitt.hidden) return;

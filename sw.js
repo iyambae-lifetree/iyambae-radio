@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v24';
+const SW_VERSION = 'iyambae-v25';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -68,6 +68,7 @@ const SHELL_FILES = [
     // bricht offline der ganze Start ab — ein fehlendes ES-Modul reisst das
     // Skript mit. Scripts/pruefe-shell-dateien.py wacht darueber.
     '/assets/lib/gewichtung.mjs',
+    '/assets/lib/verlauf.mjs',
     '/assets/lib/verwandt.mjs',
     '/assets/lib/myretuner.mjs',
     '/assets/lib/titel.mjs',
