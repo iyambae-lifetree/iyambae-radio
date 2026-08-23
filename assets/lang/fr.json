@@ -160,5 +160,17 @@
   "teilen.kopiert": "Lien copié",
   "teilen.empfangen": "Quelqu’un vous a envoyé {anzahl} stations.",
   "teilen.uebernehmen": "Ajouter à mes disques",
-  "teilen.uebernommen": "{anzahl} stations ajoutées."
+  "teilen.uebernommen": "{anzahl} stations ajoutées.",
+  "karte.moderation": "Animation en {sprache}",
+  "sprachname.de": "allemand",
+  "sprachname.en": "anglais",
+  "sprachname.es": "espagnol",
+  "sprachname.fr": "français",
+  "sprachname.ja": "japonais",
+  "sprachname.hr": "croate",
+  "sprachname.it": "italien",
+  "sprachname.ru": "russe",
+  "sprachname.tw": "twi",
+  "sprachname.az": "azéri",
+  "sprachname.nl": "néerlandais"
 }

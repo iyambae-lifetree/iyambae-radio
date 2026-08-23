@@ -160,5 +160,17 @@
   "teilen.kopiert": "リンクをコピーしました",
   "teilen.empfangen": "{anzahl} 局が届いています。",
   "teilen.uebernehmen": "自分の棚に入れる",
-  "teilen.uebernommen": "{anzahl} 局を追加しました。"
+  "teilen.uebernommen": "{anzahl} 局を追加しました。",
+  "karte.moderation": "進行は{sprache}",
+  "sprachname.de": "ドイツ語",
+  "sprachname.en": "英語",
+  "sprachname.es": "スペイン語",
+  "sprachname.fr": "フランス語",
+  "sprachname.ja": "日本語",
+  "sprachname.hr": "クロアチア語",
+  "sprachname.it": "イタリア語",
+  "sprachname.ru": "ロシア語",
+  "sprachname.tw": "トウィ語",
+  "sprachname.az": "アゼルバイジャン語",
+  "sprachname.nl": "オランダ語"
 }

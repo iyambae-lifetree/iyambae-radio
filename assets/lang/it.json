@@ -160,5 +160,17 @@
   "teilen.kopiert": "Link copiato",
   "teilen.empfangen": "Qualcuno ti ha mandato {anzahl} stazioni.",
   "teilen.uebernehmen": "Aggiungi ai miei dischi",
-  "teilen.uebernommen": "{anzahl} stazioni aggiunte."
+  "teilen.uebernommen": "{anzahl} stazioni aggiunte.",
+  "karte.moderation": "Conduzione in {sprache}",
+  "sprachname.de": "tedesco",
+  "sprachname.en": "inglese",
+  "sprachname.es": "spagnolo",
+  "sprachname.fr": "francese",
+  "sprachname.ja": "giapponese",
+  "sprachname.hr": "croato",
+  "sprachname.it": "italiano",
+  "sprachname.ru": "russo",
+  "sprachname.tw": "twi",
+  "sprachname.az": "azero",
+  "sprachname.nl": "olandese"
 }

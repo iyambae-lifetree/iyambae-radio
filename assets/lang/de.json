@@ -160,5 +160,17 @@
   "teilen.kopiert": "Link kopiert",
   "teilen.empfangen": "Jemand hat dir {anzahl} Sender geschickt.",
   "teilen.uebernehmen": "Zu meinen Platten legen",
-  "teilen.uebernommen": "{anzahl} Sender übernommen."
+  "teilen.uebernommen": "{anzahl} Sender übernommen.",
+  "karte.moderation": "Moderation auf {sprache}",
+  "sprachname.de": "Deutsch",
+  "sprachname.en": "Englisch",
+  "sprachname.es": "Spanisch",
+  "sprachname.fr": "Französisch",
+  "sprachname.ja": "Japanisch",
+  "sprachname.hr": "Kroatisch",
+  "sprachname.it": "Italienisch",
+  "sprachname.ru": "Russisch",
+  "sprachname.tw": "Twi",
+  "sprachname.az": "Aserbaidschanisch",
+  "sprachname.nl": "Niederländisch"
 }

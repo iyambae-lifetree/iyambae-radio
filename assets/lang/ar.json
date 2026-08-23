@@ -160,5 +160,17 @@
   "teilen.kopiert": "نُسخ الرابط",
   "teilen.empfangen": "أرسل إليك أحدهم {anzahl} محطة.",
   "teilen.uebernehmen": "أضِفها إلى أسطواناتي",
-  "teilen.uebernommen": "أُضيفت {anzahl} محطة."
+  "teilen.uebernommen": "أُضيفت {anzahl} محطة.",
+  "karte.moderation": "التقديم بـ{sprache}",
+  "sprachname.de": "الألمانية",
+  "sprachname.en": "الإنجليزية",
+  "sprachname.es": "الإسبانية",
+  "sprachname.fr": "الفرنسية",
+  "sprachname.ja": "اليابانية",
+  "sprachname.hr": "الكرواتية",
+  "sprachname.it": "الإيطالية",
+  "sprachname.ru": "الروسية",
+  "sprachname.tw": "التوية",
+  "sprachname.az": "الأذربيجانية",
+  "sprachname.nl": "الهولندية"
 }

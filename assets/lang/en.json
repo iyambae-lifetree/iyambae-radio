@@ -160,5 +160,17 @@
   "teilen.kopiert": "Link copied",
   "teilen.empfangen": "Someone sent you {anzahl} stations.",
   "teilen.uebernehmen": "Add to my records",
-  "teilen.uebernommen": "{anzahl} stations added."
+  "teilen.uebernommen": "{anzahl} stations added.",
+  "karte.moderation": "Presented in {sprache}",
+  "sprachname.de": "German",
+  "sprachname.en": "English",
+  "sprachname.es": "Spanish",
+  "sprachname.fr": "French",
+  "sprachname.ja": "Japanese",
+  "sprachname.hr": "Croatian",
+  "sprachname.it": "Italian",
+  "sprachname.ru": "Russian",
+  "sprachname.tw": "Twi",
+  "sprachname.az": "Azerbaijani",
+  "sprachname.nl": "Dutch"
 }

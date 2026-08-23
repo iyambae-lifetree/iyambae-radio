@@ -160,5 +160,17 @@
   "teilen.kopiert": "Enlace copiado",
   "teilen.empfangen": "Alguien te ha enviado {anzahl} emisoras.",
   "teilen.uebernehmen": "Añadir a mis discos",
-  "teilen.uebernommen": "{anzahl} emisoras añadidas."
+  "teilen.uebernommen": "{anzahl} emisoras añadidas.",
+  "karte.moderation": "Locución en {sprache}",
+  "sprachname.de": "alemán",
+  "sprachname.en": "inglés",
+  "sprachname.es": "español",
+  "sprachname.fr": "francés",
+  "sprachname.ja": "japonés",
+  "sprachname.hr": "croata",
+  "sprachname.it": "italiano",
+  "sprachname.ru": "ruso",
+  "sprachname.tw": "twi",
+  "sprachname.az": "azerí",
+  "sprachname.nl": "neerlandés"
 }

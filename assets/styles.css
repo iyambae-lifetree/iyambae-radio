@@ -903,7 +903,19 @@ body.spielt .platte { animation-play-state: running; }
    22 px hoeher als die andere, und kein Platzhalter kann die Hoehe vorher
    treffen — gemessen fehlten der Auslage 36 px. Im Raster ist mehr Platz,
    dort bleiben beide stehen. */
-.regal__reihe .karte__fuss .marke:nth-child(n+2) { display: none; }
+.regal__reihe /* Wer spricht, spricht eine Sprache — und das steht auf der Huelle,
+   aber nur, wenn es eine andere ist als die des Lesers. Leise gesetzt:
+   Es ist ein Hinweis, keine Warnung. */
+.karte__stimme {
+    font-size: 0.74rem;
+    /* Gedaempft, nicht in Gold: Gold ist auf dieser Seite die Farbe der
+       wichtigen Dinge. Hier steht eine Auskunft, keine Warnung — wer
+       Englisch versteht, soll nicht bei jeder zweiten Huelle aufschauen. */
+    color: var(--text-leise);
+    margin-top: 0.15rem;
+}
+
+.karte__fuss .marke:nth-child(n+2) { display: none; }
 
 /* Gefiltert: Raster statt Reihe. */
 .regale.ist-gefiltert { gap: 2.5rem; }
