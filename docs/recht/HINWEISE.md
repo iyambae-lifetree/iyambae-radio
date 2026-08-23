@@ -586,6 +586,36 @@ gemeinsam gepflegt werden.
 
 ## Teil B — Erst nötig, wenn die Konten kommen
 
+> **Stand 23.08.2026: Teil B ist keine Zukunftsmusik mehr.** Die Anmeldung ist in
+> der Seite angeschlossen (`assets/lib/konto.mjs` an `assets/app.js`), und der
+> Dienst antwortet unter `https://iyambae.fm/api/`. Was hier steht, wird mit der
+> nächsten Auslieferung fällig, nicht später.
+
+### 26. Was mit dem Anschließen der Anmeldung sofort fällig wird
+
+Nachgezogen ist, was sich aus dem Programmtext ergibt:
+
+- `datenschutz.md` Abschnitt 11 gilt jetzt und sagt das auch.
+- `datenschutz.md` Abschnitt 8 nennt `hz_favoriten_zeit` und `hz_konto_frage`
+  sowie das Sitzungscookie `hz_sitzung`.
+- `verarbeitungsverzeichnis.md` V6 nennt dieselben und sagt beim Feld
+  „Empfänger" nicht mehr **keine**, sondern nennt die eine Ausnahme.
+
+Offen und **nicht** von hier aus entscheidbar:
+
+- **Angeboten werden heute zwei Wege**, Google und E-Mail (Einmalcode oder
+  Passwort). `GET /api/apple/start` antwortet `501 apple_nicht_eingerichtet`,
+  Passkey ist betriebsbereit, aber in der Oberfläche nicht angeschlossen.
+  Kommen sie dazu, sind Abschnitt 11 und V9 daraufhin zu lesen — der Text
+  beschreibt beide schon.
+- **Auftragsverarbeitung Google.** Abschnitt 11 nennt Google LLC in den USA.
+  Punkt 17 (AV-Verträge) ist dafür noch offen.
+- **Punkt 20 (Frist für inaktive Konten) und Punkt 21 (Grabsteine)** sind jetzt
+  dringlich: Grabsteine werden ab sofort wirklich geschrieben — auf dem Gerät in
+  `hz_favoriten_zeit`, im Dienst über `raeumeGrabsteine()` mit 90 Tagen.
+- **Der Hörverlauf geht heute nicht mit.** `POST /api/verlauf/abgleich` gibt es
+  im Dienst, die Seite ruft ihn nicht. Abschnitt 11 sagt das jetzt so.
+
 ### 20. Frist für inaktive Konten festlegen
 
 Art. 5 Abs. 1 lit. e DSGVO — Speicherbegrenzung. Es gibt keine gesetzliche Zahl;
@@ -623,9 +653,11 @@ Programmcode, die Grabsteine schreibt.
   sich trotzdem. **Anwaltsfrage, Teil D.**
 - **ACS-Rollenkennung nachschlagen.** Bleibt sie leer, läuft der Mailversand
   über eine Verbindungszeichenfolge — dann ist deren Rotation zu regeln.
-- **`/api/` nie zwischenspeichern.** Der Service Worker legt heute jede
-  erfolgreiche Antwort eigener Herkunft ab. Eine fremde Merkliste im
-  Zwischenspeicher eines Familiengeräts ist eine meldepflichtige Datenpanne.
+- **`/api/` nie zwischenspeichern — erledigt.** Der Service Worker legte
+  einmal jede erfolgreiche Antwort eigener Herkunft ab; eine fremde Merkliste
+  im Zwischenspeicher eines Familiengeräts wäre eine meldepflichtige
+  Datenpanne. `sw.js` reicht `/api/` und `/messung` heute ausdrücklich durch,
+  und `Scripts/pruefe-konto.mjs` hält diese Zeile fest.
 
 ---
 

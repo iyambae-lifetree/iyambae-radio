@@ -23,6 +23,26 @@ import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 import { beobachteFehler, einwilligungsstand, widerrufeEinwilligung }
   from './lib/fehlerbericht.mjs';
 import { miss, messungLaeuft, setzeMessung } from './lib/messung.mjs';
+/*
+ Das Konto. Derselbe Griff wie bei fehlerbericht.mjs und myretuner.mjs:
+ einmal fragen, im richtigen Augenblick, die Antwort merken.
+
+ Der richtige Augenblick ist hier das Herz, und nur das Herz. Alles andere —
+ Abspielen, alle neun Regale, Suche, Nadel, 432 Hz, Sprachwechsel, offline —
+ kommt an keiner Stelle mit diesem Import in Beruehrung. Wer das aendert,
+ bricht die Regel, die im Kopf von lib/konto.mjs steht.
+
+ Und solange unter /api/ niemand antwortet, tut dieser Import gar nichts:
+ klaereZustand() faellt still auf `kein-dienst`, kontoNoetig() bleibt falsch,
+ der Knopf im Fuss bleibt verborgen.
+*/
+import { klaereZustand, kontozustand, angemeldet, kontoDaten, kontoNoetig,
+         beiAenderung as beiKontoAenderung, fordereCode, loeseCodeEin,
+         meldeMitPasswortAn, abmelden, fremdAdresse,
+         alsMenge, ausMenge, verschmilz, gleicheAb,
+         schonGefragt, merkeAblehnung, vergissAblehnung,
+         ZUSTAND as KONTO }
+  from './lib/konto.mjs';
 
 /*
  Abspielfehler: einmal je Sender, Zweig und Sitzung.
@@ -102,6 +122,22 @@ const SENDER = KATALOG.sender.filter(s => s.status !== 'tot');
 // ── Örtlicher Speicher ─────────────────────────────────────────────
 const SCHLUESSEL = {
   favoriten:  'hz_favoriten',
+  /*
+   Wann ein Sender gemerkt und wann er wieder entfernt wurde.
+
+   Ohne diese Stempel gaebe es keinen brauchbaren Abgleich. `hz_favoriten`
+   ist eine blosse Liste von Kennungen; wer sie hochlaedt, sagt „das ist
+   alles" — und ein Sender, den man auf dem Telefon entfernt hat, kaeme vom
+   Rechner beim naechsten Mal zurueck. Die Begruendung, warum es Grabsteine
+   braucht, steht ausfuehrlich in lib/konto.mjs.
+
+   Die Stempel entstehen von der ersten Herzberuehrung an, auch bei jemandem,
+   der sich nie anmeldet — ein Grabstein, der erst mit der Anmeldung
+   angelegt wuerde, kaeme fuer alles zu spaet, was vorher passiert ist. Sie
+   gehoeren zur Merkliste und stehen auf derselben Grundlage wie sie:
+   § 25 Abs. 2 Nr. 2 TDDDG.
+  */
+  favoritenZeit: 'hz_favoriten_zeit',
   zuletzt:    'hz_zuletzt',
   gehoert:    'hz_gehoert',
   fehlschlag: 'hz_fehlschlaege',
@@ -141,6 +177,33 @@ function zaehleGehoert(senderId) {
 
 function merkeZuletzt(senderId) {
   speicher.schreib(SCHLUESSEL.zuletzt, merkeGehoert(ladeZuletzt(), senderId));
+}
+
+/*
+ Einen Herzschlag festhalten: gemerkt oder entfernt, mit der Uhr des Geraets.
+
+ Geht die Uhr falsch, geht der Abgleich falsch aus — der Dienst zieht deshalb
+ Zukunftswerte auf seine eigene Zeit herunter (siehe lib/konto.mjs).
+*/
+function stempleFavorit(senderId, drin) {
+  const stempel = speicher.lies(SCHLUESSEL.favoritenZeit, {});
+  const alt = stempel[senderId] ?? { a: 0, e: null };
+  const jetzt = Date.now();
+  stempel[senderId] = drin ? { a: jetzt, e: alt.e ?? null }
+                           : { a: alt.a ?? 0, e: jetzt };
+  speicher.schreib(SCHLUESSEL.favoritenZeit, stempel);
+}
+
+/**
+ * Die Merkliste in der Form, die der Abgleich versteht.
+ *
+ * Was noch keinen Stempel traegt, stammt aus der Zeit vor dem Konto. Dafuer
+ * gibt es alsMenge(): „jetzt gemerkt, nie entfernt".
+ */
+function merklisteAlsMenge(ids) {
+  const stempel = speicher.lies(SCHLUESSEL.favoritenZeit, {});
+  const ohne = [...ids].filter((id) => !stempel[id]);
+  return verschmilz(stempel, alsMenge(ohne));
 }
 
 function zaehleFehlschlag(senderId) {
@@ -688,13 +751,28 @@ class UI {
   senderMitId(id) { return this.sender.find(s => s.id === id) ?? null; }
   istFavorit(id)  { return this.favoriten.has(id); }
 
+  /*
+   Das Herz. Die EINZIGE Stelle, an der jemals nach einer Anmeldung gefragt
+   wird — und auch hier erst, nachdem der Sender gemerkt ist.
+
+   Die Reihenfolge ist die ganze Regel: Erst tun, was der Besucher wollte,
+   dann fragen. Ein Herz, das auf eine Anmeldung wartet, waere ein Herz, das
+   nicht funktioniert. Die Frage kommt hinterher, sie ist wegklickbar, und
+   wenn sie weggeklickt wird, bleibt alles so, wie es eben war: oertlich
+   gemerkt, ohne Konto, vollstaendig brauchbar.
+  */
   toggleFavorit(id) {
-    if (this.favoriten.has(id)) this.favoriten.delete(id);
-    else this.favoriten.add(id);
+    const drin = !this.favoriten.has(id);
+    if (drin) this.favoriten.add(id);
+    else this.favoriten.delete(id);
     speicher.schreib(SCHLUESSEL.favoriten, [...this.favoriten]);
+    stempleFavorit(id, drin);
     this.aktualisiereFavoritenAnzeige();
     window.app?.aktualisiereGriff();
-    return this.favoriten.has(id);
+    // Beides tut nichts, solange es keinen Dienst gibt.
+    window.app?.merklisteGeaendert();
+    if (drin) window.app?.frageNachKonto();
+    return drin;
   }
 
   // ── Karten ───────────────────────────────────────────────────────
@@ -1682,6 +1760,10 @@ class App {
     this.ui = new UI(this.engine);
     this.visualizer = new Visualizer(this.engine);
     this.myRetunerAktiv = false;
+    // Die Anmeldefrage: hoechstens einmal je Sitzung, und nur am Herzen.
+    this._kontoGefragt = false;
+    this._abgleichLaeuft = false;
+    this._abgleichNochmal = false;
   }
 
   async init() {
@@ -1804,6 +1886,193 @@ class App {
      vielleicht nie passiert, und staende zwischen Besucher und Musik.
     */
     beobachteFehler({ fassung: FASSUNG, melde: this.ui });
+
+    /*
+     Das Konto. Ganz zum Schluss, ohne await: Nichts hier oben wartet auf
+     eine Antwort aus dem Netz, und der Ladeschirm ist zu diesem Zeitpunkt
+     laengst gefallen. Antwortet niemand, laeuft die Seite genau wie bisher.
+    */
+    this.starteKonto();
+  }
+
+  // ── Konto ────────────────────────────────────────────────────────
+  /*
+   Einmal klaeren, woran wir sind — und sonst nichts.
+
+   Drei Zustaende, drei Verhaltensweisen, und der Unterschied zwischen den
+   ersten beiden ist der Grund, warum es drei sind:
+
+     unbekannt   noch keine Antwort. Nichts anbieten, nichts verweigern.
+     kein-dienst niemand unter /api/. Nichts anbieten, nie fragen, Merkliste
+                 bleibt oertlich. Das ist heute der erwartete Fall, wenn die
+                 Oberflaeche vor dem Dienst ausgeliefert wird.
+     abgemeldet  es gibt einen Dienst. JETZT darf am Herzen gefragt werden.
+  */
+  async starteKonto() {
+    beiKontoAenderung(() => this.zeigeKontoLage());
+    this.zeigeKontoLage();
+    this.folgeAnmeldeRueckweg();
+    await klaereZustand();
+    if (angemeldet()) this.gleicheMerklisteAb({ still: true });
+  }
+
+  /*
+   Was der Rueckweg von Google mitbringt.
+
+   fremd.mjs schickt den Browser auf `/<sprache>/?anmeldung=ok|neu|fehler|
+   abgebrochen` zurueck (rueckkehrZiel()). Der Parameter wird gelesen, gezeigt
+   und dann aus der Adresszeile entfernt — aus demselben Grund wie bei
+   folgeAdressZiel(): Ein Neuladen zeigte sonst wieder dieselbe Meldung, und
+   ein weitergegebener Link truege eine Nachricht, die dem Empfaenger nichts
+   sagt.
+  */
+  folgeAnmeldeRueckweg() {
+    const suche = new URLSearchParams(location.search);
+    const stand = suche.get('anmeldung');
+    if (!stand) return;
+
+    history.replaceState(null, '', location.pathname);
+    const saetze = {
+      ok:          ['konto.zurueck.ok', 'info'],
+      neu:         ['konto.zurueck.neu', 'info'],
+      fehler:      ['konto.zurueck.fehler', 'fehler'],
+      abgebrochen: ['konto.zurueck.abgebrochen', 'info'],
+    };
+    const treffer = saetze[stand];
+    if (treffer) this.ui.meldung(t(treffer[0]), treffer[1]);
+  }
+
+  /** Den Knopf im Fuss und das Fenster auf den Stand bringen. */
+  zeigeKontoLage() {
+    const zustand = kontozustand();
+    const gibtDienst = zustand === KONTO.abgemeldet || zustand === KONTO.angemeldet;
+
+    const knopf = document.getElementById('kontoAuf');
+    if (knopf) {
+      // `unbekannt` und `kein-dienst` sehen hier gleich aus — in beiden
+      // Faellen gibt es nichts anzubieten. Auseinander gehen sie am Herzen.
+      knopf.hidden = !gibtDienst;
+      knopf.textContent = t(angemeldet() ? 'konto.mein' : 'konto.anmelden');
+    }
+
+    const an = angemeldet();
+    const lage = document.getElementById('anmeldungAngemeldet');
+    const wege = document.getElementById('anmeldungWege');
+    if (lage) lage.hidden = !an;
+    if (wege) wege.hidden = an;
+
+    /*
+     Dasselbe Fenster, zwei Anlaesse: hineingehen und nachsehen. Ueberschrift
+     und Fussknopf sagen, welcher gerade gilt — sonst steht ueber der eigenen
+     Adresse „Anmelden" und darunter „Spaeter", und beides stimmt nicht.
+    */
+    const titel = document.getElementById('anmeldungTitel');
+    if (titel) titel.textContent = t(an ? 'konto.mein' : 'konto.titel');
+    const spaeter = document.getElementById('anmeldungSpaeter');
+    if (spaeter) spaeter.textContent = t(an ? 'filter.panel.fertig' : 'konto.spaeter');
+
+    const wer = document.getElementById('anmeldungWer');
+    if (wer) wer.textContent = an
+      ? (kontoDaten()?.adresse ?? t('konto.angemeldet.ohneAdresse'))
+      : '';
+  }
+
+  /*
+   Die eine Frage. Vier Riegel davor, und jeder hat einen Grund:
+
+     kontoNoetig()   nur im Zustand `abgemeldet`. Ohne Dienst und solange
+                     nichts geklaert ist, passiert gar nichts.
+     schonGefragt()  wer einmal „Nicht jetzt" gesagt hat, wird nicht wieder
+                     gefragt — auch beim naechsten Besuch nicht.
+     _kontoGefragt   und innerhalb einer Sitzung ohnehin nur einmal, auch
+                     wenn jemand die Frage einfach stehen laesst.
+     Aufrufort       toggleFavorit(), und nur beim Merken, nicht beim
+                     Entfernen. Wer ein Herz ausschaltet, will nichts.
+  */
+  frageNachKonto() {
+    if (!kontoNoetig()) return;
+    if (schonGefragt()) return;
+    if (this._kontoGefragt) return;
+    this._kontoGefragt = true;
+
+    this.ui.frage(t('konto.frage'), [
+      { text: t('konto.frage.ja'), haupt: true, tun: () => this.oeffneAnmeldung() },
+      // Gespeichert wird nur die Ablehnung — siehe lib/konto.mjs.
+      { text: t('konto.frage.nein'), tun: () => merkeAblehnung() },
+    ]);
+  }
+
+  oeffneAnmeldung() {
+    const fenster = document.getElementById('anmeldung');
+    if (!fenster) return;
+    this.zeigeKontoLage();
+    this.zeigeAnmeldeFehler('');
+    fenster.showModal();
+  }
+
+  zeigeAnmeldeFehler(text) {
+    const feld = document.getElementById('anmeldungFehler');
+    if (!feld) return;
+    feld.textContent = text;
+    feld.hidden = !text;
+  }
+
+  /*
+   Die Merkliste abgleichen.
+
+   Gibt es kein Konto, kehrt gleicheAb() sofort mit null zurueck und beruehrt
+   das Netz nicht — deshalb darf diese Funktion bedenkenlos an jedem
+   Herzschlag haengen.
+
+   Laeuft schon einer, wird nicht ein zweiter gestartet, sondern gemerkt,
+   dass noch einer faellig ist. Sonst schickt jemand, der zehn Sender
+   hintereinander merkt, zehn Anfragen los, die einander ueberholen.
+  */
+  async gleicheMerklisteAb({ still = false } = {}) {
+    if (!angemeldet()) return null;
+    if (this._abgleichLaeuft) { this._abgleichNochmal = true; return null; }
+    this._abgleichLaeuft = true;
+    try {
+      const meine = merklisteAlsMenge(this.ui.favoriten);
+      const antwort = await gleicheAb(meine);
+      if (!antwort) return null;
+
+      const zusammen = verschmilz(meine, antwort.eintraege);
+      speicher.schreib(SCHLUESSEL.favoritenZeit, zusammen);
+
+      // Nur Sender, die es im Katalog noch gibt. Eine Kennung aus einer
+      // aelteren Fassung wuerde sonst als leerer Platz im Regal stehen.
+      const drin = ausMenge(zusammen).filter((id) => this.ui.senderMitId(id));
+      const vorher = [...this.ui.favoriten].sort().join(',');
+      const nachher = [...drin].sort().join(',');
+      if (vorher === nachher) return antwort;
+
+      this.ui.favoriten = new Set(drin);
+      speicher.schreib(SCHLUESSEL.favoriten, drin);
+      /*
+       Dieselben drei Schritte wie nach einem Herzschlag, nicht mehr. Ein
+       zeichneRegalwand() waere naheliegend und falsch: Es baut die Regale
+       neu auf und wuerfe eine gefilterte Ansicht weg, in der jemand gerade
+       steht — waehrend Musik laeuft.
+      */
+      this.ui.aktualisiereFavoritenAnzeige();
+      this.ui.zeichneFilter();
+      this.aktualisiereGriff();
+      if (!still) this.ui.meldung(t('konto.abgeglichen', { anzahl: drin.length }));
+      return antwort;
+    } finally {
+      this._abgleichLaeuft = false;
+      if (this._abgleichNochmal) {
+        this._abgleichNochmal = false;
+        this.gleicheMerklisteAb({ still: true });
+      }
+    }
+  }
+
+  /** Ruft toggleFavorit(). Ohne Konto ein Aufruf, der sofort zurueckkehrt. */
+  merklisteGeaendert() {
+    if (!angemeldet()) return;
+    this.gleicheMerklisteAb({ still: true });
   }
 
   /*
@@ -2393,6 +2662,8 @@ class App {
       });
     }
 
+    this._verdrahteKonto(anKlick);
+
     anKlick('heroFavorit',       () => { if (this.ui.aktuelleId) this.ui.toggleFavorit(this.ui.aktuelleId); });
 
     /*
@@ -2456,6 +2727,141 @@ class App {
       };
       if (tasten[e.key]) { e.preventDefault(); tasten[e.key](); }
     });
+  }
+
+  /*
+   Die Anmeldung. Dasselbe <dialog> wie die Einstellungen — Fokusfang,
+   Escape und Verdunkler kommen vom Browser.
+
+   Alle Wege hier fuehren auf Endpunkte, die es im Dienst wirklich gibt;
+   welche das sind und welche NICHT dabei sind, steht bei der Auszeichnung
+   in index.html.
+  */
+  _verdrahteKonto(anKlick) {
+    const fenster = document.getElementById('anmeldung');
+    if (!fenster) return;
+
+    anKlick('kontoAuf', () => this.oeffneAnmeldung());
+    anKlick('anmeldungZu', () => fenster.close());
+    anKlick('anmeldungSpaeter', () => fenster.close());
+    fenster.addEventListener('click', (e) => { if (e.target === fenster) fenster.close(); });
+
+    /*
+     Die Adresse fuer Google traegt die Sprache mit, damit der Rueckweg auf
+     /fr/ statt auf / fuehrt. Sie steht im Dokument als blosses
+     "/api/google/start", damit der Verweis auch dann etwas ist, wenn dieser
+     Programmcode nicht laeuft — hier wird sie nachgezogen.
+    */
+    const google = document.getElementById('knopfGoogle');
+    if (google) google.href = fremdAdresse('google');
+
+    const mail     = document.getElementById('feldMail');
+    const code     = document.getElementById('feldCode');
+    const passwort = document.getElementById('feldPasswort');
+    const formCode = document.getElementById('formCode');
+
+    /*
+     Warten, waehrend der Dienst rechnet.
+
+     Bei der Passwortpruefung sind das ueber 200 ms Argon2 — mit Absicht, und
+     ohne diesen Riegel schickt ein ungeduldiger Doppelklick zwei Versuche
+     los und verbraucht zwei Plaetze in der Drosselung des Dienstes.
+    */
+    const warte = (knopfId, an) => {
+      const k = document.getElementById(knopfId);
+      if (k) k.disabled = an;
+    };
+
+    document.getElementById('formMail')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const adresse = (mail?.value ?? '').trim();
+      if (!adresse) return;
+      this.zeigeAnmeldeFehler('');
+      warte('knopfMailSenden', true);
+      const ok = await fordereCode(adresse);
+      warte('knopfMailSenden', false);
+      /*
+       Der Dienst antwortet IMMER 204 — auch fuer eine Adresse, die er nicht
+       kennt. Das ist der Grund, warum hier nie „diese Adresse gibt es nicht"
+       stehen kann und auch nicht stehen darf: Sonst waere dieses Feld eine
+       Auskunft darueber, wer hier ein Konto hat.
+      */
+      if (!ok) return this.zeigeAnmeldeFehler(t('konto.fehler.netz'));
+      if (formCode) formCode.hidden = false;
+      code?.focus();
+    });
+
+    formCode?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const adresse = (mail?.value ?? '').trim();
+      const eingabe = (code?.value ?? '').trim();
+      if (!adresse || !eingabe) return;
+      this.zeigeAnmeldeFehler('');
+      warte('knopfCodeSenden', true);
+      const a = await loeseCodeEin(adresse, eingabe);
+      warte('knopfCodeSenden', false);
+      if (a.ok) return this.nachDerAnmeldung(fenster, a.daten?.neu);
+      this.zeigeAnmeldeFehler(t(a.kein_dienst ? 'konto.fehler.netz' : 'konto.fehler.code'));
+    });
+
+    document.getElementById('formPasswort')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const adresse = (mail?.value ?? '').trim();
+      const geheim = passwort?.value ?? '';
+      if (!adresse) { mail?.focus(); return this.zeigeAnmeldeFehler(t('konto.fehler.ohneMail')); }
+      if (!geheim) return;
+      this.zeigeAnmeldeFehler('');
+      warte('knopfPasswortSenden', true);
+      const a = await meldeMitPasswortAn(adresse, geheim);
+      warte('knopfPasswortSenden', false);
+      if (passwort) passwort.value = '';
+      if (a.ok) return this.nachDerAnmeldung(fenster, false);
+      this.zeigeAnmeldeFehler(t(a.kein_dienst ? 'konto.fehler.netz' : 'konto.fehler.passwort'));
+    });
+
+    /*
+     Abmelden. Der Dienst loescht die Sitzungszeile und schickt ein
+     Loeschplaetzchen; hier bleibt danach nur, das Fenster zu schliessen und
+     zu sagen, dass es geschehen ist.
+
+     Die Merkliste bleibt stehen, wo sie ist — auf dem Geraet. Sie beim
+     Abmelden zu leeren waere die naheliegende Lesart von „abmelden" und die
+     falsche: Sie war vor dem Konto da und gehoert dem Geraet, nicht dem
+     Konto.
+
+     Und die Ablehnung wird gemerkt: Wer sich gerade abgemeldet hat, hat die
+     Frage nach einem Konto beantwortet. Beim naechsten Herz noch einmal zu
+     fragen waere zudringlich. Der Weg zurueck steht im Fuss.
+    */
+    anKlick('knopfAbmelden', async () => {
+      await abmelden();
+      merkeAblehnung();
+      fenster.close();
+      this.ui.meldung(t('konto.abgemeldet'));
+    });
+  }
+
+  /** Nach einer geglueckten Anmeldung: aufraeumen, abgleichen, Bescheid sagen. */
+  async nachDerAnmeldung(fenster, neu) {
+    vergissAblehnung();
+    const code = document.getElementById('feldCode');
+    const formCode = document.getElementById('formCode');
+    if (code) code.value = '';
+    if (formCode) formCode.hidden = true;
+    this.zeigeAnmeldeFehler('');
+    fenster.close();
+    this.ui.meldung(t(neu ? 'konto.willkommen.neu' : 'konto.willkommen'));
+    /*
+     Noch einmal nachfragen, wer man ist.
+
+     /api/anmelden/code und /api/anmelden/passwort antworten mit {kontoId,
+     neu} und sonst nichts — die Adresse steht nur in /api/konto. Ohne diese
+     Zeile stand im Fenster „Angemeldet" statt der Adresse, und man haette
+     nicht gesehen, ALS WER man angemeldet ist. Auf einem geteilten Geraet
+     ist das der Unterschied, auf den es ankommt.
+    */
+    await klaereZustand();
+    this.gleicheMerklisteAb();
   }
 
   // Sperrbildschirm und Bluetooth-Tasten. Lief früher nie, weil der

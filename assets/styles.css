@@ -1540,6 +1540,59 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 }
 
 @media (pointer: coarse) { .schieber__bahn { width: 3rem; height: 1.75rem; } }
+
+/* ── Anmeldung ───────────────────────────────────────────────────
+   Erbt das Aussehen der Einstellungen (dasselbe <dialog>, derselbe Kopf,
+   dieselbe Fußzeile) und ergänzt nur, was es dort nicht gibt: Eingabe-
+   felder. Ein drittes Aussehen für dasselbe Verhalten wäre genau die
+   Uneinheitlichkeit, gegen die die Einstellungen schon gebaut wurden. */
+.anmeldung__wege,
+.anmeldung__lage { display: grid; gap: 0.9rem; }
+/* `display: grid` schlägt das eingebaute `[hidden] { display: none }` —
+   dieselbe Klassenstärke, und die Regel des Browsers steht weiter oben.
+   Ohne diese Zeile standen im Anmeldefenster beide Hälften gleichzeitig:
+   „Abmelden" über „Mit Google anmelden". Im Programmtext war alles richtig
+   gesetzt; zu sehen war es nur im Bild. */
+.anmeldung__wege[hidden],
+.anmeldung__lage[hidden],
+.anmeldung__form[hidden] { display: none; }
+.anmeldung__lage .knopf { justify-self: start; }
+.anmeldung__fremd { text-align: center; text-decoration: none; }
+.anmeldung__oder {
+    font-size: 0.8rem; color: var(--text-leise); text-align: center;
+}
+.anmeldung__form { display: grid; gap: 0.45rem; }
+.anmeldung__feld { font-size: 0.8rem; color: var(--text-leise); }
+.anmeldung__eingabe {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    background: var(--karte);
+    border: 1px solid var(--rand);
+    border-radius: var(--rund);
+    color: var(--text);
+    font: inherit; font-size: 0.92rem;
+}
+.anmeldung__eingabe:focus-visible {
+    outline: 2px solid var(--pink); outline-offset: 1px;
+    border-color: var(--pink);
+}
+.anmeldung__form .knopf { justify-self: start; margin-top: 0.15rem; }
+.anmeldung__mehr summary {
+    font-size: 0.82rem; color: var(--text-leise); cursor: pointer;
+}
+.anmeldung__mehr summary:hover { color: var(--text); }
+.anmeldung__mehr .anmeldung__form { margin-top: 0.7rem; }
+/* Der Fehlersatz. role="alert" macht ihn hörbar, die Farbe sichtbar —
+   dieselbe wie bei .meldung--fehler, damit „etwas ging schief" überall
+   gleich aussieht. */
+.anmeldung__fehler {
+    font-size: 0.84rem; line-height: 1.5;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(255, 92, 92, 0.5);
+    border-radius: var(--rund);
+    background: var(--karte);
+}
+.anmeldung__fehler[hidden] { display: none; }
 .fuss__widerruf:hover { color: var(--text); border-color: var(--rand-hell); }
 
 .fuss__test {

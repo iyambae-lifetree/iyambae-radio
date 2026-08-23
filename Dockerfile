@@ -9,10 +9,10 @@
 # ── Stufe 1: die Sprachseiten erzeugen ──────────────────────────────
 FROM python:3.12-alpine AS erzeuger
 WORKDIR /bau
-# node für die zwei Prüfungen, die Modulcode tatsächlich AUSFÜHREN statt ihn
-# zu lesen: die Erlaubnisliste der Messung und die Reihenfolge im Regal
-# „Zuletzt gehört". Diese Stufe wird verworfen; im ausgelieferten Abbild
-# steckt kein node.
+# node für die drei Prüfungen, die Modulcode tatsächlich AUSFÜHREN statt ihn
+# zu lesen: die Erlaubnisliste der Messung, die Reihenfolge im Regal
+# „Zuletzt gehört" und die Zustandslogik des Kontos. Diese Stufe wird
+# verworfen; im ausgelieferten Abbild steckt kein node.
 RUN apk add --no-cache nodejs
 COPY . .
 # Der Erzeuger prüft sich selbst: Er muss index.html mit dem deutschen
@@ -23,7 +23,8 @@ RUN python3 Scripts/baue-sprachen.py \
  && python3 Scripts/baue-apps-sprachen.py \
  && python3 Scripts/pruefe-shell-dateien.py \
  && node Scripts/pruefe-messung.mjs \
- && node Scripts/pruefe-verlauf.mjs
+ && node Scripts/pruefe-verlauf.mjs \
+ && node Scripts/pruefe-konto.mjs
 
 # ── Stufe 2: ausliefern ─────────────────────────────────────────────
 #
