@@ -881,17 +881,37 @@ body.spielt .platte { animation-play-state: running; }
     */
     .regal__reihe.wird-gezogen,
     .regal__reihe.rollt-aus { scroll-snap-type: none; }
-    /* Waehrend des Zuges nichts auswaehlen und nichts als Bild wegziehen.
-       Ohne das markiert die Maus Text und schleift Cover hinter sich her —
-       beides sieht aus wie ein Fehler. */
+    /* Waehrend des Zuges nichts auswaehlen. Ohne das markiert die Maus Text,
+       und das sieht aus wie ein Fehler.
+
+       NUR waehrend des Zuges: Ausserhalb muss ein Sendername mit der Maus
+       markiert und kopiert werden koennen. `user-select: none` in Ruhe
+       naehme das weg, und niemand hat danach gefragt. */
     .regal__reihe.wird-gezogen,
-    .regal__reihe.wird-gezogen * {
-        user-select: none;
-        -webkit-user-drag: none;
-    }
+    .regal__reihe.wird-gezogen * { user-select: none; }
     /* Der Zeiger bleibt ein Zeiger, wo etwas anderes gemeint ist. */
     .regal__reihe :is(button, a) { cursor: pointer; }
 }
+/*
+ Kein Cover verlaesst seine Reihe.
+
+ Das stand vorher unter `.wird-gezogen` — also erst, WENN der Zug erkannt war.
+ Genau da liegt der Fehler: Der Browser entscheidet nach vier Pixeln, dass er
+ ein Bild wegzieht, die Reihe erst nach sechs. Eine Regel, die an der Klasse
+ haengt, kommt zwei Pixel zu spaet und hat nie gegriffen. Gemessen: Zeiger
+ gedrueckt bei x=354, `dragstart` bei x=350, Klasse noch nicht gesetzt.
+
+ Deshalb gilt sie jetzt in Ruhe. Sie steht ausserdem AUSSERHALB der Abfrage
+ `(hover: hover) and (pointer: fine)`: Ein Laptop mit Bildschirm zum Anfassen
+ meldet dort je nach Geraet `coarse`, hat aber trotzdem eine Maus. Auf reinen
+ Fingergeraeten kostet die Regel nichts — dort gibt es kein Bild-Ziehen.
+
+ `-webkit-user-drag` ist der Riegel fuer WebKit; das Attribut `draggable="false"`
+ an den Bildern selbst ist der fuer alle anderen. Beide zusammen, weil der
+ Riegel an genau einer Stelle fehlen darf, ohne dass es jemand merkt.
+*/
+.regal__reihe img { -webkit-user-drag: none; }
+
 .regal__reihe > .karte {
     flex: 0 0 clamp(9.2rem, 40vw, 12.5rem);
     scroll-snap-align: start;

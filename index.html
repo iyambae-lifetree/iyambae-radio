@@ -94,12 +94,17 @@
          Rillen nicht laufen und den Tonarm nicht wandern — was sich
          sichtbar dreht, ist die Mitte. -->
     <div class="plattenspieler" id="plattenspieler">
-        <img class="deck" src="/assets/bild/plattenspieler.webp" alt=""
+        <!-- draggable="false" an allen drei Ebenen: Ein Plattenspieler laedt
+             dazu ein, die Platte anzuschubsen. Tut man das mit der Maus,
+             haengt am Zeiger ein Geisterbild des Fotos — die Platte dreht
+             sich weiter, und es sieht aus, als sei etwas kaputt. Die Bilder
+             sind Zierat (alt=""); sie herauszuziehen hat keinen Zweck. -->
+        <img class="deck" src="/assets/bild/plattenspieler.webp" alt="" draggable="false"
              width="1400" height="1077" fetchpriority="high" decoding="async">
 
         <div class="platte" id="platte">
             <div class="label" id="label">
-                <img class="label__bild" id="labelBild" src="/assets/logo/iyambae-label.svg" alt="">
+                <img class="label__bild" id="labelBild" src="/assets/logo/iyambae-label.svg" alt="" draggable="false">
             </div>
             <span class="spindel"></span>
         </div>
@@ -107,7 +112,7 @@
         <!-- Der Tonarm ist aus demselben Foto herausgeschnitten und liegt
              als eigene Ebene darueber. Er schwenkt um sein Lager — beim
              Auflegen nach innen, danach langsam weiter. -->
-        <img class="tonarm" id="tonarm" src="/assets/bild/tonarm.webp" alt=""
+        <img class="tonarm" id="tonarm" src="/assets/bild/tonarm.webp" alt="" draggable="false"
              width="1400" height="1077" decoding="async">
 
         <canvas id="heroVisualizer" width="440" height="440" aria-hidden="true"></canvas>

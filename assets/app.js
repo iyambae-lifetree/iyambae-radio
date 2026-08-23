@@ -757,7 +757,25 @@ class UI {
                style="--regalton:${regalton(sender)}">
         <div class="karte__bild">
           ${eigenes
-            ? `<img src="${senderbild(sender)}" alt="" loading="lazy" width="512" height="512">`
+            /*
+              `draggable="false"` ist kein Beiwerk, sondern der Kern der Sache.
+
+              Bilder sind in HTML von Haus aus ziehbar. Der Browser entscheidet
+              nach VIER Pixeln Bewegung, dass er ein Bild wegzieht; die Reihe
+              hier entscheidet erst nach SECHS, dass ein Zug begonnen hat. In
+              den zwei Pixeln dazwischen gewinnt der Browser: Er schickt
+              `dragstart`, danach `pointercancel`, und der Zug der Reihe ist
+              tot, bevor er anfing. Uebrig bleibt ein Geisterbild am Zeiger.
+
+              Gemessen mit echten Mausereignissen: Zeigerdruck bei x=354,
+              `dragstart` bei x=350 — vier Pixel, Reihe noch ohne die Klasse
+              `wird-gezogen`, Reihe danach um null Pixel gescrollt.
+
+              Das Attribut nimmt dem Browser die Entscheidung ab, bevor sie
+              faellt. Eine Regel, die erst waehrend des Zuges greift, kann das
+              nicht — sie kommt bauartbedingt zu spaet.
+            */
+            ? `<img src="${senderbild(sender)}" alt="" loading="lazy" draggable="false" width="512" height="512">`
             /*
               Keine Huelle ohne Cover ist ein Fehler — in jedem Plattenladen
               stehen Testpressungen mit gesetztem Namen. Deshalb wird der Name
@@ -765,7 +783,7 @@ class UI {
             */
             : `<div class="huelle huelle--${huellengroesse(sender)}">
                  <span class="huelle__name">${huellenzeilen(sender).join('<br>')}</span>
-                 <img class="huelle__marke" src="${MARKE}" alt="" width="28" height="20">
+                 <img class="huelle__marke" src="${MARKE}" alt="" draggable="false" width="28" height="20">
                </div>`}
           <div class="karte__schleier"></div>
           <p class="karte__kaertchen"><span>${sender.kaertchen}</span></p>
@@ -1179,6 +1197,26 @@ class UI {
     // Ein neuer Zug hebt das Nachlaufen auf — sonst zieht man gegen den
     // eigenen Schwung.
     reihe.addEventListener('wheel', halt, { passive: true });
+
+    /*
+     Notnagel, kein Ersatz: Nichts in einer Reihe wird weggezogen.
+
+     Die eigentliche Loesung ist `draggable="false"` an den Covern. Dieser
+     Horcher faengt nur, was daran vorbeikommt — ein Bild, das spaeter
+     woanders in eine Reihe gesetzt wird und das Attribut nicht bekommt.
+
+     WAS ER NICHT KANN, und das ist gemessen: Der Browser SCHICKT dann
+     trotzdem erst `pointercancel` und danach `dragstart`. Bis dieser Horcher
+     abwinkt, ist der Zug der Reihe schon tot — das Geisterbild bleibt aus,
+     die Reihe scrollt aber um null Pixel. Ein `draggable="false"` erst gar
+     nicht in diesen Pfad zu geraten ist deshalb nicht dasselbe wie hier
+     abzuwinken, sondern besser.
+
+     Keine Ausnahme fuer Verweise: In einer Reihe steht heute keiner, und
+     stuende dort einer, gaelte fuer ihn dasselbe — die Reihe ist eine
+     Zieh-Flaeche, aus ihr wird nichts herausgezogen.
+    */
+    reihe.addEventListener('dragstart', (e) => e.preventDefault());
   }
 
   _verdrahteReihen(behaelter) {
