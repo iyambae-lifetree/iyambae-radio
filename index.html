@@ -94,12 +94,17 @@
          Rillen nicht laufen und den Tonarm nicht wandern — was sich
          sichtbar dreht, ist die Mitte. -->
     <div class="plattenspieler" id="plattenspieler">
-        <img class="deck" src="/assets/bild/plattenspieler.webp" alt=""
+        <!-- draggable="false" an allen drei Ebenen: Ein Plattenspieler laedt
+             dazu ein, die Platte anzuschubsen. Tut man das mit der Maus,
+             haengt am Zeiger ein Geisterbild des Fotos — die Platte dreht
+             sich weiter, und es sieht aus, als sei etwas kaputt. Die Bilder
+             sind Zierat (alt=""); sie herauszuziehen hat keinen Zweck. -->
+        <img class="deck" src="/assets/bild/plattenspieler.webp" alt="" draggable="false"
              width="1400" height="1077" fetchpriority="high" decoding="async">
 
         <div class="platte" id="platte">
             <div class="label" id="label">
-                <img class="label__bild" id="labelBild" src="/assets/logo/iyambae-label.svg" alt="">
+                <img class="label__bild" id="labelBild" src="/assets/logo/iyambae-label.svg" alt="" draggable="false">
             </div>
             <span class="spindel"></span>
         </div>
@@ -107,7 +112,7 @@
         <!-- Der Tonarm ist aus demselben Foto herausgeschnitten und liegt
              als eigene Ebene darueber. Er schwenkt um sein Lager — beim
              Auflegen nach innen, danach langsam weiter. -->
-        <img class="tonarm" id="tonarm" src="/assets/bild/tonarm.webp" alt=""
+        <img class="tonarm" id="tonarm" src="/assets/bild/tonarm.webp" alt="" draggable="false"
              width="1400" height="1077" decoding="async">
 
         <canvas id="heroVisualizer" width="440" height="440" aria-hidden="true"></canvas>
@@ -402,6 +407,21 @@
         <a href="/recht/datenschutz/" hreflang="de" data-text="fuss.datenschutz">Datenschutz</a>
         <button class="fuss__widerruf" id="einstellungenAuf"
                 data-text="fuss.einstellungen">Datenschutz-Einstellungen</button>
+        <!-- Der Weg zum Konto, und der einzige, der immer dasteht.
+
+             Er ist von Anfang an VERBORGEN und wird nur sichtbar, wenn der
+             Dienst geantwortet hat (assets/lib/konto.mjs, Zustand
+             `abgemeldet` oder `angemeldet`). Solange niemand unter /api/
+             antwortet, gibt es hier nichts zu sehen — kein Knopf, der ins
+             Leere fuehrt, keine Anmeldung, die es nicht gibt.
+
+             Dass er im Fuss steht und nicht im Kopf, ist Absicht: Das Radio
+             laeuft ohne Konto vollstaendig. Ein Anmeldeknopf neben dem
+             Abspielknopf behauptete etwas anderes. Hier findet ihn, wer ihn
+             sucht — zum Abmelden, und fuer alle, die die Frage am Herzen
+             einmal weggeschickt haben. -->
+        <button class="fuss__widerruf" id="kontoAuf" hidden
+                data-text="konto.anmelden">Anmelden</button>
     </nav>
 
 <!-- Die Einstellungen.
@@ -467,6 +487,111 @@
     <div class="filter-panel__fuss">
         <span class="filter-panel__stand"></span>
         <button class="knopf knopf--gross" id="einstellungenFertig" data-text="filter.panel.fertig">Fertig</button>
+    </div>
+</dialog>
+
+<!-- Die Anmeldung.
+
+     WAS HIER NICHT STEHT, ist der wichtigere Teil: kein Vorhang beim ersten
+     Besuch, kein Knopf im Kopf, keine Wand vor der Musik. Dieses Fenster
+     oeffnet sich an genau zwei Stellen — beim Herz, EINMAL, und ueber den
+     Knopf im Fuss, wenn jemand ihn sucht. Die Begruendung steht im Kopf von
+     assets/lib/konto.mjs: Am Konto haengen Merken, eigene Listen und
+     Empfehlungen. Sonst nichts.
+
+     WELCHE WEGE HIER STEHEN, ist nicht ausgedacht, sondern nachgesehen und
+     nachgemessen (dienst/src/server.mjs, gemessen gegen iyambae.fm am
+     23.08.2026):
+
+       GET  /api/google/start      302 zu accounts.google.com
+       POST /api/anmelden          204, schickt einen Einmalcode
+       POST /api/anmelden/code     200 mit Sitzung, 401 bei falschem Code
+       POST /api/anmelden/passwort 200 mit Sitzung, 401 sonst
+       POST /api/abmelden          204
+
+     NICHT hier stehen zwei Wege, die es im Dienst gibt:
+
+       /api/apple/start antwortet heute 501 apple_nicht_eingerichtet — ein
+       Knopf, der auf eine JSON-Fehlerseite fuehrt, ist schlechter als kein
+       Knopf. Er kommt, wenn der Schluessel hinterlegt ist.
+
+       /api/passkey/anmelden/start antwortet 200 und ist damit betriebsbereit.
+       Er fehlt, weil dafuer erst der WebAuthn-Griff im Browser gebaut sein
+       will; konto.mjs hat dafuer heute keine Funktion, und eine zu erfinden
+       waere mehr, als diese Leitung legen soll. -->
+<dialog class="einstellungen anmeldung" id="anmeldung" data-aria="konto.bereich" aria-label="Anmelden">
+    <div class="filter-panel__kopf">
+        <h2 class="filter-panel__titel" id="anmeldungTitel" data-text="konto.titel">Anmelden</h2>
+        <button class="filter-panel__zu" id="anmeldungZu"
+                data-aria="filter.panel.schliessen" aria-label="Schließen">
+            <span data-symbol="zu" data-symbol-groesse="18"></span>
+        </button>
+    </div>
+
+    <div class="einstellungen__inhalt">
+        <p class="einstellungen__vorwort" data-text="konto.vorwort">Ein Konto brauchst du für nichts, was dieses Radio kann. Es hält nur deine Merkliste auf allen deinen Geräten gleich.</p>
+
+        <!-- Angemeldet: wer, und der Weg hinaus. -->
+        <div class="anmeldung__lage" id="anmeldungAngemeldet" hidden>
+            <div class="einstellungen__punkt">
+                <div class="einstellungen__text">
+                    <p class="einstellungen__name" id="anmeldungWer"></p>
+                    <p class="einstellungen__was" data-text="konto.angemeldet.was">Deine Merkliste wird beim Anmelden und bei jeder Änderung abgeglichen.</p>
+                </div>
+            </div>
+            <button class="knopf" id="knopfAbmelden" data-text="konto.abmelden">Abmelden</button>
+        </div>
+
+        <!-- Abgemeldet: die drei Wege, in der Reihenfolge ihrer Mühe. -->
+        <div class="anmeldung__wege" id="anmeldungWege">
+            <a class="knopf knopf--gross anmeldung__fremd" id="knopfGoogle"
+               href="/api/google/start" rel="nofollow" data-text="konto.google">Mit Google anmelden</a>
+
+            <p class="anmeldung__oder" data-text="konto.oder">oder mit deiner E-Mail-Adresse</p>
+
+            <form class="anmeldung__form" id="formMail" novalidate>
+                <label class="anmeldung__feld" for="feldMail" data-text="konto.mail.feld">E-Mail-Adresse</label>
+                <input class="anmeldung__eingabe" type="email" id="feldMail" name="mail"
+                       autocomplete="email" spellcheck="false"
+                       data-platzhalter="konto.mail.platzhalter" placeholder="du@beispiel.de">
+                <button class="knopf knopf--gross" type="submit" id="knopfMailSenden" data-text="konto.mail.senden">Code schicken</button>
+            </form>
+
+            <!-- Der Code. Steht von Anfang an im Dokument, aber verborgen:
+                 Ein Feld, das erst per Programmcode entsteht, findet kein
+                 Passwortverwalter und keine Vorlesehilfe. -->
+            <form class="anmeldung__form" id="formCode" hidden novalidate>
+                <!-- Ohne Zahl, und das ist Absicht: Wie lange der Code gilt,
+                     entscheidet CODE_GUELTIG_MINUTEN im Dienst. Eine Zahl
+                     hier wäre eine zweite Wahrheit, die still veraltet — die
+                     Mail selbst trägt sie. -->
+                <p class="einstellungen__was" data-text="konto.code.hinweis">Wenn es zu dieser Adresse ein Postfach gibt, liegt dort jetzt ein Code. Wie lange er gilt, steht in der Mail.</p>
+                <label class="anmeldung__feld" for="feldCode" data-text="konto.code.feld">Code aus der Mail</label>
+                <input class="anmeldung__eingabe" type="text" id="feldCode"
+                       inputmode="numeric" autocomplete="one-time-code" spellcheck="false"
+                       data-platzhalter="konto.code.platzhalter" placeholder="123456">
+                <button class="knopf knopf--gross" type="submit" id="knopfCodeSenden" data-text="konto.code.senden">Anmelden</button>
+            </form>
+
+            <details class="anmeldung__mehr">
+                <summary data-text="konto.passwort.auf">Ich habe ein Passwort</summary>
+                <form class="anmeldung__form" id="formPasswort" novalidate>
+                    <p class="einstellungen__was" data-text="konto.passwort.hinweis">Trage oben deine E-Mail-Adresse ein und hier dein Passwort.</p>
+                    <label class="anmeldung__feld" for="feldPasswort" data-text="konto.passwort.feld">Passwort</label>
+                    <input class="anmeldung__eingabe" type="password" id="feldPasswort"
+                           autocomplete="current-password">
+                    <button class="knopf knopf--gross" type="submit" id="knopfPasswortSenden" data-text="konto.passwort.senden">Anmelden</button>
+                </form>
+            </details>
+        </div>
+
+        <p class="anmeldung__fehler" id="anmeldungFehler" role="alert" hidden></p>
+        <p class="einstellungen__nachwort" data-html="konto.nachwort">Was ein Konto speichert und wie lange, steht in Abschnitt 11 der <a href="/recht/datenschutz/" hreflang="de">Datenschutzerklärung</a>.</p>
+    </div>
+
+    <div class="filter-panel__fuss">
+        <span class="filter-panel__stand"></span>
+        <button class="knopf knopf--gross" id="anmeldungSpaeter" data-text="konto.spaeter">Später</button>
     </div>
 </dialog>
 </footer>

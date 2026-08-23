@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v24';
+const SW_VERSION = 'iyambae-v26';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -68,6 +68,7 @@ const SHELL_FILES = [
     // bricht offline der ganze Start ab — ein fehlendes ES-Modul reisst das
     // Skript mit. Scripts/pruefe-shell-dateien.py wacht darueber.
     '/assets/lib/gewichtung.mjs',
+    '/assets/lib/verlauf.mjs',
     '/assets/lib/verwandt.mjs',
     '/assets/lib/myretuner.mjs',
     '/assets/lib/titel.mjs',
@@ -79,6 +80,13 @@ const SHELL_FILES = [
     '/assets/lib/sprache.mjs',
     '/assets/lib/aktualisierung.mjs',
     '/assets/lib/fehlerbericht.mjs',
+    // Das Konto. Es steht hier NICHT, damit die Anmeldung offline liefe —
+    // sie tut es nicht, und soll es auch nicht. Es steht hier, weil app.js
+    // es importiert: Ein fehlendes ES-Modul reisst offline den ganzen Start
+    // mit, und dann laeuft nicht einmal mehr die Musik. Der Zugriff auf
+    // /api/ selbst wird vom fetch-Behandler weiter unten ausdruecklich
+    // durchgereicht und nie abgelegt.
+    '/assets/lib/konto.mjs',
     // Der Signalkern des IYAMBAE Tuners. Der Worklet wird nicht importiert, sondern per
     // addModule geladen, und die .wasm per fetch — beides sieht der
     // import-Ausdruck nicht. Scripts/pruefe-shell-dateien.py prueft deshalb

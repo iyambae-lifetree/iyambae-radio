@@ -44,6 +44,46 @@ let zustand = ZUSTAND.unbekannt;
 let konto = null;
 const horcher = new Set();
 
+// ── Die eine Frage, und dass sie nur einmal kommt ───────────────────
+/*
+ Der Kopf dieses Moduls verspricht „einmal fragen, im richtigen Augenblick,
+ und die Antwort merken". Das Merken steht hier, aus demselben Grund, aus dem
+ fehlerbericht.mjs seinen Schluessel selbst haelt: Wer die Speicherung sucht,
+ soll sie neben der Begruendung finden.
+
+ GESPEICHERT WIRD NUR DIE ABLEHNUNG — genau wie `hz_messung` in messung.mjs.
+ Wer sich anmeldet, hinterlaesst ohnehin ein Sitzungsplaetzchen; ein zweiter
+ Eintrag „hat ja gesagt" waere eine Spur ohne Zweck.
+
+ § 25 Abs. 2 Nr. 2 TDDDG: Das Speichern ist unbedingt erforderlich fuer den
+ ausdruecklich gewuenschten Dienst. Der Dienst ist hier das Versprechen, NICHT
+ noch einmal zu fragen — und ein Nein, das beim naechsten Herz vergessen
+ waere, ist keines. Dieselbe Abwaegung wie bei `hz_messung` und
+ `hz_fehlerbericht`, und sie traegt hier sogar leichter: Der Eintrag ist ein
+ einziges Wort und entsteht nur, wenn jemand ihn ausgeloest hat.
+*/
+const SCHLUESSEL_FRAGE = 'hz_konto_frage';
+
+/** Hat der Besucher die Anmeldefrage schon einmal weggeschickt? */
+export function schonGefragt() {
+  try { return localStorage.getItem(SCHLUESSEL_FRAGE) === 'nein'; }
+  catch { return false; }   // privates Fenster: dann eben noch einmal fragen
+}
+
+/** „Nicht jetzt." Wird gemerkt; der Weg ueber den Fuss bleibt offen. */
+export function merkeAblehnung() {
+  try { localStorage.setItem(SCHLUESSEL_FRAGE, 'nein'); } catch {}
+}
+
+/*
+ Wieder wegraeumen. Nach einer geglueckten Anmeldung gibt es nichts mehr zu
+ merken — die Sitzung sagt schon alles, und ein liegengebliebenes „nein"
+ waere ein Eintrag ohne Zweck. Aufgeraeumt statt aufgehoben.
+*/
+export function vergissAblehnung() {
+  try { localStorage.removeItem(SCHLUESSEL_FRAGE); } catch {}
+}
+
 export function kontozustand() { return zustand; }
 export function angemeldet() { return zustand === ZUSTAND.angemeldet; }
 export function kontoDaten() { return konto; }
@@ -93,7 +133,25 @@ async function ruf(pfad, optionen = {}) {
  */
 export async function klaereZustand() {
   const a = await ruf('/konto', { frist: 6000 });
-  if (!a.ok && a.kein_dienst) zustand = ZUSTAND.keinDienst;
+  /*
+   `!a.ok`, nicht `!a.ok && a.kein_dienst` — der Unterschied ist gemessen und
+   nicht theoretisch.
+
+   deploy/nginx.conf faengt 502/503/504 vom Anmeldedienst ab und antwortet
+   selbst: `503 {"fehler":"dienst_schlaeft"}` mit `Content-Type:
+   application/json`. Das ist gut gemacht — aber es ist JSON, und deshalb ging
+   es hier nicht in den `kein_dienst`-Zweig, sondern durch bis zum letzten:
+   Ein schlafender Dienst hiess `abgemeldet`. Dann boete die Seite eine
+   Anmeldung an, die nicht funktionieren kann, und fragte am Herzen danach.
+
+   Gegen einen Container, der gerade kalt startet, ist das kein Randfall: Der
+   Kaltstart ist gemessen und dauert Sekunden.
+
+   Also die enge Regel: NUR eine 200er-Antwort, die ausdruecklich
+   `angemeldet: false` sagt, heisst `abgemeldet`. Alles andere heisst, dass
+   niemand geantwortet hat — und dann aendert sich gar nichts.
+  */
+  if (!a.ok) zustand = ZUSTAND.keinDienst;
   else if (a.daten?.angemeldet) { zustand = ZUSTAND.angemeldet; konto = a.daten; }
   else { zustand = ZUSTAND.abgemeldet; konto = null; }
   melde();
@@ -101,9 +159,17 @@ export async function klaereZustand() {
 }
 
 // ── Anmelden ───────────────────────────────────────────────────────
-/** Schickt einen Einmalcode. Antwortet IMMER erfolgreich — siehe Dienst. */
+/*
+ Schickt einen Einmalcode. Antwortet IMMER erfolgreich — siehe Dienst.
+
+ Die Sprache faehrt mit, und das ist keine Beigabe: Der Dienst liest
+ `koerper.sprache` und schreibt die Mail danach (server.mjs, 'POST
+ /api/anmelden' → versender.reiheEin). Ohne dieses Feld bekaeme ein Besucher
+ auf /ja/ seinen Anmeldecode auf Deutsch. Der Aufruf stand hier ohne sie, und
+ der Fehler waere erst im Postfach eines Fremden aufgefallen.
+*/
 export async function fordereCode(mail) {
-  const a = await ruf('/anmelden', { rumpf: { mail } });
+  const a = await ruf('/anmelden', { rumpf: { mail, sprache: sprache() } });
   return a.ok || a.status === 204;
 }
 

@@ -1,6 +1,6 @@
 # Datenschutz
 
-> **Entwurf, Stand 21.08.2026 — zweite Fassung.** Zwei Dinge haben sich gegenüber der ersten geändert, und beide reichen tief: Verantwortliche ist eine Gesellschaft in den USA mit einem EU-Vertreter auf Malta, nicht eine deutsche Privatperson. Und es wird jetzt gemessen, welcher Sender gestartet wird — die erste Fassung sagte an drei Stellen das Gegenteil. Abschnitt 3 ist am 21.08.2026 ein zweites Mal nachgezogen worden: Das Adressfeld ist aus der Messzeile verschwunden, und die Sprachangabe kommt nicht mehr aus dem Cookie, sondern aus dem Pfad. Der Abschnitt „Wenn du ein Konto anlegst" beschreibt weiterhin etwas, das es **noch nicht gibt**. Offene Punkte: [HINWEISE.md](HINWEISE.md).
+> **Entwurf, Stand 21.08.2026 — zweite Fassung.** Zwei Dinge haben sich gegenüber der ersten geändert, und beide reichen tief: Verantwortliche ist eine Gesellschaft in den USA mit einem EU-Vertreter auf Malta, nicht eine deutsche Privatperson. Und es wird jetzt gemessen, welcher Sender gestartet wird — die erste Fassung sagte an drei Stellen das Gegenteil. Abschnitt 3 ist am 21.08.2026 ein zweites Mal nachgezogen worden: Das Adressfeld ist aus der Messzeile verschwunden, und die Sprachangabe kommt nicht mehr aus dem Cookie, sondern aus dem Pfad. Am 23.08.2026 ist Abschnitt 11 aus dem Konjunktiv geholt worden: Die Anmeldung steht jetzt in der Seite, und damit gilt der Abschnitt. Mitgezogen sind Abschnitt 8 (zwei neue Einträge im örtlichen Speicher, dazu das Sitzungscookie) und der Satz über Drittlandübermittlungen weiter unten. Offene Punkte: [HINWEISE.md](HINWEISE.md).
 
 ---
 
@@ -98,9 +98,10 @@ gelöscht.
 
 **Wirkliche Drittlandübermittlungen gibt es hier trotzdem**, und sie stehen an
 ihrem Platz: die Verbindung deines Geräts zu den Senderservern (Abschnitt 7),
-die Fernwartung durch Microsoft-Personal außerhalb der EU (Abschnitt 2) und —
-später, wenn es Konten gibt — die Anmeldung über Google oder Apple
-(Abschnitt 11).
+die Fernwartung durch Microsoft-Personal außerhalb der EU (Abschnitt 2) und die
+Anmeldung über Google (Abschnitt 11) — letztere aber nur, wenn du sie selbst
+anstößt. Wer sich nicht anmeldet, hat mit Google nichts zu tun: Beim Aufbau der
+Seite geht keine einzige Anfrage dorthin.
 
 ### Datenschutzbeauftragter
 
@@ -509,6 +510,8 @@ nirgendwohin.
 | Schlüssel | Inhalt |
 |---|---|
 | `hz_favoriten` | deine gemerkten Sender |
+| `hz_favoriten_zeit` | wann du welchen Sender gemerkt und wann du ihn wieder entfernt hast — nur Kennung und Uhrzeit |
+| `hz_konto_frage` | **nur, wenn** du die Frage nach einem Konto mit „Nicht jetzt" beantwortet hast (Abschnitt 11) |
 | `hz_zuletzt` | die letzten 20 gehörten Sender |
 | `hz_gehoert` | wie oft du welchen Sender gestartet hast |
 | `hz_fehlschlaege` | welche Sender nicht ansprangen (ab dem dritten Mal rutscht ein Sender ans Regalende) |
@@ -523,20 +526,55 @@ nirgendwohin.
 **nur die Ablehnung**. Wer die Messung anlässt, hinterlässt gar nichts — ein
 Eintrag „ja" wäre eine Spur ohne Zweck.
 
+`hz_konto_frage` ist derselbe Fall, und deshalb steht er hier gleich daneben:
+Auch dort wird **nur das Nein** gespeichert, und es entsteht überhaupt nur, wenn
+du die Frage ausdrücklich weggeschickt hast. Wer sich anmeldet, hat das
+Sitzungscookie — ein zusätzlicher Eintrag „hat ja gesagt" wäre eine Spur ohne
+Zweck, und er wird beim Anmelden wieder entfernt.
+
+`hz_favoriten_zeit` ist die Merkliste selbst, nur mit Uhrzeiten. Ohne sie ließen
+sich zwei Geräte nicht zusammenführen, ohne dass ein von dir entferntes Herz vom
+anderen Gerät zurückkommt. Der Eintrag entsteht mit dem ersten Herz, also auch
+bei dir, wenn du dich nie anmeldest — er ist Teil der Merkliste und geht mit ihr
+weg.
+
 Diese Angaben werden **nicht** an uns übertragen — auch nicht für die
 Reichweitenmessung, die keinen einzigen dieser Schlüssel ausliest. Solange du
-kein Konto hast, verlassen sie dein Gerät nicht. Du löschst sie, indem du in
-deinem Browser die Websitedaten für iyambae.fm löschst.
+kein Konto hast, verlassen sie dein Gerät nicht.
 
-### Ein Cookie
+Meldest du dich an, ändert sich daran genau eines: `hz_favoriten` und
+`hz_favoriten_zeit` gehen zu unserem Anmeldedienst — dafür gibt es das Konto
+(Abschnitt 11). Alles andere in dieser Tabelle bleibt auch dann hier. Der
+Hörverlauf ist dabei vorgesehen, geht heute aber noch nicht mit.
 
-Genau eines: `hz_sprache`, mit dem Sprachkürzel als Inhalt (`de`, `en`, `fr`,
-`es`, `it`, `ja`, `ar`), einer Laufzeit von einem Jahr und `SameSite=Lax`. Es
-muss ein Cookie sein und kann kein Eintrag im örtlichen Speicher sein, weil der
-Server es lesen können muss: Wer `iyambae.fm` ohne Sprachpfad aufruft, wird
-anhand dieses Cookies auf die richtige Sprachfassung geleitet. Es enthält keine
-Kennung, keine Nummer und nichts, woran man dich wiedererkennen könnte — nur
-zwei Buchstaben. Es dient keiner Analyse und keiner Werbung.
+Du löschst all das, indem du in deinem Browser die Websitedaten für iyambae.fm
+löschst.
+
+### Cookies
+
+**Eines für alle: `hz_sprache`**, mit dem Sprachkürzel als Inhalt (`de`, `en`,
+`fr`, `es`, `it`, `ja`, `ar`), einer Laufzeit von einem Jahr und
+`SameSite=Lax`. Es muss ein Cookie sein und kann kein Eintrag im örtlichen
+Speicher sein, weil der Server es lesen können muss: Wer `iyambae.fm` ohne
+Sprachpfad aufruft, wird anhand dieses Cookies auf die richtige Sprachfassung
+geleitet. Es enthält keine Kennung, keine Nummer und nichts, woran man dich
+wiedererkennen könnte — nur zwei Buchstaben. Es dient keiner Analyse und keiner
+Werbung.
+
+**Eines nur für Angemeldete: `hz_sitzung`.** Es entsteht in dem Augenblick, in
+dem du dich anmeldest, und geht weg, wenn du dich abmeldest. Es trägt
+`HttpOnly`, `Secure`, `SameSite=Lax` und eine Laufzeit von einem Jahr. Sein
+Inhalt ist ein Zufallswert und sonst nichts — bei uns liegt davon nur ein
+SHA-256-Abdruck (Abschnitt 11).
+
+Wer sich nie anmeldet, bekommt dieses Cookie nie zu sehen. Es ist kein
+Analyse-Cookie und kein Werbe-Cookie: Ohne es gäbe es keine Anmeldung, denn eine
+Anmeldung, die der Server beim nächsten Klick vergessen hat, ist keine.
+Deswegen fragt auch kein Banner danach — § 25 Abs. 2 Nr. 2 TDDDG nimmt genau
+das aus, und die Anmeldung ist der Dienst, den du in diesem Moment ausdrücklich
+verlangt hast. Beim Anmeldevorgang über Google kommt für eine Viertelstunde ein
+zweites, kurzlebiges Cookie unter `Path=/api/` hinzu; es bindet den Rückweg von
+Google an genau diesen Browser und wird danach gelöscht.
 
 ### Der Service Worker
 
@@ -555,9 +593,10 @@ deinstallierst.
 sind unbedingt erforderlich, damit der von dir ausdrücklich gewünschte Dienst
 funktioniert — eine Merkliste ohne Speicher ist keine Merkliste, ein
 Sprachwähler, der die Sprache vergisst, ist keiner, und eine App, die offline
-laufen soll, muss etwas zwischenspeichern. Dasselbe gilt für `hz_messung` und
-`hz_fehlerbericht`: Eine Abschaltung, die beim nächsten Besuch vergessen wäre,
-wäre keine.
+laufen soll, muss etwas zwischenspeichern. Dasselbe gilt für `hz_messung`,
+`hz_fehlerbericht` und `hz_konto_frage`: Eine Abschaltung, die beim nächsten
+Besuch vergessen wäre, wäre keine — und ein „Nicht jetzt", das beim nächsten
+Herz wieder gefragt würde, auch nicht.
 
 Soweit in diesen Angaben personenbezogene Daten liegen, ist die Rechtsgrundlage
 für die Verarbeitung Art. 6 Abs. 1 lit. f DSGVO — mit dem Zusatz, dass wir sie
@@ -649,11 +688,17 @@ für die Messung kommt aus dem Pfad (Abschnitt 3).
 
 ## 11. Wenn du ein Konto anlegst
 
-> **Dieser Abschnitt beschreibt eine geplante Funktion.** Solange es auf iyambae.fm keine Anmeldung gibt, gilt er nicht. Er steht hier, damit er fertig ist, wenn es so weit ist — und damit du vorher lesen kannst, worauf du dich einlässt.
+> **Dieser Abschnitt gilt seit dem 23.08.2026.** Vorher stand hier, er beschreibe eine geplante Funktion — das stimmt nicht mehr: Die Anmeldung ist in der Seite angeschlossen. Heute stehen zwei Wege offen, die Anmeldung über Google und die per E-Mail (Einmalcode oder Passwort). Die Anmeldung über Apple und der Passkey sind im Dienst gebaut, aber nicht angeboten; kommen sie hinzu, gilt für sie, was hier steht.
 
-Ein Konto brauchst du für nichts, was die Seite heute kann. Es gibt es nur für
-eine Sache: damit deine Merkliste und dein Hörverlauf auf deinem Telefon und
-deinem Rechner dieselben sind.
+Ein Konto brauchst du für nichts, was die Seite kann. Abspielen, alle Regale,
+Suche, 432 Hz, Sprachwechsel, offline — nichts davon fragt danach. Gefragt wirst
+du an einer einzigen Stelle, nämlich wenn du einen Sender merkst, und auch dort
+erst, nachdem er gemerkt ist. Sagst du nein, wird nicht wieder gefragt.
+
+Ein Konto gibt es für eine Sache: damit deine Merkliste und dein Hörverlauf auf
+deinem Telefon und deinem Rechner dieselben sind. **Heute geht davon nur die
+Merkliste mit.** Der Abgleich des Hörverlaufs ist gebaut, aber von der Seite aus
+noch nicht angeschlossen; was hier über ihn steht, gilt erst dann.
 
 ### Was gespeichert wird
 

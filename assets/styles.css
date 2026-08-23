@@ -881,17 +881,37 @@ body.spielt .platte { animation-play-state: running; }
     */
     .regal__reihe.wird-gezogen,
     .regal__reihe.rollt-aus { scroll-snap-type: none; }
-    /* Waehrend des Zuges nichts auswaehlen und nichts als Bild wegziehen.
-       Ohne das markiert die Maus Text und schleift Cover hinter sich her —
-       beides sieht aus wie ein Fehler. */
+    /* Waehrend des Zuges nichts auswaehlen. Ohne das markiert die Maus Text,
+       und das sieht aus wie ein Fehler.
+
+       NUR waehrend des Zuges: Ausserhalb muss ein Sendername mit der Maus
+       markiert und kopiert werden koennen. `user-select: none` in Ruhe
+       naehme das weg, und niemand hat danach gefragt. */
     .regal__reihe.wird-gezogen,
-    .regal__reihe.wird-gezogen * {
-        user-select: none;
-        -webkit-user-drag: none;
-    }
+    .regal__reihe.wird-gezogen * { user-select: none; }
     /* Der Zeiger bleibt ein Zeiger, wo etwas anderes gemeint ist. */
     .regal__reihe :is(button, a) { cursor: pointer; }
 }
+/*
+ Kein Cover verlaesst seine Reihe.
+
+ Das stand vorher unter `.wird-gezogen` — also erst, WENN der Zug erkannt war.
+ Genau da liegt der Fehler: Der Browser entscheidet nach vier Pixeln, dass er
+ ein Bild wegzieht, die Reihe erst nach sechs. Eine Regel, die an der Klasse
+ haengt, kommt zwei Pixel zu spaet und hat nie gegriffen. Gemessen: Zeiger
+ gedrueckt bei x=354, `dragstart` bei x=350, Klasse noch nicht gesetzt.
+
+ Deshalb gilt sie jetzt in Ruhe. Sie steht ausserdem AUSSERHALB der Abfrage
+ `(hover: hover) and (pointer: fine)`: Ein Laptop mit Bildschirm zum Anfassen
+ meldet dort je nach Geraet `coarse`, hat aber trotzdem eine Maus. Auf reinen
+ Fingergeraeten kostet die Regel nichts — dort gibt es kein Bild-Ziehen.
+
+ `-webkit-user-drag` ist der Riegel fuer WebKit; das Attribut `draggable="false"`
+ an den Bildern selbst ist der fuer alle anderen. Beide zusammen, weil der
+ Riegel an genau einer Stelle fehlen darf, ohne dass es jemand merkt.
+*/
+.regal__reihe img { -webkit-user-drag: none; }
+
 .regal__reihe > .karte {
     flex: 0 0 clamp(9.2rem, 40vw, 12.5rem);
     scroll-snap-align: start;
@@ -1532,6 +1552,59 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 }
 
 @media (pointer: coarse) { .schieber__bahn { width: 3rem; height: 1.75rem; } }
+
+/* ── Anmeldung ───────────────────────────────────────────────────
+   Erbt das Aussehen der Einstellungen (dasselbe <dialog>, derselbe Kopf,
+   dieselbe Fußzeile) und ergänzt nur, was es dort nicht gibt: Eingabe-
+   felder. Ein drittes Aussehen für dasselbe Verhalten wäre genau die
+   Uneinheitlichkeit, gegen die die Einstellungen schon gebaut wurden. */
+.anmeldung__wege,
+.anmeldung__lage { display: grid; gap: 0.9rem; }
+/* `display: grid` schlägt das eingebaute `[hidden] { display: none }` —
+   dieselbe Klassenstärke, und die Regel des Browsers steht weiter oben.
+   Ohne diese Zeile standen im Anmeldefenster beide Hälften gleichzeitig:
+   „Abmelden" über „Mit Google anmelden". Im Programmtext war alles richtig
+   gesetzt; zu sehen war es nur im Bild. */
+.anmeldung__wege[hidden],
+.anmeldung__lage[hidden],
+.anmeldung__form[hidden] { display: none; }
+.anmeldung__lage .knopf { justify-self: start; }
+.anmeldung__fremd { text-align: center; text-decoration: none; }
+.anmeldung__oder {
+    font-size: 0.8rem; color: var(--text-leise); text-align: center;
+}
+.anmeldung__form { display: grid; gap: 0.45rem; }
+.anmeldung__feld { font-size: 0.8rem; color: var(--text-leise); }
+.anmeldung__eingabe {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    background: var(--karte);
+    border: 1px solid var(--rand);
+    border-radius: var(--rund);
+    color: var(--text);
+    font: inherit; font-size: 0.92rem;
+}
+.anmeldung__eingabe:focus-visible {
+    outline: 2px solid var(--pink); outline-offset: 1px;
+    border-color: var(--pink);
+}
+.anmeldung__form .knopf { justify-self: start; margin-top: 0.15rem; }
+.anmeldung__mehr summary {
+    font-size: 0.82rem; color: var(--text-leise); cursor: pointer;
+}
+.anmeldung__mehr summary:hover { color: var(--text); }
+.anmeldung__mehr .anmeldung__form { margin-top: 0.7rem; }
+/* Der Fehlersatz. role="alert" macht ihn hörbar, die Farbe sichtbar —
+   dieselbe wie bei .meldung--fehler, damit „etwas ging schief" überall
+   gleich aussieht. */
+.anmeldung__fehler {
+    font-size: 0.84rem; line-height: 1.5;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(255, 92, 92, 0.5);
+    border-radius: var(--rund);
+    background: var(--karte);
+}
+.anmeldung__fehler[hidden] { display: none; }
 .fuss__widerruf:hover { color: var(--text); border-color: var(--rand-hell); }
 
 .fuss__test {
