@@ -74,7 +74,7 @@ function meldeAbspielfehler(senderId, zweig, code) {
 }
 
 import { beobachteTitel, haltAn as haltTitelAn } from './lib/titel.mjs';
-import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t }
+import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t, sprache }
   from './lib/sprache.mjs';
 
 // ── Sprache ────────────────────────────────────────────────────────
@@ -118,6 +118,26 @@ const REGALE = KATALOG.regale;
 // Fassung, und sie steigt mit jeder Auslieferung.
 const FASSUNG = KATALOG._version ?? 'unbekannt';
 const SENDER = KATALOG.sender.filter(s => s.status !== 'tot');
+
+/*
+ ═══ Wer spricht, spricht eine Sprache ═════════════════════════════
+
+ Sāmi-Ras Beobachtung, 23.08.2026: „Ich wurde gerade auf ByteFM
+ zugequatscht vom Moderator. Waere ich jetzt ein internationaler Zuhoerer
+ aus Dubai, ich wuerde nie wieder auf iyambae.fm gehen."
+
+ Der Katalog wusste schon, WO jemand am Mikrofon sitzt — die Etiketten
+ `mensch-am-mikro` und `live-dj`, zusammen 56 Sender. Was fehlte, war die
+ Sprache. Sie steht jetzt als `sprache` am Sender; wo niemand spricht,
+ steht sie nicht.
+
+ VERSTECKT WIRD NICHTS. In einem Plattenladen raeumt man auch keine Regale
+ weg, nur weil einer die Sprache nicht spricht. Es steht nur auf der
+ Huelle, und was man versteht, liegt weiter vorn.
+*/
+function verstehtMan(s) {
+  return !s.sprache || s.sprache === sprache();
+}
 
 // ── Örtlicher Speicher ─────────────────────────────────────────────
 const SCHLUESSEL = {
@@ -891,6 +911,10 @@ class UI {
             ${guete ? `<span class="karte__guete karte__guete--${stufe}" title="${guetetitel}">${guete}</span>` : ''}
           </div>
           <p class="karte__ort">${sender.ort} · ${sender.land}</p>
+          ${sender.sprache && !verstehtMan(sender)
+            ? `<p class="karte__stimme">${t('karte.moderation',
+                { sprache: t('sprachname.' + sender.sprache) })}</p>`
+            : ''}
           ${breite ? `<p class="karte__leitung">${t('karte.bandbreite', { wert: breite })}</p>` : ''}
           <div class="karte__fuss">
             ${(sender.etiketten ?? []).slice(0, 2).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
@@ -1037,7 +1061,13 @@ class UI {
       }
 
       for (const regal of this.regale) {
-        const drin = daten.filter(s => s.regal === regal.id);
+        /*
+         Stabil sortiert: Wer die Sprache am Mikro nicht versteht, findet
+         diese Sender weiter hinten — nicht weniger davon, nur spaeter.
+         Innerhalb der beiden Gruppen bleibt die Reihenfolge des Katalogs.
+        */
+        const drin = daten.filter(s => s.regal === regal.id)
+          .sort((a, b) => verstehtMan(b) - verstehtMan(a));
         if (!drin.length) continue;
         behaelter.appendChild(this._regalHTML(regal, drin, gefiltert));
       }
@@ -2207,7 +2237,7 @@ class App {
   }
 
   zeichneAuslage() {
-    const auswahl = waehleUeberraschung(this._ziehbareSender(), ladeGehoert(), 6, ladeZuletzt());
+    const auswahl = waehleUeberraschung(this._ziehbareSender(), ladeGehoert(), 6, ladeZuletzt(), verstehtMan);
     const raster = document.getElementById('auslageRaster');
     raster.innerHTML = auswahl.map(s => this.ui._karteHTML(s)).join('');
     this.ui._verdrahteReihen(raster.parentElement);
@@ -2215,7 +2245,7 @@ class App {
   }
 
   nadelFallenLassen() {
-    const [treffer] = waehleUeberraschung(this._ziehbareSender(), ladeGehoert(), 1, ladeZuletzt());
+    const [treffer] = waehleUeberraschung(this._ziehbareSender(), ladeGehoert(), 1, ladeZuletzt(), verstehtMan);
     if (treffer) {
       this.spieleSender(treffer);
       this.ui.meldung(t('meldung.nadel', { name: treffer.name }), 'info');

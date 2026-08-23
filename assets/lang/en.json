@@ -198,5 +198,17 @@
   "konto.zurueck.ok": "Signed in.",
   "konto.zurueck.neu": "Account created. Welcome.",
   "konto.zurueck.fehler": "Signing in did not work. Please try again.",
-  "konto.zurueck.abgebrochen": "Sign-in cancelled."
+  "konto.zurueck.abgebrochen": "Sign-in cancelled.",
+  "karte.moderation": "Presented in {sprache}",
+  "sprachname.de": "German",
+  "sprachname.en": "English",
+  "sprachname.es": "Spanish",
+  "sprachname.fr": "French",
+  "sprachname.ja": "Japanese",
+  "sprachname.hr": "Croatian",
+  "sprachname.it": "Italian",
+  "sprachname.ru": "Russian",
+  "sprachname.tw": "Twi",
+  "sprachname.az": "Azerbaijani",
+  "sprachname.nl": "Dutch"
 }

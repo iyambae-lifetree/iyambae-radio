@@ -94,7 +94,8 @@
       "cors": true,
       "logo": "assets/logos/nts-1.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "1"
+      "kanal": "1",
+      "sprache": "en"
     },
     {
       "id": "nts-2",
@@ -118,7 +119,8 @@
       "cors": true,
       "logo": "assets/logos/nts-2.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "2"
+      "kanal": "2",
+      "sprache": "en"
     },
     {
       "id": "nts-slow-focus",
@@ -166,7 +168,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "dublab"
+      "kanal": "dublab",
+      "sprache": "en"
     },
     {
       "id": "dublab-bcn",
@@ -190,7 +193,8 @@
       "cors": false,
       "kanal": "Barcelona",
       "logo": "assets/logos/dublab-bcn.webp",
-      "logoQuelle": "apple-touch-icon"
+      "logoQuelle": "apple-touch-icon",
+      "sprache": "es"
     },
     {
       "id": "dublab-de",
@@ -215,7 +219,8 @@
       "cors": true,
       "logo": "assets/logos/dublab-de.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Deutschland"
+      "kanal": "Deutschland",
+      "sprache": "de"
     },
     {
       "id": "cashmere",
@@ -240,7 +245,8 @@
       "cors": true,
       "logo": "assets/logos/cashmere.webp",
       "logoQuelle": "og:image",
-      "kanal": "Cashmere Radio"
+      "kanal": "Cashmere Radio",
+      "sprache": "de"
     },
     {
       "id": "kiosk-radio",
@@ -264,7 +270,8 @@
       "cors": true,
       "logo": "assets/logos/kiosk-radio.webp",
       "logoQuelle": "og:image",
-      "kanal": "Kiosk Radio"
+      "kanal": "Kiosk Radio",
+      "sprache": "en"
     },
     {
       "id": "refuge-worldwide",
@@ -289,7 +296,8 @@
       "cors": true,
       "logo": "assets/logos/refuge-worldwide.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Refuge Worldwide"
+      "kanal": "Refuge Worldwide",
+      "sprache": "de"
     },
     {
       "id": "rinse-uk",
@@ -313,7 +321,8 @@
       "cors": false,
       "logo": "assets/logos/rinse-uk.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Rinse FM"
+      "kanal": "Rinse FM",
+      "sprache": "en"
     },
     {
       "id": "rinse-france",
@@ -334,7 +343,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": false,
-      "kanal": "Rinse France"
+      "kanal": "Rinse France",
+      "sprache": "fr"
     },
     {
       "id": "kool-fm",
@@ -358,7 +368,8 @@
       "cors": false,
       "logo": "assets/logos/kool-fm.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Kool FM"
+      "kanal": "Kool FM",
+      "sprache": "en"
     },
     {
       "id": "wfmu",
@@ -383,7 +394,8 @@
       "cors": false,
       "logo": "assets/logos/wfmu.webp",
       "logoQuelle": "icon",
-      "kanal": "WFMU"
+      "kanal": "WFMU",
+      "sprache": "en"
     },
     {
       "id": "yammat-fm",
@@ -407,7 +419,8 @@
       "cors": true,
       "logo": "assets/logos/yammat-fm.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Yammat FM"
+      "kanal": "Yammat FM",
+      "sprache": "hr"
     },
     {
       "id": "neu-radio",
@@ -431,7 +444,8 @@
       "cors": true,
       "logo": "assets/logos/neu-radio.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "NEU Radio"
+      "kanal": "NEU Radio",
+      "sprache": "it"
     },
     {
       "id": "radio-nova",
@@ -455,7 +469,8 @@
       "cors": true,
       "logo": "assets/logos/radio-nova.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Radio Nova"
+      "kanal": "Radio Nova",
+      "sprache": "fr"
     },
     {
       "id": "fip",
@@ -551,7 +566,8 @@
       "cors": true,
       "logo": "assets/logos/worldwide-fm.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Worldwide FM"
+      "kanal": "Worldwide FM",
+      "sprache": "en"
     },
     {
       "id": "hirschmilch-techno",
@@ -673,7 +689,8 @@
       "cors": true,
       "logo": "assets/logos/bassdrive.webp",
       "logoQuelle": "direkt",
-      "kanal": "Bassdrive"
+      "kanal": "Bassdrive",
+      "sprache": "en"
     },
     {
       "id": "brokenbeats",
@@ -718,7 +735,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "Frisky Radio"
+      "kanal": "Frisky Radio",
+      "sprache": "en"
     },
     {
       "id": "uzic-techno",
@@ -766,7 +784,8 @@
       "cors": true,
       "logo": "assets/logos/fm4.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "FM4"
+      "kanal": "FM4",
+      "sprache": "de"
     },
     {
       "id": "ukbass",
@@ -789,7 +808,8 @@
       "cors": true,
       "logo": "assets/logos/ukbass.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "UK Bass Radio"
+      "kanal": "UK Bass Radio",
+      "sprache": "en"
     },
     {
       "id": "atmospheric-dnb",
@@ -885,7 +905,8 @@
       "cors": true,
       "logo": "assets/logos/dnbfm.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "DNB FM"
+      "kanal": "DNB FM",
+      "sprache": "ru"
     },
     {
       "id": "soma-dronezone",
@@ -1197,7 +1218,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": false,
-      "kanal": "Adroit Jazz Underground"
+      "kanal": "Adroit Jazz Underground",
+      "sprache": "en"
     },
     {
       "id": "classic-vinyl",
@@ -1242,7 +1264,8 @@
       "cors": true,
       "logo": "assets/logos/jazz24.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Jazz24"
+      "kanal": "Jazz24",
+      "sprache": "en"
     },
     {
       "id": "wbgo",
@@ -1266,7 +1289,8 @@
       "cors": true,
       "logo": "assets/logos/wbgo.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "WBGO Jazz 88.3"
+      "kanal": "WBGO Jazz 88.3",
+      "sprache": "en"
     },
     {
       "id": "kjazz-bebop",
@@ -1334,7 +1358,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "Ashiya Radio"
+      "kanal": "Ashiya Radio",
+      "sprache": "ja"
     },
     {
       "id": "japan-citypop",
@@ -1474,7 +1499,8 @@
       "cors": false,
       "logo": "assets/logos/r-a-d-io.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "R/a/dio"
+      "kanal": "R/a/dio",
+      "sprache": "ja"
     },
     {
       "id": "fm-setagaya",
@@ -1496,7 +1522,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "FM Setagaya 83.4"
+      "kanal": "FM Setagaya 83.4",
+      "sprache": "ja"
     },
     {
       "id": "gotanno-fm",
@@ -1654,7 +1681,8 @@
       "cors": true,
       "logo": "assets/logos/gladys-coleccion.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Colección"
+      "kanal": "Colección",
+      "sprache": "es"
     },
     {
       "id": "gladys-latinfresh",
@@ -1702,7 +1730,8 @@
       "cors": true,
       "logo": "assets/logos/ibero-909.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Ibero 90.9"
+      "kanal": "Ibero 90.9",
+      "sprache": "es"
     },
     {
       "id": "colombia-salsadura",
@@ -1765,7 +1794,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "La Salsa Maestra"
+      "kanal": "La Salsa Maestra",
+      "sprache": "es"
     },
     {
       "id": "salsa-brava-ccs",
@@ -1830,7 +1860,8 @@
       "cors": true,
       "logo": "assets/logos/panamericana-salsa.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Panamericana Salsa Power"
+      "kanal": "Panamericana Salsa Power",
+      "sprache": "es"
     },
     {
       "id": "radionica",
@@ -1853,7 +1884,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-22",
       "logoQuelle": null,
-      "kanal": "Radiónica"
+      "kanal": "Radiónica",
+      "sprache": "es"
     },
     {
       "id": "bytefm",
@@ -1878,7 +1910,8 @@
       "cors": true,
       "logo": "assets/logos/bytefm.webp",
       "logoQuelle": "og:image",
-      "kanal": "ByteFM"
+      "kanal": "ByteFM",
+      "sprache": "de"
     },
     {
       "id": "wdr-cosmo",
@@ -1902,7 +1935,8 @@
       "cors": true,
       "logo": "assets/logos/wdr-cosmo.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "WDR Cosmo"
+      "kanal": "WDR Cosmo",
+      "sprache": "de"
     },
     {
       "id": "radio-mega",
@@ -1925,7 +1959,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "Radio Méga"
+      "kanal": "Radio Méga",
+      "sprache": "fr"
     },
     {
       "id": "ancient-fm",
@@ -1971,7 +2006,8 @@
       "cors": true,
       "logo": "assets/logos/nhyira-fm.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Nhyira FM 104.5"
+      "kanal": "Nhyira FM 104.5",
+      "sprache": "tw"
     },
     {
       "id": "lagosjump",
@@ -1995,7 +2031,8 @@
       "cors": true,
       "logo": "assets/logos/lagosjump.webp",
       "logoQuelle": "og:image",
-      "kanal": "LagosJump Radio"
+      "kanal": "LagosJump Radio",
+      "sprache": "en"
     },
     {
       "id": "yabiladi-chaabi",
@@ -2042,7 +2079,8 @@
       "cors": true,
       "logo": "assets/logos/yurd-fm.webp",
       "logoQuelle": "icon",
-      "kanal": "Yurd FM"
+      "kanal": "Yurd FM",
+      "sprache": "az"
     },
     {
       "id": "radyo-siran",
@@ -2160,7 +2198,8 @@
       "cors": true,
       "logo": "assets/logos/bootie-mashup.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Bootie Mashup"
+      "kanal": "Bootie Mashup",
+      "sprache": "en"
     },
     {
       "id": "nightwave-plaza",
@@ -2565,7 +2604,8 @@
       "cors": true,
       "logo": "assets/logos/soma-bootliquor.webp",
       "logoQuelle": "somafm",
-      "kanal": "Boot Liquor"
+      "kanal": "Boot Liquor",
+      "sprache": "en"
     },
     {
       "id": "soma-thistle",
@@ -2685,7 +2725,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-22",
       "logoQuelle": null,
-      "kanal": "Dunkerque Street Radio"
+      "kanal": "Dunkerque Street Radio",
+      "sprache": "fr"
     },
     {
       "id": "soma-covers",
@@ -2777,7 +2818,8 @@
       "cors": true,
       "logo": "assets/logos/tsf-jazz.webp",
       "logoQuelle": "icon",
-      "kanal": "TSF Jazz"
+      "kanal": "TSF Jazz",
+      "sprache": "fr"
     },
     {
       "id": "concertzender-jazz",
@@ -2802,7 +2844,8 @@
       "cors": false,
       "logo": "assets/logos/concertzender-jazz.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "Concertzender Jazz"
+      "kanal": "Concertzender Jazz",
+      "sprache": "nl"
     },
     {
       "id": "radio-swiss-jazz",
@@ -2967,7 +3010,8 @@
       "cors": true,
       "logo": "assets/logos/wwoz.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "WWOZ"
+      "kanal": "WWOZ",
+      "sprache": "en"
     },
     {
       "id": "wnur",
@@ -2991,7 +3035,8 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "logoQuelle": null,
-      "kanal": "WNUR"
+      "kanal": "WNUR",
+      "sprache": "en"
     },
     {
       "id": "radio-unisinos",
@@ -3039,7 +3084,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-22",
       "logoQuelle": null,
-      "kanal": "KMHD2"
+      "kanal": "KMHD2",
+      "sprache": "en"
     },
     {
       "id": "soma-brfm",
@@ -3109,7 +3155,8 @@
       "status": "ok",
       "geprueft_am": "2026-08-22",
       "logoQuelle": null,
-      "kanal": "The Lot Radio"
+      "kanal": "The Lot Radio",
+      "sprache": "en"
     },
     {
       "id": "pbs-fm",
@@ -3134,7 +3181,8 @@
       "geprueft_am": "2026-08-22",
       "logo": "assets/logos/pbs-fm.webp",
       "logoQuelle": "og:image",
-      "kanal": "PBS FM"
+      "kanal": "PBS FM",
+      "sprache": "en"
     },
     {
       "id": "wruw",
@@ -3159,7 +3207,8 @@
       "geprueft_am": "2026-08-22",
       "logo": "assets/logos/wruw.webp",
       "logoQuelle": "apple-touch-icon",
-      "kanal": "WRUW"
+      "kanal": "WRUW",
+      "sprache": "en"
     },
     {
       "id": "nts-labyrinth",
@@ -3208,7 +3257,8 @@
       "geprueft_am": "2026-08-22",
       "logo": "assets/logos/gutsy-radio.webp",
       "logoQuelle": "og:image",
-      "kanal": "Gutsy Radio"
+      "kanal": "Gutsy Radio",
+      "sprache": "en"
     },
     {
       "id": "nts-otaku",
@@ -3394,7 +3444,8 @@
       "cors": true,
       "logo": "assets/logos/181fm-oldschool.webp",
       "logoQuelle": "og:image",
-      "kanal": "Old School HipHop"
+      "kanal": "Old School HipHop",
+      "sprache": "en"
     },
     {
       "id": "181fm-90salt",
@@ -3671,7 +3722,8 @@
       "bitrate": 194,
       "cors": true,
       "geprueft_am": "2026-08-21",
-      "kanal": "France Musique"
+      "kanal": "France Musique",
+      "sprache": "fr"
     },
     {
       "id": "swiss-classic",
@@ -3742,7 +3794,8 @@
       "bitrate": 256,
       "cors": true,
       "geprueft_am": "2026-08-21",
-      "kanal": "BR-Klassik"
+      "kanal": "BR-Klassik",
+      "sprache": "de"
     },
     {
       "id": "ndr-kultur",
@@ -3764,7 +3817,8 @@
       "bitrate": 128,
       "cors": true,
       "geprueft_am": "2026-08-21",
-      "kanal": "NDR Kultur"
+      "kanal": "NDR Kultur",
+      "sprache": "de"
     },
     {
       "id": "oe1",
@@ -3786,7 +3840,8 @@
       "bitrate": 192,
       "cors": true,
       "geprueft_am": "2026-08-21",
-      "kanal": "Ö1"
+      "kanal": "Ö1",
+      "sprache": "de"
     },
     {
       "id": "kusc",
@@ -3950,7 +4005,8 @@
       "geprueft_am": "2026-08-22",
       "logo": "assets/logos/fine-music-radio.webp",
       "logoQuelle": "og:image",
-      "kanal": "Fine Music Radio"
+      "kanal": "Fine Music Radio",
+      "sprache": "en"
     }
   ]
 }

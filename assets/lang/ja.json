@@ -198,5 +198,17 @@
   "konto.zurueck.ok": "ログインしました。",
   "konto.zurueck.neu": "アカウントを作りました。ようこそ。",
   "konto.zurueck.fehler": "ログインできませんでした。もう一度お試しください。",
-  "konto.zurueck.abgebrochen": "ログインを中止しました。"
+  "konto.zurueck.abgebrochen": "ログインを中止しました。",
+  "karte.moderation": "進行は{sprache}",
+  "sprachname.de": "ドイツ語",
+  "sprachname.en": "英語",
+  "sprachname.es": "スペイン語",
+  "sprachname.fr": "フランス語",
+  "sprachname.ja": "日本語",
+  "sprachname.hr": "クロアチア語",
+  "sprachname.it": "イタリア語",
+  "sprachname.ru": "ロシア語",
+  "sprachname.tw": "トウィ語",
+  "sprachname.az": "アゼルバイジャン語",
+  "sprachname.nl": "オランダ語"
 }

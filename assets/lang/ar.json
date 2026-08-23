@@ -198,5 +198,17 @@
   "konto.zurueck.ok": "تم تسجيل الدخول.",
   "konto.zurueck.neu": "أُنشئ الحساب. أهلًا بك.",
   "konto.zurueck.fehler": "لم ينجح تسجيل الدخول. أعد المحاولة.",
-  "konto.zurueck.abgebrochen": "أُلغي تسجيل الدخول."
+  "konto.zurueck.abgebrochen": "أُلغي تسجيل الدخول.",
+  "karte.moderation": "التقديم بـ{sprache}",
+  "sprachname.de": "الألمانية",
+  "sprachname.en": "الإنجليزية",
+  "sprachname.es": "الإسبانية",
+  "sprachname.fr": "الفرنسية",
+  "sprachname.ja": "اليابانية",
+  "sprachname.hr": "الكرواتية",
+  "sprachname.it": "الإيطالية",
+  "sprachname.ru": "الروسية",
+  "sprachname.tw": "التوية",
+  "sprachname.az": "الأذربيجانية",
+  "sprachname.nl": "الهولندية"
 }

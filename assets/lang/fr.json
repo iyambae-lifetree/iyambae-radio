@@ -198,5 +198,17 @@
   "konto.zurueck.ok": "Connecté.",
   "konto.zurueck.neu": "Compte créé. Bienvenue.",
   "konto.zurueck.fehler": "La connexion n'a pas abouti. Réessayez.",
-  "konto.zurueck.abgebrochen": "Connexion annulée."
+  "konto.zurueck.abgebrochen": "Connexion annulée.",
+  "karte.moderation": "Animation en {sprache}",
+  "sprachname.de": "allemand",
+  "sprachname.en": "anglais",
+  "sprachname.es": "espagnol",
+  "sprachname.fr": "français",
+  "sprachname.ja": "japonais",
+  "sprachname.hr": "croate",
+  "sprachname.it": "italien",
+  "sprachname.ru": "russe",
+  "sprachname.tw": "twi",
+  "sprachname.az": "azéri",
+  "sprachname.nl": "néerlandais"
 }

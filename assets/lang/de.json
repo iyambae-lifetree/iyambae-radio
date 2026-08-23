@@ -198,5 +198,17 @@
   "konto.zurueck.ok": "Angemeldet.",
   "konto.zurueck.neu": "Konto angelegt. Willkommen.",
   "konto.zurueck.fehler": "Die Anmeldung hat nicht geklappt. Versuch es noch einmal.",
-  "konto.zurueck.abgebrochen": "Anmeldung abgebrochen."
+  "konto.zurueck.abgebrochen": "Anmeldung abgebrochen.",
+  "karte.moderation": "Moderation auf {sprache}",
+  "sprachname.de": "Deutsch",
+  "sprachname.en": "Englisch",
+  "sprachname.es": "Spanisch",
+  "sprachname.fr": "Französisch",
+  "sprachname.ja": "Japanisch",
+  "sprachname.hr": "Kroatisch",
+  "sprachname.it": "Italienisch",
+  "sprachname.ru": "Russisch",
+  "sprachname.tw": "Twi",
+  "sprachname.az": "Aserbaidschanisch",
+  "sprachname.nl": "Niederländisch"
 }

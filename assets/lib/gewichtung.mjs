@@ -2,7 +2,17 @@
 // Nichts ist ausgeschlossen — auch der Lieblingssender kann auftauchen,
 // sonst waere die Ueberraschung berechenbar.
 
-export function waehleUeberraschung(sender, gehoert = {}, anzahl = 6, zuletzt = []) {
+/*
+ `verstehtMan` entscheidet, ob der Zuhoerer die Sprache am Mikrofon
+ versteht. Wer sie nicht versteht, zieht solche Sender seltener — aber
+ nicht nie. Ein Fuenftel des Gewichts bleibt: Eine Zufallsnadel, die
+ ganze Laender ausschliesst, ist keine Zufallsnadel mehr, und manch einer
+ hoert eine fremde Stimme gerade gern.
+
+ Ohne die Angabe verhaelt sich alles wie vorher.
+*/
+export function waehleUeberraschung(sender, gehoert = {}, anzahl = 6, zuletzt = [],
+                                    verstehtMan = () => true) {
   const uebrig = [...sender];
   const gezogen = [];
   const zuHolen = Math.min(anzahl, uebrig.length);
@@ -11,7 +21,9 @@ export function waehleUeberraschung(sender, gehoert = {}, anzahl = 6, zuletzt = 
 
   for (let n = 0; n < zuHolen; n++) {
     const gewichte = uebrig.map(s =>
-      (1 / (1 + (gehoert[s.id] ?? 0))) * (frisch.has(s.id) ? 0.1 : 1));
+      (1 / (1 + (gehoert[s.id] ?? 0)))
+      * (frisch.has(s.id) ? 0.1 : 1)
+      * (verstehtMan(s) ? 1 : 0.2));
     const summe = gewichte.reduce((a, b) => a + b, 0);
     let wurf = Math.random() * summe;
     let index = gewichte.length - 1;
