@@ -1524,25 +1524,6 @@ class UI {
       if (el) el.innerHTML = symbol(laeuft ? 'pause' : 'abspielen', 20);
     }
     document.body.classList.toggle('spielt', laeuft);
-    this.setzeTonarm(laeuft);
-  }
-
-  // Der Tonarm wird direkt gesetzt statt über eine Klasse — ein
-  // klassenbasierter Wechsel auf einem SVG-<g> kommt im Renderer nicht an.
-  setzeTonarm(liegtAuf) {
-    const schwenk = document.querySelector('.tonarm__schwenk');
-    if (!schwenk) return;
-    schwenk.style.transform = `rotate(${liegtAuf ? 4 : -30}deg)`;
-    clearInterval(this._armWandern);
-    if (!liegtAuf) return;
-    // Wie bei einer echten Platte wandert der Arm langsam nach innen.
-    // Von 4° bis 15° in gut zwölf Minuten — kaum sichtbar, aber vorhanden.
-    let winkel = 4;
-    this._armWandern = setInterval(() => {
-      winkel = Math.min(15, winkel + 0.1);
-      schwenk.style.transform = `rotate(${winkel.toFixed(2)}deg)`;
-      if (winkel >= 15) clearInterval(this._armWandern);
-    }, 6500);
   }
 
   // ── Ausfall ──────────────────────────────────────────────────────

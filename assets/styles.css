@@ -312,190 +312,54 @@ body.stimmt-432 .stimmung__mehr {
 @media (min-width: 800px) { .hero { grid-template-columns: auto 1fr; } }
 
 /* ── Plattenspieler ──────────────────────────────────────────────
-   Gebaut wie ein DJ-Deck: Zarge, Teller mit Stroboskoprand, Slipmat,
-   darauf die Platte. Was einen Plattenspieler echt aussehen lässt, sind
-   die Teile, die man erst vermisst, wenn sie fehlen — die glatte
-   Einlaufrille vor der Musik, der Filz unter dem Vinyl, das Lichtband,
-   das über die Rillen wandert. */
+
+   Hier stand einmal ein nachgebauter Plattenspieler: Zarge aus
+   Farbverläufen, Teller mit Stroboskoprand, erzeugte Filz- und
+   Vinyltexturen, ein Tonarm aus SVG-Pfaden. Über dreihundert Zeilen, und
+   er sah trotzdem gezeichnet aus.
+
+   Jetzt ist es ein Foto — ein Technics SL-1200MK5 von oben, CC0.
+   Siehe assets/bild/HERKUNFT.md
+
+   Und bewegt wird nur das Etikett. Das ist keine Sparmaßnahme, sondern
+   richtiger: Auf einem echten Deck sieht man die Rillen nicht laufen und
+   den Tonarm nicht wandern. Was sich sichtbar dreht, ist die Mitte. */
 .plattenspieler {
     position: relative;
     justify-self: center;
-    width: clamp(230px, 44vw, 350px);
-    aspect-ratio: 1;
+    width: clamp(280px, 52vw, 460px);
+    aspect-ratio: 1400 / 1077;
+}
+.deck {
+    display: block;
+    width: 100%; height: auto;
+    border-radius: 6px;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
 }
 
-/* Die Zarge: das Gehäuse. Gebürstetes Metall mit weichem Lichtverlauf. */
-.zarge {
-    position: absolute; inset: 0;
-    border-radius: 4.5%;
-    background:
-        url('textur/metall.webp') center / 60% auto,
-        linear-gradient(152deg, #35304180 0%, #211c2e 42%, #14111b 100%),
-        linear-gradient(152deg, #3b3349 0%, #211c2e 42%, #14111b 100%);
-    /* Graues Korn als soft-light: sichtbar als Struktur, nicht als Farbe.
-       Ein farbiges oder kontrastreiches Bild lässt Metall wie Plastik
-       aussehen — das Auge liest Buntheit als billiges Material. */
-    background-blend-mode: soft-light, normal, normal;
-    box-shadow:
-        /* Der Schlagschatten des Geräts auf der Unterlage */
-        0 26px 50px rgba(0, 0, 0, 0.66),
-        0 6px 16px rgba(0, 0, 0, 0.5),
-        /* Die Oberkante fängt Licht, die Unterkante liegt im Schatten —
-           daran erkennt das Auge, dass etwas eine Höhe hat */
-        inset 0 1px 0 rgba(255, 255, 255, 0.13),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.65),
-        inset 1px 0 0 rgba(255, 255, 255, 0.045),
-        inset -1px 0 0 rgba(0, 0, 0, 0.42);
-    padding: 7%;
-}
-/* Die feine Struktur des gebürsteten Metalls */
-.zarge__flaeche {
-    position: absolute; inset: 0;
-    border-radius: 4.5%;
-    background: repeating-linear-gradient(96deg,
-        rgba(255, 255, 255, 0.018) 0px,
-        rgba(255, 255, 255, 0.018) 1px,
-        transparent 1px, transparent 3px);
-    pointer-events: none;
-}
+/* Die Platte — genauer: das, was von ihr in Bewegung ist.
 
-/* Der Teller */
-.teller {
-    position: absolute; inset: 7%;
-    border-radius: 50%;
-    /* Der Teller sitzt in einer Vertiefung, nicht auf der Fläche */
-    background: radial-gradient(circle at 50% 50%, #232032 0%, #16131f 72%, #0d0b13 100%);
-    box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-        inset 0 8px 18px rgba(0, 0, 0, 0.7),
-        inset 0 -3px 8px rgba(255, 255, 255, 0.035),
-        0 0 0 1px rgba(0, 0, 0, 0.55),
-        0 2px 6px rgba(0, 0, 0, 0.4);
-    display: grid; place-items: center;
-}
-
-/* Die Stroboskoppunkte am Tellerrand — das Erkennungszeichen jedes
-   DJ-Decks. Sie stehen beim richtigen Tempo scheinbar still. */
-.teller__strobo {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background: repeating-conic-gradient(from 0deg at 50% 50%,
-        rgba(255, 220, 150, 0.85) 0deg 1.4deg,
-        transparent 1.4deg 4.2deg);
-    mask: radial-gradient(circle at 50% 50%, transparent 90%, #000 91.5%, #000 97%, transparent 98.5%);
-    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 90%, #000 91.5%, #000 97%, transparent 98.5%);
-    pointer-events: none;
-    z-index: 2;
-}
-.teller__rand {
-    position: absolute; inset: 3.5%;
-    border-radius: 50%;
-    box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-        inset 0 0 12px rgba(0, 0, 0, 0.5);
-    pointer-events: none;
-}
-
-/* Die Slipmat: Filz zwischen Teller und Platte */
-.slipmat {
-    position: absolute; inset: 5.5%;
-    border-radius: 50%;
-    background:
-        url('textur/filz.webp') center / 120% 120%,
-        radial-gradient(circle at 42% 36%, #2e2a3d 0%, #201d2c 60%, #17141f 100%);
-    background-blend-mode: soft-light, normal;
-    pointer-events: none;
-}
-
-/* Die Platte */
+   Die Maße stehen fest, weil sie am Foto abgemessen sind: die Mitte des
+   Etiketts liegt bei 39,3 % / 49,1 %, sein Durchmesser bei 20 % der
+   Bildbreite. Wer das Foto tauscht, muss hier nachmessen. */
 .platte {
-    position: absolute; inset: 9%;
+    position: absolute;
+    left: 39.33%; top: 49.06%;
+    width: 20%; aspect-ratio: 1;
+    /* Gestellt wird mit `translate`, gedreht mit `transform` — zwei
+       eigene Eigenschaften. In einer zusammengefassten transform-Kette
+       überschriebe die Drehung die Verschiebung. */
+    translate: -50% -50%;
     border-radius: 50%;
-    /* Erzeugte Textur statt Farbverlauf: 131 Rillen mit schwankendem
-       Abstand, 340 Staubkörner, sieben feine Kratzer. Glatte Verläufe
-       sehen immer nach Zeichnung aus — Unregelmäßigkeit macht den
-       Unterschied. Siehe tools/textur-bauen.mjs */
-    background:
-        url('textur/vinyl.webp') center / 100% 100% no-repeat,
-        radial-gradient(circle at 50% 50%, #14111c 0%, #0a0810 62%, #060509 100%);
     display: grid; place-items: center;
     will-change: transform;
-    z-index: 1;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
-}
-
-/* Die Rillen — enger gestaffelt als zuvor, damit sie nach Vinyl aussehen
-   und nicht nach Zielscheibe. Ausgespart bleiben Label, Einlauf und
-   Auslauf, so wie bei einer echten Platte. */
-.platte__rillen {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    /* Ein feiner Zusatzschimmer über der Textur — nur so viel, dass die
-       Rillen bei kleiner Darstellung nicht verschwinden */
-    background: repeating-radial-gradient(circle at 50% 50%,
-        rgba(255, 255, 255, 0.045) 0px,
-        rgba(255, 255, 255, 0.045) 0.5px,
-        transparent 0.5px,
-        transparent 3px);
-    mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 33%, #000 92%, transparent 95%);
-    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 33%, #000 92%, transparent 95%);
-    pointer-events: none;
-}
-/* Einlaufrille: der glatte Ring außen, wo die Nadel aufsetzt */
-.platte__einlauf {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%,
-        transparent 92%, rgba(255, 255, 255, 0.045) 93.5%, transparent 96%);
-    pointer-events: none;
-}
-/* Auslaufrille: der glatte Ring innen, kurz vor dem Label */
-.platte__auslauf {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%,
-        transparent 29%, rgba(255, 255, 255, 0.05) 31%, transparent 33%);
-    pointer-events: none;
     z-index: 2;
-}
-
-/* Das Lichtband, das über die Rillen wandert — der eine Effekt, an dem
-   man Vinyl sofort erkennt. Zwei gegenüberliegende Bögen, weil Licht
-   sich in der Rille zweimal bricht. */
-.platte__glanz {
-    position: absolute; inset: 9%;
-    border-radius: 50%;
-    background: conic-gradient(from 202deg at 50% 50%,
-        transparent 0deg,
-        rgba(255, 246, 220, 0.20) 13deg,
-        rgba(255, 252, 242, 0.34) 25deg,
-        rgba(255, 246, 220, 0.13) 39deg,
-        transparent 62deg,
-        transparent 170deg,
-        rgba(255, 246, 220, 0.14) 188deg,
-        rgba(255, 252, 242, 0.24) 203deg,
-        rgba(255, 246, 220, 0.09) 217deg,
-        transparent 240deg);
-    mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 34%, #000 93%, transparent 96%);
-    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 30%, #000 34%, #000 93%, transparent 96%);
-    pointer-events: none;
-    z-index: 3;
-}
-
-/* Der Balkenkranz liegt als Lichtschein UM die Platte, nicht darauf. */
-.teller canvas {
-    position: absolute;
-    left: 50%; top: 50%;
-    width: 142%; height: 142%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    z-index: 0;
 }
 
 /* Das Label — hier liegt das Logo des Senders, sonst die IYAMBAE-Marke */
 .label {
     position: relative;
-    width: 36%; aspect-ratio: 1;
+    width: 100%; aspect-ratio: 1;
     border-radius: 50%;
     background: radial-gradient(circle at 38% 32%, #fffdf6 0%, #f6efdd 58%, #e6daba 100%);
     box-shadow:
@@ -518,7 +382,7 @@ body.stimmt-432 .stimmung__mehr {
 .spindel {
     position: absolute;
     left: 50%; top: 50%;
-    width: 4.2%; aspect-ratio: 1;
+    width: 12%; aspect-ratio: 1;
     transform: translate(-50%, -50%);
     border-radius: 50%;
     background:
@@ -530,109 +394,21 @@ body.stimmt-432 .stimmung__mehr {
     z-index: 6;
 }
 .label.traegt-marke ~ .spindel {
-    width: 3.4%;
+    width: 9%;
     background: radial-gradient(circle at 34% 28%,
         rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.2) 32%, transparent 60%);
     box-shadow: none;
 }
-.label::after {
-    content: '';
-    position: absolute; left: 50%; top: 50%;
-    width: 15%; aspect-ratio: 1;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.2);
-    pointer-events: none;
-}
 
-/* ── Tonarm ──────────────────────────────────────────────────────
-   Gekröpftes Rohr mit Gegengewicht, Headshell und Nadel. In Ruhe liegt er
-   auf der Stütze, beim Abspielen senkt er sich auf die Einlaufrille.
-   Der Winkel wird aus app.js gesetzt: Ein klassenbasierter Wechsel auf
-   einem SVG-<g> kommt im Renderer nicht an. */
-.tonarm {
+/* Der Balkenkranz liegt als Lichtschein UM die Platte, nicht darauf.
+   Mitte und Größe folgen der Platte im Foto, nicht dem Bildmittelpunkt. */
+.plattenspieler canvas {
     position: absolute;
-    inset: 5% 4% auto auto;
-    width: 66%; height: 66%;
-    overflow: visible;
+    left: 39.57%; top: 48.87%;
+    width: 88%; aspect-ratio: 1;
+    translate: -50% -50%;
     pointer-events: none;
-    z-index: 5;
-    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.55));
-}
-.tonarm__schwenk {
-    transform-origin: 88px 16px;
-    transform: rotate(-30deg);
-    transition: transform 1.6s cubic-bezier(0.35, 1.0, 0.4, 1);
-}
-/* Gemessen an einer Aufnahme von oben: Das Rohr ist rund ein
-   Zweiundzwanzigstel der Armlaenge dick. Vorher war es doppelt so
-   fett — der haeufigste Fehler an gezeichneten Tonarmen. */
-.tonarm__rohr        { fill: none; stroke: url(#rohrMetall); stroke-width: 2.4; stroke-linecap: round; }
-.tonarm__griff       { fill: #b9b3c6; stroke: #8a839a; stroke-width: 0.3; }
-.tonarm__lagerteller { fill: #1b1725; stroke: rgba(255,255,255,0.07); stroke-width: 0.6; }
-.tonarm__lift        { fill: #2a2534; stroke: rgba(255,255,255,0.12); stroke-width: 0.4; }
-.tonarm__gewicht     { fill: url(#gewichtMetall); stroke: rgba(255,255,255,0.14); stroke-width: 0.5; }
-.tonarm__gewichtring { fill: rgba(255, 255, 255, 0.13); }
-.tonarm__shell       { fill: #d8d3e2; stroke: #9c96ab; stroke-width: 0.4; }
-.tonarm__system      { fill: #2a2534; }
-.tonarm__nadel       { stroke: var(--gold); stroke-width: 1.1; stroke-linecap: round; opacity: 0.6; }
-.tonarm__lager       { fill: url(#lagerMetall); stroke: rgba(255,255,255,0.16); stroke-width: 0.8; }
-.tonarm__lagerkern   { fill: #8f8899; }
-.tonarm__stuetze rect { fill: #241f2f; stroke: rgba(255,255,255,0.1); stroke-width: 0.4; }
-body.spielt .tonarm__nadel { opacity: 1; filter: drop-shadow(0 0 2px var(--gold)); }
-
-/* ── Bedienelemente an der Zarge ─────────────────────────────────── */
-.zarge__regler {
-    position: absolute; left: 4.5%; bottom: 6%;
-    display: flex; align-items: flex-end; gap: 12%;
-    width: 21%;
-    pointer-events: none;
-}
-/* Die eingelassene Mulde, in der der Schieber läuft */
-.pitch {
-    position: relative;
-    width: 26%; height: 0; padding-bottom: 92%;
-    border-radius: 2px;
-    background: linear-gradient(180deg, #0b0910, #17141f);
-    box-shadow:
-        inset 0 0 0 1px rgba(0, 0, 0, 0.7),
-        inset 0 2px 5px rgba(0, 0, 0, 0.8),
-        0 1px 0 rgba(255, 255, 255, 0.05);
-    overflow: visible;
-}
-/* Die Mittelrasterung, die jeder Pitch-Fader hat */
-.pitch::before {
-    content: '';
-    position: absolute; left: -55%; right: -55%; top: 50%;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.16);
-}
-.pitch__schieber {
-    position: absolute;
-    left: -60%; right: -60%;
-    top: 44%;
-    height: 9%;
-    border-radius: 1.5px;
-    background: linear-gradient(180deg, #8d8699 0%, #5c5570 46%, #2c2738 100%);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    transition: top 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-}
-body.spielt .pitch__schieber { top: 58%; }
-
-.startknopf {
-    width: 34%; aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(circle at 36% 30%, #322c3d, #16131e);
-    box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.09),
-        inset 0 -1px 2px rgba(0, 0, 0, 0.6),
-        0 1px 3px rgba(0, 0, 0, 0.7);
-    align-self: flex-end;
-    transition: box-shadow 0.4s ease, background 0.4s ease;
-}
-body.spielt .startknopf {
-    background: radial-gradient(circle at 36% 30%, #4a4030, #2a2318);
-    box-shadow: inset 0 0 0 1px rgba(242, 183, 5, 0.4), 0 0 10px rgba(242, 183, 5, 0.35);
+    z-index: 1;
 }
 
 /* Gedreht wird nur, wenn Ton läuft. 33⅓ Umdrehungen je Minute wären
@@ -1800,14 +1576,12 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     }
     .regalwand { padding-top: 1.2rem; }
 
-    /* Solange nichts läuft, soll der Teller nicht den halben Bildschirm
-       belegen — auf dem Handy zählt jeder Zentimeter bis zu den Regalen. */
-    .plattenspieler { width: 52vw; max-width: 230px; }
-    body.spielt .plattenspieler { width: 64vw; max-width: 270px; }
-    /* Der Stroboskoprand und die Regler sind auf dem Handy nur noch
-       Krissel — sie kosten Rechenzeit und bringen kein Bild. */
-    .teller__strobo { display: none; }
-    .zarge__regler  { display: none; }
+    /* Solange nichts läuft, soll das Deck nicht den halben Bildschirm
+       belegen — auf dem Handy zählt jeder Zentimeter bis zu den Regalen.
+       Es ist jetzt breit statt quadratisch, deshalb mehr Breite bei
+       weniger Höhe als vorher. */
+    .plattenspieler { width: 76vw; max-width: 320px; }
+    body.spielt .plattenspieler { width: 88vw; max-width: 380px; }
     .hero { gap: 1rem; padding-bottom: 1rem; }
     .hero__name { font-size: 1.75rem; }
     .hero__knoepfe { gap: 0.5rem; }

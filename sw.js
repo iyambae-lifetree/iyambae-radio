@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-const SW_VERSION = 'iyambae-v23';
+const SW_VERSION = 'iyambae-v24';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -40,25 +40,24 @@ const SHELL_FILES = [
     // Die runde Fassung fuer das Plattenlabel, auf den blauen Punkt
     // ausgerichtet — der sitzt beim Drehen auf der Spindel.
     '/assets/logo/iyambae-label.svg',
-    // Die Texturen des Plattenspielers: Vinyl, Filz, gebuerstetes
-    // Metall. Ohne sie faellt der Teller auf Farbverlaeufe zurueck.
     /*
-      Die drei Texturen stehen BEWUSST NICHT hier — gemessen, nicht gemutmasst.
+      Das Foto des Plattenspielers (92 KiB) steht BEWUSST NICHT hier —
+      aus demselben Grund, aus dem vorher die drei Texturen fehlten:
 
-      Zusammen 162 KiB (vinyl 54,5 / metall 93,2 / filz 14,5), und der Vorrat
-      waechst dadurch um 19,3 Prozent. Der schaerfere Punkt steht unten im
-      Einbau: der Neuladen-Schalter am Request geht am HTTP-Zwischenspeicher
-      vorbei (siehe install-Behandler weiter unten). Das CSS
-      holt die Texturen ohnehin beim ersten Anstrich, der Teller steht ueber
-      der Falz — sie kaemen also ZWEIMAL ueber die Leitung, rund 324 KiB auf
-      einem kalten Erstbesuch.
+      Es steht ueber der Falz, das HTML holt es also ohnehin beim ersten
+      Anstrich. Der Neuladen-Schalter am Request geht am
+      HTTP-Zwischenspeicher vorbei (siehe install-Behandler weiter unten)
+      — es kaeme also ZWEIMAL ueber die Leitung, rund 184 KiB auf einem
+      kalten Erstbesuch, fuer null zusaetzliche Offlinedeckung.
 
-      Im Laufzeit-Zwischenspeicher landen sie trotzdem, sobald das CSS sie
-      geholt hat. Die Offlinedeckung ab dem zweiten Besuch bleibt damit
-      gleich; nur der blockierende Einbau wird um 162 KiB leichter.
+      Im Laufzeit-Zwischenspeicher landet es trotzdem, sobald das HTML es
+      geholt hat. Ab dem zweiten Besuch ist es offline da.
 
       iyambae-label.svg steht dagegen weiter im Vorrat: Das wird offline
       gebraucht, bevor das CSS ueberhaupt laeuft.
+
+      Die drei erzeugten Texturen (vinyl, filz, metall) sind fort — mit
+      dem gezeichneten Plattenspieler, den sie ueberzogen haben.
     */
     '/assets/styles.css',
     '/assets/schrift/schriften.css',

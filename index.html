@@ -87,91 +87,24 @@
 </header>
 
 <section class="hero" id="hero">
+    <!-- Der Plattenspieler ist ein Foto, kein Nachbau: ein Technics
+         SL-1200MK5 von oben, CC0. Siehe assets/bild/HERKUNFT.md
+
+         Bewegt wird nur das Etikett. Auf einem echten Deck sieht man die
+         Rillen nicht laufen und den Tonarm nicht wandern — was sich
+         sichtbar dreht, ist die Mitte. -->
     <div class="plattenspieler" id="plattenspieler">
-        <!-- Die Zarge: das Gehäuse, in dem der Teller sitzt -->
-        <div class="zarge">
-            <div class="zarge__flaeche"></div>
+        <img class="deck" src="/assets/bild/plattenspieler.webp" alt=""
+             width="1400" height="1077" fetchpriority="high" decoding="async">
 
-            <!-- Der Teller mit Stroboskoprand und Slipmat -->
-            <div class="teller">
-                <div class="teller__strobo"></div>
-                <div class="teller__rand"></div>
-                <div class="slipmat"></div>
-
-                <div class="platte" id="platte">
-                    <div class="platte__auslauf"></div>
-                    <div class="platte__rillen"></div>
-                    <div class="platte__einlauf"></div>
-                    <div class="label" id="label">
-                        <img class="label__bild" id="labelBild" src="/assets/logo/iyambae-label.svg" alt="">
-                    </div>
-                    <span class="spindel"></span>
-                </div>
-                <div class="platte__glanz"></div>
-                <canvas id="heroVisualizer" width="440" height="440" aria-hidden="true"></canvas>
+        <div class="platte" id="platte">
+            <div class="label" id="label">
+                <img class="label__bild" id="labelBild" src="/assets/logo/iyambae-label.svg" alt="">
             </div>
-
-            <!-- Der Tonarm samt Lager, Gegengewicht und Stütze -->
-            <svg class="tonarm" id="tonarm" viewBox="0 0 100 100" aria-hidden="true">
-                <defs>
-                    <linearGradient id="rohrMetall" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0"    stop-color="#9c96ab"/>
-                        <stop offset="0.35" stop-color="#e8e4f0"/>
-                        <stop offset="0.62" stop-color="#7b7489"/>
-                        <stop offset="1"    stop-color="#4a4458"/>
-                    </linearGradient>
-                    <linearGradient id="gewichtMetall" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0"    stop-color="#6f6880"/>
-                        <stop offset="0.45" stop-color="#3a3446"/>
-                        <stop offset="1"    stop-color="#221e2c"/>
-                    </linearGradient>
-                    <radialGradient id="lagerMetall" cx="0.35" cy="0.3" r="0.85">
-                        <stop offset="0"   stop-color="#8f8899"/>
-                        <stop offset="0.5" stop-color="#3d3749"/>
-                        <stop offset="1"   stop-color="#1d1926"/>
-                    </radialGradient>
-                </defs>
-
-                <!-- Armstütze, auf der der Arm in Ruhe liegt -->
-                <g class="tonarm__stuetze">
-                    <rect x="72" y="62" width="7" height="4" rx="2"/>
-                    <rect x="74" y="64" width="3" height="9" rx="1.5"/>
-                </g>
-
-                <g class="tonarm__schwenk">
-                    <!-- Gegengewicht hinter dem Lager -->
-                    <rect class="tonarm__gewicht" x="88" y="8" width="14" height="10" rx="5"/>
-                    <rect class="tonarm__gewichtring" x="92" y="8" width="2" height="10"/>
-                    <!-- Das Rohr, leicht gekröpft wie bei einem S-Arm -->
-                    <path class="tonarm__rohr" d="M 88 15 C 76 26, 64 40, 52 55"/>
-                    <!-- Headshell mit Tonabnehmer und Nadel -->
-                    <g class="tonarm__kopf" transform="translate(52 55) rotate(-38)">
-                        <!-- Das Headshell ist schmaler als frueher: gemessen an
-                             einer Aufnahme von oben ist es rund zweieinhalbmal
-                             so breit wie das Rohr, nicht viermal. -->
-                        <path class="tonarm__shell" d="M -3.4 -3 L 3.4 -3 L 2.6 5.4 L -2.6 5.4 Z"/>
-                        <path class="tonarm__griff" d="M -3.4 -3 L -5.6 -5.4 L -4.4 -6.2 L -2.4 -3.4 Z"/>
-                        <rect class="tonarm__system" x="-1.9" y="3.6" width="3.8" height="3.2" rx="0.7"/>
-                        <line class="tonarm__nadel" x1="0" y1="6.6" x2="0" y2="9.4"/>
-                    </g>
-                </g>
-
-                <!-- Das Lager, um das der Arm schwenkt -->
-                <!-- Unter dem Lager sitzt ein Teller, der es in die Zarge
-                     einfasst — auf jeder Aufnahme von oben deutlich zu sehen. -->
-                <circle class="tonarm__lagerteller" cx="88" cy="16" r="10"/>
-                <circle class="tonarm__lager" cx="88" cy="16" r="5.6"/>
-                <circle class="tonarm__lagerkern" cx="88" cy="16" r="2"/>
-                <!-- Der Lifthebel, mit dem man den Arm absenkt -->
-                <rect class="tonarm__lift" x="76" y="14.2" width="9" height="1.8" rx="0.9"/>
-            </svg>
-
-            <!-- Bedienelemente, wie an einem DJ-Deck -->
-            <div class="zarge__regler" aria-hidden="true">
-                <span class="pitch"><span class="pitch__schieber"></span></span>
-                <span class="startknopf"></span>
-            </div>
+            <span class="spindel"></span>
         </div>
+
+        <canvas id="heroVisualizer" width="440" height="440" aria-hidden="true"></canvas>
     </div>
     <div class="hero__text">
         <p class="hero__guete" id="heroGuete" data-text="hero.guete.bereit">bereit</p>
