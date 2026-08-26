@@ -146,17 +146,67 @@ export function istGefiltert(f) {
  * @param {object} f       Filterzustand
  * @param {(id: string) => boolean} istFavorit
  */
-export function wendeAn(sender, f, istFavorit) {
-  const gueteTest = f.guete ? GUETE[f.guete] : null;
-  const suchtext = f.suche.toLowerCase().trim();
+/*
+ Sāmi-Ra am 23.08.2026: „Der Radiosender heisst BR-Klassik, aber die Suche
+ fand nichts bei der Eingabe br klassik."
 
-  const suchTest = (x) =>
-    x.name.toLowerCase().includes(suchtext) ||
-    (x.betreiber ?? '').toLowerCase().includes(suchtext) ||
-    (x.ort ?? '').toLowerCase().includes(suchtext) ||
-    (x.land ?? '').toLowerCase().includes(suchtext) ||
-    (x.kaertchen ?? '').toLowerCase().includes(suchtext) ||
-    (x.etiketten ?? []).some(e => e.toLowerCase().includes(suchtext));
+ Sie suchte stur nach der Zeichenfolge. „br klassik" steht in „BR-Klassik"
+ nun einmal nicht — dazwischen liegt ein Bindestrich.
+
+ WER SUCHT, TIPPT NICHT DIE SCHREIBWEISE, SONDERN DEN NAMEN. Deshalb wird
+ vor dem Vergleich beides eingeebnet: Kleinschreibung, Akzente ab, und
+ alles, was kein Buchstabe und keine Ziffer ist, wird zu einem Leerzeichen.
+
+   BR-Klassik        → br klassik
+   Rádio Unisinos    → radio unisinos
+   NTS 1             → nts 1
+   Café del Mar CALM → cafe del mar calm
+
+ `NFD` zerlegt „á" in „a" + Akzentzeichen; der Bereich U+0300–U+036F sind
+ genau diese Zeichen. Japanische und arabische Namen bleiben unberuehrt,
+ sie haben keine solchen Zerlegungen.
+*/
+export function ebne(text) {
+  return String(text ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+}
+
+export function wendeAn(sender, f, istFavorit, regalName = null) {
+  const gueteTest = f.guete ? GUETE[f.guete] : null;
+  const suchtext = ebne(f.suche);
+  /*
+   Jedes Wort muss vorkommen, nicht die ganze Eingabe am Stueck. Damit
+   findet „klassik br" denselben Sender wie „br klassik", und „paradise
+   main" den Kanal, ohne dass jemand die Reihenfolge des Katalogs kennt.
+  */
+  const woerter = suchtext.split(' ').filter(Boolean);
+
+  /*
+   Ein kurzes Wort muss am ANFANG eines Wortes stehen, ein langes darf
+   auch mitten drin vorkommen.
+
+   Ohne diese Unterscheidung fand „br klassik" auch Radio Swiss Classic:
+   „br" steckt in „Bern". Als Wortanfang tut es das nicht. Umgekehrt soll
+   „milch" weiter Hirschmilch finden — wer vier Zeichen tippt, meint sie.
+  */
+  const passt = (heu, woerterImHeu, w) =>
+    (w.length >= 4 && heu.includes(w)) || woerterImHeu.some(h => h.startsWith(w));
+
+  const suchTest = (x) => {
+    /*
+     Der Regalname gehoert dazu. „Wuehlkiste" ist fuer den Besucher ein
+     Ort im Laden, kein Datenfeld — wer danach sucht, sucht die Kiste.
+    */
+    const heu = ebne([x.name, x.betreiber, x.ort, x.land, x.kaertchen,
+                      regalName?.(x.regal), ...(x.etiketten ?? [])]
+                     .filter(Boolean).join(' '));
+    const teile = heu.split(' ');
+    return woerter.every(w => passt(heu, teile, w));
+  };
 
   return sender.filter(x =>
     (!gueteTest || gueteTest(x)) &&
@@ -177,7 +227,7 @@ export function wendeAn(sender, f, istFavorit) {
  Deshalb wird die Zahl bei jedem Filterwechsel neu gerechnet — und eine Null
  macht den Chip stumpf, statt ihn in eine leere Ansicht laufen zu lassen.
 */
-export function vorschau(sender, f, istFavorit, achse, wert) {
+export function vorschau(sender, f, istFavorit, achse, wert, regalName = null) {
   const probe = {
     ...f,
     etiketten: new Set(f.etiketten),
@@ -187,5 +237,5 @@ export function vorschau(sender, f, istFavorit, achse, wert) {
   else if (achse === 'region') probe.regionen.add(wert);
   else if (achse === 'guete') probe.guete = wert;
   else if (achse === 'gemerkte') probe.nurGemerkte = true;
-  return wendeAn(sender, probe, istFavorit).length;
+  return wendeAn(sender, probe, istFavorit, regalName).length;
 }

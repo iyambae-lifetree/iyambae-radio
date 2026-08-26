@@ -1562,7 +1562,8 @@ class UI {
   istGefiltert() { return istGefiltert(this.filter); }
 
   wendeFilterAn() {
-    const treffer = wendeAn(this.sender, this.filter, (id) => this.istFavorit(id));
+    const treffer = wendeAn(this.sender, this.filter, (id) => this.istFavorit(id),
+                            (id) => this.regale?.find(r => r.id === id)?.name);
 
     this.zeichneSchnellchips();
     this.zeichneFilterPanel();
