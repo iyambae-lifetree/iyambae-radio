@@ -324,7 +324,44 @@ class AudioEngine {
       this._rufe('fehler');
     });
     el.addEventListener('loadstart', () => { if (el === this.audio) this._rufe('laden'); });
-    el.addEventListener('waiting',  () => { if (el === this.audio) this._rufe('puffern'); });
+
+    /*
+     Stocken messen, weil Raten nichts gebracht hat.
+
+     Sāmi-Ra am 23.08.2026 auf einem Android-Gerät mit LTE und vollem
+     Empfang: eine Minute Musik, dann zwei bis drei Minuten Puffern, und
+     das immer wieder.
+
+     Drei Verdaechtige habe ich geprueft und ALLE DREI ENTLASTET:
+       · der Signalkern im Browser — 0,05 % der Rechenzeit je Block,
+         gemessen mit demselben WebAssembly, das auf dem Geraet laeuft
+       · der Strom selbst — 150 s im Abspieltempo gelesen, kein Abriss
+       · die Sitzung mit Token beim Sender — haelt laenger als 150 s
+
+     Was bleibt, ist das Geraet. Und darueber weiss diese Seite nichts,
+     solange sie nicht fragt. Also fragt sie: wie lange, wie oft, bei
+     welchem Sender.
+    */
+    el.addEventListener('waiting', () => {
+      if (el !== this.audio) return;
+      this._stocktSeit ??= Date.now();
+      this._rufe('puffern');
+    });
+    el.addEventListener('playing', () => {
+      if (el !== this.audio || !this._stocktSeit) return;
+      const dauer = Math.round((Date.now() - this._stocktSeit) / 1000);
+      this._stocktSeit = null;
+      this._stockZahl = (this._stockZahl || 0) + 1;
+      /*
+       Unter drei Sekunden ist kein Stocken, sondern Anlaufen — das
+       passiert bei jedem Start und wuerde die Zahlen zumuellen. Und mehr
+       als fuenf Meldungen je Sender braucht niemand: Wer siebenmal
+       stockt, stockt auch beim achten Mal.
+      */
+      if (dauer < 3 || this._stockZahl > 5) return;
+      miss('stockt', { sender: this.aktuellerSender?.id, dauer,
+                       zahl: this._stockZahl });
+    });
   }
 
   _rufe(art, ...was) { this._rueckrufe[art].forEach(fn => fn(...was)); }
@@ -435,6 +472,8 @@ class AudioEngine {
     try {
       await this.audio.play();
       this.laeuft = true;
+      this._stocktSeit = null;
+      this._stockZahl = 0;
       this._wacheUeberStille();
     } catch (e) {
       if (e.name !== 'AbortError') this._rufe('fehler');

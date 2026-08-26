@@ -1717,9 +1717,44 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
        und 86 px in fr, weil "Mes disques" umbricht. Die Spielerleiste lag
        dadurch je nach Sprache 3 bis 24 px darueber. Jetzt wird gemessen —
        dieselbe Loesung wie beim Kopf. */
-    .spieler { bottom: var(--leiste-hoehe, 3.9rem); padding: 0.5rem 0.9rem; }
+    /*
+      Auf dem Handy zwei Zeilen statt einer.
+
+      Sāmi-Ra am 23.08.2026, mit einem Bild vom Android-Gerät: „Unten wirkt
+      diese Anzeige etwas zusammengequetscht — als Rückmeldung für den
+      Radiosender finde ich sie sehr gut."
+
+      In einer Reihe mussten sich Name, Knopf, Zustand und Regler 360 px
+      teilen; „Live — 432Hz gemessen" brach dabei mitten im Wort um. Jetzt:
+
+          Name · Regal          (Knopf)
+          Live — 432Hz gemessen  ═══════
+
+      `display: contents` bei den beiden Hüllen löst deren Kinder aus ihnen
+      heraus, damit sie unmittelbar im Raster liegen. So braucht es keine
+      zweite Fassung des Markups nur für die schmale Ansicht.
+    */
+    /* `.spieler.ist-sichtbar` setzt weiter oben `display: flex` und wiegt
+       schwerer als ein einzelner Klassenname — eine Medienabfrage erhoeht
+       die Gewichtung NICHT. Deshalb hier derselbe doppelte Name. */
+    .spieler, .spieler.ist-sichtbar {
+        bottom: var(--leiste-hoehe, 3.9rem);
+        padding: 0.5rem 0.9rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "info    knopf"
+            "zustand regler";
+        column-gap: 0.8rem;
+        row-gap: 0.4rem;
+        align-items: center;
+    }
+    .spieler__mitte, .spieler__rechts { display: contents; }
+    .spieler__info   { grid-area: info; }
+    #barPlay         { grid-area: knopf; }
+    .spieler__status { grid-area: zustand; white-space: nowrap; }
     .spieler__rechts canvas { display: none; }
-    #lautstaerke { width: 4rem; }
+    #lautstaerke     { grid-area: regler; width: 100%; min-width: 6rem; }
     .meldungen { inset-inline: 0.7rem; bottom: 9rem; }
 
     .handy-leiste {
