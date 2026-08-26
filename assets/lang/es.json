@@ -210,5 +210,18 @@
   "sprachname.ru": "ruso",
   "sprachname.tw": "twi",
   "sprachname.az": "azerí",
-  "sprachname.nl": "neerlandés"
+  "sprachname.nl": "neerlandés",
+  "karte.teilen": "Pasar esta emisora",
+  "teilen.sender": "{name} — escuchado en IYAMBAE Radio",
+  "teilen.empfangenSender": "{name} está listo. Pulsa reproducir.",
+  "mitnehmen.bereich": "Llévate la tienda",
+  "mitnehmen.titel": "Llévate la tienda",
+  "mitnehmen.einbauen": "Añadir a la pantalla de inicio",
+  "mitnehmen.startseite": "Definir como página de inicio",
+  "mitnehmen.wie.chrome": "En Chrome: menú ⋮ → Configuración → Al abrir → Abrir una página concreta → pega esta dirección.",
+  "mitnehmen.wie.firefox": "En Firefox: menú → Ajustes → Inicio → Direcciones personalizadas → pega esta dirección.",
+  "mitnehmen.wie.edge": "En Edge: menú ⋯ → Configuración → Inicio, página principal y pestañas nuevas → Abrir estas páginas.",
+  "mitnehmen.wie.safari": "En Safari: Safari → Ajustes → General → Página de inicio → pega esta dirección.",
+  "mitnehmen.wie.ios": "En el iPhone: toca el icono de compartir → «Añadir a inicio». Safari en iPhone no tiene página de inicio.",
+  "mitnehmen.wie.android": "En Android: menú ⋮ → «Añadir a pantalla principal». En los ajustes de Chrome también puedes indicar esta dirección en «Página de inicio»."
 }

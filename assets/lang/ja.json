@@ -210,5 +210,18 @@
   "sprachname.ru": "ロシア語",
   "sprachname.tw": "トウィ語",
   "sprachname.az": "アゼルバイジャン語",
-  "sprachname.nl": "オランダ語"
+  "sprachname.nl": "オランダ語",
+  "karte.teilen": "この局を人に渡す",
+  "teilen.sender": "{name} — IYAMBAE Radio で聴いています",
+  "teilen.empfangenSender": "{name} をセットしました。再生を押してください。",
+  "mitnehmen.bereich": "この店を持ち歩く",
+  "mitnehmen.titel": "この店を持ち歩く",
+  "mitnehmen.einbauen": "ホーム画面に追加",
+  "mitnehmen.startseite": "起動ページに設定",
+  "mitnehmen.wie.chrome": "Chrome：メニュー ⋮ → 設定 → 起動時 → 特定のページを開く → このアドレスを貼り付け。",
+  "mitnehmen.wie.firefox": "Firefox：メニュー → 設定 → ホーム → カスタム URL → このアドレスを貼り付け。",
+  "mitnehmen.wie.edge": "Edge：メニュー ⋯ → 設定 → [スタート]、[ホーム]、および [新規] タブ → これらのページを開く。",
+  "mitnehmen.wie.safari": "Safari：Safari → 設定 → 一般 → ホームページ → このアドレスを貼り付け。",
+  "mitnehmen.wie.ios": "iPhone：共有アイコン →「ホーム画面に追加」。iPhone の Safari に起動ページの設定はありません。",
+  "mitnehmen.wie.android": "Android：メニュー ⋮ →「ホーム画面に追加」。Chrome の設定の「ホームページ」にこのアドレスを入れることもできます。"
 }

@@ -210,5 +210,18 @@
   "sprachname.ru": "russe",
   "sprachname.tw": "twi",
   "sprachname.az": "azéri",
-  "sprachname.nl": "néerlandais"
+  "sprachname.nl": "néerlandais",
+  "karte.teilen": "Faire passer cette station",
+  "teilen.sender": "{name} — écouté sur IYAMBAE Radio",
+  "teilen.empfangenSender": "{name} est prêt. Appuyez sur lecture.",
+  "mitnehmen.bereich": "Emporter la boutique",
+  "mitnehmen.titel": "Emporter la boutique",
+  "mitnehmen.einbauen": "Ajouter à l’écran d’accueil",
+  "mitnehmen.startseite": "Définir comme page de démarrage",
+  "mitnehmen.wie.chrome": "Dans Chrome : menu ⋮ → Paramètres → Au démarrage → Ouvrir une page précise → collez cette adresse.",
+  "mitnehmen.wie.firefox": "Dans Firefox : menu → Paramètres → Accueil → Adresses personnalisées → collez cette adresse.",
+  "mitnehmen.wie.edge": "Dans Edge : menu ⋯ → Paramètres → Démarrage, accueil et nouveaux onglets → Ouvrir ces pages.",
+  "mitnehmen.wie.safari": "Dans Safari : Safari → Réglages → Général → Page d’accueil → collez cette adresse.",
+  "mitnehmen.wie.ios": "Sur iPhone : touchez l’icône de partage → « Sur l’écran d’accueil ». Safari sur iPhone n’a pas de page de démarrage.",
+  "mitnehmen.wie.android": "Sur Android : menu ⋮ → « Ajouter à l’écran d’accueil ». Les réglages de Chrome permettent aussi d’indiquer cette adresse sous « Page d’accueil »."
 }

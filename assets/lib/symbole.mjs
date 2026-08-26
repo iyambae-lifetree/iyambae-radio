@@ -33,6 +33,15 @@ const PFADE = {
              'fill="currentColor"/>',
 
     // Pfeil aus dem Kasten heraus — die übliche Form für „öffnet woanders".
+    // Weitergeben: drei Punkte, durch zwei Linien verbunden.
+    teilen: '<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/>' +
+            '<circle cx="18" cy="19" r="2.6"/>' +
+            '<path d="M8.3 10.8 15.7 6.4"/><path d="M8.3 13.2 15.7 17.6"/>',
+
+    // Auf den Startbildschirm: ein Geraet mit einem Pfeil hinein.
+    hinzufuegen: '<rect x="6" y="2.5" width="12" height="19" rx="2"/>' +
+            '<path d="M12 7v7"/><path d="M9 11l3 3 3-3"/>',
+
     extern: '<path d="M14 4h6v6"/><path d="M20 4 11 13"/>' +
             '<path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
 

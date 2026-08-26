@@ -378,6 +378,31 @@
      Cloaking und wird zu Recht bestraft. -->
 <!--KATALOGTEXT-->
 
+<!--
+     Den Laden mitnehmen. Zwei Wege, und sie sind unterschiedlich ehrlich:
+
+     Auf den Startbildschirm kann der Browser wirklich — dafuer gibt es
+     `beforeinstallprompt`, und der Knopf zeigt sich nur, wenn er auch
+     etwas tut.
+
+     Als Startseite kann er NICHT. Das darf keine Webseite selbst setzen,
+     und das ist gut so. Deshalb steht dort kein Knopf, der etwas
+     verspricht, sondern eine Anleitung fuer das Geraet, auf dem der
+     Besucher gerade sitzt.
+-->
+<section class="mitnehmen" id="mitnehmen" data-aria="mitnehmen.bereich" aria-label="Den Laden mitnehmen">
+    <h2 class="mitnehmen__titel" data-text="mitnehmen.titel">Den Laden mitnehmen</h2>
+    <div class="mitnehmen__knoepfe">
+        <button class="knopf knopf--leise" id="knopfEinbauen" hidden>
+            <span data-symbol="hinzufuegen"></span><span data-text="mitnehmen.einbauen">Auf den Startbildschirm</span>
+        </button>
+        <button class="knopf knopf--leise" id="knopfStartseite">
+            <span data-symbol="laden"></span><span data-text="mitnehmen.startseite">Als Startseite einrichten</span>
+        </button>
+    </div>
+    <p class="mitnehmen__anleitung" id="startseiteAnleitung" hidden></p>
+</section>
+
 <footer class="fuss">
     <p class="fuss__hinweis" data-html="fuss.hinweis">
         Diese Seite <em>rät</em>. Sie nimmt an, jeder Sender sei auf 440 Hz gestimmt, und

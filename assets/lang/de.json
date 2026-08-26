@@ -210,5 +210,18 @@
   "sprachname.ru": "Russisch",
   "sprachname.tw": "Twi",
   "sprachname.az": "Aserbaidschanisch",
-  "sprachname.nl": "Niederländisch"
+  "sprachname.nl": "Niederländisch",
+  "karte.teilen": "Diesen Sender weitergeben",
+  "teilen.sender": "{name} — gehört bei IYAMBAE Radio",
+  "teilen.empfangenSender": "{name} liegt auf. Drück auf Abspielen.",
+  "mitnehmen.bereich": "Den Laden mitnehmen",
+  "mitnehmen.titel": "Den Laden mitnehmen",
+  "mitnehmen.einbauen": "Auf den Startbildschirm",
+  "mitnehmen.startseite": "Als Startseite einrichten",
+  "mitnehmen.wie.chrome": "In Chrome: Menü ⋮ → Einstellungen → Beim Start → Bestimmte Seite öffnen → diese Adresse einfügen.",
+  "mitnehmen.wie.firefox": "In Firefox: Menü → Einstellungen → Startseite → Benutzerdefinierte Adressen → diese Adresse einfügen.",
+  "mitnehmen.wie.edge": "In Edge: Menü ⋯ → Einstellungen → Start, Startseite und neue Registerkarten → Diese Seiten öffnen.",
+  "mitnehmen.wie.safari": "In Safari: Safari → Einstellungen → Allgemein → Homepage → diese Adresse einfügen.",
+  "mitnehmen.wie.ios": "Auf dem iPhone: unten auf das Teilen-Symbol tippen → „Zum Home-Bildschirm\". Eine eigene Startseite kennt Safari auf dem iPhone nicht.",
+  "mitnehmen.wie.android": "Auf Android: Menü ⋮ → „Zum Startbildschirm hinzufügen\". In den Chrome-Einstellungen lässt sich unter „Startseite\" zusätzlich diese Adresse eintragen."
 }

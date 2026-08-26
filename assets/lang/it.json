@@ -210,5 +210,18 @@
   "sprachname.ru": "russo",
   "sprachname.tw": "twi",
   "sprachname.az": "azero",
-  "sprachname.nl": "olandese"
+  "sprachname.nl": "olandese",
+  "karte.teilen": "Passa questa emittente",
+  "teilen.sender": "{name} — ascoltato su IYAMBAE Radio",
+  "teilen.empfangenSender": "{name} è pronto. Premi play.",
+  "mitnehmen.bereich": "Porta con te il negozio",
+  "mitnehmen.titel": "Porta con te il negozio",
+  "mitnehmen.einbauen": "Aggiungi alla schermata Home",
+  "mitnehmen.startseite": "Imposta come pagina iniziale",
+  "mitnehmen.wie.chrome": "In Chrome: menu ⋮ → Impostazioni → All’avvio → Apri una pagina specifica → incolla questo indirizzo.",
+  "mitnehmen.wie.firefox": "In Firefox: menu → Impostazioni → Pagina iniziale → Indirizzi personalizzati → incolla questo indirizzo.",
+  "mitnehmen.wie.edge": "In Edge: menu ⋯ → Impostazioni → Avvio, home e nuove schede → Apri queste pagine.",
+  "mitnehmen.wie.safari": "In Safari: Safari → Impostazioni → Generali → Homepage → incolla questo indirizzo.",
+  "mitnehmen.wie.ios": "Su iPhone: tocca l’icona di condivisione → «Aggiungi a Home». Safari su iPhone non ha una pagina iniziale.",
+  "mitnehmen.wie.android": "Su Android: menu ⋮ → «Aggiungi a schermata Home». Nelle impostazioni di Chrome puoi anche indicare questo indirizzo sotto «Pagina iniziale»."
 }

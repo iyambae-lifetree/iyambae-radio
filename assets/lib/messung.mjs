@@ -56,7 +56,7 @@ const SCHLUESSEL = 'hz_messung';
  Genau dieselbe Bauart hat protokoll.mjs im Anmeldedienst.
 */
 const ARTEN = new Set(['start', 'filter', 'regal', 'suche', 'sprache',
-                       'installiert', 'abspielfehler', 'stockt',
+                       'installiert', 'abspielfehler', 'stockt', 'teilen-sender',
                        'teilen', 'teilen-uebernommen']);
 
 /*

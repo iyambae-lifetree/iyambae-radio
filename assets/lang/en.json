@@ -210,5 +210,18 @@
   "sprachname.ru": "Russian",
   "sprachname.tw": "Twi",
   "sprachname.az": "Azerbaijani",
-  "sprachname.nl": "Dutch"
+  "sprachname.nl": "Dutch",
+  "karte.teilen": "Pass this station on",
+  "teilen.sender": "{name} — heard on IYAMBAE Radio",
+  "teilen.empfangenSender": "{name} is cued up. Press play.",
+  "mitnehmen.bereich": "Take the shop with you",
+  "mitnehmen.titel": "Take the shop with you",
+  "mitnehmen.einbauen": "Add to home screen",
+  "mitnehmen.startseite": "Set as your start page",
+  "mitnehmen.wie.chrome": "In Chrome: menu ⋮ → Settings → On startup → Open a specific page → paste this address.",
+  "mitnehmen.wie.firefox": "In Firefox: menu → Settings → Home → Custom URLs → paste this address.",
+  "mitnehmen.wie.edge": "In Edge: menu ⋯ → Settings → Start, home and new tabs → Open these pages.",
+  "mitnehmen.wie.safari": "In Safari: Safari → Settings → General → Homepage → paste this address.",
+  "mitnehmen.wie.ios": "On iPhone: tap the share icon → “Add to Home Screen”. Safari on iPhone has no start page setting.",
+  "mitnehmen.wie.android": "On Android: menu ⋮ → “Add to Home screen”. Chrome’s settings also let you set this address under “Homepage”."
 }

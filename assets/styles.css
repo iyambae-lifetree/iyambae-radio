@@ -931,7 +931,56 @@ body.spielt .platte { animation-play-state: running; }
    22 px hoeher als die andere, und kein Platzhalter kann die Hoehe vorher
    treffen — gemessen fehlten der Auslage 36 px. Im Raster ist mehr Platz,
    dort bleiben beide stehen. */
-.regal__reihe /* Wer spricht, spricht eine Sprache — und das steht auf der Huelle,
+.regal__reihe /* Der Weitergeben-Knopf auf der Huelle. Er sitzt neben dem Herz und
+   verhaelt sich genauso: unaufdringlich, bis man mit der Maus darueber
+   geht oder die Huelle beruehrt. */
+.karte__teilen {
+    position: absolute;
+    top: 0.5rem; left: 0.5rem;
+    display: grid; place-items: center;
+    width: 2rem; height: 2rem;
+    border: 0; border-radius: 50%;
+    background: rgba(5, 2, 10, 0.55);
+    color: #e8e3f2;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.18s ease, background 0.18s ease;
+}
+.karte:hover .karte__teilen,
+.karte:focus-within .karte__teilen { opacity: 0.85; }
+.karte__teilen:hover { opacity: 1; background: rgba(5, 2, 10, 0.8); }
+/* Auf Geraeten ohne Zeigegeraet gibt es kein Hover — dort steht er
+   dauerhaft da, sonst waere er unerreichbar. */
+@media (hover: none) { .karte__teilen { opacity: 0.7; } }
+
+/* ── Den Laden mitnehmen ─────────────────────────────────────────── */
+.mitnehmen {
+    max-width: 60rem;
+    margin: 2.5rem auto 0;
+    padding: 0 1rem;
+    text-align: center;
+}
+.mitnehmen__titel {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.9rem;
+}
+.mitnehmen__knoepfe {
+    display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center;
+}
+.mitnehmen__anleitung {
+    margin: 1rem auto 0;
+    max-width: 40rem;
+    font-size: 0.86rem;
+    line-height: 1.6;
+    color: var(--text-leise);
+}
+.mitnehmen__anleitung[hidden] { display: none; }
+
+/* Wer spricht, spricht eine Sprache — und das steht auf der Huelle,
    aber nur, wenn es eine andere ist als die des Lesers. Leise gesetzt:
    Es ist ein Hinweis, keine Warnung. */
 .karte__stimme {

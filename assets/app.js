@@ -185,6 +185,21 @@ const speicher = {
 // Rautezeichen, und wer ihn spaeter auswerten will, findet ihn dort nicht
 // mehr zuverlaessig. Also gleich festhalten.
 const GETEILTE_PLATTEN = (/[#&]platten=([a-z0-9.\-]+)/i.exec(location.hash) || [])[1] || '';
+/*
+ Ein EINZELNER weitergegebener Sender — die haeufigere Geste.
+
+ Sāmi-Ra: „Jemand, der auf der Seite seinen Lieblingssender gefunden hat
+ und ihn mit jemand anderem teilen will."
+
+ Eigener Schluessel `platte=` statt `platten=`, denn die Gegenseite tut
+ etwas anderes: Eine Liste wird ANGEBOTEN, ein einzelner Sender wird
+ AUFGELEGT. Wer einem Link zu genau einem Sender folgt, will ihn hoeren
+ und nicht gefragt werden, ob er ihn merken moechte.
+
+ Gelesen wird beim Laden des Moduls, weil die Adresse spaeter nicht mehr
+ verlaesslich dasteht — sie wird nach dem Auswerten entfernt.
+*/
+const GETEILTE_PLATTE = (/[#&]platte=([a-z0-9\-]+)/i.exec(location.hash) || [])[1] || '';
 
 const ladeGehoert  = () => speicher.lies(SCHLUESSEL.gehoert, {});
 const ladeZuletzt  = () => speicher.lies(SCHLUESSEL.zuletzt, []);
@@ -926,6 +941,8 @@ class UI {
           <p class="karte__kaertchen"><span>${sender.kaertchen}</span></p>
           <button class="karte__favorit${favorit ? ' ist-favorit' : ''}"
                   aria-label="${favorit ? t('karte.favorit.entfernen') : t('karte.favorit.hinzu')}">${symbol(favorit ? 'gemerkt' : 'merken', 20)}</button>
+          <button class="karte__teilen" aria-label="${t('karte.teilen')}"
+                  title="${t('karte.teilen')}">${symbol('teilen', 18)}</button>
           <button class="karte__spielen" aria-label="${t('karte.spielen')}">
             <span class="karte__ikon--an">${symbol('abspielen', 20)}</span><span class="karte__ikon--aus">${symbol('pause', 20)}</span>
           </button>
@@ -967,6 +984,7 @@ class UI {
       const id = karte.dataset.senderId;
       karte.addEventListener('click', (e) => {
         if (e.target.closest('.karte__favorit')) return;
+        if (e.target.closest('.karte__teilen')) return;
         if (e.target.closest('.karte__spielen')) return;
         const sender = this.senderMitId(id);
         if (sender) window.app.spieleSender(sender);
@@ -974,6 +992,11 @@ class UI {
       karte.querySelector('.karte__favorit')?.addEventListener('click', (e) => {
         e.stopPropagation();
         this.toggleFavorit(id);
+      });
+      karte.querySelector('.karte__teilen')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sender = this.senderMitId(id);
+        if (sender) window.app.teileSender(sender);
       });
       /*
        Der Abspielknopf haelt an, wenn der Sender schon laeuft — sonst wuerde
@@ -1940,6 +1963,7 @@ class App {
 
     this.folgeAdressZiel();
     this.pruefeGeteilteAdresse();
+    this.zeigeGeteiltePlatte();
 
     /*
      Aktualisierung ueberwachen. Spielt gerade Musik, wird nicht von selbst
@@ -2349,6 +2373,62 @@ class App {
       miss('teilen', { anzahl: favoriten.length });
     });
     behaelter.before(leiste);
+  }
+
+  /*
+   Einen einzelnen Sender weitergeben.
+
+   Auf dem Handy uebernimmt das Teilen-Blatt des Geraets — dort landet der
+   Link in WhatsApp, Signal oder wo der Mensch ihn haben will, ohne dass
+   diese Seite etwas davon erfaehrt. Nur wenn es das nicht gibt, wird
+   kopiert.
+
+   `navigator.share` wirft ab, wenn der Mensch das Blatt schliesst. Das ist
+   KEIN Fehler und darf deshalb auch nicht als Ersatzweg behandelt werden —
+   sonst laege der Link in der Zwischenablage von jemandem, der gerade
+   abgebrochen hat.
+  */
+  async teileSender(sender) {
+    const adresse = `${location.origin}${location.pathname}#platte=${sender.id}`;
+    const text = t('teilen.sender', { name: sender.name });
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: sender.name, text, url: adresse });
+        miss('teilen-sender', { sender: sender.id, weg: 'blatt' });
+      } catch { /* abgebrochen — dann ist nichts zu tun */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(adresse);
+      this.ui.meldung(t('teilen.kopiert'), 'info');
+      miss('teilen-sender', { sender: sender.id, weg: 'zwischenablage' });
+    } catch {
+      this.ui.meldung(adresse, 'info');
+    }
+  }
+
+  /*
+   Die Gegenseite fuer einen einzelnen Sender: auflegen, nicht fragen.
+
+   Wer einen Link zu genau einem Sender oeffnet, hat eine Empfehlung
+   bekommen. Ihn erst zu fragen, ob er den Sender merken moechte, waere
+   eine Ruecknachfrage auf eine Geste, die schon eindeutig war.
+
+   Losspielen tut die Seite trotzdem nicht von selbst: Browser lassen Ton
+   ohne Zutun ohnehin nicht zu, und ein Laden, der einen ungefragt
+   beschallt, waere kein guter Laden. Der Sender steht bereit, der Mensch
+   drueckt.
+  */
+  zeigeGeteiltePlatte() {
+    if (!GETEILTE_PLATTE) return;
+    const sender = this.ui.senderMitId(GETEILTE_PLATTE);
+    history.replaceState(null, '', location.pathname + location.search);
+    if (!sender) return;
+    this.ui.zeigeSender(sender);
+    this.engine.aktuellerSender = sender;
+    this.ui.meldung(t('teilen.empfangenSender', { name: sender.name }), 'info');
+    document.getElementById('hero')?.scrollIntoView({ block: 'start' });
   }
 
   baueTeilAdresse(favoriten) {
@@ -2970,3 +3050,83 @@ await app.init();
  eine ganz andere Zahl.
 */
 addEventListener('appinstalled', () => miss('installiert'));
+
+/*
+ ═══ Den Laden mitnehmen ═══════════════════════════════════════════
+
+ ZWEI WEGE, UND SIE SIND UNTERSCHIEDLICH EHRLICH.
+
+ Auf den Startbildschirm: Das kann der Browser wirklich. Er meldet sich
+ mit `beforeinstallprompt`, wenn er es fuer moeglich haelt; wir halten
+ die Meldung fest und zeigen erst dann den Knopf. Ein Knopf, der bei
+ jedem Zweiten nichts tut, ist schlimmer als keiner.
+
+ Als Startseite: DAS KANN KEINE WEBSEITE. Kein Browser laesst eine Seite
+ die Startseite setzen, und das ist gut so — sonst taete es jede zweite
+ ungefragt. Also steht dort auch kein Knopf, der etwas verspricht,
+ sondern eine Anleitung fuer das Geraet, auf dem der Besucher sitzt.
+
+ Die Erkennung ist grob und bleibt es: Sie waehlt einen Text aus, sonst
+ nichts. Wer im falschen landet, liest eine Anleitung fuer einen anderen
+ Browser — aergerlich, aber nicht schaedlich.
+*/
+let einbauAngebot = null;
+
+addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  einbauAngebot = e;
+  const knopf = document.getElementById('knopfEinbauen');
+  if (knopf) knopf.hidden = false;
+});
+
+function welcherBrowser() {
+  const u = navigator.userAgent;
+  if (/iPhone|iPad|iPod/.test(u)) return 'ios';
+  if (/Android/.test(u)) return 'android';
+  if (/Firefox\//.test(u)) return 'firefox';
+  if (/Edg\//.test(u)) return 'edge';
+  if (/Safari\//.test(u) && !/Chrome|Chromium/.test(u)) return 'safari';
+  return 'chrome';
+}
+
+function richteMitnehmenEin() {
+  const einbauen = document.getElementById('knopfEinbauen');
+  einbauen?.addEventListener('click', async () => {
+    if (!einbauAngebot) return;
+    einbauAngebot.prompt();
+    /*
+     `userChoice` sagt, ob der Mensch zugestimmt hat. Gemeldet wird
+     trotzdem nichts: Der Einbau selbst meldet sich oben mit
+     'appinstalled', und das ist die Zahl, die stimmt. Eine Zusage, die
+     der Browser danach doch nicht ausfuehrt, waere eine zweite Wahrheit.
+    */
+    await einbauAngebot.userChoice;
+    einbauAngebot = null;
+    einbauen.hidden = true;
+  });
+
+  const startseite = document.getElementById('knopfStartseite');
+  const anleitung = document.getElementById('startseiteAnleitung');
+  startseite?.addEventListener('click', () => {
+    if (!anleitung) return;
+    anleitung.textContent = t(`mitnehmen.wie.${welcherBrowser()}`);
+    anleitung.hidden = false;
+    anleitung.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+}
+/*
+ NICHT ueber 'DOMContentLoaded' anmelden.
+
+ Dieses Modul hat oben ein `await` auf oberster Ebene (den Katalog).
+ Damit wird es ERST NACH 'DOMContentLoaded' ausgefuehrt — ein Zuhoerer,
+ der hier angemeldet wird, kommt nie zum Zug. Der Knopf sah verdrahtet
+ aus und tat nichts.
+
+ Wieder dieselbe Sorte Fehler: Im Code steht alles richtig da, und beim
+ Druecken passiert nichts.
+*/
+if (document.readyState === 'loading') {
+  addEventListener('DOMContentLoaded', richteMitnehmenEin);
+} else {
+  richteMitnehmenEin();
+}

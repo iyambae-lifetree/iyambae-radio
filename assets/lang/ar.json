@@ -210,5 +210,18 @@
   "sprachname.ru": "الروسية",
   "sprachname.tw": "التوية",
   "sprachname.az": "الأذربيجانية",
-  "sprachname.nl": "الهولندية"
+  "sprachname.nl": "الهولندية",
+  "karte.teilen": "مرِّر هذه المحطة",
+  "teilen.sender": "{name} — من إذاعة IYAMBAE",
+  "teilen.empfangenSender": "{name} جاهزة. اضغط على التشغيل.",
+  "mitnehmen.bereich": "خذ المتجر معك",
+  "mitnehmen.titel": "خذ المتجر معك",
+  "mitnehmen.einbauen": "أضِف إلى الشاشة الرئيسية",
+  "mitnehmen.startseite": "اجعلها صفحة البدء",
+  "mitnehmen.wie.chrome": "في Chrome: القائمة ⋮ ← الإعدادات ← عند بدء التشغيل ← فتح صفحة محدّدة ← الصق هذا العنوان.",
+  "mitnehmen.wie.firefox": "في Firefox: القائمة ← الإعدادات ← الصفحة الرئيسية ← عناوين مخصّصة ← الصق هذا العنوان.",
+  "mitnehmen.wie.edge": "في Edge: القائمة ⋯ ← الإعدادات ← البدء والصفحة الرئيسية وعلامات التبويب الجديدة ← افتح هذه الصفحات.",
+  "mitnehmen.wie.safari": "في Safari: ‏Safari ← الإعدادات ← عام ← الصفحة الرئيسية ← الصق هذا العنوان.",
+  "mitnehmen.wie.ios": "على iPhone: اضغط رمز المشاركة ← «إضافة إلى الشاشة الرئيسية». لا توجد صفحة بدء في Safari على iPhone.",
+  "mitnehmen.wie.android": "على Android: القائمة ⋮ ← «إضافة إلى الشاشة الرئيسية». يمكن أيضًا وضع هذا العنوان في إعدادات Chrome تحت «الصفحة الرئيسية»."
 }
