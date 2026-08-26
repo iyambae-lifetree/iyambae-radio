@@ -115,6 +115,22 @@
         <img class="tonarm" id="tonarm" src="/assets/bild/tonarm.webp" alt="" draggable="false"
              width="1400" height="1077" decoding="async">
 
+        <!-- Der Pitchregler zeigt die Stimmung an. Auf einem echten Deck
+             steht er in der Mitte fuer die normale Geschwindigkeit, daneben
+             stehen die Prozente. 432 statt 440 Hz sind -1,8 % — genau die
+             Sprache, in der dieses Geraet misst. -->
+        <img class="pitch" id="pitch" src="/assets/bild/pitch.webp" alt="" draggable="false"
+             width="104" height="100" decoding="async">
+
+        <!-- Der Startknopf des Plattenspielers ist der Startknopf.
+             Er liegt ueber dem Knopf im Foto und tut, was er verspricht. -->
+        <button class="startstop" id="startstop" data-aria="deck.startstop"
+                aria-label="Abspielen oder pausieren"></button>
+
+        <!-- 33 leuchtet, solange gespielt wird. Ein Radiostrom ist eine LP,
+             keine Single — fuer die 45 gibt es hier keine Wahrheit. -->
+        <span class="lampe33" aria-hidden="true"></span>
+
         <canvas id="heroVisualizer" width="440" height="440" aria-hidden="true"></canvas>
     </div>
     <div class="hero__text">

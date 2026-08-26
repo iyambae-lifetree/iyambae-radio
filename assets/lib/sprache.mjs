@@ -145,12 +145,39 @@ export async function ladeSprache(kuerzel = erkenneSprache()) {
   return AKTUELL;
 }
 
+/*
+ Zahlen, die IMMER eingesetzt werden — die Groesse des Ladens.
+
+ Gefunden am 23.08.2026 auf der laufenden Seite: Unter der Ueberschrift
+ stand woertlich
+
+     „{senderzahl} Sender aus {laenderzahl} Ländern, in {regalzahl} Regalen"
+
+ Der Erzeuger setzt die Zahlen beim Bauen ins HTML — das stimmte auch, im
+ ausgelieferten Quelltext stand „165 Sender aus 37 Ländern". Nur schrieb
+ `uebersetzeDokument` beim Start denselben Satz noch einmal aus der
+ Sprachdatei darueber, und DORT stehen die Platzhalter.
+
+ Zwei Wahrheiten fuer denselben Satz, und die spaetere gewann.
+
+ Es gibt keinen dritten Ort dafuer: Der Erzeuger kennt den Katalog, die
+ Seite kennt ihn auch. Also traegt die Seite ihre Zahlen hier ein, und
+ `t()` setzt sie ueberall ein, ohne dass jede Aufrufstelle daran denken
+ muss. Eine Aufrufstelle, die daran denken muss, wird eines Tages
+ vergessen — genau das ist hier passiert.
+*/
+let ZAHLEN = {};
+
+export function setzeZahlen(werte) {
+  ZAHLEN = { ...ZAHLEN, ...werte };
+}
+
 // ── Nachschlagen ───────────────────────────────────────────────────
 export function t(schluessel, werte) {
   const roh = TEXTE[schluessel] ?? TEXTE_RUECKFALL[schluessel] ?? schluessel;
-  if (!werte) return roh;
+  const alle = werte ? { ...ZAHLEN, ...werte } : ZAHLEN;
   return roh.replace(/\{(\w+)\}/g, (ganz, name) =>
-    Object.hasOwn(werte, name) ? String(werte[name]) : ganz);
+    Object.hasOwn(alle, name) ? String(alle[name]) : ganz);
 }
 
 // ── Auszeichnung im Dokument ───────────────────────────────────────

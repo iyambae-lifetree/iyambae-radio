@@ -445,6 +445,79 @@ body.spielt .tonarm { transform: rotate(2deg); }
     .tonarm { transition: none; }
 }
 
+/* ── Der Pitchregler zeigt die Stimmung ──────────────────────────
+
+   Auf einem echten Deck steht der Schieber in der Mitte fuer die normale
+   Geschwindigkeit, und daneben stehen die Prozente: +6,4 · 3,3 · 0 · −3,3.
+   Das ist genau die Sprache, in der diese Seite misst — 432 statt 440 Hz
+   sind −1,8 %.
+
+   Alle Zahlen sind am Foto abgemessen: Die Skala laeuft von −8 (y=603) bis
+   +8 (y=930), macht 20,4 px je Prozent. Der Schieber steht im Foto auf 0.
+   −1,8 % sind also 36,7 px nach OBEN — die Skala ist umgekehrt beschriftet,
+   oben steht das Minus.
+
+   Was darunter lag, ist im Deckbild ersetzt: spaltenweise interpoliert
+   zwischen der Zeile ueber und unter dem Schieber. Der Regler ist senkrecht
+   gleichfoermig, deshalb passt das fugenlos — dieselbe Ueberlegung wie beim
+   Tonarm, nur um neunzig Grad gedreht. */
+.pitch {
+    position: absolute;
+    left: 94.43%; top: 71.12%;
+    width: 7.43%; height: auto;
+    translate: -50% -50%;
+    transition: top 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 4;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+/* 71,12 % − 3,41 % = 67,71 % */
+body.stimmt-432 .pitch { top: 67.71%; }
+
+/* Der Startknopf des Plattenspielers ist der Startknopf.
+
+   Er liegt unsichtbar ueber dem Knopf im Foto. Kein gemalter Knopf darauf:
+   Das Foto zeigt schon einen, und zwei uebereinander waeren einer zu viel.
+   Beim Spielen bekommt er den goldenen Schein, den ein gedrueckter Knopf
+   am Geraet auch haette. */
+.startstop {
+    position: absolute;
+    left: 6.43%; top: 93.5%;
+    width: 9.29%; height: 10.03%;
+    translate: -50% -50%;
+    border: 0; border-radius: 3px;
+    background: transparent;
+    cursor: pointer;
+    z-index: 6;
+    transition: box-shadow 0.25s ease, background 0.25s ease;
+}
+.startstop:hover  { background: rgba(255, 255, 255, 0.12); }
+.startstop:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+body.spielt .startstop {
+    background: rgba(242, 183, 5, 0.16);
+    box-shadow: inset 0 0 12px rgba(242, 183, 5, 0.45);
+}
+
+/* 33 leuchtet, solange gespielt wird. Ein Radiostrom ist eine LP, keine
+   Single — fuer die 45 gaebe es hier keine Wahrheit, also bleibt sie aus. */
+.lampe33 {
+    position: absolute;
+    left: 16.79%; top: 97.21%;
+    width: 1.1%; aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 5;
+}
+body.spielt .lampe33 { opacity: 0.9; box-shadow: 0 0 6px rgba(242, 183, 5, 0.8); }
+
+@media (prefers-reduced-motion: reduce) {
+    .pitch { transition: none; }
+}
+
 /* Gedreht wird nur, wenn Ton läuft. 33⅓ Umdrehungen je Minute wären
    1,8 Sekunden — hier langsamer, sonst flimmert das Label. */
 .platte { animation: dreht 3.6s linear infinite; animation-play-state: paused; }

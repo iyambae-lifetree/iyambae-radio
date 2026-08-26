@@ -74,7 +74,7 @@ function meldeAbspielfehler(senderId, zweig, code) {
 }
 
 import { beobachteTitel, haltAn as haltTitelAn } from './lib/titel.mjs';
-import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t, sprache }
+import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t, sprache, setzeZahlen }
   from './lib/sprache.mjs';
 
 // ── Sprache ────────────────────────────────────────────────────────
@@ -118,6 +118,36 @@ const REGALE = KATALOG.regale;
 // Fassung, und sie steigt mit jeder Auslieferung.
 const FASSUNG = KATALOG._version ?? 'unbekannt';
 const SENDER = KATALOG.sender.filter(s => s.status !== 'tot');
+
+/*
+ Die Groesse des Ladens, einmal ausgerechnet und in die Sprachschicht
+ gegeben. Ab hier setzt `t()` sie ueberall selbst ein.
+
+ Gezaehlt wird der ausgelieferte Katalog, nicht eine Zahl im Text: Faellt
+ morgen ein Sender aus, stimmt der Satz weiter.
+*/
+setzeZahlen({
+  senderzahl:  SENDER.length,
+  laenderzahl: new Set(SENDER.map(s => s.land).filter(Boolean)).size,
+  regalzahl:   REGALE.length,
+});
+
+/*
+ Und noch einmal uebersetzen.
+
+ `uebersetzeDokument()` laeuft weiter oben — VOR dem Katalog, denn die
+ Seite soll lesbar sein, bevor 142 KB Sender geladen sind. Zu diesem
+ Zeitpunkt kann sie die Zahlen aber nicht kennen, und schrieb daher
+ „{senderzahl} Sender aus {laenderzahl} Ländern" ueber den Satz, in dem
+ der Erzeuger die richtigen Zahlen schon eingesetzt hatte.
+
+ Genau das stand am 23.08.2026 auf der laufenden Seite.
+
+ Ein zweiter Durchgang kostet nichts — es ist immer noch Startzeit, kein
+ Text ist bisher von Hand gesetzt worden, es gibt also nichts zu
+ ueberschreiben.
+*/
+uebersetzeDokument();
 
 /*
  ═══ Wer spricht, spricht eine Sprache ═════════════════════════════
@@ -3103,6 +3133,11 @@ function richteMitnehmenEin() {
     await einbauAngebot.userChoice;
     einbauAngebot = null;
     einbauen.hidden = true;
+  });
+
+  // Der Startknopf am Deck macht dasselbe wie der grosse Knopf daneben.
+  document.getElementById('startstop')?.addEventListener('click', () => {
+    window.app?.wechselSpiel();
   });
 
   const startseite = document.getElementById('knopfStartseite');
