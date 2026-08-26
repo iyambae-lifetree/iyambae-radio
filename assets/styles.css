@@ -423,9 +423,17 @@ body.stimmt-432 .stimmung__mehr {
     position: absolute; inset: 0;
     width: 100%; height: auto;
     transform-origin: 85.33% 25.35%;
-    /* Ruhe: nach aussen geschwenkt. Beim Auflegen faehrt er in gut einer
-       Sekunde herein — schneller waere hektisch, langsamer waere Warten. */
-    transform: rotate(-24deg);
+    /* Ruhe: der Arm liegt in seiner Ablage — dem kleinen Keil zwischen
+       Teller und Pitchregler. Der Winkel ist nicht geschaetzt: Die Ablage
+       liegt bei 83,7 % / 55,2 %, also 334 px vom Lager in Richtung 93,8°.
+       Das Rohr steht dort im Ruhezustand bei 112,7°, macht -16°.
+
+       Vorher waren es -24°, da schwebte er frei ueber der Zarge. Sāmi-Ra:
+       „In Ruhe liegt er auf einem echten Deck geparkt."
+
+       Beim Auflegen faehrt er in gut einer Sekunde herein — schneller
+       waere hektisch, langsamer waere Warten. */
+    transform: rotate(-16deg);
     transition: transform 1.1s cubic-bezier(0.33, 0.9, 0.4, 1);
     pointer-events: none;
     z-index: 5;
