@@ -25,6 +25,15 @@ IYAMBAE-Marke oder das Logo des Senders.
 | `plattenspieler.webp` | das Deck **ohne** Arm |
 | `tonarm.webp` | nur der Arm, freigestellt |
 
+**Zum Arm gehoert das Gegengewicht.** Sāmi-Ra hat es am 27.08.2026 in
+einem Video gesehen und angemerkt: Es sitzt am hinteren Ende, dem Kopf
+genau gegenueber, und schwenkt mit. In der ersten Fassung hatte ich es
+weggelassen — es sei klein und liege auf schwarzem Grund. Es faellt auf.
+
+Gefunden wurde es nicht ueber die Helligkeit (Gegengewicht und Lagerplatte
+sind beide schwarz), sondern ueber die Geometrie: Es liegt auf der
+Verlaengerung der Linie Nadel–Lager, bei −55,9°.
+
 Der Arm liegt als eigene Ebene darueber und schwenkt um sein Lager — bei
 85,33 % / 25,35 % der Bildbreite und -hoehe. **Wer das Foto tauscht, muss
 diese Zahlen neu messen**, sonst dreht der Arm um einen falschen Punkt.
