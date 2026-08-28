@@ -1454,7 +1454,7 @@ code {
     <div class="geraet" id="probe">
       <div class="geraet__kopf">
         <p class="geraet__titel" data-text="probe.titel">Die Probe · kein Download nötig</p>
-        <p class="geraet__hilfe" data-text="probe.hilfe">Ton an, dann von 440 auf 432 ziehen.</p>
+        <p class="geraet__hilfe" data-text="probe.hilfe">Musik an, dann von 440 auf 432 ziehen.</p>
       </div>
 
       <!-- Die Einheiten hängen als data-einheit an den Feldern, weil der
@@ -1474,10 +1474,9 @@ code {
                 data-einheit="probe.einheit.cent|Cent">−31,8<small>Cent</small></span>
         </div>
         <div class="ablesung__feld">
-          <span class="ablesung__marke" data-text="probe.marke.schweb">Schwebung</span>
-          <span class="ablesung__wert" id="anzeigeSchweb" data-html="probe.wert.schweb"
-                data-einheit="probe.einheit.schweb|/s"
-                data-ruhig="probe.ruhig|keine">8,0<small>/s</small></span>
+          <span class="ablesung__marke" data-text="probe.marke.tempo">Tempo</span>
+          <span class="ablesung__wert" id="anzeigeTempo" data-html="probe.wert.tempo"
+                data-einheit="probe.einheit.tempo|%">100,0<small>%</small></span>
         </div>
       </div>
 
@@ -1506,10 +1505,11 @@ code {
           <input type="range" id="regler" min="415" max="448" step="0.1" value="432">
           <div class="skala"><span>415</span><span>432</span><span>440</span><span>448</span></div>
         </div>
+        <audio id="probeklang" src="assets/klang/nocturne.mp3" preload="none" loop crossorigin="anonymous"></audio>
         <button class="hoerknopf" id="hoerknopf" type="button" aria-pressed="false"
                 data-text="probe.ton.an"
-                data-an="probe.ton.an|Ton einschalten"
-                data-aus="probe.ton.aus|Ton ausschalten">Ton einschalten</button>
+                data-an="probe.ton.an|Musik einschalten"
+                data-aus="probe.ton.aus|Musik ausschalten">Musik einschalten</button>
       </div>
 
       <div class="stimmungen" role="group" data-aria="probe.stimmungen.aria" aria-label="Historische Kammertöne">
@@ -1524,11 +1524,12 @@ code {
       <!-- Kurz gehalten, weil dieser Absatz über der Falz steht. Alles,
            was hier länger würde, kostet Aufmerksamkeit an einer Stelle,
            an der der Besucher noch entscheidet. -->
-      <p class="geraet__fuss" data-text="probe.fuss">
-        Zwei Sinustöne im Browser. Was pulsiert, ist die Schwebung — zwei nahe
-        Töne löschen sich abwechselnd aus. So stimmt man Instrumente seit
-        Jahrhunderten: Man wartet, bis es aufhört. Der Tuner selbst verschiebt
-        den fertigen Klang, ohne das Tempo anzutasten.
+      <p class="geraet__fuss" data-html="probe.fuss">
+        Chopin, Nocturne op. 9 Nr. 2 — gemeinfrei. Umgestimmt wird sie hier von
+        demselben Rechenkern, der auch im Tuner sitzt: <strong>die Tonhöhe wandert,
+        das Tempo bleibt stehen</strong>. Deshalb steht dort 100 %, egal wohin du
+        ziehst. Die Anzeige nimmt an, die Aufnahme liege auf 440 — der Tuner auf
+        deinem Rechner rät nicht, er misst.
       </p>
     </div>
 
@@ -2476,194 +2477,166 @@ code {
 (() => {
   'use strict';
 
+  /* ═══ DIE PROBE ════════════════════════════════════════════════════
+
+     Hier stand bis zum 28.08.2026 ein Tongeber: zwei Sinustoene, deren
+     Schwebung man sah und hoerte. Sachlich richtig, handwerklich schoen —
+     und am Erzeugnis vorbei.
+
+     Sāmi-Ra: „Ist ja schoen, dass der Tongeber die Schwebung anzeigt,
+     aber was hat das mit dem Tuner zu tun? Der Tuner erzeugt keine
+     Schwebung. Deswegen empfinde ich das Teil als Irrefuehrung."
+
+     Er hat recht. Ein Werkzeug auf einer Landeseite muss das Erzeugnis
+     vorfuehren, nicht ein verwandtes Phaenomen. Jetzt laeuft echte Musik
+     durch DENSELBEN Rechenkern, der im Tuner sitzt — und der Besucher
+     zieht sie, waehrend sie spielt.
+
+     DIE DRITTE ZAHL IST DER BEWEIS. Sie steht auf 100 % und ruehrt sich
+     nicht, egal wohin man zieht. Genau das ist der Unterschied zu
+     playbackRate, mit dem die halbe Welt 432 Hz macht: Dort wandert das
+     Tempo mit. Eine Zahl, die sich nicht bewegt, ist hier die Aussage.
+
+     GELADEN WIRD ERST AUF DRUCK. Die 380 KiB Musik holt niemand, der nur
+     liest.
+     ═══════════════════════════════════════════════════════════════════ */
+
   const REFERENZ = 440;
   const schirm = document.getElementById('schirm');
   const strich = schirm.getContext('2d');
   const regler = document.getElementById('regler');
   const knopf  = document.getElementById('hoerknopf');
+  const klang  = document.getElementById('probeklang');
   const felder = {
-    hz:     document.getElementById('anzeigeHz'),
-    cent:   document.getElementById('anzeigeCent'),
-    schweb: document.getElementById('anzeigeSchweb'),
+    hz:    document.getElementById('anzeigeHz'),
+    cent:  document.getElementById('anzeigeCent'),
+    tempo: document.getElementById('anzeigeTempo'),
   };
   const stimmungen = [...document.querySelectorAll('.stimmung')];
 
   let hz = parseFloat(regler.value);
-  let hof = null, quelleA = null, quelleB = null, lautstaerke = null;
-  let laeuft = false;
+  let hof = null, quelle = null, kern = null, messer = null, lautstaerke = null;
+  let laeuft = false, kernBereit = false;
 
-  /* ── Die Woerter, die dieses Skript schreibt ──────────────────────
+  const wort = (el, name, ersatz) => {
+    const roh = el?.dataset?.[name];
+    if (!roh) return ersatz;
+    const teil = roh.split('|');
+    return teil.length > 1 ? teil.slice(1).join('|') : ersatz;
+  };
 
-     Sie stehen NICHT hier im Programmtext, sondern als data-Attribute an
-     den Elementen, die sie tragen. Scripts/baue-apps-sprachen.py setzt sie
-     beim Erzeugen der Sprachseite ein. Stuenden sie hier, spraeche die
-     Anzeige auf allen sieben Seiten deutsch — und zwar erst nach dem ersten
-     Zug am Regler, also genau dann, wenn niemand mehr hinschaut.
+  const zahl = (n, k) => n.toLocaleString(document.documentElement.lang || 'de',
+    { minimumFractionDigits: k, maximumFractionDigits: k });
 
-     Der Rueckfall in Klammern gilt fuer die deutsche Vorlage selbst, die
-     bei der oertlichen Entwicklung ohne Erzeuger geoeffnet wird. */
-  const wort = (el, name, ersatz) => el.dataset[name] || ersatz;
-
-  /* Das Dezimalzeichen ist Sprache, keine Schreibweise: "0,09" heisst auf
-     Englisch "0.09", und wer das verwechselt, liest das Tausendfache.
-     data-zahlformat am <html> traegt die Kennung dafuer — beim Arabischen
-     mit "-u-nu-latn", damit die Anzeige dieselben Ziffern benutzt wie die
-     Skala daneben. Begruendung steht im Erzeuger. */
-  const ZAHLFORMAT = document.documentElement.dataset.zahlformat || 'de';
-  const zahl = (n, s = 1) => n.toLocaleString(ZAHLFORMAT, {
-    minimumFractionDigits: s, maximumFractionDigits: s, useGrouping: false });
-  // Cent ist das logarithmische Mass fuer Tonhoehenabstand: 1200 je Oktave.
-  const cent = (a, b) => 1200 * Math.log2(a / b);
-
-  function zeigeWerte() {
-    const df = Math.abs(hz - REFERENZ);
-    const c  = cent(hz, REFERENZ);
-    felder.hz.innerHTML = `${zahl(hz)}<small>${wort(felder.hz, 'einheit', 'Hz')}</small>`;
-    felder.cent.innerHTML = `${c >= 0 ? '+' : '−'}${zahl(Math.abs(c))}`
-      + `<small>${wort(felder.cent, 'einheit', 'Cent')}</small>`;
-
-    const ruhig = df < 0.05;
-    felder.schweb.innerHTML = ruhig
-      ? wort(felder.schweb, 'ruhig', 'keine')
-      : `${zahl(df)}<small>${wort(felder.schweb, 'einheit', '/s')}</small>`;
-    felder.schweb.classList.toggle('ablesung__wert--ruhig', ruhig);
-    felder.cent.classList.toggle('ablesung__wert--ruhig', ruhig);
-
-    for (const s of stimmungen) {
-      s.setAttribute('aria-pressed',
-        String(Math.abs(parseFloat(s.dataset.hz) - hz) < 0.05));
-    }
+  function schreibeFelder() {
+    const cent = 1200 * Math.log2(hz / REFERENZ);
+    felder.hz.innerHTML   = zahl(hz, 1) + '<small>' + wort(felder.hz, 'einheit', 'Hz') + '</small>';
+    felder.cent.innerHTML = zahl(cent, 1) + '<small>' + wort(felder.cent, 'einheit', 'Cent') + '</small>';
+    // Steht fest. Das ist der Punkt.
+    felder.tempo.innerHTML = zahl(100, 1) + '<small>' + wort(felder.tempo, 'einheit', '%') + '</small>';
   }
 
-  async function tonAn() {
-    const Hof = window.AudioContext || window.webkitAudioContext;
-    if (!Hof) return false;
-    hof = hof || new Hof();
-    if (hof.state === 'suspended') await hof.resume();
-
-    lautstaerke = hof.createGain();
-    lautstaerke.gain.value = 0;
-    lautstaerke.connect(hof.destination);
-
-    quelleA = hof.createOscillator();
-    quelleB = hof.createOscillator();
-    quelleA.type = quelleB.type = 'sine';
-    quelleA.frequency.value = REFERENZ;
-    quelleB.frequency.value = hz;
-    quelleA.connect(lautstaerke); quelleB.connect(lautstaerke);
-    quelleA.start(); quelleB.start();
-    // Sanft aufblenden. Ein harter Einsatz knackt, und das klingt nach Fehler.
-    lautstaerke.gain.linearRampToValueAtTime(0.09, hof.currentTime + 0.25);
-    return true;
+  function setzeFaktor() {
+    if (kern) kern.parameters.get('faktor').value = hz / REFERENZ;
   }
-
-  function tonAus() {
-    if (!hof || !lautstaerke) return;
-    const jetzt = hof.currentTime;
-    lautstaerke.gain.cancelScheduledValues(jetzt);
-    lautstaerke.gain.setValueAtTime(lautstaerke.gain.value, jetzt);
-    lautstaerke.gain.linearRampToValueAtTime(0, jetzt + 0.15);
-    const a = quelleA, b = quelleB;
-    setTimeout(() => { try { a.stop(); b.stop(); } catch {} }, 220);
-    quelleA = quelleB = null;
-  }
-
-  function beschrifteKnopf() {
-    knopf.setAttribute('aria-pressed', String(laeuft));
-    knopf.textContent = laeuft
-      ? wort(knopf, 'aus', 'Ton ausschalten')
-      : wort(knopf, 'an',  'Ton einschalten');
-  }
-
-  knopf.addEventListener('click', async () => {
-    if (laeuft) { tonAus(); laeuft = false; }
-    else { laeuft = await tonAn(); }
-    beschrifteKnopf();
-  });
 
   function setzeHz(neu) {
     hz = Math.min(448, Math.max(415, neu));
     regler.value = String(hz);
-    // Gleiten statt springen: ein Sprung der Frequenz knackt hoerbar.
-    if (quelleB && hof) quelleB.frequency.setTargetAtTime(hz, hof.currentTime, 0.02);
-    zeigeWerte();
+    stimmungen.forEach(b => b.setAttribute('aria-pressed',
+      String(Math.abs(parseFloat(b.dataset.hz) - hz) < 0.05)));
+    schreibeFelder();
+    setzeFaktor();
   }
 
-  regler.addEventListener('input', () => setzeHz(parseFloat(regler.value)));
-  for (const s of stimmungen) {
-    s.addEventListener('click', () => setzeHz(parseFloat(s.dataset.hz)));
+  /* Der Rechenkern des Tuners als WebAssembly. Schlaegt er fehl, bleibt
+     die Probe stumm statt still falsch zu spielen: Ein Ausweichen ueber
+     playbackRate wuerde das Tempo verschieben — und damit ausgerechnet
+     das Gegenteil dessen vorfuehren, was hier behauptet wird. */
+  async function baueGraph() {
+    hof = new (window.AudioContext || window.webkitAudioContext)();
+    quelle = hof.createMediaElementSource(klang);
+    messer = hof.createAnalyser();
+    messer.fftSize = 1024;
+    messer.smoothingTimeConstant = 0.7;
+    lautstaerke = hof.createGain();
+    lautstaerke.gain.value = 0.9;
+
+    try {
+      const [, antwort] = await Promise.all([
+        hof.audioWorklet.addModule('/assets/lib/retuner-worklet.js'),
+        fetch('/assets/wasm/retuner.wasm'),
+      ]);
+      const bytes = await antwort.arrayBuffer();
+      kern = new AudioWorkletNode(hof, 'retuner',
+        { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
+      kern.port.postMessage({ art: 'wasm', bytes, frames: 128 }, [bytes]);
+      kernBereit = true;
+      quelle.connect(kern).connect(messer).connect(lautstaerke).connect(hof.destination);
+      setzeFaktor();
+    } catch {
+      kernBereit = false;
+      quelle.connect(messer).connect(lautstaerke).connect(hof.destination);
+      knopf.disabled = true;
+    }
   }
 
-  /*
-    Gezeichnet wird die HUELLKURVE der Summe, nicht die Summe selbst. Bei
-    440 Hz auf 1400 Pixeln laegen ueber dreihundert Schwingungen je Sekunde
-    im Bild — das ergaebe Moire und keine Aussage. Die Huellkurve ist genau
-    das, was das Ohr als Pulsieren wahrnimmt.
+  async function an() {
+    if (!hof) await baueGraph();
+    if (!kernBereit) return;
+    if (hof.state === 'suspended') await hof.resume();
+    try { await klang.play(); } catch { return; }
+    laeuft = true;
+    knopf.setAttribute('aria-pressed', 'true');
+    knopf.textContent = wort(knopf, 'aus', 'Musik ausschalten');
+    male();
+  }
 
-    0,9 Sekunden im Fenster: Bei 1,4 lagen elf Pulse nebeneinander, und elf
-    gleiche Boegen liest das Auge als Muster, nicht als Vorgang. Bei 0,9
-    sind es sieben — wenige genug, um sie zu zaehlen. Die Zahl ueber dem
-    Fenster und das, was man sieht, sollen dasselbe sein.
-  */
-  let t0 = null, angefordert = null;
-  const FENSTER = 0.9;
+  function aus() {
+    klang.pause();
+    laeuft = false;
+    knopf.setAttribute('aria-pressed', 'false');
+    knopf.textContent = wort(knopf, 'an', 'Musik einschalten');
+  }
+
+  /* Gezeichnet wird der Pegel der Musik, nicht eine Rechnung darueber.
+     Was man sieht, ist das, was man hoert — sonst waere das Fenster
+     Zierat. */
+  let angefordert = null;
   const ruhe = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  function male(zeit) {
-    if (t0 === null) t0 = zeit;
-    const t = (zeit - t0) / 1000;
+  function male() {
     const B = schirm.width, H = schirm.height, M = H / 2;
-    const df = Math.abs(hz - REFERENZ);
-
     strich.clearRect(0, 0, B, H);
     strich.strokeStyle = '#2A2B33';
     strich.lineWidth = 1;
     strich.beginPath(); strich.moveTo(0, M); strich.lineTo(B, M); strich.stroke();
 
-    // 0.36 statt 0.40: Bei voller Auslenkung schlug die Huellkurve sonst
-    // oben und unten an den Rahmen an, und was anschlaegt, sieht nach einem
-    // uebersteuerten Geraet aus.
-    const hoehe = H * 0.36;
-    const huelle = (x) => Math.abs(Math.cos(Math.PI * df * (t + (x / B) * FENSTER)));
-
-    strich.strokeStyle = 'rgba(76, 217, 115, 0.28)';
-    for (let x = 0; x < B; x += 2) {
-      const a = huelle(x) * hoehe;
-      strich.beginPath(); strich.moveTo(x, M - a); strich.lineTo(x, M + a); strich.stroke();
-    }
-
-    strich.lineWidth = 2;
-    strich.strokeStyle = df < 0.05 ? '#8B93A8' : '#7DE89A';
-    for (const vz of [-1, 1]) {
+    if (messer && laeuft) {
+      const daten = new Uint8Array(messer.fftSize);
+      messer.getByteTimeDomainData(daten);
+      strich.strokeStyle = '#4CD973';
+      strich.lineWidth = 1.6;
       strich.beginPath();
-      for (let x = 0; x <= B; x += 2) {
-        const y = M + vz * huelle(x) * hoehe;
-        x === 0 ? strich.moveTo(x, y) : strich.lineTo(x, y);
+      for (let i = 0; i < daten.length; i++) {
+        const x = i / (daten.length - 1) * B;
+        const y = M + (daten[i] - 128) / 128 * (H * 0.42);
+        i ? strich.lineTo(x, y) : strich.moveTo(x, y);
       }
       strich.stroke();
     }
-
-    /* Wer Bewegung abbestellt hat, bekommt EIN Standbild — nicht nichts.
-       Die Schwebung ist die Aussage der Seite; sie ganz wegzulassen hiesse,
-       diesen Menschen die Erklaerung vorzuenthalten. */
-    if (!ruhe.matches) angefordert = requestAnimationFrame(male);
+    if (laeuft && !ruhe.matches) angefordert = requestAnimationFrame(male);
+    else if (angefordert) { cancelAnimationFrame(angefordert); angefordert = null; }
   }
 
-  zeigeWerte();
-  requestAnimationFrame(male);
+  regler.addEventListener('input', () => setzeHz(parseFloat(regler.value)));
+  stimmungen.forEach(b => b.addEventListener('click',
+    () => setzeHz(parseFloat(b.dataset.hz))));
+  knopf.addEventListener('click', () => (laeuft ? aus() : an()));
+  klang.addEventListener('pause', () => { if (laeuft) aus(); });
 
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      if (angefordert) cancelAnimationFrame(angefordert);
-      angefordert = null;
-      if (laeuft) {
-        tonAus(); laeuft = false;
-        beschrifteKnopf();
-      }
-    } else if (!angefordert) {
-      t0 = null; requestAnimationFrame(male);
-    }
-  });
+  setzeHz(hz);
+  male();
 })();
 </script>
 <script>
