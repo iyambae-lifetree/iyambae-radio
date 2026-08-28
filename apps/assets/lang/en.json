@@ -220,5 +220,18 @@
   "fremd.7.was": "Extensive private collection on pitch history and practice.",
   "probe.marke.tempo": "Tempo",
   "probe.einheit.tempo": "%",
-  "probe.wert.tempo": "100.0<small>%</small>"
+  "probe.wert.tempo": "100.0<small>%</small>",
+  "wege.eyebrow": "To get your bearings",
+  "wege.titel": "Three ways to <em>432 Hz</em>.",
+  "wege.vorwort": "There are three ways to enjoy 432 Hz. They do not exclude each other — they answer different questions.",
+  "wege.1.titel": "<b>1</b> The Tuner — system-wide",
+  "wege.1.was": "Computers only. Every app, every service, without touching a single file.",
+  "wege.1.stand": "Where we stand: we are waiting for Apple’s Developer ID. It cannot go into the App Store — it sits too deep in the system for that. Through this site it can.",
+  "wege.2.titel": "<b>2</b> Players that convert as they play",
+  "wege.2.was": "With any DRM-free source, on the phone too. The catch: you have to own the music and have it stored somewhere.",
+  "wege.2.stand": "For radio, <a href=\"https://iyambae.fm\">iyambae.fm</a> covers that need for now. Our own player is planned — but only once we know what we can do differently and better.",
+  "wege.3.titel": "<b>3</b> Converters — retuning files for good",
+  "wege.3.was": "Only with DRM-free material, and honestly only worth it for “lossless”: .flac or .wav.",
+  "wege.3.stand": "What was once heavily compressed would have to be compressed a second time when converted. With “lossless” the sound is <strong>recalculated once — but not compressed a second time</strong>. That is the difference.",
+  "wege.schluss": "For now the focus is on the Tuner and the website. After the test phase we want to offer the software at a fair price. <strong>It is time everyone had the freedom to hear music in the tuning they chose themselves.</strong> If that isn’t possible in daily life — telephones, doorbells, church bells, sirens, shop music — then at least on your own devices."
 }

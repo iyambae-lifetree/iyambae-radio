@@ -220,5 +220,18 @@
   "fremd.7.was": "Amplia colección privada sobre historia y práctica del diapasón.",
   "probe.marke.tempo": "Tempo",
   "probe.einheit.tempo": "%",
-  "probe.wert.tempo": "100,0<small>%</small>"
+  "probe.wert.tempo": "100,0<small>%</small>",
+  "wege.eyebrow": "Para orientarse",
+  "wege.titel": "Tres caminos hacia <em>432 Hz</em>.",
+  "wege.vorwort": "Hay tres maneras de disfrutar los 432 Hz. No se excluyen — responden a preguntas distintas.",
+  "wege.1.titel": "<b>1</b> El Tuner — en todo el sistema",
+  "wege.1.was": "Solo en ordenadores. Cualquier aplicación, cualquier servicio, sin tocar un solo archivo.",
+  "wege.1.stand": "Dónde estamos: esperamos el Developer ID de Apple. No puede ir a la App Store — está demasiado adentro del sistema. Por esta página, sí.",
+  "wege.2.titel": "<b>2</b> Reproductores que convierten al sonar",
+  "wege.2.was": "Con cualquier fuente sin DRM, también en el móvil. El inconveniente: hay que poseer la música y tenerla guardada.",
+  "wege.2.stand": "En cuanto a la radio, <a href=\"https://iyambae.fm\">iyambae.fm</a> cubre esa necesidad por ahora. Un reproductor propio está previsto — pero solo cuando sepamos qué podemos hacer distinto y mejor.",
+  "wege.3.titel": "<b>3</b> Convertidores — reafinar archivos para siempre",
+  "wege.3.was": "Solo con material sin DRM, y sinceramente solo merece la pena con «lossless»: .flac o .wav.",
+  "wege.3.stand": "Lo que ya se comprimió mucho tendría que comprimirse una segunda vez al convertirlo. Con «lossless» el sonido se <strong>recalcula una vez — pero no se comprime otra vez</strong>. Ahí está la diferencia.",
+  "wege.schluss": "De momento el foco está en el Tuner y en la web. Tras la fase de pruebas queremos ofrecer el programa a un precio justo. <strong>Ya es hora de que cada cual tenga la libertad de oír la música en la afinación que él mismo eligió.</strong> Si en el día a día no se puede — teléfonos, timbres, campanas, sirenas, música de centro comercial —, al menos en los propios aparatos."
 }

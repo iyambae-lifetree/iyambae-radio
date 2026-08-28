@@ -220,5 +220,18 @@
   "fremd.7.was": "Ampia raccolta privata su storia e pratica del diapason.",
   "probe.marke.tempo": "Tempo",
   "probe.einheit.tempo": "%",
-  "probe.wert.tempo": "100,0<small>%</small>"
+  "probe.wert.tempo": "100,0<small>%</small>",
+  "wege.eyebrow": "Per orientarsi",
+  "wege.titel": "Tre vie verso i <em>432 Hz</em>.",
+  "wege.vorwort": "Ci sono tre modi di godersi i 432 Hz. Non si escludono — rispondono a domande diverse.",
+  "wege.1.titel": "<b>1</b> Il Tuner — su tutto il sistema",
+  "wege.1.was": "Solo su computer. Ogni applicazione, ogni servizio, senza toccare un file.",
+  "wege.1.stand": "A che punto siamo: aspettiamo il Developer ID di Apple. Nell’App Store non può andare — sta troppo in profondità nel sistema. Da questo sito sì.",
+  "wege.2.titel": "<b>2</b> Lettori che convertono mentre suonano",
+  "wege.2.was": "Con qualsiasi sorgente senza DRM, anche sul telefono. Il rovescio: bisogna possedere la musica e averla salvata da qualche parte.",
+  "wege.2.stand": "Per la radio, <a href=\"https://iyambae.fm\">iyambae.fm</a> copre per ora questa esigenza. Un lettore nostro è previsto — ma solo quando sapremo che cosa possiamo fare di diverso e di meglio.",
+  "wege.3.titel": "<b>3</b> Convertitori — riaccordare i file una volta per tutte",
+  "wege.3.was": "Solo con materiale senza DRM, e sinceramente ne vale la pena solo con «lossless»: .flac o .wav.",
+  "wege.3.stand": "Ciò che è già stato compresso molto dovrebbe essere compresso una seconda volta nella conversione. Con «lossless» il suono viene <strong>ricalcolato una volta — ma non compresso una seconda volta</strong>. Qui sta la differenza.",
+  "wege.schluss": "Per ora il centro è il Tuner e il sito. Dopo la fase di prova vogliamo offrire il programma a un prezzo onesto. <strong>È tempo che ciascuno abbia la libertà di ascoltare la musica nell’intonazione che ha scelto lui stesso.</strong> Se nella vita di tutti i giorni non si può — telefoni, campanelli, campane, sirene, musica dei negozi —, almeno sui propri apparecchi."
 }

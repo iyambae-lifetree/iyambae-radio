@@ -220,5 +220,18 @@
   "fremd.7.was": "Vaste collection privée sur l’histoire et la pratique du diapason.",
   "probe.marke.tempo": "Tempo",
   "probe.einheit.tempo": "%",
-  "probe.wert.tempo": "100,0<small>%</small>"
+  "probe.wert.tempo": "100,0<small>%</small>",
+  "wege.eyebrow": "Pour s’y retrouver",
+  "wege.titel": "Trois chemins vers <em>432 Hz</em>.",
+  "wege.vorwort": "Il y a trois façons de profiter du 432 Hz. Elles ne s’excluent pas — elles répondent à des questions différentes.",
+  "wege.1.titel": "<b>1</b> Le Tuner — à l’échelle du système",
+  "wege.1.was": "Sur ordinateur seulement. Toutes les applications, tous les services, sans toucher un seul fichier.",
+  "wege.1.stand": "Où nous en sommes : nous attendons le Developer ID d’Apple. Impossible de le mettre sur l’App Store — il siège trop profondément dans le système. Par ce site, oui.",
+  "wege.2.titel": "<b>2</b> Des lecteurs qui convertissent en jouant",
+  "wege.2.was": "Avec toute source sans DRM, sur téléphone aussi. Le hic : il faut posséder la musique et l’avoir stockée quelque part.",
+  "wege.2.stand": "Pour la radio, <a href=\"https://iyambae.fm\">iyambae.fm</a> couvre ce besoin pour l’instant. Un lecteur maison est prévu — mais seulement quand nous saurons ce que nous pouvons faire autrement et mieux.",
+  "wege.3.titel": "<b>3</b> Des convertisseurs — réaccorder les fichiers pour de bon",
+  "wege.3.was": "Uniquement avec du matériel sans DRM, et franchement seulement pour du « lossless » : .flac ou .wav.",
+  "wege.3.stand": "Ce qui a déjà été fortement compressé devrait l’être une seconde fois à la conversion. En « lossless », le son est <strong>recalculé une fois — mais pas compressé une seconde fois</strong>. Voilà la différence.",
+  "wege.schluss": "Pour l’instant, l’accent est mis sur le Tuner et le site. Après la phase de test, nous voulons proposer le logiciel à un prix juste. <strong>Il est temps que chacun ait la liberté d’entendre la musique dans le diapason qu’il a choisi lui-même.</strong> Si ce n’est pas possible au quotidien — sonneries, sonnettes, cloches, sirènes, musique des magasins —, alors au moins sur ses propres appareils."
 }
