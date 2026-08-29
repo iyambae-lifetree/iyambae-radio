@@ -9,7 +9,7 @@
   "auf.mac.tat": "Télécharger pour macOS",
   "auf.mac.zusatz": "DMG · 1,3 Mo · à partir de macOS 14.4 · sans compte · version d’essai jusqu’au 1.10.2026",
   "auf.linux.tat": "Télécharger pour Linux",
-  "auf.linux.zusatz": "DEB · 43 Ko · Debian 13 · PipeWire 0.3.60 ou plus",
+  "auf.linux.zusatz": "DEB · 43 Ko · Debian 13 · PipeWire 0.3.60+ · pas encore d’interface, s’utilise en ligne de commande",
   "auf.win.tat": "Télécharger pour Windows — réaccorder des fichiers",
   "auf.win.zusatz": "EXE · 68 Mo · Windows 10 et 11 · le son du système viendra, il lui faut un périphérique de sortie virtuel.",
   "auf.mobil.zusatz": "Sur un téléphone, aucune application ne livre le son de Spotify ou de Netflix.",

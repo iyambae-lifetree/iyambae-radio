@@ -37,7 +37,7 @@
   "auf.win.tat": "Für Windows laden — Dateien umstimmen",
   "auf.win.zusatz": "EXE · 68 MB · Windows 10 und 11 · Systemton kommt noch, er braucht ein virtuelles Ausgabegerät.",
   "auf.linux.tat": "Für Linux laden",
-  "auf.linux.zusatz": "DEB · 43 KB · Debian 13 · PipeWire ab 0.3.60",
+  "auf.linux.zusatz": "DEB · 43 KB · Debian 13 · PipeWire ab 0.3.60 · noch ohne Oberfläche, Bedienung über die Kommandozeile",
   "auf.mobil.zusatz": "Am Telefon gibt keine App den Ton von Spotify oder Netflix heraus.",
   "bild.eyebrow": "So sieht sie aus",
   "bild.alt": "Das Fenster des IYAMBAE Tuners unter Windows: eine Reihe Kammertöne von 415 bis 445 Hertz, die gewählte Stimmung 432 im Farbklang hervorgehoben, darunter eine Fläche zum Ablegen von Musikdateien.",

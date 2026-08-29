@@ -9,7 +9,7 @@
   "auf.mac.tat": "Scarica per macOS",
   "auf.mac.zusatz": "DMG · 1,3 MB · da macOS 14.4 · senza account · versione di prova fino all’1.10.2026",
   "auf.linux.tat": "Scarica per Linux",
-  "auf.linux.zusatz": "DEB · 43 KB · Debian 13 · PipeWire 0.3.60 o successivo",
+  "auf.linux.zusatz": "DEB · 43 KB · Debian 13 · PipeWire dalla 0.3.60 · ancora senza interfaccia, si usa da riga di comando",
   "auf.win.tat": "Scarica per Windows — riaccordare file",
   "auf.win.zusatz": "EXE · 68 MB · Windows 10 e 11 · l’audio di sistema arriverà, gli serve un dispositivo di uscita virtuale.",
   "auf.mobil.zusatz": "Sul telefono nessuna app consegna l'audio di Spotify o di Netflix.",

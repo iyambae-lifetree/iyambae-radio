@@ -9,7 +9,7 @@
   "auf.mac.tat": "Download for macOS",
   "auf.mac.zusatz": "DMG · 1.3 MB · macOS 14.4 and up · no account · test build until 1 Oct 2026",
   "auf.linux.tat": "Download for Linux",
-  "auf.linux.zusatz": "DEB · 43 KB · Debian 13 · PipeWire 0.3.60 and up",
+  "auf.linux.zusatz": "DEB · 43 KB · Debian 13 · PipeWire 0.3.60+ · no interface yet, operated from the command line",
   "auf.win.tat": "Download for Windows — retune files",
   "auf.win.zusatz": "EXE · 68 MB · Windows 10 and 11 · system audio still to come, it needs a virtual output device.",
   "auf.mobil.zusatz": "On a phone, no app hands out the sound of Spotify or Netflix.",
