@@ -73,7 +73,7 @@ function meldeAbspielfehler(senderId, zweig, code) {
   miss('abspielfehler', { sender: senderId, zweig, code });
 }
 
-import { beobachteTitel, haltAn as haltTitelAn } from './lib/titel.mjs';
+import { beobachteTitel, haltAn as haltTitelAn, saeubere } from './lib/titel.mjs';
 import { ladeSprache, uebersetzeDokument, baueSprachumschalter, t, sprache, setzeZahlen }
   from './lib/sprache.mjs';
 
@@ -214,6 +214,70 @@ const speicher = {
 // Beim Laden gemerkt: Ein weitergegebener Link steht hinter dem
 // Rautezeichen, und wer ihn spaeter auswerten will, findet ihn dort nicht
 // mehr zuverlaessig. Also gleich festhalten.
+/*
+ ═══ ID3 aus dem HLS-Strom lesen ═══════════════════════════════════
+
+ Sāmi-Ra, 29.08.2026, mit einem Bild von SomaFM Groove Salad:
+ „Die Trackangabe ist nicht ganz sauber."
+
+ Dastand:
+
+   Fairyland TPE1 Lemongrass TALB Klassik Lounge Werk 2 WXXX
+   artworkURL_640x https://somafm.com/logos/512/groovesalad512.
+
+ Das sind ROHE FELDNAMEN. TPE1 ist der Interpret, TALB das Album, WXXX
+ eine Adresse. Der alte Code hat den ganzen Block als Text gelesen, alles
+ VOR `TIT2` abgeschnitten — und den ganzen Rest stehen lassen.
+
+ Ein Suchmuster ueber ein Binaerformat. Es hat bei den Sendern
+ funktioniert, die nur einen Titel mitschicken, und ist bei allen
+ aufgeflogen, die mehr mitschicken.
+
+ Jetzt werden die Felder gelesen, wie sie gebaut sind: Kopf, dann Rahmen
+ fuer Rahmen mit Kennung, Laenge und Inhalt. Genommen wird TIT2 und, wenn
+ vorhanden, TPE1 davor. Alles andere bleibt liegen.
+*/
+function id3Text(roh) {
+  if (!roh || !roh.length) return '';
+  const art = roh[0];
+  const kodierung = art === 1 ? 'utf-16' : art === 2 ? 'utf-16be'
+                  : art === 3 ? 'utf-8'  : 'iso-8859-1';
+  let text;
+  try { text = new TextDecoder(kodierung, { fatal: false }).decode(roh.subarray(1)); }
+  catch { text = new TextDecoder('utf-8', { fatal: false }).decode(roh.subarray(1)); }
+  return text.replace(/\0+$/, '').replace(/[\x00-\x1f]+/g, ' ').trim();
+}
+
+function ausId3(bytes, sendername) {
+  if (!(bytes instanceof Uint8Array) || bytes.length < 10) return null;
+  if (bytes[0] !== 0x49 || bytes[1] !== 0x44 || bytes[2] !== 0x33) return null;   // "ID3"
+
+  const haupt = bytes[3];
+  const synchron = (a, b, c, d) => (a << 21) | (b << 14) | (c << 7) | d;
+  const ende = Math.min(bytes.length, 10 + synchron(bytes[6], bytes[7], bytes[8], bytes[9]));
+
+  let p = 10, titel = '', wer = '';
+  while (p + 10 <= ende) {
+    const kennung = String.fromCharCode(bytes[p], bytes[p + 1], bytes[p + 2], bytes[p + 3]);
+    if (!/^[A-Z][A-Z0-9]{3}$/.test(kennung)) break;
+    /*
+     Fassung 2.4 zaehlt die Laenge synchronsicher (sieben Bit je Byte),
+     2.3 gewoehnlich. Wer das verwechselt, liest ab dem ersten Rahmen
+     ueber 128 Byte an der falschen Stelle weiter.
+    */
+    const laenge = haupt >= 4
+      ? synchron(bytes[p + 4], bytes[p + 5], bytes[p + 6], bytes[p + 7])
+      : ((bytes[p + 4] << 24) | (bytes[p + 5] << 16) | (bytes[p + 6] << 8) | bytes[p + 7]) >>> 0;
+    p += 10;
+    if (laenge <= 0 || p + laenge > ende) break;
+    if (kennung === 'TIT2') titel = id3Text(bytes.subarray(p, p + laenge));
+    else if (kennung === 'TPE1') wer = id3Text(bytes.subarray(p, p + laenge));
+    p += laenge;
+  }
+  if (!titel) return null;
+  return saeubere(wer ? `${wer} — ${titel}` : titel, sendername);
+}
+
 const GETEILTE_PLATTEN = (/[#&]platten=([a-z0-9.\-]+)/i.exec(location.hash) || [])[1] || '';
 /*
  Ein EINZELNER weitergegebener Sender — die haeufigere Geste.
@@ -581,10 +645,8 @@ class AudioEngine {
       */
       this._hls.on(Hls.Events.FRAG_PARSING_METADATA, (_, daten) => {
         for (const probe of daten.samples ?? []) {
-          const text = new TextDecoder('utf-8', { fatal: false }).decode(probe.data ?? new Uint8Array());
-          const titel = (/TIT2|StreamTitle/.test(text) ? text : '')
-            .replace(/[\x00-\x1f]+/g, ' ').replace(/^.*?(TIT2|StreamTitle)/, '').trim();
-          if (titel.length > 2) this._rufe('titel', titel.slice(0, 120));
+          const titel = ausId3(probe.data, sender.name);
+          if (titel) this._rufe('titel', titel.slice(0, 120));
         }
       });
     } catch {

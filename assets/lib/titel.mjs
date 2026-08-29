@@ -87,7 +87,12 @@ function ohneAnhang(t) {
   return k.length >= 3 ? k : t;
 }
 
-function sauber(x, name) {
+/*
+ Auch von aussen gebraucht: Die Titel aus dem HLS-Strom kommen nicht durch
+ dieses Modul, sollen aber dieselbe Saeuberung bekommen. Sonst saehe
+ dieselbe Zeile anders aus, je nachdem auf welchem Weg sie kam.
+*/
+export function saeubere(x, name) {
   if (typeof x !== 'string') return null;
   // Erst der Anhang, dann der Name: andersherum bliebe von
   // „NDR Kultur - www.ndr.de/kultur" die nackte Adresse stehen.
