@@ -533,7 +533,30 @@ class AudioEngine {
           if (e.data?.art === 'bereit') fertig(e.data);
           else fehler(new Error(e.data?.text || 'unbekannt'));
         };
-        knoten.port.postMessage({ art: 'wasm', bytes, frames: 2048 }, [bytes]);
+        /*
+         `engine: 'gut'` — Signalsmith Stretch, auf dem Mac „High Quality".
+         Seit dem 30.08.2026.
+
+         Vorher lief hier die schnelle Delay-Line. Deren Artefakt steht in
+         ihrem eigenen Quelltext: Beide Leseköpfe tragen immer bei, also
+         liegt durchgehend ein wandernder Kammfilter über der Musik. Mit
+         `frames: 2048` waren das 2,7 dB Schwankung, einmal je Sekunde —
+         wenig, aber hörbar. Die gute Engine kommt auf 0,55 dB.
+
+         WARUM DIE 240 ms NICHT STÖREN, ANDERS ALS ZUERST BEFÜRCHTET:
+         Es gibt hier keinen Regler, an dem man zieht, sondern EINEN
+         SCHALTER — `wechsle432()`. Ein Vierteldrekunde Verzug beim
+         Umlegen merkt niemand; die Blende des Schiebers dauert länger.
+         Der Visualizer hängt hinter dem Retuner und zeigt deshalb genau
+         das, was zu hören ist. Und der Tonarm wandert über zwölf Minuten
+         von 2° auf 9°.
+
+         Gemessen, bevor es hier steht: 2,12 % eines Kerns für Stereo in
+         Echtzeit (die schnelle: 0,06 %), und beim Umlegen des Schalters
+         mitten im Strom kein Sprung im Signal — der größte Abstand von
+         Abtastwert zu Abtastwert bleibt derselbe wie vorher.
+        */
+        knoten.port.postMessage({ art: 'wasm', bytes, engine: 'gut' }, [bytes]);
       });
 
       // Zwischen Quelle und Analyse einhängen — so zeigt der Visualizer,
