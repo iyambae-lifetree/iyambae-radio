@@ -1,0 +1,194 @@
+# Bauen und ausliefern, sobald etwas auf main landet.
+#
+# WARUM ES DIESE DATEI GIBT
+#
+# Sie fehlte, und das hat gekostet. Am 26.08.2026 blieb die Auslieferung
+# stehen; am 28.08. standen sechs Commits auf main und nicht auf iyambae.fm,
+# am 29.08. schon wieder fuenf — darunter eine Seite, die ein Leistensymbol
+# versprach, das im Paket nicht liegt. Gemeldet hat es jedes Mal jemand
+# anders, nicht wir. Vorgang 432hz-radio#14.
+#
+# Von Hand nachholen heisst: Es faellt erst auf, wenn jemand hinsieht. Diese
+# Datei sieht bei jedem Push hin.
+#
+# DER WEG — ACR, NICHT GHCR
+#
+# Gebaut wird serverseitig in der Azure Container Registry. Kein Docker im
+# Laeufer, kein Registry-Token. Der ghcr-Weg ist tot: Das vorhandene
+# GitHub-Token traegt kein `write:packages`, und das faellt erst beim Push
+# auf, nicht beim Bauen.
+#
+# ANMELDUNG OHNE GEHEIMNIS
+#
+# OIDC statt hinterlegtem Passwort. GitHub stellt fuer jeden Lauf ein kurz
+# gueltiges Token aus, Entra vertraut ihm fuer genau dieses Repository und
+# genau diesen Zweig. Es gibt also kein Geheimnis, das ablaufen, verrutschen
+# oder in ein Protokoll geraten koennte.
+#
+# Die einmalige Einrichtung steht in `deploy/AUSLIEFERUNG-EINRICHTEN.md`.
+# Ohne sie schlaegt der Anmeldeschritt fehl — mit einer klaren Meldung, nicht
+# stillschweigend.
+
+name: Ausliefern
+
+on:
+  push:
+    branches: [main]
+    # Aenderungen, die das Abbild nicht beruehren, loesen keinen Bau aus.
+    # OFFEN.md oder ein README zu aendern soll nicht drei Minuten Rechenzeit
+    # und eine neue Ueberarbeitung kosten.
+    paths-ignore:
+      - '**/*.md'
+      - '.gitignore'
+      - '.github/ISSUE_TEMPLATE/**'
+  # Von Hand ausloesbar — fuer den Fall, dass eine Auslieferung wiederholt
+  # werden muss, ohne dass sich etwas geaendert hat.
+  workflow_dispatch:
+
+# Fuer OIDC noetig. `contents: read` steht ausdruecklich da, damit das Token
+# nicht mehr darf als lesen.
+permissions:
+  id-token: write
+  contents: read
+
+# Zwei Auslieferungen gleichzeitig wuerden sich um dieselbe Ueberarbeitung
+# streiten. Der zweite Lauf wartet; ein dritter loest den zweiten ab, weil
+# nur der letzte Stand zaehlt. Der laufende wird NICHT abgebrochen — ein
+# halb ausgeliefertes Abbild ist schlimmer als eine Minute Wartezeit.
+concurrency:
+  group: ausliefern
+  cancel-in-progress: false
+
+env:
+  REGISTRIERUNG: criyambaejdgjecajzb
+  RESSOURCENGRUPPE: iyambae
+  ABBILD: iyambae-radio
+  ANWENDUNG: ca-iyambae-web
+  # Die App hat zwei Container, `web` und `konto`. Ohne diesen Namen bricht
+  # `containerapp update` mehrdeutig ab — das hat am 28.08. einen Anlauf
+  # gekostet.
+  CONTAINER: web
+
+jobs:
+  ausliefern:
+    runs-on: ubuntu-latest
+    # Drei Minuten sind der Normalfall (Bau 40 s, Ueberarbeitung 60 s). Zehn
+    # heisst: Es haengt, und ein haengender Lauf soll nicht stundenlang eine
+    # Auslieferung blockieren, die danach kommt.
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Anmelden
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Abbild bauen
+        # Serverseitig in der ACR. Der Laeufer schickt nur den Quellbaum hin.
+        #
+        # Der Bau prueft sich selbst: Stufe 1 des Dockerfiles laesst
+        # `baue-sprachen.py` und `baue-apps-sprachen.py` laufen, und die
+        # brechen ab, wenn der Zerleger die Vorlage nicht zeichengenau
+        # wiedergibt. Eine kaputte Uebersetzung kommt also gar nicht erst
+        # bis hierher.
+        run: |
+          az acr build \
+            --registry "$REGISTRIERUNG" \
+            --resource-group "$RESSOURCENGRUPPE" \
+            --image "$ABBILD:${{ github.sha }}" \
+            --image "$ABBILD:latest" \
+            .
+
+      - name: Ueberarbeitung setzen
+        id: setzen
+        run: |
+          az containerapp update \
+            --name "$ANWENDUNG" \
+            --resource-group "$RESSOURCENGRUPPE" \
+            --container-name "$CONTAINER" \
+            --image "$REGISTRIERUNG.azurecr.io/$ABBILD:${{ github.sha }}" \
+            --output none
+
+          UEBERARBEITUNG="$(az containerapp show \
+            --name "$ANWENDUNG" --resource-group "$RESSOURCENGRUPPE" \
+            --query 'properties.latestRevisionName' -o tsv)"
+          echo "ueberarbeitung=$UEBERARBEITUNG" >> "$GITHUB_OUTPUT"
+          echo "Neue Ueberarbeitung: $UEBERARBEITUNG"
+
+      - name: Gesund und im Verkehr?
+        # Der Befehl oben kommt zurueck, sobald Azure den Auftrag angenommen
+        # hat — nicht, wenn die Ueberarbeitung wirklich laeuft. Ohne diese
+        # Probe meldete der Lauf Erfolg, waehrend der Container noch startet
+        # oder in einer Startschleife haengt.
+        run: |
+          for i in $(seq 1 30); do
+            LAGE="$(az containerapp revision show \
+              --name "$ANWENDUNG" --resource-group "$RESSOURCENGRUPPE" \
+              --revision "${{ steps.setzen.outputs.ueberarbeitung }}" \
+              --query '{gesund:properties.healthState,verkehr:properties.trafficWeight,laeuft:properties.runningState}' \
+              -o tsv)"
+            echo "  $LAGE"
+            case "$LAGE" in
+              Healthy*100*) echo "Ueberarbeitung ist gesund und traegt den Verkehr."; exit 0 ;;
+              Unhealthy*)   echo "FEHLER: Ueberarbeitung meldet Unhealthy."; exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "FEHLER: Nach fuenf Minuten weder gesund noch im Verkehr."
+          exit 1
+
+      - name: Nachsehen, was wirklich ausgeliefert wurde
+        # Messen, nicht annehmen. Diese Probe hat am 28.08. den Unterschied
+        # zwischen „Befehl lief durch" und „liegt wirklich live" gemacht:
+        # Der Statuscode allein sagt nichts, denn fehlende Dateien antworten
+        # auf dieser Seite mit 200 und HTML (Vorgang #11).
+        #
+        # Deshalb wird die Byte-Zahl gegen den Quellbaum gehalten. Weicht sie
+        # ab, liegt ein anderer Stand aus, als gerade gebaut wurde.
+        run: |
+          set -u
+          FEHLER=0
+          pruefe() {
+            local pfad="$1" datei="$2"
+            local erwartet groesse code
+            erwartet="$(stat -c%s "$datei")"
+            code="$(curl -fsSL -o /tmp/probe.bin -w '%{http_code}' "$pfad")" || code=000
+            groesse="$(stat -c%s /tmp/probe.bin 2>/dev/null || echo 0)"
+            if [ "$code" = "200" ] && [ "$groesse" = "$erwartet" ]; then
+              printf '  ok    %-52s %s Bytes\n' "$pfad" "$groesse"
+            else
+              printf '  FEHLT %-52s %s statt %s Bytes (HTTP %s)\n' \
+                     "$pfad" "$groesse" "$erwartet" "$code"
+              FEHLER=1
+            fi
+          }
+
+          pruefe https://apps.iyambae.fm/assets/wasm/retuner.wasm  apps/assets/wasm/retuner.wasm
+          pruefe https://iyambae.fm/assets/wasm/retuner.wasm       assets/wasm/retuner.wasm
+
+          # Die sieben Sprachseiten entstehen erst im Bau, es gibt also keine
+          # Datei zum Vergleichen. Hier zaehlt, dass sie ueberhaupt kommen und
+          # nicht die Sprachweiche im Kreis schickt.
+          for L in de en fr es it ja ar; do
+            CODE="$(curl -fsS -o /dev/null -w '%{http_code}' "https://apps.iyambae.fm/$L/")" || CODE=000
+            [ "$CODE" = "200" ] || { echo "  FEHLT apps.iyambae.fm/$L/ (HTTP $CODE)"; FEHLER=1; }
+          done
+          echo "  ok    sieben Sprachseiten antworten"
+
+          exit $FEHLER
+
+      - name: Wenn es schiefging, sagen wo
+        if: failure()
+        run: |
+          echo "Die Auslieferung ist nicht durchgelaufen."
+          echo "Live steht weiter die vorige Ueberarbeitung — Azure schaltet"
+          echo "den Verkehr erst um, wenn die neue gesund ist."
+          echo
+          az containerapp revision list \
+            --name "$ANWENDUNG" --resource-group "$RESSOURCENGRUPPE" \
+            --query "[?properties.active].{Name:name,Gesund:properties.healthState,Verkehr:properties.trafficWeight}" \
+            -o table || true
