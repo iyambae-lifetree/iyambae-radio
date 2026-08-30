@@ -31,7 +31,7 @@
   "probe.st.440": "ISO 16",
   "probe.st.443": "D · A heute",
   "probe.st.445": "Karajan",
-  "probe.fuss": "Chopin, Nocturne op. 9 Nr. 2 — gemeinfrei. Umgestimmt wird sie hier von\n        demselben Rechenkern, der auch im Tuner sitzt: <strong>die Tonhöhe wandert,\n        das Tempo bleibt stehen</strong>. Deshalb steht dort 100 %, egal wohin du\n        ziehst. Die Anzeige nimmt an, die Aufnahme liege auf 440 — der Tuner auf\n        deinem Rechner rät nicht, er misst.",
+  "probe.fuss": "Chopin, Nocturne op. 9 Nr. 2 — gemeinfrei. Umgestimmt wird sie hier von\n        demselben Rechenkern, der auch im Tuner sitzt, und zwar in seiner besten\n        Stufe: <strong>die Tonhöhe wandert, das Tempo bleibt stehen</strong>.\n        Deshalb steht dort 100 %, egal wohin du ziehst. Die Anzeige nimmt an, die\n        Aufnahme liege auf 440 — der Tuner auf deinem Rechner rät nicht, er misst.",
   "auf.mac.tat": "Für macOS laden",
   "auf.mac.zusatz": "DMG · 1,3 MB · ab macOS 14.4 · kein Konto · Testfassung bis 31.10.2026",
   "auf.win.tat": "Windows — noch nicht zum Ausprobieren",

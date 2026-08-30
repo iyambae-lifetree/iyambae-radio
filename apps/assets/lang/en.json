@@ -35,7 +35,7 @@
   "probe.st.440": "ISO 16",
   "probe.st.443": "DE · AT today",
   "probe.st.445": "Karajan",
-  "probe.fuss": "Chopin, Nocturne op. 9 no. 2 — public domain. It is retuned here by the same signal core that sits in the Tuner: <strong>the pitch moves, the tempo stays put</strong>. That is why it reads 100 %, wherever you drag. The display assumes the recording sits at 440 — the Tuner on your machine does not assume, it measures.",
+  "probe.fuss": "Chopin, Nocturne op. 9 no. 2 — public domain. It is retuned here by the same signal core that sits in the Tuner, and at its best setting: <strong>the pitch moves, the tempo stays put</strong>. That is why it says 100 %, wherever you drag. The display assumes the recording sits at 440 — the Tuner on your own machine does not assume, it measures.",
   "bild.eyebrow": "This is how it looks",
   "bild.alt": "The IYAMBAE Tuner’s menu-bar panel on macOS: at the top the switch that turns it on and off, below it the chosen pitch of 432 Hz as the Verdi tuning, then the measured pitch of the music that is playing — 439.7 Hz at 97 per cent confidence — and the correction worked out from it.",
   "bild.hinweis": "The Mac version 0.20.1, taken with music playing. <strong>The green figure is measured, not assumed:</strong> the Tuner hears what the recording actually sits on and works from there to 432 — not from 440, where it only usually sits.",

@@ -35,7 +35,7 @@
   "probe.st.440": "ISO 16",
   "probe.st.443": "DE · AT hoy",
   "probe.st.445": "Karajan",
-  "probe.fuss": "Chopin, Nocturno op. 9 n.º 2 — dominio público. Aquí se reafina con el mismo núcleo de cálculo que lleva el Tuner: <strong>la altura se mueve, el tempo se queda</strong>. Por eso pone 100 %, arrastre a donde arrastre. La indicación supone que la grabación está en 440 — el Tuner de su ordenador no supone, mide.",
+  "probe.fuss": "Chopin, Nocturno op. 9 n.º 2 — dominio público. Aquí la reafina el mismo núcleo de cálculo que lleva el Tuner, y en su mejor ajuste: <strong>la altura se mueve, el tempo se queda quieto</strong>. Por eso pone 100 %, arrastres a donde arrastres. La indicación supone que la grabación está en 440 — el Tuner de tu ordenador no supone, mide.",
   "bild.eyebrow": "Así se ve",
   "bild.alt": "La ventana de barra de menús del IYAMBAE Tuner en macOS: arriba el interruptor que lo enciende y lo apaga, debajo el diapasón elegido de 432 Hz como afinación de Verdi, luego el diapasón medido de la música que suena — 439,7 Hz con un 97 por ciento de seguridad — y la corrección que resulta de ello.",
   "bild.hinweis": "La versión para Mac 0.20.1, tomada con música sonando. <strong>La cifra verde está medida, no supuesta:</strong> el Tuner oye en qué está afinada realmente la grabación y desde ahí llega a 432 — no desde 440, donde solo está la mayoría de las veces.",

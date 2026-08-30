@@ -1589,10 +1589,10 @@ code {
            an der der Besucher noch entscheidet. -->
       <p class="geraet__fuss" data-html="probe.fuss">
         Chopin, Nocturne op. 9 Nr. 2 — gemeinfrei. Umgestimmt wird sie hier von
-        demselben Rechenkern, der auch im Tuner sitzt: <strong>die Tonhöhe wandert,
-        das Tempo bleibt stehen</strong>. Deshalb steht dort 100 %, egal wohin du
-        ziehst. Die Anzeige nimmt an, die Aufnahme liege auf 440 — der Tuner auf
-        deinem Rechner rät nicht, er misst.
+        demselben Rechenkern, der auch im Tuner sitzt, und zwar in seiner besten
+        Stufe: <strong>die Tonhöhe wandert, das Tempo bleibt stehen</strong>.
+        Deshalb steht dort 100 %, egal wohin du ziehst. Die Anzeige nimmt an, die
+        Aufnahme liege auf 440 — der Tuner auf deinem Rechner rät nicht, er misst.
       </p>
     </div>
 
@@ -2717,7 +2717,16 @@ code {
       const bytes = await antwort.arrayBuffer();
       kern = new AudioWorkletNode(hof, 'retuner',
         { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
-      kern.port.postMessage({ art: 'wasm', bytes, frames: 128 }, [bytes]);
+      /* `engine: 'gut'` — Signalsmith Stretch, auf dem Mac „High Quality".
+         Vorher stand hier nur `frames: 128`, also die schnelle Delay-Line
+         mit der kuerzest moeglichen Verzoegerungsstrecke. Genau die machte
+         das Pulsieren, das Sāmi-Ra am 30.08.2026 gehoert hat: 7,9 dB,
+         12,5-mal je Sekunde. Auf einer Seite, die ein Produkt verkauft,
+         hat der schlechteste Zustand des Produkts nichts zu suchen.
+
+         Die gute Engine kostet 240 ms Verzoegerung. Die faellt hier nicht
+         auf: Man hoert Musik, man sieht kein Bild dazu. */
+      kern.port.postMessage({ art: 'wasm', bytes, engine: 'gut' }, [bytes]);
       kernBereit = true;
       quelle.connect(kern).connect(messer).connect(lautstaerke).connect(hof.destination);
       setzeFaktor();
