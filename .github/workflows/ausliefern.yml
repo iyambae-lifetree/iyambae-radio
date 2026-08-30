@@ -40,7 +40,10 @@ on:
     paths-ignore:
       - '**/*.md'
       - '.gitignore'
-      - '.github/ISSUE_TEMPLATE/**'
+      # Auch das Werkzeug selbst. Diese Datei zu aendern soll die Seite nicht
+      # neu bauen — was hier steht, landet ohnehin in keinem Abbild. Erprobt
+      # wird die Aenderung beim naechsten Push, der wirklich etwas ausliefert.
+      - '.github/**'
   # Von Hand ausloesbar — fuer den Fall, dass eine Auslieferung wiederholt
   # werden muss, ohne dass sich etwas geaendert hat.
   workflow_dispatch:
