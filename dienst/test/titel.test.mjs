@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
     liesIcyTitel, saeubereTitel, erzeugeTitel,
-    ALTER_MS, JE_ZUG, REIHUM, METAINT_HOECHSTENS,
+    ALTER_MS, ALTER_BEOBACHTET_MS, JE_ZUG, REIHUM, METAINT_HOECHSTENS,
 } from '../src/titel.mjs';
 
 /*
@@ -291,6 +291,64 @@ test('die zuletzt gestarteten Sender werden ZUERST angefasst', async () => {
               'beide Beobachteten sind dabei');
     assert.equal(angefragt.indexOf('u7') < 2 && angefragt.indexOf('u9') < 2, true,
                  'und zwar vorn: ' + angefragt.slice(0, 4).join(','));
+});
+
+test('wer gerade gehoert wird, ist frueher wieder faellig', async () => {
+    /*
+      432hz-radio#12. Bei einer einzigen Frist fuer alle stand auf ByteFM
+      zweieinhalb Minuten lang der vorletzte Titel — nicht aus einem Fehler,
+      sondern aus der Umlaufzeit.
+
+      Gemessen wird hier der Unterschied, nicht die Absicht: Nach 30 s ist
+      der beobachtete Sender wieder dran und der uebrige NICHT. Waeren beide
+      dran, gaebe es keine zweite Frist; waere keiner dran, griffe sie nicht.
+    */
+    const uhr = { t: 1_000_000 };
+    const { laden, angefragt } = bau({
+        sender: [{ id: 'a', stream: 'ua' }, { id: 'b', stream: 'ub' }],
+        titel: { ua: 'Erster', ub: 'Zweiter' },
+        beobachtet: ['b'],
+        uhr,
+    });
+
+    await laden.fuelle();
+    assert.deepEqual(angefragt.slice().sort(), ['ua', 'ub'], 'zuerst beide');
+
+    angefragt.length = 0;
+    uhr.t += 30_000;                    // mehr als 25 s, weniger als 90 s
+    await laden.fuelle();
+    assert.deepEqual(angefragt, ['ub'],
+                     'nur der beobachtete Sender, nicht der uebrige');
+
+    angefragt.length = 0;
+    uhr.t += 70_000;                    // jetzt ist auch die lange Frist um
+    await laden.fuelle();
+    assert.ok(angefragt.includes('ua'), 'nach ALTER_MS kommt auch der uebrige');
+});
+
+test('ohne Vorrangliste gilt fuer alle dieselbe Frist wie bisher', async () => {
+    // Die zweite Frist darf nicht dadurch wirken, dass sie irgendwo
+    // durchsickert. Steht keine Liste zur Verfuegung, bleibt es bei ALTER_MS.
+    const uhr = { t: 1_000_000 };
+    const { laden, angefragt } = bau({
+        sender: [{ id: 'a', stream: 'ua' }, { id: 'b', stream: 'ub' }],
+        titel: { ua: 'Erster', ub: 'Zweiter' },
+        beobachtet: null,
+        uhr,
+    });
+    await laden.fuelle();
+    angefragt.length = 0;
+    uhr.t += 30_000;
+    await laden.fuelle();
+    assert.deepEqual(angefragt, [], 'ohne Liste ruehrt sich nach 30 s nichts');
+});
+
+test('die kurze Frist ist kuerzer als die lange', () => {
+    // Klingt albern, ist es nicht: Wer eine der beiden Zahlen aendert und
+    // sich vertut, dreht die Bedeutung um, ohne dass ein anderer Test das
+    // merkt.
+    assert.ok(ALTER_BEOBACHTET_MS < ALTER_MS,
+              `${ALTER_BEOBACHTET_MS} muss unter ${ALTER_MS} liegen`);
 });
 
 test('ein Zug fasst hoechstens JE_ZUG Stroeme an', async () => {

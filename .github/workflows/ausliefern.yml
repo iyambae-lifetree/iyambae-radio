@@ -71,6 +71,11 @@ env:
   # `containerapp update` mehrdeutig ab — das hat am 28.08. einen Anlauf
   # gekostet.
   CONTAINER: web
+  # Der Anmeldedienst laeuft als zweiter Container in derselben Replik.
+  # Er hat ein eigenes Abbild und wird nur angefasst, wenn sich dienst/
+  # wirklich geaendert hat — siehe unten.
+  ABBILD_KONTO: iyambae-konto
+  CONTAINER_KONTO: konto
 
 jobs:
   ausliefern:
@@ -82,6 +87,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Volle Geschichte: Weiter unten wird gegen die Marke verglichen,
+          # die gerade live steht. Mit einer flachen Kopie kennt git diese
+          # Kennung nicht.
+          fetch-depth: 0
 
       - name: Anmelden
         uses: azure/login@v2
@@ -189,6 +199,71 @@ jobs:
           echo "  ok    sieben Sprachseiten antworten"
 
           exit $FEHLER
+
+      # ── Der Anmeldedienst ────────────────────────────────────────────
+      #
+      # Eigenes Abbild, eigener Container, eigener Lebenslauf. Er wird NICHT
+      # bei jedem Lauf neu gebaut: Die allermeisten Aenderungen betreffen die
+      # Seite, und ein Bau je Push kostete zwei Minuten und eine
+      # Ueberarbeitung fuer nichts.
+      #
+      # Womit verglichen wird: mit der Marke, die GERADE LIVE STEHT — nicht
+      # mit dem vorigen Commit. Das ist absichtlich, denn es korrigiert sich
+      # selbst. Ist ein frueherer Lauf gescheitert oder hat jemand von Hand
+      # etwas anderes gesetzt, holt der naechste Lauf es nach, statt die
+      # Luecke fuer immer zu vererben.
+      - name: Braucht der Dienst eine neue Fassung?
+        id: dienst
+        run: |
+          MARKE="$(az containerapp show -n "$ANWENDUNG" -g "$RESSOURCENGRUPPE"             --query "properties.template.containers[?name=='$CONTAINER_KONTO'].image | [0]" -o tsv             | sed 's/.*://')"
+          echo "live steht: ${MARKE:-nichts}"
+
+          if [ -z "$MARKE" ]; then
+            echo "  kein Container $CONTAINER_KONTO gefunden — nichts zu tun"
+            echo "bauen=nein" >> "$GITHUB_OUTPUT"
+          elif ! git cat-file -e "$MARKE^{commit}" 2>/dev/null; then
+            echo "  Marke ist kein Commit hier — sicherheitshalber bauen"
+            echo "bauen=ja" >> "$GITHUB_OUTPUT"
+          elif git diff --quiet "$MARKE" "${{ github.sha }}" -- dienst/; then
+            echo "  dienst/ unveraendert seit $MARKE — nichts zu tun"
+            echo "bauen=nein" >> "$GITHUB_OUTPUT"
+          else
+            echo "  dienst/ hat sich geaendert:"
+            git diff --stat "$MARKE" "${{ github.sha }}" -- dienst/ | sed 's/^/    /'
+            echo "bauen=ja" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Dienst bauen und setzen
+        if: steps.dienst.outputs.bauen == 'ja'
+        run: |
+          az acr build             --registry "$REGISTRIERUNG"             --resource-group "$RESSOURCENGRUPPE"             --image "$ABBILD_KONTO:${{ github.sha }}"             --file dienst/Dockerfile             dienst/
+
+          az containerapp update             --name "$ANWENDUNG"             --resource-group "$RESSOURCENGRUPPE"             --container-name "$CONTAINER_KONTO"             --image "$REGISTRIERUNG.azurecr.io/$ABBILD_KONTO:${{ github.sha }}"             --output none
+
+          UEBERARBEITUNG="$(az containerapp show             --name "$ANWENDUNG" --resource-group "$RESSOURCENGRUPPE"             --query 'properties.latestRevisionName' -o tsv)"
+          echo "Neue Ueberarbeitung: $UEBERARBEITUNG"
+
+          for i in $(seq 1 30); do
+            LAGE="$(az containerapp revision show               --name "$ANWENDUNG" --resource-group "$RESSOURCENGRUPPE"               --revision "$UEBERARBEITUNG"               --query '{gesund:properties.healthState,verkehr:properties.trafficWeight}' -o tsv)"
+            echo "  $LAGE"
+            case "$LAGE" in
+              Healthy*100*) echo "Dienst steht."; exit 0 ;;
+              Unhealthy*)   echo "FEHLER: Ueberarbeitung meldet Unhealthy."; exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "FEHLER: Nach fuenf Minuten weder gesund noch im Verkehr."
+          exit 1
+
+      - name: Antwortet der Dienst?
+        if: steps.dienst.outputs.bauen == 'ja'
+        # /gesund geht durch nginx an 127.0.0.1:8081 — also genau den Weg,
+        # den auch ein Besucher nimmt. Ein Abbild, das startet und dann
+        # nicht antwortet, faellt hier auf und nicht beim Nutzer.
+        run: |
+          CODE="$(curl -fsS -o /dev/null -w '%{http_code}' https://iyambae.fm/gesund)" || CODE=000
+          echo "  /gesund -> $CODE"
+          [ "$CODE" = "200" ] || { echo "FEHLER: Der Dienst antwortet nicht."; exit 1; }
 
       - name: Wenn es schiefging, sagen wo
         if: failure()

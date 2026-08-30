@@ -71,6 +71,39 @@
 /** Wie lange ein gelesener Titel als frisch gilt. */
 export const ALTER_MS = 90_000;
 
+/*
+  Dieselbe Frist fuer einen Sender, den gerade jemand hoert.
+
+  DER ANLASS ist gemessen, nicht ausgedacht (432hz-radio#12). Saemi-Ra hat
+  es gehoert, bevor eine Zahl es zeigte:
+
+    "Auf ByteFM ist die aktuelle Titelanzeige nicht korrekt, eher einen
+     Titel hinterher."
+
+  Nachgemessen waren 51 von 117 Titeln veraltet, bei ByteFM zweieinhalb
+  Minuten. Das war kein Fehler, sondern die Umlaufzeit: JE_ZUG Stroeme je
+  Nachschub, jeder Sender fruehestens nach ALTER_MS wieder, ueber 150
+  Sender — rund achtzehn Minuten fuer eine Runde. Ein Stueck laeuft vier.
+  Also stand meistens der vorletzte Titel da.
+
+  WARUM EINE ZWEITE FRIST und nicht einfach ALTER_MS herunter: Die 90 s
+  sind die Ruecksicht auf fremde Server fuer die grosse Mehrheit, die
+  gerade niemand hoert. Sie zu senken hiesse, 150 Sender oefter anzufassen,
+  um einer Handvoll willen.
+
+  Die Vorrangliste, die es dafuer braucht, gibt es schon: dieselbe, aus der
+  unten die Restplaetze verteilt werden. Es kommt kein Merkmal dazu, keine
+  Anfrage nennt einen Sender, und die Antwort bleibt fuer alle dieselbe.
+
+  ZUR ZAHL: Ein Stueck laeuft rund vier Minuten. Bei 25 s steht der Titel
+  spaetestens nach einem Sechzehntel eines Stueckes richtig da — genauer
+  als jeder Mensch es bemerkt. Gleichzeitig gehoert werden bei den heutigen
+  Besucherzahlen eine Handvoll Sender; fuenf Stroeme alle 25 s sind rund
+  11 MB je Stunde, in derselben Groessenordnung wie die 6 MB von heute.
+  Und wie diese fallen sie nur an, solange ueberhaupt jemand fragt.
+*/
+export const ALTER_BEOBACHTET_MS = 25_000;
+
 /**
  * Wie lange die AUSGELIEFERTE Antwort zwischengespeichert wird.
  *
@@ -388,9 +421,12 @@ export function erzeugeTitel({
         // Die ältesten zuerst. Ein Sender ohne Eintrag zählt als unendlich
         // alt und kommt damit vor allen, die schon einmal gelesen wurden.
         const jetztMs = jetzt();
+        // Wer gerade gehoert wird, ist frueher wieder faellig. Ohne
+        // Vorrangliste gilt fuer alle dieselbe Frist wie bisher.
+        const frist = (id) => (beobachtet?.has(id) ? ALTER_BEOBACHTET_MS : ALTER_MS);
         const faellig = alle
             .map((s) => ({ s, alter: jetztMs - (stand.get(s.id)?.stand ?? -Infinity) }))
-            .filter((x) => x.alter >= ALTER_MS)
+            .filter((x) => x.alter >= frist(x.s.id))
             .sort((a, b) => b.alter - a.alter);
 
         if (!beobachtet) return faellig.slice(0, JE_ZUG).map((x) => x.s);
