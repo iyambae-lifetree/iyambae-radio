@@ -1,12 +1,16 @@
 # Die Auslieferung einrichten — einmalig
 
-`.github/workflows/ausliefern.yml` liegt bereit und läuft bei jedem Push auf
-`main`. Damit sie sich bei Azure anmelden darf, fehlt noch **ein** Schritt, und
-den muss ein Mensch gehen: Es entsteht dabei eine Kennung im Verzeichnis, und
-das ist nichts, was eine Sitzung nebenbei anlegt.
+> **Erledigt am 30.08.2026.** Die Kennung steht, der erste Lauf ist
+> durchgelaufen (`33305353084`, 2 min 16 s, Byte-Probe grün,
+> Überarbeitung `ca-iyambae-web--0000060`). Was hier steht, ist die
+> Beschreibung dessen, was eingerichtet wurde — zum Nachvollziehen, und
+> falls es einmal neu aufgesetzt werden muss.
 
-Danach läuft die Auslieferung von selbst, und Vorgang `432hz-radio#14` ist
-erledigt — nicht nur diesmal, sondern dauerhaft.
+`.github/workflows/ausliefern.yml` läuft bei jedem Push auf `main`. Damit sie
+sich bei Azure anmelden darf, braucht es einmalig eine Kennung im Verzeichnis.
+
+Damit ist Vorgang `432hz-radio#14` erledigt — nicht nur einmal, sondern
+dauerhaft.
 
 ## Warum OIDC und kein hinterlegtes Passwort
 
@@ -58,6 +62,39 @@ az ad app federated-credential create --id "$APP_ID" --parameters '{
 `subject` ist die eigentliche Absicherung. Ein Lauf aus einem anderen
 Repository, von einem anderen Zweig oder aus einem Fork bekommt kein Token —
 Entra prüft die Zeichenkette genau.
+
+> ### Die Falle, die hier einen Lauf gekostet hat
+>
+> **Bei diesem Repository legt GitHub nicht die Form von oben vor.** Der erste
+> Lauf scheiterte mit `AADSTS700213`, und im Protokoll stand, was wirklich
+> geschickt wurde:
+>
+> ```
+> repo:iyambae-lifetree@318734877/iyambae-radio@1340859189:ref:refs/heads/main
+> ```
+>
+> Besitzer- und Repository-Nummer stecken mit drin. GitHub nennt das die
+> **unveränderliche Form**, und sie ist hier die Vorgabe — nachgesehen:
+>
+> ```bash
+> gh api repos/iyambae-lifetree/iyambae-radio/actions/oidc/customization/sub
+> # {"use_default":true,"use_immutable_subject":false,
+> #  "sub_claim_prefix":"repo:iyambae-lifetree@318734877/iyambae-radio@1340859189"}
+> ```
+>
+> `use_default` steht auf `true` und liefert trotzdem die Nummernform. Wer sich
+> auf die Dokumentation verlässt, trägt die falsche Zeichenkette ein.
+>
+> **Deshalb liegen zwei Zuordnungen auf der Kennung** — die Nummernform, die
+> heute wirklich benutzt wird, und die Namensform als Vorrat, falls GitHub
+> zurückschwenkt. Beide kosten nichts.
+>
+> **Im Zweifel nicht raten, sondern nachsehen:** Der Fehlschlag nennt die
+> vorgelegte Zeichenkette im Klartext. Sie gehört zeichengenau in `subject`.
+>
+> ```bash
+> gh run view <lauf-id> -R iyambae-lifetree/iyambae-radio --log-failed >   | grep "subject claim"
+> ```
 
 **Wer `workflow_dispatch` auch von einem anderen Zweig auslösen will**, braucht
 dafür eine zweite Zuordnung. Bewusst nicht vorbereitet: Eine Auslieferung, die
