@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title data-text="seite.titel">IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln</title>
-<meta name="description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Für Windows gibt es heute das Umstimmen von Dateien. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<meta name="description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Windows und Linux sind gebaut und kommen. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
 <meta name="theme-color" content="#0A0908">
 
 <!-- Vorschau in Foren und Boten. Der Anlass ist unmittelbar: Wer diese
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="IYAMBAE Tuner">
 <meta property="og:title" data-inhalt="seite.titel" content="IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln">
-<meta property="og:description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Für Windows gibt es heute das Umstimmen von Dateien. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<meta property="og:description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Windows und Linux sind gebaut und kommen. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
 <meta property="og:url" content="https://apps.iyambae.fm/de/">
 <meta property="og:locale" content="de">
 <meta name="twitter:card" content="summary">
@@ -420,10 +420,15 @@ html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
 .sicht__ersatz p { margin: 0; }
 
 /* Die Ueberschrift ueber den Karten richtet sich nach dem System.
-   "Hol es dir" ist eine Aufforderung — auf Windows und am Telefon gibt es
-   nichts zu holen, und eine Aufforderung ins Leere ist die unhoeflichste
-   Art, jemanden wegzuschicken. Ohne Skript gilt die erste, weil sie fuer
-   zwei von drei Systemen stimmt.
+   "Hol es dir" ist eine Aufforderung — auf Windows, auf Linux und am
+   Telefon gibt es nichts zu holen, und eine Aufforderung ins Leere ist
+   die unhoeflichste Art, jemanden wegzuschicken. Ohne Skript gilt die
+   erste, weil sie die einzige ist, hinter der eine Datei liegt.
+
+   BIS ZUM 30.08.2026 hiess diese Klasse `kopf--win`, denn Windows war
+   das einzige System ohne Datei. Seit Sāmi-Ras Entscheidung, Windows und
+   Linux nicht an Tester zu geben, sind es zwei — und ein Name, der eines
+   davon nennt, waere ab jetzt falsch.
 
    EIGENE KLASSENNAMEN, und das ist kein Geschmack. Der erste Versuch nahm
    `.fuer--win`, also denselben Namen, den die Knoepfe oben schon benutzen.
@@ -431,11 +436,13 @@ html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
    und Beschriftung und Erklaerung liefen in einer Zeile ineinander —
    sichtbar erst bei schmaler Breite. Zwei Dinge, die verschieden sind,
    duerfen nicht denselben Namen tragen. */
-.kopf--win, .kopf--mobil { display: none; }
+.kopf--wartet, .kopf--mobil { display: none; }
 html[data-os="win"]   .kopf--holen,
+html[data-os="linux"] .kopf--holen,
 html[data-os="mobil"] .kopf--holen { display: none; }
-html[data-os="win"]   .kopf--win   { display: block; }
-html[data-os="mobil"] .kopf--mobil { display: block; }
+html[data-os="win"]   .kopf--wartet { display: block; }
+html[data-os="linux"] .kopf--wartet { display: block; }
+html[data-os="mobil"] .kopf--mobil  { display: block; }
 .sicht__ersatz strong { color: var(--text); font-weight: 600; }
 
 /* ── Die dunklen Abschnitte ──────────────────────────────────────── */
@@ -651,6 +658,19 @@ input[type="range"]::-moz-range-thumb {
 }
 .plattform__zusatz { font-size: .74rem; line-height: 1.45; color: var(--leiser); }
 
+/* Die Kachel, hinter der noch nichts liegt.
+
+   Gestrichelte Kante, kein Grund, kein Zeiger: Sie muss sich schon vor
+   dem Klick von einem Knopf unterscheiden. Wer glaubt, hier laege etwas,
+   und dann nichts findet, verliert mehr Vertrauen, als eine fehlende
+   Fassung je gekostet haette. */
+.plattform--wartet {
+  border-style: dashed; background: transparent; cursor: default;
+}
+.plattform--wartet:hover { border-color: var(--kante-hell); background: transparent; }
+.plattform--wartet .plattform__tat { color: var(--leise); }
+.plattform--wartet:hover .plattform__zeichen { color: var(--leise); }
+
 /* Das erkannte System steht vor, es verdraengt die anderen aber nicht.
    Ohne Erkennung — kein JavaScript, unbekanntes System — bleiben alle
    drei gleichberechtigt, und das ist ein brauchbarer Zustand, kein
@@ -665,6 +685,17 @@ html[data-os="mac"]   .plattform[data-fuer="mac"]   .plattform__zeichen,
 html[data-os="win"]   .plattform[data-fuer="win"]   .plattform__zeichen,
 html[data-os="linux"] .plattform[data-fuer="linux"] .plattform__zeichen {
   color: var(--akzent-hell);
+}
+/* Auch auf dem eigenen System bleibt die wartende Kachel gedaempft: Sie
+   steht vorn, weil sie den Besucher angeht — aber sie leuchtet nicht,
+   als koennte man sie mitnehmen. */
+html[data-os="win"]   .plattform--wartet[data-fuer="win"],
+html[data-os="linux"] .plattform--wartet[data-fuer="linux"] {
+  border-color: var(--kante-hell); background: transparent;
+}
+html[data-os="win"]   .plattform--wartet[data-fuer="win"]   .plattform__zeichen,
+html[data-os="linux"] .plattform--wartet[data-fuer="linux"] .plattform__zeichen {
+  color: var(--leise);
 }
 @media (prefers-reduced-motion: reduce) { .plattform { transition: none; } }
 
@@ -789,14 +820,16 @@ html[data-os="win"]   .karte--win   { order: -1; }
    eine Fussnote. */
 html[data-os="win"]   .karte--win   { background: var(--grund-hoch); }
 html[data-os="win"]   .karte--win .karte__name { color: var(--kalt); }
-/* BERICHTIGT AM 23.08.2026. Hier stand: „Auf der Windows-Karte liegt
-   nichts zum Laden." Das war bis zum 21.08. richtig und ist es nicht mehr.
+/* BERICHTIGT AM 23.08.2026, WIEDER BERICHTIGT AM 30.08.2026.
 
-   Die Regeln bleiben trotzdem stehen, aber aus einem anderen Grund: Die
-   Windows-Fassung stimmt Dateien um, nicht den Systemton. Der kühle Ton
-   sagt jetzt „kann weniger", nicht mehr „gibt es nicht" — und genau das
-   ist der Vorbehalt, den Sāmi-Ra ausdrücklich benannt haben wollte. */
+   Zwischendurch lag auf der Windows-Karte ein Installer, und der kühle
+   Ton hiess „kann weniger" statt „gibt es nicht". Seit Sāmi-Ras
+   Entscheidung liegt dort wieder nichts zum Laden — die urspruengliche
+   Begruendung stimmt also erneut, und sie gilt jetzt auch fuer Linux. */
 html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
+html[data-os="linux"] .karte--linux { background: var(--grund-hoch); }
+html[data-os="linux"] .karte--linux .karte__name  { color: var(--kalt); }
+html[data-os="linux"] .karte--linux .karte__deins { background: var(--kalt); }
 
 /* ── Was gleich passiert: die drei Schritte ──────────────────────── */
 
@@ -1464,7 +1497,7 @@ code {
 <section class="rahmen aufmacher">
   <div class="aufmacher__satz">
     <div>
-      <p class="eyebrow" data-text="auf.eyebrow">Menüleisten-App · macOS · Linux · Windows</p>
+      <p class="eyebrow" data-text="auf.eyebrow">Menüleisten-App · macOS · Windows und Linux in Arbeit</p>
       <h1 data-html="auf.titel">Spotify in <em>432 Hz</em>. Ohne eine einzige Datei umzuwandeln.</h1>
       <p class="aufmacher__vorwort" data-text="auf.vorwort">
         Netflix, YouTube, dein Player genauso. Der Tuner sitzt im Systemton —
@@ -1581,16 +1614,26 @@ code {
             <span class="plattform__tat" data-text="auf.mac.tat">Für macOS laden</span>
             <span class="plattform__zusatz" data-text="auf.mac.zusatz">DMG · 1,3 MB · ab macOS 14.4 · kein Konto · Testfassung bis 31.10.2026</span>
           </a>
-          <a class="plattform" data-fuer="win" href="/herunterladen/iyambae-tuner-1.1.0-windows-setup.exe">
+          <!-- Windows und Linux stehen weiter da, sind aber kein Knopf mehr.
+
+               Sāmi-Ra am 30.08.2026: „Beide Versionen gefallen mir nicht
+               wirklich, dass ich sie auf Tester loslassen würde. Sie sind ja
+               nicht annähernd so weit wie die Mac Version."
+
+               Die Kachel bleibt, weil sie eine Frage beantwortet, die jeder
+               Besucher zuerst stellt: Gibt es das für mein System? Ja — nur
+               noch nicht zum Mitnehmen. Ein <div> statt eines <a>, damit
+               nichts anklickbar ist, was nicht herausgehen soll. -->
+          <div class="plattform plattform--wartet" data-fuer="win">
             <img class="plattform__zeichen" src="assets/plattform-win.svg" alt="" width="24" height="24">
-            <span class="plattform__tat" data-text="auf.win.tat">Für Windows laden — Dateien umstimmen</span>
-            <span class="plattform__zusatz" data-text="auf.win.zusatz">EXE · 68 MB · Windows 10 und 11 · Systemton kommt noch, er braucht ein virtuelles Ausgabegerät.</span>
-          </a>
-          <a class="plattform" data-fuer="linux" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb">
+            <span class="plattform__tat" data-text="auf.win.tat">Windows — noch nicht zum Ausprobieren</span>
+            <span class="plattform__zusatz" data-text="auf.win.zusatz">Es gibt sie, sie läuft, und sie ist noch nicht so weit wie die auf dem Mac. Sie geht hinaus, wenn sie es ist.</span>
+          </div>
+          <div class="plattform plattform--wartet" data-fuer="linux">
             <img class="plattform__zeichen" src="assets/plattform-linux.svg" alt="" width="24" height="24">
-            <span class="plattform__tat" data-text="auf.linux.tat">Für Linux laden</span>
-            <span class="plattform__zusatz" data-text="auf.linux.zusatz">DEB · 43 KB · Debian 13 · PipeWire ab 0.3.60 · noch ohne Oberfläche, Bedienung über die Kommandozeile</span>
-          </a>
+            <span class="plattform__tat" data-text="auf.linux.tat">Linux — noch nicht zum Ausprobieren</span>
+            <span class="plattform__zusatz" data-text="auf.linux.zusatz">Läuft, aber ohne Oberfläche — Bedienung über die Kommandozeile. Erst mit Fenster geht sie hinaus.</span>
+          </div>
         </div>
 
         <p class="nebenweg fuer fuer--mobil" data-text="auf.mobil.zusatz">Am Telefon gibt keine App den Ton von Spotify oder Netflix heraus.</p>
@@ -1735,9 +1778,9 @@ code {
 <details class="rahmen teil teil--linie klappe" id="holen">
   <summary class="klappe__griff">
     <div class="eng">
-      <p class="eyebrow" data-text="holen.eyebrow">Testausgabe · kostenlos · kein Konto · macOS 0.15.2 · Windows 1.1.0 · Linux 0.1.0 — die Nummern zählen je System eigen</p>
+      <p class="eyebrow" data-text="holen.eyebrow">Testausgabe · kostenlos · kein Konto · macOS 0.15.2 — Windows und Linux sind gebaut, aber noch nicht so weit</p>
       <h2 class="kopf--holen" data-html="holen.titel">Hol es dir. <em>Dann drei Schritte.</em></h2>
-      <h2 class="kopf--win" data-html="holen.titel.win">Hol es dir. <em>Dann einmal durchwinken.</em></h2>
+      <h2 class="kopf--wartet" data-html="holen.titel.wartet">Für dein System <em>noch nicht</em>. Hier steht, wie weit es ist.</h2>
       <h2 class="kopf--mobil" data-html="holen.titel.mobil">Am Telefon geht es <em>nicht</em>. Hier steht, warum.</h2>
     </div>
   </summary>
@@ -1767,7 +1810,7 @@ code {
       </div>
     </div>
 
-    <div class="karte karte--bereit karte--linux">
+    <div class="karte karte--linux">
       <span class="karte__deins fuer fuer--linux" data-text="karte.deins">dein System</span>
       <div class="karte__kopf">
         <span class="karte__name">Linux</span>
@@ -1784,14 +1827,12 @@ code {
         am Ausgabegerät.
       </p>
       <div class="karte__fuellen"></div>
-      <div class="karte__tat">
-        <a class="laden" href="/herunterladen/iyambae-tuner_0.1.0-1_amd64.deb">
-          <span data-text="karte.linux.laden">DEB laden</span><span class="laden__groesse">43 KB</span>
-        </a>
-        <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
-          <span data-text="holen.pruefsumme">SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
-        </a>
-      </div>
+      <p class="karte__stand" data-html="karte.linux.stand">
+        <b>Noch nicht zum Herunterladen</b>
+        Sie geht hinaus, wenn sie ein Fenster hat. Ein Paket, das man nur
+        über die Kommandozeile bedient, ist keine Fassung, die man jemandem
+        zum Ausprobieren gibt.
+      </p>
     </div>
 
     <div class="karte karte--win">
@@ -1810,11 +1851,11 @@ code {
         Ersetzen. Die App sagt dir, was sie auf deinem Rechner kann.
       </p>
       <div class="karte__fuellen"></div>
-      <div class="karte__tat">
-        <a class="laden" href="/herunterladen/iyambae-tuner-1.1.0-windows-setup.exe">
-          <span data-text="karte.win.laden">Installer laden</span><span class="laden__groesse">68 MB</span>
-        </a>
-      </div>
+      <p class="karte__stand" data-html="karte.win.stand">
+        <b>Noch nicht zum Herunterladen</b>
+        Der Abstand zur Mac-Fassung ist zu gross, um sie jemandem in die Hand
+        zu drücken. Sie geht hinaus, wenn er es nicht mehr ist.
+      </p>
     </div>
 
   </div>
@@ -1840,19 +1881,12 @@ code {
           Einschalten fragt macOS nach „Systemaudio aufnehmen“.
         </p></li>
       </ol>
-      <p class="schritte__auch" data-html="schritte.win">
-        <strong>Auf Windows heisst dasselbe Fenster SmartScreen.</strong>
-        Der Weg dort: „Weitere Informationen“, dann „Trotzdem ausführen“.
-        Grund ist derselbe — die Ausgabe ist nicht signiert. Der Installer
-        selbst braucht danach keine Administratorrechte.
-      </p>
-      <p class="schritte__auch" data-html="schritte.linux">
-        <strong>Das Linux-Paket ist davon nicht betroffen.</strong>
-        <code>apt install ./iyambae-tuner_0.1.0-1_amd64.deb</code> — danach
-        läuft es als Dienst und wird über die Kommandozeile bedient. Ein Symbol
-        in der Leiste bekommt es noch; bis dahin ist das hier die ehrliche
-        Beschreibung und keine Untertreibung.
-      </p>
+      <!-- Hier standen die Wege fuer Windows (SmartScreen) und Linux
+           (apt install). Beide sind am 30.08.2026 herausgenommen worden,
+           weil es dort nichts mehr zu installieren gibt. Eine Anleitung
+           fuer eine Datei, die niemand bekommt, ist kein Dienst am Leser,
+           sondern ein Versprechen. Sie kommen zurueck, wenn die Fassungen
+           zurueckkommen. -->
     </div>
 
     <div class="pruefung">
@@ -1863,9 +1897,8 @@ code {
         ist der ehrliche Stand einer Testausgabe.
       </p>
       <p data-html="pruefung.2">
-        Beide Dateien tragen ihre SHA-256-Summe. Rechne sie nach, statt uns zu
-        glauben: <code>shasum -a 256</code> auf dem Mac,
-        <code>sha256sum -c</code> unter Linux.
+        Die Datei trägt ihre SHA-256-Summe. Rechne sie nach, statt uns zu
+        glauben: <code>shasum -a 256</code> auf dem Mac.
       </p>
       <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
         <span>PRUEFSUMMEN.txt</span><span class="laden__groesse">↓</span>
