@@ -154,10 +154,16 @@ jobs:
           FEHLER=0
           pruefe() {
             local pfad="$1" datei="$2"
-            local erwartet groesse code
+            local erwartet groesse code antwort
             erwartet="$(stat -c%s "$datei")"
-            code="$(curl -fsSL -o /tmp/probe.bin -w '%{http_code}' "$pfad")" || code=000
-            groesse="$(stat -c%s /tmp/probe.bin 2>/dev/null || echo 0)"
+            # curl selbst zaehlen lassen, statt in eine Datei zu schreiben und
+            # sie zu vermessen. Ein fehlgeschlagener Schreibvorgang saehe sonst
+            # aus wie eine leere Antwort — auf dem Entwicklungsrechner ist genau
+            # das passiert und haette beinahe eine gesunde Auslieferung als
+            # kaputt gemeldet.
+            antwort="$(curl -fsSL -o /dev/null -w '%{http_code} %{size_download}' "$pfad")" || antwort="000 0"
+            code="${antwort%% *}"
+            groesse="${antwort##* }"
             if [ "$code" = "200" ] && [ "$groesse" = "$erwartet" ]; then
               printf '  ok    %-52s %s Bytes\n' "$pfad" "$groesse"
             else
