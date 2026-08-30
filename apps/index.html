@@ -632,6 +632,12 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--kante-hell); border-radius: 3px;
   background: var(--grund);
 }
+/* Ein Leistenfenster ist hochkant. Ueber die HOEHE begrenzen, nicht ueber
+   die Breite: Sonst entscheidet die Spaltenbreite darueber, wie gross ein
+   Fenster erscheint, das in Wahrheit immer gleich gross ist. */
+.bildteil__bild--hoch {
+  width: auto; max-width: 100%; max-height: 34rem; margin-inline: auto;
+}
 .bildteil__zeile {
   margin-top: .7rem; font-size: .76rem; line-height: 1.5; color: var(--leiser);
 }
@@ -1644,24 +1650,42 @@ code {
 <!-- ══ 2 · Was es tut, in drei Zeilen ═══════════════════════════ -->
 <!-- ══ Das Bild · echt, nicht gerechnet ═════════════════════════
 
-     Ein Bildschirmfoto der laufenden Fassung, am 23.08.2026 mit
-     PrintWindow vom Fenster selbst abgenommen — nicht vom Bildschirm
-     abfotografiert und nicht nachgezeichnet.
+     Hier stand bis zum 30.08.2026 das Fenster der WINDOWS-Fassung, und
+     der Kommentar an dieser Stelle begruendete das so: „macOS laesst
+     sich auf Michas Rechner nicht bauen." Das stimmte, solange Micha
+     der einzige war, der bauen konnte.
 
-     WARUM NUR EINES: macOS laesst sich auf Michas Rechner nicht bauen,
-     und Linux ist ein Leistensymbol, an dem es kaum etwas zu zeigen
-     gibt. Ein erfundenes Bild einer Oberflaeche, die so nicht
-     existiert, waere genau die Sorte Angabe, gegen die diese Seite
-     sonst antritt. Die Stelle bleibt frei, bis es ein echtes gibt.
+     Seit die Windows-Fassung nicht mehr herausgeht, war das Bild
+     ausserdem falsch am Platz: Es zeigte als einziges Gesicht des
+     Programms genau die Fassung, die man nicht bekommt.
+
+     Jetzt steht hier die Mac-Fassung — 0.20.1, am 30.08.2026 vom
+     laufenden Programm auf Sāmi-Ras eigenem Rechner abgenommen, waehrend
+     Musik lief. Deshalb steht die gemessene Quellstimmung gruen da und
+     nicht als „zu unsicher": Das Bild zeigt das Geraet bei der Arbeit,
+     nicht im Leerlauf.
+
+     Nachgeholfen wurde nur an zwei Stellen, und an keiner davon am
+     Inhalt: Hinter dem Fenster lag eine leere weisse Flaeche, damit die
+     Durchsicht nicht den halben Schreibtisch mitzeigt, und die
+     Bildschirmleiste darueber ist abgeschnitten. Kein Pixel im Fenster
+     selbst ist gemalt.
+
+     tuner-windows.webp bleibt liegen. Es kommt zurueck, wenn die
+     Windows-Fassung zurueckkommt.
+
+     HOCHKANT: Ein Leistenfenster ist schmal und hoch. Bei width:100%
+     waere es riesig geworden — deshalb .bildteil__bild--hoch, das ueber
+     die Hoehe begrenzt und mittig steht.
      ═════════════════════════════════════════════════════════════ -->
 <section class="rahmen teil teil--eng bildteil">
   <p class="eyebrow" data-text="bild.eyebrow">So sieht sie aus</p>
   <figure class="bildteil__figur">
-    <img class="bildteil__bild" src="assets/bild/tuner-windows.webp"
-         width="1024" height="712" loading="lazy" decoding="async"
+    <img class="bildteil__bild bildteil__bild--hoch" src="assets/bild/tuner-macos.webp"
+         width="744" height="1611" loading="lazy" decoding="async"
          data-alt="bild.alt"
-         alt="Das Fenster des IYAMBAE Tuners unter Windows: eine Reihe Kammertöne von 415 bis 445 Hertz, die gewählte Stimmung 432 im Farbklang hervorgehoben, darunter eine Fläche zum Ablegen von Musikdateien.">
-    <figcaption class="bildteil__zeile" data-text="bild.hinweis">Die Windows-Fassung 1.1.0. macOS und Linux tragen dieselben Farben, aber die Bedienelemente ihres Systems.</figcaption>
+         alt="Das Leistenfenster des IYAMBAE Tuners auf macOS: oben der Schalter, der ihn ein- und ausschaltet, darunter die gewählte Stimmung 432 Hz als Verdi-Stimmung, dann die gemessene Stimmung der laufenden Musik — 439,7 Hz bei 97 Prozent Sicherheit — und die daraus errechnete Korrektur.">
+    <figcaption class="bildteil__zeile" data-html="bild.hinweis">Die Mac-Fassung 0.20.1, aufgenommen bei laufender Musik. <strong>Die grüne Zahl ist gemessen, nicht angenommen:</strong> Der Tuner hört, worauf die Aufnahme steht, und rechnet von dort nach 432 — nicht von 440, wo sie nur meistens steht.</figcaption>
   </figure>
 </section>
 
