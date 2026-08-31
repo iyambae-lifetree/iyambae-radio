@@ -67,6 +67,34 @@ LANG = APPS / "assets" / "lang"
 HAUS = "https://apps.iyambae.fm"
 RADIO = "https://iyambae.fm"
 
+# ── Die Seiten, die dieses Skript traegt ────────────────────────────
+#
+# Bis zum 31.08.2026 war es genau eine, fest verdrahtet. 432hz-radio#16
+# beschreibt, warum das nicht reichte: Ein Text, der eine eigene Adresse
+# verdient, bekam keine — er wurde Abschnitt einer ohnehin langen Seite.
+#
+# Michas Assistent hat den Umbau ausdruecklich hierher gegeben: „Ich haenge
+# mich nicht selbst an dein Skript, wenn du das lieber machst."
+#
+# DER SCHLUESSELRAUM BLEIBT GEMEINSAM. Ein Katalog je Sprache, nicht je
+# Seite: Uebersetzen ist die teure Arbeit, und sieben Dateien sind schon
+# genug. Die Namensraeume trennen die Seiten (`seite.`, `mess.`), und
+# ernte() faellt ueber jeden Schluessel, der in zwei Vorlagen mit
+# VERSCHIEDENEM Text steht.
+#
+# `pfad` ist der Ordner unter der Sprachwurzel, mit Schraegstrich am Ende
+# oder leer fuer die Wurzel selbst. Er landet in jedem hreflang, jedem
+# canonical, jeder @id im JSON-LD und in der Sitemap.
+SEITEN = {
+    "": {
+        "vorlage": "index.html",
+        # Diese Seite beschreibt ein Programm zum Herunterladen.
+        "programm": "tuner",
+        # Nur hier stehen die Saetze, die rechtlich tragen muessen.
+        "rueckgrat": True,
+    },
+}
+
 # Schreibrichtung und Zahlenformat je Sprache.
 #
 # Das dritte Feld ist die Kennung, mit der der Schwebungsmesser im Browser
@@ -367,7 +395,7 @@ def fuelle(satz, **werte):
     return satz
 
 
-def sprachumschalter(kuerzel):
+def sprachumschalter(kuerzel, pfad=""):
     """Echte Verweise, keine Auswahlliste.
 
     Sie sind fuer eine Suchmaschine die Bruecke zwischen den sieben
@@ -385,13 +413,13 @@ def sprachumschalter(kuerzel):
               f'<ul class="sprachwahl__liste">']
     for k, (name, _, _) in SPRACHEN.items():
         jetzt = ' aria-current="true"' if k == kuerzel else ""
-        zeilen.append(f'<li><a href="/{k}/" hreflang="{k}" lang="{k}"{jetzt}>'
+        zeilen.append(f'<li><a href="/{k}/{pfad}" hreflang="{k}" lang="{k}"{jetzt}>'
                       f'{html.escape(name)}</a></li>')
     zeilen.append("</ul></details>")
     return "".join(zeilen)
 
 
-def jsonld(kuerzel, texte):
+def jsonld(kuerzel, texte, pfad="", programm="tuner"):
     """Organization, WebPage und SoftwareApplication.
 
     WAS HIER NICHT STEHT UND NIE STEHEN WIRD: aggregateRating, review,
@@ -403,7 +431,7 @@ def jsonld(kuerzel, texte):
     nichts, und das soll auch die Maschine wissen, damit niemand einen Preis
     dazuerfindet.
     """
-    seite = f"{HAUS}/{kuerzel}/"
+    seite = f"{HAUS}/{kuerzel}/{pfad}"
     haus = {
         "@type": "Organization",
         "@id": f"{RADIO}/#haus",
@@ -421,7 +449,7 @@ def jsonld(kuerzel, texte):
         "isPartOf": {"@id": f"{RADIO}/#haus"},
         "publisher": {"@id": f"{RADIO}/#haus"},
     }
-    programm = {
+    programm_knoten = {
         "@type": "SoftwareApplication",
         "@id": f"{HAUS}/#tuner",
         "name": "IYAMBAE Tuner",
@@ -445,7 +473,32 @@ def jsonld(kuerzel, texte):
             "availability": "https://schema.org/InStock",
         },
     }
-    graph = {"@context": "https://schema.org", "@graph": [haus, webseite, programm]}
+    if programm == "messwerkzeug":
+        # Ein Werkzeug, das IM BROWSER laeuft, ist keine SoftwareApplication
+        # zum Herunterladen. WebApplication sagt der Maschine genau das —
+        # und `browserRequirements` sagt, was sie braucht.
+        anwendung = {
+            "@type": "WebApplication",
+            "@id": f"{HAUS}/#stimmungsmesser",
+            "name": texte.get("mess.titel.klar", "Stimmung messen"),
+            "url": seite,
+            "applicationCategory": "MultimediaApplication",
+            "operatingSystem": "Alle",
+            "browserRequirements": "Web Audio API",
+            "description": texte.get("seite.beschreibung", ""),
+            "inLanguage": kuerzel,
+            "isAccessibleForFree": True,
+            "author": {"@id": f"{RADIO}/#haus"},
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR",
+                "availability": "https://schema.org/InStock",
+            },
+        }
+    else:
+        anwendung = programm_knoten
+    graph = {"@context": "https://schema.org", "@graph": [haus, webseite, anwendung]}
     roh = json.dumps(graph, ensure_ascii=False, separators=(",", ":"))
     # Jedes "<" maskieren, nicht nur "</script>". Ein Kleinerzeichen in einem
     # uebersetzten Satz beendete sonst im Zweifel das Skript-Element, und der
@@ -453,7 +506,8 @@ def jsonld(kuerzel, texte):
     return f'<script type="application/ld+json">{roh.replace("<", chr(92) + "u003c")}</script>\n'
 
 
-def erzeuge_seite(vorlage_quelle, kuerzel, texte, ersetze=True):
+def erzeuge_seite(vorlage_quelle, kuerzel, texte, pfad="", programm="tuner",
+                  ersetze=True):
     """Eine Sprachfassung bauen.
 
     ersetze=False baut dieselbe Seite OHNE einen einzigen Griff in den
@@ -486,9 +540,9 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, ersetze=True):
             setze_attribut(s, "href", f"/{kuerzel}/")
 
         if s["tag"] == "link" and attr.get("rel") == "canonical":
-            setze_attribut(s, "href", f"{HAUS}/{kuerzel}/")
+            setze_attribut(s, "href", f"{HAUS}/{kuerzel}/{pfad}")
         if s["tag"] == "meta" and attr.get("property") == "og:url":
-            setze_attribut(s, "content", f"{HAUS}/{kuerzel}/")
+            setze_attribut(s, "content", f"{HAUS}/{kuerzel}/{pfad}")
         if s["tag"] == "meta" and attr.get("property") == "og:locale":
             setze_attribut(s, "content", kuerzel)
 
@@ -523,8 +577,13 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, ersetze=True):
     # sind und nicht sieben duenne Seiten. Ohne das konkurrieren sie
     # gegeneinander. x-default zeigt auf /, wo die Erkennung von nginx sitzt.
     verweise = "\n".join(
-        f'<link rel="alternate" hreflang="{k}" href="{HAUS}/{k}/">' for k in SPRACHEN)
-    verweise += f'\n<link rel="alternate" hreflang="x-default" href="{HAUS}/">'
+        f'<link rel="alternate" hreflang="{k}" href="{HAUS}/{k}/{pfad}">'
+        for k in SPRACHEN)
+    # x-default zeigt auf die Adresse OHNE Sprache — dort sitzt die
+    # Spracherkennung von nginx. Fuer eine Unterseite ist das /stimmung/,
+    # nicht die Startseite: Wer das Messwerkzeug sucht, soll dort landen
+    # und nicht beim Tuner.
+    verweise += f'\n<link rel="alternate" hreflang="x-default" href="{HAUS}/{pfad}">'
     seite = seite.replace("</head>", verweise + "\n</head>", 1)
 
     # GENAU EINMAL, nicht "mindestens einmal".
@@ -538,12 +597,13 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, ersetze=True):
     wie_oft = seite.count(MARKE_SPRACHWAHL)
     if wie_oft != 1:
         raise ValueError(f"{MARKE_SPRACHWAHL} steht {wie_oft}-mal in "
-                         f"apps/index.html, erwartet wird genau einmal")
-    seite = seite.replace(MARKE_SPRACHWAHL, sprachumschalter(kuerzel), 1)
+                         f"der Vorlage, erwartet wird genau einmal")
+    seite = seite.replace(MARKE_SPRACHWAHL, sprachumschalter(kuerzel, pfad), 1)
 
     # Die strukturierten Daten ans Ende des Rumpfes, nicht in den Kopf: Der
     # Kopf soll klein bleiben, damit der erste Anblick frueh steht.
-    seite = seite.replace("</body>", jsonld(kuerzel, texte) + "</body>", 1)
+    seite = seite.replace("</body>", jsonld(kuerzel, texte, pfad, programm)
+                          + "</body>", 1)
     return seite
 
 
@@ -563,15 +623,16 @@ def erzeuge_sitemap():
     zeilen = ['<?xml version="1.0" encoding="UTF-8"?>',
               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
               '        xmlns:xhtml="http://www.w3.org/1999/xhtml">']
-    for kuerzel in SPRACHEN:
-        zeilen.append("  <url>")
-        zeilen.append(f"    <loc>{HAUS}/{kuerzel}/</loc>")
-        for k in SPRACHEN:
-            zeilen.append(f'    <xhtml:link rel="alternate" hreflang="{k}" '
-                          f'href="{HAUS}/{k}/"/>')
-        zeilen.append('    <xhtml:link rel="alternate" hreflang="x-default" '
-                      f'href="{HAUS}/"/>')
-        zeilen.append("  </url>")
+    for pfad in SEITEN:
+        for kuerzel in SPRACHEN:
+            zeilen.append("  <url>")
+            zeilen.append(f"    <loc>{HAUS}/{kuerzel}/{pfad}</loc>")
+            for k in SPRACHEN:
+                zeilen.append(f'    <xhtml:link rel="alternate" hreflang="{k}" '
+                              f'href="{HAUS}/{k}/{pfad}"/>')
+            zeilen.append('    <xhtml:link rel="alternate" hreflang="x-default" '
+                          f'href="{HAUS}/{pfad}"/>')
+            zeilen.append("  </url>")
     zeilen.append("</urlset>")
     return "\n".join(zeilen) + "\n"
 
@@ -650,7 +711,7 @@ def pruefe_treue(vorlage_quelle):
     return False
 
 
-def pruefe_deutsch(vorlage_quelle, deutsch):
+def pruefe_deutsch(vorlage_quelle, deutsch, pfad="", programm="tuner"):
     """Sagt de.json zeichengenau dasselbe wie die Vorlage?
 
     Zweimal dieselbe deutsche Seite bauen: einmal mit dem Katalog, einmal
@@ -660,13 +721,13 @@ def pruefe_deutsch(vorlage_quelle, deutsch):
     Satz von Hand nachgebessert worden. Beides waere ein stiller Fehler:
     Die deutsche Seite saehe im Browser fast richtig aus.
     """
-    mit  = erzeuge_seite(vorlage_quelle, "de", deutsch, ersetze=True)
-    ohne = erzeuge_seite(vorlage_quelle, "de", deutsch, ersetze=False)
+    mit  = erzeuge_seite(vorlage_quelle, "de", deutsch, pfad, programm, ersetze=True)
+    ohne = erzeuge_seite(vorlage_quelle, "de", deutsch, pfad, programm, ersetze=False)
     if mit == ohne:
         return True
     for n, (a, b) in enumerate(zip(ohne, mit)):
         if a != b:
-            print(f"  ✘ de.json weicht ab Zeichen {n} von apps/index.html ab:")
+            print(f"  ✘ de.json weicht ab Zeichen {n} von der Vorlage ab:")
             print(f"    Vorlage:  {ohne[max(0, n - 80):n + 80]!r}")
             print(f"    Katalog:  {mit[max(0, n - 80):n + 80]!r}")
             print(f"    Abhilfe:  python3 Scripts/baue-apps-sprachen.py --ernte")
@@ -778,7 +839,7 @@ def pruefe_robots(quelle):
     return not fehler
 
 
-def pruefe_seite(kuerzel, seite, texte):
+def pruefe_seite(kuerzel, seite, texte, pfad="", rueckgrat=True):
     """Traegt die erzeugte Seite, was sie tragen soll?"""
     fehler = []
 
@@ -792,12 +853,12 @@ def pruefe_seite(kuerzel, seite, texte):
         fehler.append(f'kein dir="{SPRACHEN[kuerzel][1]}" am <html>')
 
     for k in SPRACHEN:
-        if f'hreflang="{k}" href="{HAUS}/{k}/"' not in seite:
+        if f'hreflang="{k}" href="{HAUS}/{k}/{pfad}"' not in seite:
             fehler.append(f"hreflang {k} fehlt")
     if 'hreflang="x-default"' not in seite:
         fehler.append("hreflang x-default fehlt")
-    if f'<link rel="canonical" href="{HAUS}/{kuerzel}/">' not in seite:
-        fehler.append("canonical zeigt nicht auf die eigene Sprachwurzel")
+    if f'<link rel="canonical" href="{HAUS}/{kuerzel}/{pfad}">' not in seite:
+        fehler.append("canonical zeigt nicht auf die eigene Adresse")
 
     # Nicht nur "steht irgendwo", sondern "steht in der Kopfleiste". Siehe
     # den Kommentar zur Marke in erzeuge_seite(): Er stand schon einmal im
@@ -806,13 +867,13 @@ def pruefe_seite(kuerzel, seite, texte):
     if 'class="sprachwahl"' not in kopf:
         fehler.append("kein Sprachumschalter in der Kopfleiste")
     for k in SPRACHEN:
-        if f'<a href="/{k}/" hreflang="{k}"' not in seite:
-            fehler.append(f"Sprachumschalter ohne Weg nach /{k}/")
+        if f'<a href="/{k}/{pfad}" hreflang="{k}"' not in seite:
+            fehler.append(f"Sprachumschalter ohne Weg nach /{k}/{pfad}")
 
     # Der Rueckgratsatz und der Medizinprodukt-Satz stehen wirklich im HTML —
     # nicht nur im Katalog. Ein Schluessel, den die Vorlage nicht mehr
     # auszeichnet, faellt hier auf.
-    for schluessel in ("fuss.merksatz", "fuss.recht"):
+    for schluessel in (("fuss.merksatz", "fuss.recht") if rueckgrat else ()):
         stueck = texte.get(schluessel, "")
         probe = html.escape(stueck, quote=False) if schluessel == "fuss.merksatz" else stueck
         if probe and probe not in seite:
@@ -829,7 +890,9 @@ def pruefe_seite(kuerzel, seite, texte):
             fehler.append(f"JSON-LD ist kein gueltiges JSON: {fehl}")
         else:
             knoten = {k.get("@type"): k for k in daten.get("@graph", [])}
-            for art in ("Organization", "WebPage", "SoftwareApplication"):
+            gefordert = ("Organization", "WebPage",
+                         "SoftwareApplication" if rueckgrat else "WebApplication")
+            for art in gefordert:
                 if art not in knoten:
                     fehler.append(f"JSON-LD ohne {art}")
             if knoten.get("WebPage", {}).get("inLanguage") != kuerzel:
@@ -867,17 +930,32 @@ def main():
     nur_pruefen = "--pruefe" in sys.argv
     nur_ernten = "--ernte" in sys.argv
 
-    vorlage = APPS / "index.html"
-    if not vorlage.exists():
-        print(f"  ✘ {vorlage} fehlt")
-        return 1
-    quelle = io.open(vorlage, encoding="utf-8").read()
+    # Alle Vorlagen lesen, jede fuer sich pruefen, dann EINEN Katalog daraus
+    # ernten. Ein Schluessel, der in zwei Vorlagen mit verschiedenem Text
+    # steht, faellt beim Zusammenlegen auf — leg_ab() in ernte() meldet das.
+    quellen = {}
+    for pfad, wie in SEITEN.items():
+        datei = APPS / wie["vorlage"]
+        if not datei.exists():
+            print(f"  ✘ {datei} fehlt")
+            return 1
+        quellen[pfad] = io.open(datei, encoding="utf-8").read()
 
-    if not pruefe_treue(quelle):
-        return 1
-    print("  ✔ Zerleger gibt apps/index.html unveraendert zurueck")
+    for pfad, quelle in quellen.items():
+        if not pruefe_treue(quelle):
+            print(f"    (in apps/{SEITEN[pfad]['vorlage']})")
+            return 1
+    print(f"  ✔ Zerleger gibt {len(quellen)} Vorlage(n) unveraendert zurueck")
 
-    geerntet, ernte_fehler = ernte(quelle)
+    geerntet, ernte_fehler = {}, []
+    for pfad, quelle in quellen.items():
+        teil, fehl = ernte(quelle)
+        for schluessel, wert in teil.items():
+            if schluessel in geerntet and geerntet[schluessel] != wert:
+                fehl.append(f'{schluessel}: steht in zwei Vorlagen mit '
+                            f'verschiedenem Text')
+            geerntet[schluessel] = wert
+        ernte_fehler += [f"apps/{SEITEN[pfad]['vorlage']}: {f}" for f in fehl]
     if ernte_fehler:
         for satz in ernte_fehler:
             print(f"  ✘ Ernte: {satz}")
@@ -899,10 +977,13 @@ def main():
         kataloge[kuerzel] = json.loads(io.open(p, encoding="utf-8").read())
 
     gut = True
-    if not pruefe_deutsch(quelle, kataloge["de"]):
-        gut = False
-    else:
-        print("  ✔ de.json gibt apps/index.html zeichengenau wieder")
+    for pfad, quelle in quellen.items():
+        wie = SEITEN[pfad]
+        if not pruefe_deutsch(quelle, kataloge["de"], pfad, wie["programm"]):
+            print(f"    (in apps/{wie['vorlage']})")
+            gut = False
+    if gut:
+        print(f"  ✔ de.json gibt {len(quellen)} Vorlage(n) zeichengenau wieder")
     if not pruefe_schluessel(kataloge):
         gut = False
     if not pruefe_ruecken(kataloge):
@@ -916,12 +997,15 @@ def main():
     # Erst alles bauen und pruefen, dann schreiben. Ein halber Stand auf der
     # Platte waere schlimmer als gar keiner.
     seiten = {}
-    for kuerzel in SPRACHEN:
-        texte = {**kataloge["de"], **kataloge[kuerzel]}
-        seite = erzeuge_seite(quelle, kuerzel, texte)
-        seiten[kuerzel] = seite
-        if not pruefe_seite(kuerzel, seite, texte):
-            gut = False
+    for pfad, quelle in quellen.items():
+        wie = SEITEN[pfad]
+        for kuerzel in SPRACHEN:
+            texte = {**kataloge["de"], **kataloge[kuerzel]}
+            seite = erzeuge_seite(quelle, kuerzel, texte, pfad, wie["programm"])
+            seiten[(pfad, kuerzel)] = seite
+            if not pruefe_seite(kuerzel, seite, texte, pfad, wie["rueckgrat"]):
+                print(f"    (in apps/{kuerzel}/{pfad})")
+                gut = False
 
     sitemap = erzeuge_sitemap()
     robots = erzeuge_robots()
@@ -933,7 +1017,7 @@ def main():
     if not gut:
         print("\n  Nichts geschrieben — der alte Stand bleibt stehen.")
         return 1
-    print(f"  ✔ {len(SPRACHEN)} Sprachseiten, sitemap.xml und robots.txt "
+    print(f"  ✔ {len(seiten)} Sprachseiten, sitemap.xml und robots.txt "
           f"bestehen die Pruefungen")
 
     if nur_pruefen:
@@ -941,14 +1025,17 @@ def main():
         return 0
 
     for kuerzel in SPRACHEN:
-        ordner = APPS / kuerzel
         # Alten Stand raeumen, damit ein entfernter Schluessel keine Leiche
-        # hinterlaesst.
+        # hinterlaesst. Der ganze Sprachordner faellt, mitsamt den
+        # Unterseiten — sonst bliebe eine geloeschte Seite fuer immer stehen.
+        ordner = APPS / kuerzel
         if ordner.exists():
             shutil.rmtree(ordner)
-        ordner.mkdir()
-        io.open(ordner / "index.html", "w", encoding="utf-8",
-                newline="\n").write(seiten[kuerzel])
+        for pfad in SEITEN:
+            ziel = ordner / pfad
+            ziel.mkdir(parents=True, exist_ok=True)
+            io.open(ziel / "index.html", "w", encoding="utf-8",
+                    newline="\n").write(seiten[(pfad, kuerzel)])
 
     # robots.txt und sitemap.xml liegen in apps/ selbst, nicht im
     # Sprachordner: Es sind Dateien des Hostes, keine Sprachfassungen.
@@ -957,16 +1044,18 @@ def main():
     io.open(APPS / "robots.txt", "w", encoding="utf-8",
             newline="\n").write(robots)
 
-    for kuerzel in SPRACHEN:
-        seite = seiten[kuerzel]
-        print(f"  ✔ apps/{kuerzel}/  {len(seite):>6} Zeichen "
-              f"({len(seite.encode('utf-8')):>6} Bytes), dir={SPRACHEN[kuerzel][1]}, "
-              f"Zahlen {SPRACHEN[kuerzel][2]}")
+    for pfad in SEITEN:
+        for kuerzel in SPRACHEN:
+            seite = seiten[(pfad, kuerzel)]
+            print(f"  ✔ apps/{kuerzel}/{pfad:<10} {len(seite):>6} Zeichen "
+                  f"({len(seite.encode('utf-8')):>6} Bytes), "
+                  f"dir={SPRACHEN[kuerzel][1]}, Zahlen {SPRACHEN[kuerzel][2]}")
     print(f"  ✔ apps/sitemap.xml  {len(sitemap):>6} Zeichen, "
-          f"{len(SPRACHEN)} Eintraege")
+          f"{len(SEITEN) * len(SPRACHEN)} Eintraege")
     print(f"  ✔ apps/robots.txt   {len(robots):>6} Zeichen")
-    print(f"\n  {len(SPRACHEN)} Sprachseiten fuer apps.iyambae.fm erzeugt, "
-          f"dazu sitemap.xml und robots.txt.")
+    print(f"\n  {len(seiten)} Seiten fuer apps.iyambae.fm erzeugt "
+          f"({len(SEITEN)} je {len(SPRACHEN)} Sprachen), dazu sitemap.xml "
+          f"und robots.txt.")
     return 0
 
 
