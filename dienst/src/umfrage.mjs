@@ -252,3 +252,78 @@ export async function legeAbgabeAb(speicher, antworten, jetzt = Date.now()) {
         rowKey: randomUUID(),
     });
 }
+
+/*
+  ── AUSWERTEN ────────────────────────────────────────────────────────
+
+  Der Anlass steht in 432hz-radio#8: Es gab einen Weg, eine Antwort
+  ABZUGEBEN, aber keinen, sie zu LESEN. Saemi-Ra hat zweimal nach einer
+  Zwischenauswertung gefragt, weil die Preisentscheidung daran haengt —
+  besonders an `bezahlt`, der Frage nach dem, was jemand einmal wirklich
+  ausgegeben hat.
+
+  WAS HERAUSKOMMT: Anzahl je Antwortmoeglichkeit. Nichts, was auf eine
+  einzelne Abgabe zurueckfuehrt.
+
+  DER FREITEXT WIRD NICHT AUSGEGEBEN, nur gezaehlt. Er ist das einzige
+  Feld, in dem ein Mensch frei geschrieben hat — auch wenn `saeubereFreitext`
+  Adressen und Geheimnisse entfernt, bleibt es der eine Ort, an dem etwas
+  stehen koennte, das nur einer geschrieben haben kann. Wer ihn lesen will,
+  soll das ausdruecklich entscheiden und nicht nebenbei bekommen. In #8 war
+  ausdruecklich nur nach Anzahlen gefragt.
+
+  WARUM TAGESWEISE und nicht in einem Durchgang: Der Partitionsschluessel
+  IST der Tag. Eine Abfrage je Tag laeuft ueber genau eine Partition; ein
+  Durchgang durch alles wuerde mit jeder Woche teurer, und zwar fuer immer.
+  Der Kopf dieser Datei nennt das als den Grund, warum der Tag dort steht —
+  hier wird er eingelöst.
+*/
+
+/** Wie viele Tage rückwärts eine Auswertung höchstens umfasst. */
+export const AUSWERTUNG_TAGE_HOECHSTENS = 365;
+
+/**
+ * Zählt die Antworten der letzten `tage` Tage.
+ *
+ * @returns `{ tage, seit, bis, abgaben, mitVorschlag, fragen: { feld: { wert: n } } }`
+ */
+export async function werteAus(speicher, { tage = 30, jetzt = Date.now() } = {}) {
+    const spanne = Math.min(Math.max(Math.trunc(tage) || 1, 1), AUSWERTUNG_TAGE_HOECHSTENS);
+
+    // Jede Antwortmoeglichkeit steht von Anfang an mit 0 da. Eine Stufe, die
+    // niemand gewaehlt hat, ist ein Ergebnis — sie einfach weglassen liesse
+    // den Leser raten, ob sie fehlt oder ob sie nie vorkam.
+    const fragen = {};
+    for (const [feld, werte] of Object.entries(AUSWAHL)) {
+        fragen[feld] = {};
+        for (const wert of werte) fragen[feld][wert] = 0;
+    }
+
+    let abgaben = 0;
+    let mitVorschlag = 0;
+
+    for (let i = 0; i < spanne; i++) {
+        const tag = tagVon(jetzt - i * 86_400_000);
+        for await (const zeile of speicher.liste(TABELLE_UMFRAGE, tag)) {
+            abgaben++;
+            for (const feld of Object.keys(AUSWAHL)) {
+                const wert = zeile[feld];
+                // `hasOwn` und nicht `in`: Sonst zaehlte ein Feld namens
+                // 'toString' auf dem Prototyp mit.
+                if (typeof wert === 'string' && Object.hasOwn(fragen[feld], wert)) {
+                    fragen[feld][wert]++;
+                }
+            }
+            if (typeof zeile.vorschlag === 'string' && zeile.vorschlag) mitVorschlag++;
+        }
+    }
+
+    return {
+        tage: spanne,
+        seit: tagVon(jetzt - (spanne - 1) * 86_400_000),
+        bis: tagVon(jetzt),
+        abgaben,
+        mitVorschlag,
+        fragen,
+    };
+}

@@ -15,8 +15,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { erzeugeDrossel } from '../src/server.mjs';
-import { TABELLE_UMFRAGE } from '../src/speicher.mjs';
-import { saeubereAbgabe, saeubereFreitext } from '../src/umfrage.mjs';
+import { TABELLE_UMFRAGE, speicherImArbeitsspeicher } from '../src/speicher.mjs';
+import {
+    saeubereAbgabe, saeubereFreitext, legeAbgabeAb, werteAus,
+    AUSWERTUNG_TAGE_HOECHSTENS,
+} from '../src/umfrage.mjs';
 import { starteTestdienst, fangeProtokoll } from './hilfe.mjs';
 
 /** Alle Zeilen der Umfragetabelle, ueber alle Tagespartitionen hinweg. */
@@ -362,4 +365,89 @@ test('der Freitext behaelt den Satz und verliert das Gift', () => {
     assert.equal(saeubereFreitext('   '), null);
     assert.equal(saeubereFreitext(42), null);
     assert.equal(saeubereFreitext(undefined), null);
+});
+
+/*
+  ── AUSWERTEN ────────────────────────────────────────────────────────
+
+  Vorgang 432hz-radio#8: Es gab einen Weg, eine Antwort abzugeben, aber
+  keinen, sie zu lesen. Hier steht, dass das Lesen zaehlt, was da ist —
+  und nichts ausgibt, was auf eine einzelne Abgabe zurueckfuehrt.
+*/
+
+test('werteAus zaehlt je Antwortmoeglichkeit', async () => {
+    const speicher = speicherImArbeitsspeicher();
+    const jetzt = Date.parse('2026-08-31T12:00:00Z');
+
+    for (const b of ['nie', 'bis50', 'bis50', 'ueber120']) {
+        await legeAbgabeAb(speicher, { bezahlt: b, sprache: 'de' }, jetzt);
+    }
+    // Eine Abgabe von vorgestern, damit das Fenster wirklich mehrere Tage fasst.
+    await legeAbgabeAb(speicher, { bezahlt: 'bis50', sprache: 'ja' },
+                       jetzt - 2 * 86_400_000);
+
+    const a = await werteAus(speicher, { tage: 7, jetzt });
+
+    assert.equal(a.abgaben, 5);
+    assert.equal(a.fragen.bezahlt.bis50, 3, 'zweimal heute, einmal vorgestern');
+    assert.equal(a.fragen.bezahlt.nie, 1);
+    assert.equal(a.fragen.bezahlt.ueber120, 1);
+    assert.equal(a.fragen.sprache.de, 4);
+    assert.equal(a.fragen.sprache.ja, 1);
+});
+
+test('jede Antwortmoeglichkeit steht da, auch die mit null', async () => {
+    /*
+      Eine Stufe, die niemand gewaehlt hat, IST ein Ergebnis. Sie weglassen
+      liesse den Leser raten, ob sie fehlt oder ob sie nie vorkam — und
+      gerade bei `bezahlt` haengt daran die Preisentscheidung.
+    */
+    const speicher = speicherImArbeitsspeicher();
+    const jetzt = Date.parse('2026-08-31T12:00:00Z');
+    await legeAbgabeAb(speicher, { bezahlt: 'nie' }, jetzt);
+
+    const a = await werteAus(speicher, { tage: 1, jetzt });
+    assert.deepEqual(Object.keys(a.fragen).sort(),
+                     ['bezahlt', 'fehlt', 'heute', 'sprache']);
+    assert.equal(a.fragen.bezahlt.abo, 0, 'nie gewaehlt, steht aber da');
+    assert.equal(a.fragen.heute.handy, 0);
+});
+
+test('der Freitext wird gezaehlt, aber nicht ausgegeben', async () => {
+    /*
+      Der Vorschlag ist das einzige Feld, in das ein Mensch frei geschrieben
+      hat. In #8 war ausdruecklich nur nach Anzahlen gefragt; ihn nebenbei
+      mitzuliefern waere eine Entscheidung, die niemand getroffen hat.
+    */
+    const speicher = speicherImArbeitsspeicher();
+    const jetzt = Date.parse('2026-08-31T12:00:00Z');
+    await legeAbgabeAb(speicher, { bezahlt: 'nie', vorschlag: 'Bitte auch fuer Linux' }, jetzt);
+    await legeAbgabeAb(speicher, { bezahlt: 'nie' }, jetzt);
+
+    const a = await werteAus(speicher, { tage: 1, jetzt });
+    assert.equal(a.mitVorschlag, 1);
+    assert.equal(JSON.stringify(a).includes('Linux'), false,
+                 'kein Wort des Freitexts in der Auswertung');
+});
+
+test('Abgaben ausserhalb des Fensters zaehlen nicht mit', async () => {
+    const speicher = speicherImArbeitsspeicher();
+    const jetzt = Date.parse('2026-08-31T12:00:00Z');
+    await legeAbgabeAb(speicher, { bezahlt: 'nie' }, jetzt);
+    await legeAbgabeAb(speicher, { bezahlt: 'abo' }, jetzt - 10 * 86_400_000);
+
+    const a = await werteAus(speicher, { tage: 3, jetzt });
+    assert.equal(a.abgaben, 1, 'die zehn Tage alte Abgabe bleibt draussen');
+    assert.equal(a.fragen.bezahlt.abo, 0);
+    assert.equal(a.seit, '2026-08-29');
+    assert.equal(a.bis, '2026-08-31');
+});
+
+test('das Fenster ist gedeckelt', async () => {
+    // Ohne Deckel liesse sich mit tage=100000 ein Durchgang ueber
+    // hunderttausend Partitionen ausloesen — eine Anfrage, die den Dienst
+    // beschaeftigt, ohne dass jemand sie bezahlt.
+    const speicher = speicherImArbeitsspeicher();
+    const a = await werteAus(speicher, { tage: 999_999, jetzt: Date.now() });
+    assert.equal(a.tage, AUSWERTUNG_TAGE_HOECHSTENS);
 });

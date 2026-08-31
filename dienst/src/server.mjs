@@ -57,7 +57,7 @@ import {
     saeubereVerlauf, verschmelzeVerlauf,
 } from './abgleich.mjs';
 import { erzeugeFremdanmeldung } from './fremd.mjs';
-import { saeubereAbgabe, legeAbgabeAb } from './umfrage.mjs';
+import { saeubereAbgabe, legeAbgabeAb, werteAus } from './umfrage.mjs';
 import {
     erzeugeAbfrager, erzeugeZusammenfassung, liesFenster,
     liesSchluessel, schluesselStimmt,
@@ -1113,6 +1113,37 @@ export function baueDienst({
                 anzahl: tage, dauer: Date.now() - start,
             });
 
+            /*
+              Die Umfrage haengt hier mit dran und bekommt KEINEN eigenen Weg.
+              Vorgang 432hz-radio#8 fragte nach `GET /api/umfrage?auswertung=1`
+              — dagegen sprechen zwei Dinge:
+
+                · Es waere ein zweiter Weg mit demselben Schluessel, derselben
+                  Drossel und derselben Absicherung. Zwei Stellen, die
+                  dasselbe tun, laufen auseinander; und die eine Stelle, an
+                  der das teuer wird, ist genau die Schluesselpruefung.
+                · Saemi-Ra braucht den Schluessel ohnehin fuer die Zahlen.
+                  Ein Schluessel fuer beides ist eine Sache weniger, die
+                  weitergegeben werden muss.
+
+              `POST /api/umfrage` bleibt unberuehrt und ohne Schluessel: Wer
+              antwortet, soll nichts vorzeigen muessen. Nur das LESEN ist
+              abgesichert.
+
+              Faellt der Speicher aus, faellt nicht die ganze Antwort aus. Die
+              Zahlen aus Log Analytics stehen trotzdem da — sie kommen aus
+              einer anderen Quelle und haben mit der Umfrage nichts zu tun.
+            */
+            let umfrage = null;
+            try {
+                umfrage = await werteAus(speicher, { tage });
+            } catch (fehler) {
+                umfrage = {
+                    fehler: 'umfrage_nicht_lesbar',
+                    grund: String(fehler?.grund ?? fehler?.code ?? 'unbekannt'),
+                };
+            }
+
             return {
                 status: 200,
                 koerper: {
@@ -1120,6 +1151,7 @@ export function baueDienst({
                     frisch: ergebnis.frisch,
                     alter_sekunden: ergebnis.alterSekunden,
                     ...(ergebnis.stoerung ? { stoerung: ergebnis.stoerung } : {}),
+                    umfrage,
                 },
             };
         },
