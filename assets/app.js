@@ -776,9 +776,26 @@ class AudioEngine {
     speicher.schreib(SCHLUESSEL.pitch432, this.ist432An);
   }
 
+  /*
+   BERICHTIGT AM 31.08.2026. Hier stand `status.live432Gemessen`, und der Text
+   dazu lautete „Live — 432Hz gemessen".
+
+   GEMESSEN WIRD HIER NICHTS. Das Radio nimmt bei jedem Sender an, er stehe
+   auf 440, und zieht pauschal 1,8 % ab. Drei andere Stellen derselben Seite
+   sagen das auch ausdruecklich — „Diese Seite raet. Der IYAMBAE Tuner misst."
+   ist die Ueberschrift, mit der hier der Tuner verkauft wird.
+
+   Ein Wort in der Statusleiste, das dem widerspricht, kostet also nicht nur
+   Wahrheit, sondern das Verkaufsargument gleich mit.
+
+   Was der Unterschied zwischen den beiden Zustaenden WIRKLICH ist: Mit dem
+   Signalkern wandert nur die Tonhoehe. Ohne ihn — bei Sendern ohne
+   CORS-Freigabe — zieht `playbackRate` Tonhoehe UND Tempo herunter, das
+   Stueck laeuft 1,8 % langsamer. Genau das sagt der Text jetzt.
+  */
   statusText() {
     if (!this.ist432An) return t('status.live440');
-    return this.kernUebernimmt() ? t('status.live432Gemessen') : t('status.live432');
+    return this.kernUebernimmt() ? t('status.live432Exakt') : t('status.live432');
   }
 
   setzeLautstaerke(wert, merken = true) {
@@ -3223,6 +3240,28 @@ function richteMitnehmenEin() {
   // Der Startknopf am Deck macht dasselbe wie der grosse Knopf daneben.
   document.getElementById('startstop')?.addEventListener('click', () => {
     window.app?.wechselSpiel();
+  });
+
+  /*
+   Der Knopf oben in der Kopfzeile bringt den Besucher zum Abschnitt und
+   hebt ihn dort kurz hervor.
+
+   Warum die Hervorhebung: Der Abschnitt steht am Seitenende, und dort ist
+   die Seite ruhig. Wer hinspringt, landet vor drei Zeilen, die alle gleich
+   aussehen, und sucht, was gemeint war. Zwei Sekunden Gold beantworten das,
+   ohne dass ein Kasten aufpoppt.
+  */
+  const abschnitt = document.getElementById('mitnehmen');
+  document.getElementById('kopfMitnehmen')?.addEventListener('click', () => {
+    if (!abschnitt) return;
+    const ruhig = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    abschnitt.scrollIntoView({ block: 'center', behavior: ruhig ? 'auto' : 'smooth' });
+    abschnitt.classList.add('ist-gemeint');
+    clearTimeout(abschnitt._hervor);
+    abschnitt._hervor = setTimeout(() => abschnitt.classList.remove('ist-gemeint'), 2400);
+    // Der erste Knopf bekommt den Tastaturfokus — wer mit der Tastatur
+    // unterwegs ist, steht sonst weiter oben und muss den Weg selbst gehen.
+    abschnitt.querySelector('button:not([hidden])')?.focus({ preventScroll: true });
   });
 
   const startseite = document.getElementById('knopfStartseite');

@@ -125,6 +125,48 @@ a { color: var(--pink-hell); }
     transition: color 0.2s ease;
 }
 .kopf__lupe:hover { color: var(--text); }
+
+/* ── Der Knopf zum Mitnehmen, oben ───────────────────────────────
+   Er soll auffallen und trotzdem nicht betteln. Deshalb: Goldrand statt
+   Goldfläche. Ein gefüllter Knopf neben dem Logo zöge mehr Aufmerksamkeit
+   als der Laden selbst, und der Laden ist die Ware.
+
+   Auf schmalen Geräten fällt das Wort weg und das Zeichen bleibt. Ein
+   Zeichen allein ist hier vertretbar, weil daneben `title` und
+   `aria-label` stehen — und weil der Weg dorthin nicht die einzige
+   Möglichkeit ist: Der Abschnitt steht weiterhin unten. */
+.kopf__mitnehmen {
+    display: inline-flex; align-items: center; gap: 0.4rem; flex: none;
+    margin-inline-start: auto;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--gold); border-radius: 2px;
+    background: none; color: var(--gold);
+    font-family: var(--mono); font-size: 0.68rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.kopf__mitnehmen:hover { background: var(--gold); color: var(--grund); }
+.kopf__mitnehmen:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+@media (max-width: 34rem) {
+    .kopf__mitnehmen { padding: 0.35rem 0.45rem; }
+    .kopf__mitnehmen__wort { display: none; }
+}
+
+/* Der Abschnitt hebt sich kurz hervor, wenn man von oben dorthin springt.
+   Ohne das landet der Blick am Seitenende und sucht, was sich geändert
+   hat — die Seite ist dort ruhig und alles sieht gleich aus. */
+.mitnehmen.ist-gemeint .mitnehmen__titel { color: var(--pink-hell); }
+.mitnehmen.ist-gemeint .mitnehmen__knoepfe .knopf {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(242, 183, 5, 0.18);
+}
+.mitnehmen .mitnehmen__titel,
+.mitnehmen .mitnehmen__knoepfe .knopf { transition: color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease; }
+@media (prefers-reduced-motion: reduce) {
+    .kopf__mitnehmen, .mitnehmen .mitnehmen__titel,
+    .mitnehmen .mitnehmen__knoepfe .knopf { transition: none; }
+}
 .kopf__suche.ist-offen .kopf__lupe { cursor: default; }
 
 .kopf__suche input {
