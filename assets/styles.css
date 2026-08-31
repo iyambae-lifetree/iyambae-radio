@@ -566,6 +566,83 @@ body.spielt .lampe33 { opacity: 0.9; box-shadow: 0 0 6px rgba(242, 183, 5, 0.8);
 body.spielt .platte { animation-play-state: running; }
 @keyframes dreht { to { transform: rotate(360deg); } }
 
+/* ── Das Lichtspiel am Tellerrand ────────────────────────────────
+
+   Der Punktkranz liegt über dem Foto und unter dem Tonarm. Er steht
+   still, solange die Geschwindigkeit stimmt — und wandert rückwärts,
+   sobald 432 an ist. Genau das tut ein echtes Deck bei −1,8 %.
+
+   DIE ZAHL IST GERECHNET, NICHT GEWÄHLT: 180 Marken auf dem vollen Kreis,
+   also eine alle 2 Grad. Bei −1,8 % wandert das Muster um 1,8 % der
+   Blitzfolge, das sind rund 1,8 Marken je Sekunde. 1,8 × 2 Grad = 3,6
+   Grad je Sekunde, macht 100 s für eine volle Umdrehung. Deshalb 100s.
+
+   Rückwärts, weil die Platte zu LANGSAM läuft: Sie bleibt gegenüber der
+   Lampe zurück. Die Labeldrehung geht vorwärts, der Kranz dagegen. */
+.strobo {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+body.spielt .strobo { opacity: 1; }
+
+.strobo__ring {
+    /* `view-box` ist hier nicht schmueckendes Beiwerk: Ohne diese Zeile
+       zaehlt `transform-origin` in BILDSCHIRMPIXELN des <svg>-Kastens,
+       nicht in den Einheiten der viewBox. Das Bild wird aber je nach
+       Fensterbreite verschieden gross dargestellt — der Kranz drehte sich
+       dann um einen wandernden Punkt irgendwo neben dem Teller. */
+    transform-box: view-box;
+    transform-origin: 551px 530px;
+    animation: strobo-wandert 100s linear infinite;
+    animation-play-state: paused;
+}
+body.spielt.stimmt-432 .strobo__ring { animation-play-state: running; }
+@keyframes strobo-wandert { to { transform: rotate(-360deg); } }
+
+/* Die Lampe atmet leicht — eine Glühwendel im Netztakt steht nie ganz
+   ruhig. Sehr wenig: Wer es bemerkt, soll es für Zufall halten. */
+.strobo__schein { animation: strobo-glimmt 2.4s ease-in-out infinite; }
+@keyframes strobo-glimmt { 0%, 100% { opacity: 1; } 50% { opacity: 0.82; } }
+
+/* ── Der Glanz auf den Rillen ─────────────────────────────────────
+
+   Kein Nachbau des Fotos, sondern ein Hauch darüber: ein weicher
+   Streifen, wo im Foto ohnehin das Licht liegt — oben links, etwa auf
+   elf Uhr. Er dreht sich NICHT mit; er schwillt nur an und ab.
+
+   Warum das reicht: Konzentrische Rillen sehen gedreht aus wie
+   ungedreht. Sichtbar ist allein, dass das Licht über sie hinwegläuft. */
+.glanz {
+    position: absolute;
+    left: 39.4%; top: 49.2%;
+    width: 74.6%; aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    /* 33,6 % / 19,4 % ist gerechnet, nicht gewaehlt: Im Foto liegt der
+       Lichtstreifen um (380, 210) von 1400 x 1077. Umgerechnet auf diesen
+       Kasten landet er genau dort. */
+    background: radial-gradient(ellipse 44% 21% at 33.6% 19.4%,
+                rgba(255, 252, 240, 0.17), rgba(255, 252, 240, 0) 72%);
+    transition: opacity 0.8s ease;
+}
+body.spielt .glanz {
+    opacity: 1;
+    animation: glanz-atmet 3.6s ease-in-out infinite;
+}
+@keyframes glanz-atmet { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .strobo__ring, .strobo__schein { animation: none; }
+    body.spielt .glanz { animation: none; opacity: 0.7; }
+}
+
 .hero__guete { font-family: var(--mono); font-size: 0.72rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; }
 .hero__name { font-family: var(--anzeige); font-size: clamp(1.6rem, 5vw, 2.6rem); font-weight: 900; line-height: 1.15; margin: 0.3rem 0; }
 .hero__ort { font-size: 0.9rem; color: var(--text-leise); }

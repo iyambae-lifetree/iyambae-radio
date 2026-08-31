@@ -125,6 +125,167 @@
         <img class="deck" src="/assets/bild/plattenspieler.webp" alt="" draggable="false"
              width="1400" height="1077" fetchpriority="high" decoding="async">
 
+
+        <!-- ══ Das Lichtspiel des Technics ═══════════════════════════
+             Sāmi-Ra am 31.08.2026: „Und dass das berühmte Lichtspiel, das
+             Technics Plattenspieler unten links machen, auch zur Geltung
+             kommt!"
+
+             WAS EIN ECHTES DECK HIER TUT: Am Tellerrand sitzt ein Kranz
+             kleiner Marken, und links vorn eine Lampe, die im Takt des
+             Netzes flackert. Stimmt die Geschwindigkeit, stehen die Marken
+             scheinbar still. Ist der Pitch verstellt, wandern sie — und
+             zwar genau um den Fehlbetrag.
+
+             UNSER PITCH IST −1,8 %, WENN 432 AN IST. Also:
+
+                 432 aus   die Marken stehen
+                 432 an    sie kriechen rückwärts, rund 1,8 Marken je Sekunde
+
+             Damit ist das kein Zierat, sondern eine Anzeige, die die
+             Wahrheit über den Zustand des Geräts sagt — ohne ein Wort. Die
+             Pitch-Skala steht im Foto direkt darunter gedruckt.
+
+             EHRLICH GESAGT: Die echte Physik — eine flackernde Lampe, die
+             gegen wandernde Marken aliast — lässt sich auf einem Bildschirm
+             mit 60 Bildern je Sekunde nicht nachbauen. Wir animieren das
+             Wandern unmittelbar. Fürs Auge ist es dasselbe; es ist die
+             Nachbildung des Aussehens, nicht des Mechanismus.
+
+             Die Maße sind am Foto gemessen, nicht geschätzt: Mitte des
+             Tellers bei 551/530, Halbmesser 511 — der schwarze
+             Kreis der Platte misst 522, der Kranz liegt also knapp
+             darunter, dort wo ihn die Platte nicht verdeckt.
+             ═════════════════════════════════════════════════════════ -->
+        <svg class="strobo" viewBox="0 0 1400 1077" aria-hidden="true" focusable="false">
+          <defs>
+            <!-- Nur wo die Lampe hinleuchtet, ist etwas zu sehen. Ohne diese
+                 Maske liefe ein Ring aus Punkten um den ganzen Teller, und
+                 das gibt es an keinem Gerät. -->
+            <radialGradient id="stroboLicht" cx="158.0" cy="828.0" r="235" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#fff" stop-opacity="1"/>
+              <stop offset="0.55" stop-color="#fff" stop-opacity="0.55"/>
+              <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            </radialGradient>
+            <mask id="stroboMaske">
+              <rect width="1400" height="1077" fill="url(#stroboLicht)"/>
+            </mask>
+            <radialGradient id="stroboSchein" cx="158.0" cy="828.0" r="150" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#F2B705" stop-opacity="0.30"/>
+              <stop offset="1" stop-color="#F2B705" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Der Schein der Lampe selbst. Er wandert nicht mit. -->
+          <circle class="strobo__schein" cx="158.0" cy="828.0" r="150" fill="url(#stroboSchein)"/>
+
+          <g mask="url(#stroboMaske)">
+            <g class="strobo__ring" fill="#14141a" fill-opacity="0.72">
+              <rect x="1058.0" y="517.0" width="16" height="26" rx="2" transform="rotate(90.0 1066.0 530.0)"/>
+              <rect x="1056.7" y="552.9" width="16" height="26" rx="2" transform="rotate(94.0 1064.7 565.9)"/>
+              <rect x="1053.0" y="588.7" width="16" height="26" rx="2" transform="rotate(98.0 1061.0 601.7)"/>
+              <rect x="1046.7" y="624.1" width="16" height="26" rx="2" transform="rotate(102.0 1054.7 637.1)"/>
+              <rect x="1038.0" y="659.0" width="16" height="26" rx="2" transform="rotate(106.0 1046.0 672.0)"/>
+              <rect x="1026.9" y="693.1" width="16" height="26" rx="2" transform="rotate(110.0 1034.9 706.1)"/>
+              <rect x="1013.5" y="726.5" width="16" height="26" rx="2" transform="rotate(114.0 1021.5 739.5)"/>
+              <rect x="997.7" y="758.8" width="16" height="26" rx="2" transform="rotate(118.0 1005.7 771.8)"/>
+              <rect x="979.7" y="789.9" width="16" height="26" rx="2" transform="rotate(122.0 987.7 802.9)"/>
+              <rect x="959.6" y="819.7" width="16" height="26" rx="2" transform="rotate(126.0 967.6 832.7)"/>
+              <rect x="937.5" y="848.0" width="16" height="26" rx="2" transform="rotate(130.0 945.5 861.0)"/>
+              <rect x="913.5" y="874.7" width="16" height="26" rx="2" transform="rotate(134.0 921.5 887.7)"/>
+              <rect x="887.6" y="899.7" width="16" height="26" rx="2" transform="rotate(138.0 895.6 912.7)"/>
+              <rect x="860.1" y="922.8" width="16" height="26" rx="2" transform="rotate(142.0 868.1 935.8)"/>
+              <rect x="831.0" y="944.0" width="16" height="26" rx="2" transform="rotate(146.0 839.0 957.0)"/>
+              <rect x="800.5" y="963.0" width="16" height="26" rx="2" transform="rotate(150.0 808.5 976.0)"/>
+              <rect x="768.8" y="979.9" width="16" height="26" rx="2" transform="rotate(154.0 776.8 992.9)"/>
+              <rect x="735.9" y="994.5" width="16" height="26" rx="2" transform="rotate(158.0 743.9 1007.5)"/>
+              <rect x="702.1" y="1006.8" width="16" height="26" rx="2" transform="rotate(162.0 710.1 1019.8)"/>
+              <rect x="667.6" y="1016.7" width="16" height="26" rx="2" transform="rotate(166.0 675.6 1029.7)"/>
+              <rect x="632.4" y="1024.2" width="16" height="26" rx="2" transform="rotate(170.0 640.4 1037.2)"/>
+              <rect x="596.8" y="1029.2" width="16" height="26" rx="2" transform="rotate(174.0 604.8 1042.2)"/>
+              <rect x="561.0" y="1031.7" width="16" height="26" rx="2" transform="rotate(178.0 569.0 1044.7)"/>
+              <rect x="525.0" y="1031.7" width="16" height="26" rx="2" transform="rotate(182.0 533.0 1044.7)"/>
+              <rect x="489.2" y="1029.2" width="16" height="26" rx="2" transform="rotate(186.0 497.2 1042.2)"/>
+              <rect x="453.6" y="1024.2" width="16" height="26" rx="2" transform="rotate(190.0 461.6 1037.2)"/>
+              <rect x="418.4" y="1016.7" width="16" height="26" rx="2" transform="rotate(194.0 426.4 1029.7)"/>
+              <rect x="383.9" y="1006.8" width="16" height="26" rx="2" transform="rotate(198.0 391.9 1019.8)"/>
+              <rect x="350.1" y="994.5" width="16" height="26" rx="2" transform="rotate(202.0 358.1 1007.5)"/>
+              <rect x="317.2" y="979.9" width="16" height="26" rx="2" transform="rotate(206.0 325.2 992.9)"/>
+              <rect x="285.5" y="963.0" width="16" height="26" rx="2" transform="rotate(210.0 293.5 976.0)"/>
+              <rect x="255.0" y="944.0" width="16" height="26" rx="2" transform="rotate(214.0 263.0 957.0)"/>
+              <rect x="225.9" y="922.8" width="16" height="26" rx="2" transform="rotate(218.0 233.9 935.8)"/>
+              <rect x="198.4" y="899.7" width="16" height="26" rx="2" transform="rotate(222.0 206.4 912.7)"/>
+              <rect x="172.5" y="874.7" width="16" height="26" rx="2" transform="rotate(226.0 180.5 887.7)"/>
+              <rect x="148.5" y="848.0" width="16" height="26" rx="2" transform="rotate(230.0 156.5 861.0)"/>
+              <rect x="126.4" y="819.7" width="16" height="26" rx="2" transform="rotate(234.0 134.4 832.7)"/>
+              <rect x="106.3" y="789.9" width="16" height="26" rx="2" transform="rotate(238.0 114.3 802.9)"/>
+              <rect x="88.3" y="758.8" width="16" height="26" rx="2" transform="rotate(242.0 96.3 771.8)"/>
+              <rect x="72.5" y="726.5" width="16" height="26" rx="2" transform="rotate(246.0 80.5 739.5)"/>
+              <rect x="59.1" y="693.1" width="16" height="26" rx="2" transform="rotate(250.0 67.1 706.1)"/>
+              <rect x="48.0" y="659.0" width="16" height="26" rx="2" transform="rotate(254.0 56.0 672.0)"/>
+              <rect x="39.3" y="624.1" width="16" height="26" rx="2" transform="rotate(258.0 47.3 637.1)"/>
+              <rect x="33.0" y="588.7" width="16" height="26" rx="2" transform="rotate(262.0 41.0 601.7)"/>
+              <rect x="29.3" y="552.9" width="16" height="26" rx="2" transform="rotate(266.0 37.3 565.9)"/>
+              <rect x="28.0" y="517.0" width="16" height="26" rx="2" transform="rotate(270.0 36.0 530.0)"/>
+              <rect x="29.3" y="481.1" width="16" height="26" rx="2" transform="rotate(274.0 37.3 494.1)"/>
+              <rect x="33.0" y="445.3" width="16" height="26" rx="2" transform="rotate(278.0 41.0 458.3)"/>
+              <rect x="39.3" y="409.9" width="16" height="26" rx="2" transform="rotate(282.0 47.3 422.9)"/>
+              <rect x="48.0" y="375.0" width="16" height="26" rx="2" transform="rotate(286.0 56.0 388.0)"/>
+              <rect x="59.1" y="340.9" width="16" height="26" rx="2" transform="rotate(290.0 67.1 353.9)"/>
+              <rect x="72.5" y="307.5" width="16" height="26" rx="2" transform="rotate(294.0 80.5 320.5)"/>
+              <rect x="88.3" y="275.2" width="16" height="26" rx="2" transform="rotate(298.0 96.3 288.2)"/>
+              <rect x="106.3" y="244.1" width="16" height="26" rx="2" transform="rotate(302.0 114.3 257.1)"/>
+              <rect x="126.4" y="214.3" width="16" height="26" rx="2" transform="rotate(306.0 134.4 227.3)"/>
+              <rect x="148.5" y="186.0" width="16" height="26" rx="2" transform="rotate(310.0 156.5 199.0)"/>
+              <rect x="172.5" y="159.3" width="16" height="26" rx="2" transform="rotate(314.0 180.5 172.3)"/>
+              <rect x="198.4" y="134.3" width="16" height="26" rx="2" transform="rotate(318.0 206.4 147.3)"/>
+              <rect x="225.9" y="111.2" width="16" height="26" rx="2" transform="rotate(322.0 233.9 124.2)"/>
+              <rect x="255.0" y="90.0" width="16" height="26" rx="2" transform="rotate(326.0 263.0 103.0)"/>
+              <rect x="285.5" y="71.0" width="16" height="26" rx="2" transform="rotate(330.0 293.5 84.0)"/>
+              <rect x="317.2" y="54.1" width="16" height="26" rx="2" transform="rotate(334.0 325.2 67.1)"/>
+              <rect x="350.1" y="39.5" width="16" height="26" rx="2" transform="rotate(338.0 358.1 52.5)"/>
+              <rect x="383.9" y="27.2" width="16" height="26" rx="2" transform="rotate(342.0 391.9 40.2)"/>
+              <rect x="418.4" y="17.3" width="16" height="26" rx="2" transform="rotate(346.0 426.4 30.3)"/>
+              <rect x="453.6" y="9.8" width="16" height="26" rx="2" transform="rotate(350.0 461.6 22.8)"/>
+              <rect x="489.2" y="4.8" width="16" height="26" rx="2" transform="rotate(354.0 497.2 17.8)"/>
+              <rect x="525.0" y="2.3" width="16" height="26" rx="2" transform="rotate(358.0 533.0 15.3)"/>
+              <rect x="561.0" y="2.3" width="16" height="26" rx="2" transform="rotate(362.0 569.0 15.3)"/>
+              <rect x="596.8" y="4.8" width="16" height="26" rx="2" transform="rotate(366.0 604.8 17.8)"/>
+              <rect x="632.4" y="9.8" width="16" height="26" rx="2" transform="rotate(370.0 640.4 22.8)"/>
+              <rect x="667.6" y="17.3" width="16" height="26" rx="2" transform="rotate(374.0 675.6 30.3)"/>
+              <rect x="702.1" y="27.2" width="16" height="26" rx="2" transform="rotate(378.0 710.1 40.2)"/>
+              <rect x="735.9" y="39.5" width="16" height="26" rx="2" transform="rotate(382.0 743.9 52.5)"/>
+              <rect x="768.8" y="54.1" width="16" height="26" rx="2" transform="rotate(386.0 776.8 67.1)"/>
+              <rect x="800.5" y="71.0" width="16" height="26" rx="2" transform="rotate(390.0 808.5 84.0)"/>
+              <rect x="831.0" y="90.0" width="16" height="26" rx="2" transform="rotate(394.0 839.0 103.0)"/>
+              <rect x="860.1" y="111.2" width="16" height="26" rx="2" transform="rotate(398.0 868.1 124.2)"/>
+              <rect x="887.6" y="134.3" width="16" height="26" rx="2" transform="rotate(402.0 895.6 147.3)"/>
+              <rect x="913.5" y="159.3" width="16" height="26" rx="2" transform="rotate(406.0 921.5 172.3)"/>
+              <rect x="937.5" y="186.0" width="16" height="26" rx="2" transform="rotate(410.0 945.5 199.0)"/>
+              <rect x="959.6" y="214.3" width="16" height="26" rx="2" transform="rotate(414.0 967.6 227.3)"/>
+              <rect x="979.7" y="244.1" width="16" height="26" rx="2" transform="rotate(418.0 987.7 257.1)"/>
+              <rect x="997.7" y="275.2" width="16" height="26" rx="2" transform="rotate(422.0 1005.7 288.2)"/>
+              <rect x="1013.5" y="307.5" width="16" height="26" rx="2" transform="rotate(426.0 1021.5 320.5)"/>
+              <rect x="1026.9" y="340.9" width="16" height="26" rx="2" transform="rotate(430.0 1034.9 353.9)"/>
+              <rect x="1038.0" y="375.0" width="16" height="26" rx="2" transform="rotate(434.0 1046.0 388.0)"/>
+              <rect x="1046.7" y="409.9" width="16" height="26" rx="2" transform="rotate(438.0 1054.7 422.9)"/>
+              <rect x="1053.0" y="445.3" width="16" height="26" rx="2" transform="rotate(442.0 1061.0 458.3)"/>
+              <rect x="1056.7" y="481.1" width="16" height="26" rx="2" transform="rotate(446.0 1064.7 494.1)"/>
+            </g>
+          </g>
+        </svg>
+
+        <!-- Der Glanz auf den Rillen.
+
+             Rillen sind konzentrische Kreise — gedreht sehen sie aus wie
+             vorher. Was eine laufende Platte für das Auge ausmacht, ist
+             nicht die Rille, sondern das Licht darauf: Der Streifen bleibt,
+             wo die Lampe steht, und die Rillen funkeln darunter durch.
+
+             Deshalb dreht sich hier nichts. Es atmet nur. Der Takt ist der
+             der Labeldrehung — 3,6 s —, damit Glanz und Mitte übereinstimmen. -->
+        <div class="glanz" aria-hidden="true"></div>
+
         <div class="platte" id="platte">
             <div class="label" id="label">
                 <img class="label__bild" id="labelBild" src="/assets/logo/iyambae-label.svg" alt="" draggable="false">
