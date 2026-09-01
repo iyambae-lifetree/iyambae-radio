@@ -8,6 +8,24 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v30: NACHGEZOGEN, NICHT SELBST VERURSACHT.
+//
+// 97250be hat die Katalogtexte in sechs Sprachen uebersetzt — 165 Sender
+// und 11 Regale je Sprache —, dazu assets/app.js und alle sieben
+// Sprachseiten geaendert. Die Fassung blieb dabei auf v29 stehen.
+//
+// Beides liegt im Zwischenspeicher: app.js steht in SHELL_FILES, die
+// Sprachseiten kommen ueber SPRACHEN.flatMap dazu. Ohne neue Nummer haette
+// jeder BESTEHENDE Besucher seine alte deutsche Seite behalten — dauerhaft.
+//
+// Genau das hat Sāmi-Ra am 01.09.2026 gemeldet: „Die internationalen Seiten
+// ergeben keinen Sinn, wenn der meiste Text immer noch auf deutsch ist."
+// Frisch aufgerufen war die Uebersetzung schon da; er sah seinen eigenen
+// Zwischenspeicher.
+//
+// Der Satz ganz oben in dieser Datei sagt es seit jeher: Bei JEDER Aenderung
+// an SHELL_FILES hochzaehlen.
+//
 // v29: Das Lichtspiel am Tellerrand und der Glanz auf den Rillen.
 //
 // v28: Kopfknopf „Mitnehmen", und die Statusleiste sagt nicht mehr
@@ -17,7 +35,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v29';
+const SW_VERSION = 'iyambae-v30';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
