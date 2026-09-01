@@ -386,6 +386,19 @@ def ernte(vorlage_quelle):
 # "assets/marke.svg" nach /de/assets/marke.svg. Absolut machen, nicht kopieren.
 RELATIV = re.compile(r'(\s(?:href|src)=")(?!https?:|/|#|data:|mailto:)')
 
+# Verweise von einer Seite dieser Sammlung zu einer anderen.
+#
+# In den Vorlagen stehen sie als /de/… — also so, wie sie auf der deutschen
+# Seite richtig sind. Auf jeder anderen Sprachfassung wird das Kuerzel
+# ausgetauscht.
+#
+# WARUM NICHT DOKUMENTRELATIV: „stimmung/" waere naheliegend, wird von
+# RELATIV aber zu „/stimmung/" gemacht — und das ist die Wurzel ohne
+# Sprache. Auf /de/ zeigte der Knopf zum Messwerkzeug dann an der
+# Sprachwahl vorbei, und auf der Messseite zeigte „Zum Tuner" nach „/".
+# Genau so gebaut und im ersten Durchlauf gesehen.
+SEITENVERWEIS = re.compile(r'(\shref=")/de/')
+
 # Anker in der Vorlage. Fehlt einer, bricht der Lauf ab: Eine Seite ohne
 # Sprachumschalter oder ohne die Woerter fuer den Messer waere genau der
 # stille Rueckfall, den niemand bemerkt.
@@ -580,6 +593,7 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, pfad="", programm="tuner",
 
     seite = zusammen(stuecke)
     seite = RELATIV.sub(r"\1/", seite)
+    seite = SEITENVERWEIS.sub(rf'\g<1>/{kuerzel}/', seite)
 
     # hreflang: sagt der Suchmaschine, dass dies sieben Fassungen EINER Seite
     # sind und nicht sieben duenne Seiten. Ohne das konkurrieren sie
