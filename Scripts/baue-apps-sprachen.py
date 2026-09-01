@@ -93,6 +93,12 @@ SEITEN = {
         # Nur hier stehen die Saetze, die rechtlich tragen muessen.
         "rueckgrat": True,
     },
+    "hoertest/": {
+        "vorlage": "hoertest.html",
+        # Auch kein Programm zum Herunterladen — ein Pruefstand im Browser.
+        "programm": "messwerkzeug",
+        "rueckgrat": True,
+    },
     "stimmung/": {
         "vorlage": "stimmung.html",
         # Kein Programm zum Herunterladen — das Werkzeug laeuft im Browser.

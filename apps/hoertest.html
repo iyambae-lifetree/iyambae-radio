@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title data-text="hoer.seite.titel">Hörst du den Unterschied zwischen 432 und 440 Hz? — Blindtest</title>
+<meta name="description" data-inhalt="hoer.seite.beschreibung" content="Ein Blindtest in zwei Runden: erst 432 gegen 440 Hz, dann 432 gegen 433. Derselbe Ausschnitt, zufällige Reihenfolge, fünf Durchgänge. Du erfährst, was du wirklich hörst — und was die Zahl damit zu tun hat. Kostenlos, ohne Konto.">
+<meta name="theme-color" content="#0A0908">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IYAMBAE Tuner">
+<meta property="og:title" data-inhalt="hoer.seite.titel" content="Hörst du den Unterschied zwischen 432 und 440 Hz? — Blindtest">
+<meta property="og:description" data-inhalt="hoer.seite.beschreibung" content="Ein Blindtest in zwei Runden: erst 432 gegen 440 Hz, dann 432 gegen 433. Derselbe Ausschnitt, zufällige Reihenfolge, fünf Durchgänge. Du erfährst, was du wirklich hörst — und was die Zahl damit zu tun hat. Kostenlos, ohne Konto.">
+<meta property="og:url" content="https://apps.iyambae.fm/de/hoertest/">
+<meta property="og:locale" content="de">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://apps.iyambae.fm/de/hoertest/">
+<link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/schrift/schriften.css">
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   Eigenes, knappes Stilblatt — wie bei /stimmung/, aus demselben Grund.
+   :root steht zeichengleich in allen drei Seiten.
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  --nacht:        #0B0B0E;
+  --grund:        #121216;
+  --grund-hoch:   #1C1D23;
+  --kante:        #2A2B33;
+  --kante-hell:   #38393F;
+  --r1: #FF5252;
+  --r2: #FABF33;
+  --r3: #4CD973;
+  --r4: #4C9EFA;
+  --r5: #B866FA;
+  --regenbogen: linear-gradient(45deg, #FF5252, #FABF33, #4CD973, #4C9EFA, #B866FA);
+  --akzent:       #4CD973;
+  --akzent-hell:  #7DE89A;
+  --kalt:         #8B93A8;
+  --warm:         #FABF33;
+  --text:         #ECECF0;
+  --leise:        #A6A7B2;
+  --leiser:       #74757F;
+  --anzeige: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --grotesk: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --daten: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+/* [hidden] MUSS hier ueberschreiben duerfen.
+
+   `.paare { display: grid }` ist eine Autorenregel und schlaegt das
+   `display: none`, das der Browser dem hidden-Attribut mitgibt — die
+   Regel des Autors gewinnt gegen die des Browsers. Ergebnis: Nach dem
+   letzten Durchgang blieben die Knoepfe stehen, obwohl das Ergebnis
+   schon darunter stand. Im Bildschirmfoto gesehen. */
+[hidden] { display: none !important; }
+body {
+  margin: 0; background: var(--grund); color: var(--text);
+  font-family: var(--grotesk); font-size: 1rem; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.rahmen { max-width: 46rem; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2rem); }
+a { color: var(--akzent-hell); }
+
+.kopfleiste { border-bottom: 1px solid var(--kante); background: var(--nacht); }
+.kopfleiste__inhalt { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; padding-block: .9rem; }
+.marke { display: flex; align-items: center; gap: .5rem; text-decoration: none; color: var(--text); }
+.marke__wort { font-family: var(--daten); font-size: .76rem; font-weight: 700; letter-spacing: .08em; }
+.marke__wort span { color: var(--leise); font-weight: 400; }
+.kopf__wege { display: flex; align-items: center; gap: .5rem; margin-inline-start: auto; }
+.kopfknopf {
+  font-family: var(--daten); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;
+  padding: .4rem .8rem; border: 1px solid var(--kante-hell); border-radius: 2px;
+  color: var(--leise); text-decoration: none;
+}
+.kopfknopf:hover { color: var(--text); border-color: var(--kalt); }
+.kopfknopf--haupt { color: var(--nacht); background: var(--akzent); border-color: var(--akzent); font-weight: 700; }
+
+.sprachwahl { position: relative; font-family: var(--daten); font-size: .7rem; }
+.sprachwahl__knopf { cursor: pointer; padding: .4rem .6rem; border: 1px solid var(--kante-hell); border-radius: 2px; color: var(--leise); list-style: none; }
+.sprachwahl__knopf::-webkit-details-marker { display: none; }
+.sprachwahl__liste { position: absolute; inset-inline-end: 0; margin: .3rem 0 0; padding: .3rem; list-style: none; background: var(--grund-hoch); border: 1px solid var(--kante-hell); z-index: 20; min-width: 9rem; }
+.sprachwahl__liste a { display: block; padding: .35rem .5rem; color: var(--leise); text-decoration: none; }
+.sprachwahl__liste a:hover, .sprachwahl__liste a[aria-current] { color: var(--text); background: var(--kante); }
+
+.eyebrow { font-family: var(--daten); font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--akzent); margin: 0 0 .6rem; }
+h1 { font-family: var(--anzeige); font-weight: 400; font-size: clamp(2rem, 6vw, 3.1rem); line-height: 1.08; margin: 0 0 .8rem; }
+h2 { font-family: var(--anzeige); font-weight: 400; font-size: clamp(1.4rem, 3.6vw, 1.9rem); line-height: 1.2; margin: 2.6rem 0 .7rem; }
+.vorwort { font-size: 1.08rem; color: var(--leise); margin: 0 0 1.6rem; }
+.teil { padding-block: clamp(2.2rem, 6vw, 3.4rem); }
+.teil--linie { border-top: 1px solid var(--kante); }
+
+/* ── Der Prüfstand ───────────────────────────────────────────────── */
+.stand { border: 1px solid var(--kante-hell); border-radius: 3px; background: var(--grund-hoch); padding: clamp(1.2rem, 4vw, 2rem); }
+.stand__runde { font-family: var(--daten); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--akzent); }
+.stand__frage { font-family: var(--anzeige); font-size: clamp(1.3rem, 4vw, 1.8rem); margin: .3rem 0 .2rem; }
+.stand__lage { font-family: var(--daten); font-size: .72rem; color: var(--leiser); }
+
+.paare { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin: 1.4rem 0 .4rem; }
+.probe {
+  display: flex; flex-direction: column; align-items: center; gap: .5rem;
+  padding: 1.2rem .8rem; cursor: pointer;
+  border: 1px solid var(--kante-hell); border-radius: 3px;
+  background: var(--grund); color: var(--text);
+  font-family: var(--daten); font-size: .8rem; letter-spacing: .06em;
+  transition: border-color .16s, background .16s;
+}
+.probe:hover { border-color: var(--kalt); }
+.probe.laeuft { border-color: var(--akzent); background: var(--kante); }
+.probe__buchstabe { font-family: var(--anzeige); font-size: 2.4rem; line-height: 1; }
+.probe__wort { color: var(--leiser); }
+
+.wahl { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin-top: .4rem; }
+.wahl button {
+  padding: .8rem; cursor: pointer; border-radius: 2px;
+  border: 1px solid var(--akzent); background: none; color: var(--akzent-hell);
+  font-family: var(--daten); font-size: .76rem; letter-spacing: .06em; font-weight: 700;
+}
+.wahl button:hover { background: var(--akzent); color: var(--nacht); }
+.wahl button[disabled] { opacity: .35; cursor: not-allowed; }
+.wahl button[disabled]:hover { background: none; color: var(--akzent-hell); }
+
+.hinweis { font-size: .84rem; color: var(--leiser); margin-top: 1rem; }
+.punkte { display: flex; gap: .35rem; margin-top: 1rem; }
+.punkt { width: .6rem; height: .6rem; border-radius: 50%; border: 1px solid var(--kante-hell); }
+.punkt.ist-da { background: var(--kalt); border-color: var(--kalt); }
+
+/* ── Das Ergebnis ────────────────────────────────────────────────── */
+.ergebnis { margin-top: 1.4rem; border-top: 1px solid var(--kante); padding-top: 1.2rem; }
+.ergebnis__zahl { font-family: var(--anzeige); font-size: clamp(2rem, 7vw, 3rem); line-height: 1; margin: 0 0 .3rem; }
+.ergebnis__satz { color: var(--leise); margin: .4rem 0; }
+.ergebnis__satz strong { color: var(--text); }
+.ergebnis__zufall { font-family: var(--daten); font-size: .74rem; color: var(--leiser); margin-top: .6rem; }
+
+.weiter {
+  display: inline-block; margin-top: 1rem; text-decoration: none; cursor: pointer;
+  font-family: var(--daten); font-size: .78rem; letter-spacing: .06em; font-weight: 700;
+  padding: .7rem 1.3rem; border: 0; border-radius: 2px; background: var(--akzent); color: var(--nacht);
+}
+
+.frage { border-top: 1px solid var(--kante); padding-block: 1.1rem; }
+.frage__titel { font-weight: 600; font-size: 1.02rem; margin: 0 0 .35rem; color: var(--text); }
+.frage p { margin: 0 0 .5rem; color: var(--leise); }
+.frage p:last-child { margin-bottom: 0; }
+
+.fuss { border-top: 1px solid var(--kante); background: var(--nacht); padding-block: 2rem; margin-top: 2rem; }
+.merksatz { font-family: var(--anzeige); font-size: 1.2rem; margin: 0 0 .6rem; color: var(--text); }
+.fuss__recht { font-size: .84rem; color: var(--leiser); margin: 0 0 1.2rem; }
+.fuss__reihe { display: flex; flex-wrap: wrap; gap: .8rem 1.4rem; align-items: center; font-size: .8rem; color: var(--leiser); }
+.fuss__wege { display: flex; gap: 1rem; margin-inline-start: auto; }
+.fuss__wege a { color: var(--leiser); text-decoration: none; }
+.fuss__wege a:hover { color: var(--text); }
+
+@media (max-width: 30rem) { .paare, .wahl { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="kopfleiste">
+  <div class="rahmen kopfleiste__inhalt">
+    <a class="marke" href="/de/">
+      <img src="assets/iyambae-marke.svg" alt="" width="28" height="28">
+      <span class="marke__wort">IYAMBAE <span>Tuner</span></span>
+    </a>
+    <nav class="kopf__wege">
+      <!--SPRACHWAHL-->
+      <a class="kopfknopf" href="/de/stimmung/" data-text="hoer.kopf.messen">Stimmung messen</a>
+      <a class="kopfknopf kopfknopf--haupt" href="/de/" data-text="hoer.kopf.tuner">Zum Tuner</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="rahmen teil">
+  <p class="eyebrow" data-text="hoer.eyebrow">Blindtest · zwei Runden · kostenlos</p>
+  <h1 data-text="hoer.titel">Hörst du den Unterschied?</h1>
+  <p class="vorwort" data-html="hoer.vorwort">Zweimal derselbe Ausschnitt, verschieden gestimmt, die Reihenfolge gewürfelt. Du sagst, welcher tiefer klingt. <strong>Fünf Durchgänge je Runde</strong> — und am Ende steht da, was das Ergebnis wert ist.</p>
+
+  <div class="stand" id="stand">
+    <p class="stand__runde" id="rundeName">Runde 1 von 2</p>
+    <p class="stand__frage" id="frage">Welcher Ausschnitt klingt tiefer?</p>
+    <p class="stand__lage" id="lage">Durchgang 1 von 5</p>
+
+    <div class="paare">
+      <button class="probe" id="probeA" type="button">
+        <span class="probe__buchstabe">A</span>
+        <span class="probe__wort" data-text="hoer.abspielen">abspielen</span>
+      </button>
+      <button class="probe" id="probeB" type="button">
+        <span class="probe__buchstabe">B</span>
+        <span class="probe__wort" data-text="hoer.abspielen">abspielen</span>
+      </button>
+    </div>
+
+    <div class="wahl">
+      <button id="wahlA" type="button" disabled data-text="hoer.wahlA">A ist tiefer</button>
+      <button id="wahlB" type="button" disabled data-text="hoer.wahlB">B ist tiefer</button>
+    </div>
+
+    <div class="punkte" id="punkte" aria-hidden="true"></div>
+    <p class="hinweis" id="hinweis" data-text="hoer.hinweis.start">Hör dir beide an — so oft du magst. Kopfhörer helfen; Laptoplautsprecher geben tiefe Töne kaum wieder.</p>
+
+    <div class="ergebnis" id="ergebnis" hidden>
+      <p class="ergebnis__zahl" id="ergebnisZahl"></p>
+      <p class="ergebnis__satz" id="ergebnisSatz"></p>
+      <p class="ergebnis__zufall" id="ergebnisZufall"></p>
+      <button class="weiter" id="weiter" type="button"></button>
+    </div>
+  </div>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="hoer.wie.titel">Was hier gemessen wird — und was nicht</h2>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="hoer.wie.r1.titel">Runde 1: 432 gegen 440 Hz</p>
+    <p data-html="hoer.wie.r1.text"><strong>31,8 Cent Unterschied</strong> — knapp ein Drittel Halbton. Die Schwelle, ab der Menschen zwei Tonhöhen im direkten Vergleich unterscheiden, liegt bei etwa 3 bis 12 Cent. <strong>Fast jeder besteht diese Runde</strong>, und das ist keine Einbildung, sondern Physik.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="hoer.wie.r2.titel">Runde 2: 432 gegen 433 Hz</p>
+    <p data-html="hoer.wie.r2.text"><strong>4,0 Cent</strong> — an der Schwelle. Diese Runde beantwortet die eigentliche Frage: Hat die <em>Zahl</em> 432 einen eigenen Klang, oder hört man nur, dass etwas tiefer ist? Wer 432 als besonders erlebt, müsste sie von 433 unterscheiden können.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="hoer.wie.sauber.titel">Warum der Test sauber ist</p>
+    <p data-html="hoer.wie.sauber.text"><strong>Beide Ausschnitte laufen durch denselben Rechenkern</strong> — auch der auf 440, mit Faktor 1,0. Sonst hörte man die Bearbeitung statt der Tonhöhe, und das wäre der eigentliche Verräter.</p>
+    <p data-html="hoer.wie.sauber.pegel">Der Lautstärkeunterschied ist nachgemessen und liegt bei <strong>0,03 dB</strong> zwischen 432 und 440, bei <strong>0,01 dB</strong> zwischen 432 und 433. Das ist weit unter allem, was ein Mensch hört — es gibt also nichts zu verraten außer der Tonhöhe. Lautstärke ist der häufigste stille Betrug bei Hörtests: Menschen halten das Lautere für das Bessere.</p>
+    <p data-html="hoer.wie.sauber.zufall">Die Reihenfolge wird bei jedem Durchgang neu gewürfelt, und die Auswertung sagt, was kleine Zahlen wert sind: Fünf von fünf richtig kommen durch reines Raten in <strong>3,1 %</strong> der Fälle vor, vier von fünf oder besser in <strong>18,8 %</strong>.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="hoer.wie.ehrlich.titel">Was ein Ergebnis nicht beweist</p>
+    <p data-html="hoer.wie.ehrlich.text">Fünf Durchgänge sind fünf Durchgänge. Wer in Runde 2 alles trifft, hat vielleicht ein sehr feines Gehör — oder Glück gehabt. Und wer daneben liegt, hört deshalb nicht schlecht: <strong>4 Cent sind für fast alle Menschen zu wenig.</strong> Der Test sagt etwas über diesen Nachmittag, nicht über dich.</p>
+    <p data-html="hoer.wie.ehrlich.geschmack">Und er sagt nichts darüber, was dir <em>besser gefällt</em>. Das ist eine andere Frage, sie ist eine Geschmacksfrage, und sie beantwortest nur du.</p>
+  </div>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="hoer.danach.titel">Und danach?</h2>
+  <p data-html="hoer.danach.text">Wenn du wissen willst, worauf deine <em>eigene</em> Musik steht, <a href="/de/stimmung/">miss sie</a> — kostenlos, im Browser, nichts wird hochgeladen. Und wenn du sie dauerhaft anders hören willst, tut das der <a href="/de/">IYAMBAE Tuner</a>: für alles, was aus deinen Lautsprechern kommt, ohne eine Datei anzufassen.</p>
+</section>
+
+</main>
+
+<footer class="fuss">
+  <div class="rahmen">
+    <blockquote class="merksatz" data-text="fuss.merksatz">
+      Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.
+    </blockquote>
+    <p class="fuss__recht" data-html="fuss.recht">
+      Der IYAMBAE Tuner ist <strong>kein Medizinprodukt</strong> und kein
+      Heilmittel. Er verändert Tonhöhe, sonst nichts.
+    </p>
+    <div class="fuss__reihe">
+      <span data-text="fuss.zeile">IYAMBAE — kuratiertes Webradio und Werkzeuge fürs Hören.</span>
+      <nav class="fuss__wege">
+        <a href="https://iyambae.fm">iyambae.fm</a>
+        <a href="https://iyambae.fm/recht/impressum/" data-text="fuss.impressum">Impressum</a>
+        <a href="https://iyambae.fm/recht/datenschutz/" data-text="fuss.datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════════════════
+   Der Blindtest.
+
+   ZWEI RUNDEN, DIESELBE FRAGE. Nur der Abstand ändert sich:
+
+       Runde 1   432 gegen 440   −31,8 Cent   fast jeder besteht
+       Runde 2   432 gegen 433   − 4,0 Cent   an der Schwelle
+
+   Dieselbe Frage zu stellen ist kein Zufall, sondern der Kern des
+   Aufbaus: Wenn sich zwischen den Runden nur der Abstand ändert, misst
+   der Unterschied im Ergebnis genau diesen Abstand — und nichts sonst.
+   Zwei verschiedene Fragen hätten zwei verschiedene Schwierigkeiten,
+   und man wüsste nicht, welche gewirkt hat.
+
+   ALLE DREI FASSUNGEN LAUFEN DURCH DEN RECHENKERN, auch die auf 440
+   (Faktor 1,0). Sonst wäre die Bearbeitung selbst das Erkennungszeichen,
+   und der Test würde messen, wer Artefakte hört — nicht, wer Tonhöhen
+   hört.
+
+   VORGERECHNET, NICHT LIVE: Alle drei werden beim Laden einmal in einen
+   Puffer gerendert. Danach ist der Abspielweg für alle identisch — ein
+   BufferSource, sonst nichts. Live durch den Worklet zu spielen hieße,
+   dass die eine Fassung 240 ms Vorlauf hat und die andere auch, aber
+   der Einschwingvorgang bei jedem Start neu käme.
+   ═══════════════════════════════════════════════════════════════════ */
+
+import { messeStimmung } from '/assets/lib/stimmung.mjs';
+
+const AUSSCHNITT = { ab: 2.0, dauer: 9.0 };   // Sekunden aus der Aufnahme
+const DURCHGAENGE = 5;
+const RUNDEN = [
+  { name: 1, gegen: 440, cent: -31.8 },
+  { name: 2, gegen: 433, cent:  -4.0 },
+];
+
+const el = (id) => document.getElementById(id);
+function wort(name, rueckfall) {
+  const w = document.querySelector(`[data-wort="${name}"]`);
+  return w ? w.textContent : rueckfall;
+}
+const fuelle = (satz, werte) =>
+  Object.entries(werte).reduce((s, [k, v]) => s.split('{' + k + '}').join(v), satz);
+
+let hof = null;
+const puffer = {};          // { '432': AudioBuffer, '440': …, '433': … }
+let laeuftGerade = null;
+let runde = 0, durchgang = 0, treffer = 0, tieferIst = null, gehoert = false;
+
+/* Beide Ausschnitte einmal rechnen. Der Faktor ist immer bezogen auf die
+   Aufnahme, wie sie ist — deshalb 432/440 und 433/440 und 1,0. */
+async function rechne(rohPuffer, faktor) {
+  const n = rohPuffer.length;
+  const off = new OfflineAudioContext({
+    numberOfChannels: 2, length: n, sampleRate: rohPuffer.sampleRate });
+  await off.audioWorklet.addModule('/assets/lib/retuner-worklet.js');
+  const bytes = await (await fetch('/assets/wasm/retuner.wasm')).arrayBuffer();
+  const q = off.createBufferSource(); q.buffer = rohPuffer;
+  const kern = new AudioWorkletNode(off, 'retuner',
+    { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
+  await new Promise((fertig, fehl) => {
+    kern.port.onmessage = (e) => e.data?.art === 'bereit' ? fertig() : fehl(new Error('Kern'));
+    kern.port.postMessage({ art: 'wasm', bytes, engine: 'gut' }, [bytes]);
+    setTimeout(() => fehl(new Error('Zeit')), 6000);
+  });
+  kern.parameters.get('faktor').value = faktor;
+  q.connect(kern).connect(off.destination);
+  q.start();
+  return off.startRendering();
+}
+
+async function bereite() {
+  el('hinweis').textContent = wort('laedt', 'Wird vorbereitet …');
+  hof = new (window.AudioContext || window.webkitAudioContext)();
+  const roh = await (await fetch('/assets/klang/nocturne.mp3')).arrayBuffer();
+  const ganz = await hof.decodeAudioData(roh);
+
+  // Den Ausschnitt herausschneiden, mit kurzen Blenden gegen Knacken.
+  const sr = ganz.sampleRate;
+  const ab = Math.round(AUSSCHNITT.ab * sr);
+  const len = Math.round(AUSSCHNITT.dauer * sr);
+  const blende = Math.round(0.05 * sr);
+  const stueck = hof.createBuffer(2, len, sr);
+  for (let k = 0; k < 2; k++) {
+    const q = ganz.getChannelData(Math.min(k, ganz.numberOfChannels - 1));
+    const z = stueck.getChannelData(k);
+    for (let i = 0; i < len; i++) {
+      let v = q[ab + i] || 0;
+      if (i < blende) v *= i / blende;
+      if (i > len - blende) v *= (len - i) / blende;
+      z[i] = v;
+    }
+  }
+  /*
+   ERST MESSEN, DANN STIMMEN.
+
+   Naheliegend waere: die 440er-Fassung ist die Aufnahme, wie sie ist
+   (Faktor 1,0), und die anderen werden davon abgeleitet. Genau so stand
+   es hier zuerst — und beim Nachmessen der drei fertigen Puffer kam
+   heraus: 439,72 Hz. Die Aufnahme steht gar nicht auf 440.
+
+   Die ABSTAENDE waeren trotzdem richtig gewesen, denn ein Faktor ist ein
+   Verhaeltnis: 432/440 und 433/440 auf dieselbe Quelle ergeben zwischen
+   sich exakt 4,002 Cent, ganz gleich, wo die Quelle liegt. Falsch waere
+   nur die BESCHRIFTUNG gewesen — „432 gegen 440", wo in Wahrheit
+   „432 gegen 439,7" steht.
+
+   Auf einer Seite, deren einziger Zweck Genauigkeit ist, geht das nicht.
+   Also misst diese Seite ihren eigenen Ausschnitt mit demselben Modul,
+   das unter /stimmung/ liegt, und rechnet von dort aus. Danach stehen
+   alle drei wirklich dort, wo sie draufsteht — und keine Fassung ist die
+   unbearbeitete, was den Test nebenbei noch sauberer macht.
+  */
+  const mono = new Float32Array(len);
+  {
+    const a = stueck.getChannelData(0), b = stueck.getChannelData(1);
+    for (let i = 0; i < len; i++) mono[i] = (a[i] + b[i]) / 2;
+  }
+  const gemessen = messeStimmung(mono, sr);
+  const quelle = (gemessen.genug && gemessen.sicherheit >= 0.35) ? gemessen.a4 : 440;
+
+  puffer['440'] = await rechne(stueck, 440 / quelle);
+  puffer['432'] = await rechne(stueck, 432 / quelle);
+  puffer['433'] = await rechne(stueck, 433 / quelle);
+  el('hinweis').textContent = wort('start', 'Hör dir beide an — so oft du magst.');
+}
+
+function spiele(welche) {
+  if (laeuftGerade) { laeuftGerade.stop(); laeuftGerade = null; }
+  document.querySelectorAll('.probe').forEach(p => p.classList.remove('laeuft'));
+  const name = welche === 'A' ? tieferIst.A : tieferIst.B;
+  const q = hof.createBufferSource();
+  q.buffer = puffer[name];
+  q.connect(hof.destination);
+  q.start();
+  laeuftGerade = q;
+  el('probe' + welche).classList.add('laeuft');
+  q.onended = () => {
+    el('probe' + welche).classList.remove('laeuft');
+    if (laeuftGerade === q) laeuftGerade = null;
+  };
+  if (!gehoert) {
+    gehoert = true;
+    el('wahlA').disabled = false;
+    el('wahlB').disabled = false;
+  }
+}
+
+function neuerDurchgang() {
+  gehoert = false;
+  el('wahlA').disabled = true;
+  el('wahlB').disabled = true;
+  /* Gewürfelt: Welcher Knopf trägt die tiefere Fassung? Der Wert steht
+     nur hier im Speicher, nicht im Dokument. */
+  const gegen = String(RUNDEN[runde].gegen);
+  const aLinks = Math.random() < 0.5;
+  tieferIst = aLinks ? { A: '432', B: gegen, tiefer: 'A' }
+                     : { A: gegen, B: '432', tiefer: 'B' };
+  el('lage').textContent = fuelle(
+    wort('lage', 'Durchgang {n} von {ganz}'),
+    { n: durchgang + 1, ganz: DURCHGAENGE });
+  el('rundeName').textContent = fuelle(
+    wort('runde', 'Runde {n} von 2'), { n: RUNDEN[runde].name });
+  zeichnePunkte();
+}
+
+function zeichnePunkte() {
+  el('punkte').innerHTML = Array.from({ length: DURCHGAENGE }, (_, i) =>
+    `<span class="punkt${i < durchgang ? ' ist-da' : ''}"></span>`).join('');
+}
+
+function waehle(welche) {
+  if (!gehoert) return;
+  if (laeuftGerade) { laeuftGerade.stop(); laeuftGerade = null; }
+  if (welche === tieferIst.tiefer) treffer++;
+  durchgang++;
+  if (durchgang < DURCHGAENGE) { neuerDurchgang(); return; }
+  zeigeErgebnis();
+}
+
+/* Wahrscheinlichkeit, MINDESTENS `k` von `n` durch reines Raten zu
+   treffen. Ausgerechnet, nicht als Tabelle abgeschrieben — bei fünf
+   Versuchen sind das ein paar Additionen. */
+function zufall(k, n) {
+  const ueber = (n, r) => { let x = 1; for (let i = 0; i < r; i++) x = x * (n - i) / (i + 1); return x; };
+  let s = 0;
+  for (let i = k; i <= n; i++) s += ueber(n, i);
+  return s / Math.pow(2, n);
+}
+
+function zeigeErgebnis() {
+  el('ergebnis').hidden = false;
+  document.querySelector('.paare').hidden = true;
+  document.querySelector('.wahl').hidden = true;
+  el('hinweis').hidden = true;
+
+  const p = Math.round(zufall(treffer, DURCHGAENGE) * 1000) / 10;
+  el('ergebnisZahl').textContent = fuelle(
+    wort('vonN', '{t} von {n} richtig'), { t: treffer, n: DURCHGAENGE });
+  el('ergebnisZufall').textContent = fuelle(
+    wort('zufallSatz', 'So gut oder besser rät man in {p} % der Fälle blind.'), { p: String(p).replace('.', ',') });
+
+  const gut = treffer >= 4;
+  if (runde === 0) {
+    el('ergebnisSatz').innerHTML = gut
+      ? wort('r1gut', 'Du hörst 31,8 Cent — knapp ein Drittel Halbton. <strong>Das bildest du dir nicht ein.</strong> Fast jeder besteht diese Runde.')
+      : wort('r1mau', 'Diese Runde besteht fast jeder. Wenn sie hier hakt, liegt es meist an den Lautsprechern — <strong>versuch es mit Kopfhörern.</strong>');
+    el('weiter').textContent = wort('weiterR2', 'Weiter zu Runde 2 — 432 gegen 433');
+    el('weiter').onclick = () => { runde = 1; durchgang = 0; treffer = 0; starteRunde(); };
+  } else {
+    el('ergebnisSatz').innerHTML = gut
+      ? wort('r2gut', '<strong>Vier Cent.</strong> Das ist bemerkenswert — und selten. Bei fünf Durchgängen kann es auch Glück gewesen sein; die Zahl darunter sagt, wie oft.')
+      : wort('r2mau', '<strong>Der Unterschied ist hörbar. Die genaue Zahl ist es nicht.</strong> Vier Cent liegen für fast alle Menschen unter der Schwelle — und das ist der ehrliche Befund: Man hört, dass etwas tiefer ist. Dass es ausgerechnet 432,0 ist, hört niemand.');
+    el('weiter').textContent = wort('nochmal', 'Noch einmal von vorn');
+    el('weiter').onclick = () => { runde = 0; durchgang = 0; treffer = 0; starteRunde(); };
+  }
+}
+
+function starteRunde() {
+  el('ergebnis').hidden = true;
+  document.querySelector('.paare').hidden = false;
+  document.querySelector('.wahl').hidden = false;
+  el('hinweis').hidden = false;
+  neuerDurchgang();
+}
+
+let vorbereitet = false;
+async function ersterKlick(welche) {
+  if (!vorbereitet) {
+    vorbereitet = true;
+    try { await bereite(); }
+    catch {
+      el('hinweis').textContent = wort('fehler',
+        'Der Ton lässt sich in diesem Browser nicht vorbereiten. Versuch es in einem anderen.');
+      return;
+    }
+    starteRunde();
+  }
+  if (hof.state === 'suspended') await hof.resume();
+  spiele(welche);
+}
+
+el('probeA').addEventListener('click', () => ersterKlick('A'));
+el('probeB').addEventListener('click', () => ersterKlick('B'));
+el('wahlA').addEventListener('click', () => waehle('A'));
+el('wahlB').addEventListener('click', () => waehle('B'));
+zeichnePunkte();
+</script>
+
+<!-- Die Wörter des Prüfstands. Im Dokument, damit der Erzeuger sie ernten
+     und übersetzen kann — wie beim Messwerkzeug. -->
+<div hidden>
+  <span data-wort="laedt" data-text="hoer.wort.laedt">Wird vorbereitet …</span>
+  <span data-wort="start" data-text="hoer.wort.start">Hör dir beide an — so oft du magst.</span>
+  <span data-wort="fehler" data-text="hoer.wort.fehler">Der Ton lässt sich in diesem Browser nicht vorbereiten. Versuch es in einem anderen.</span>
+  <span data-wort="runde" data-text="hoer.wort.runde">Runde {n} von 2</span>
+  <span data-wort="lage" data-text="hoer.wort.lage">Durchgang {n} von {ganz}</span>
+  <span data-wort="vonN" data-text="hoer.wort.vonN">{t} von {n} richtig</span>
+  <span data-wort="zufallSatz" data-text="hoer.wort.zufallSatz">So gut oder besser rät man in {p} % der Fälle blind.</span>
+  <span data-wort="r1gut" data-html="hoer.wort.r1gut">Du hörst 31,8 Cent — knapp ein Drittel Halbton. <strong>Das bildest du dir nicht ein.</strong> Fast jeder besteht diese Runde.</span>
+  <span data-wort="r1mau" data-html="hoer.wort.r1mau">Diese Runde besteht fast jeder. Wenn sie hier hakt, liegt es meist an den Lautsprechern — <strong>versuch es mit Kopfhörern.</strong></span>
+  <span data-wort="r2gut" data-html="hoer.wort.r2gut"><strong>Vier Cent.</strong> Das ist bemerkenswert — und selten. Bei fünf Durchgängen kann es auch Glück gewesen sein; die Zahl darunter sagt, wie oft.</span>
+  <span data-wort="r2mau" data-html="hoer.wort.r2mau"><strong>Der Unterschied ist hörbar. Die genaue Zahl ist es nicht.</strong> Vier Cent liegen für fast alle Menschen unter der Schwelle — und das ist der ehrliche Befund: Man hört, dass etwas tiefer ist. Dass es ausgerechnet 432,0 ist, hört niemand.</span>
+  <span data-wort="weiterR2" data-text="hoer.wort.weiterR2">Weiter zu Runde 2 — 432 gegen 433</span>
+  <span data-wort="nochmal" data-text="hoer.wort.nochmal">Noch einmal von vorn</span>
+</div>
+
+</body>
+</html>
