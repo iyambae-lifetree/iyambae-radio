@@ -440,7 +440,22 @@ def sprachumschalter(kuerzel, pfad=""):
     return "".join(zeilen)
 
 
-def jsonld(kuerzel, texte, pfad="", programm="tuner"):
+def fassung_aus(quelle):
+    """Die Fassungsnummer aus dem Ladeverweis der Vorlage lesen.
+
+    WARUM NICHT FEST EINGETIPPT: Bis zum 01.09.2026 stand im JSON-LD
+    `"softwareVersion": "0.1.0"` — waehrend die Seite laengst 0.21.1
+    anbot. Eine Zahl, die nur eine Maschine liest, veraltet unbemerkt:
+    Im Browser sieht man sie nicht, und niemand prueft sie.
+
+    Jetzt kommt sie aus derselben Zeile wie der Knopf. Wer die Fassung
+    wechselt, wechselt beides — oder gar nichts.
+    """
+    m = re.search(r"/herunterladen/IYAMBAE-Tuner-([0-9]+\.[0-9]+\.[0-9]+)\.dmg", quelle)
+    return m.group(1) if m else None
+
+
+def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0"):
     """Organization, WebPage und SoftwareApplication.
 
     WAS HIER NICHT STEHT UND NIE STEHEN WIRD: aggregateRating, review,
@@ -482,7 +497,7 @@ def jsonld(kuerzel, texte, pfad="", programm="tuner"):
         # auffuehrt, gibt Suchmaschinen eine Zusage, die das Programm
         # nicht einloest.
         "operatingSystem": "macOS 14.4+, Linux (PipeWire 0.3.60+)",
-        "softwareVersion": "0.1.0",
+        "softwareVersion": fassung,
         "description": texte.get("seite.beschreibung", ""),
         "inLanguage": kuerzel,
         "isAccessibleForFree": True,
@@ -528,7 +543,7 @@ def jsonld(kuerzel, texte, pfad="", programm="tuner"):
 
 
 def erzeuge_seite(vorlage_quelle, kuerzel, texte, pfad="", programm="tuner",
-                  ersetze=True):
+                  ersetze=True, fassung="0.0.0"):
     """Eine Sprachfassung bauen.
 
     ersetze=False baut dieselbe Seite OHNE einen einzigen Griff in den
@@ -624,7 +639,7 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, pfad="", programm="tuner",
 
     # Die strukturierten Daten ans Ende des Rumpfes, nicht in den Kopf: Der
     # Kopf soll klein bleiben, damit der erste Anblick frueh steht.
-    seite = seite.replace("</body>", jsonld(kuerzel, texte, pfad, programm)
+    seite = seite.replace("</body>", jsonld(kuerzel, texte, pfad, programm, fassung)
                           + "</body>", 1)
     return seite
 
@@ -734,6 +749,7 @@ def pruefe_treue(vorlage_quelle):
 
 
 def pruefe_deutsch(vorlage_quelle, deutsch, pfad="", programm="tuner"):
+    fassung = fassung_aus(vorlage_quelle) or "0.0.0"
     """Sagt de.json zeichengenau dasselbe wie die Vorlage?
 
     Zweimal dieselbe deutsche Seite bauen: einmal mit dem Katalog, einmal
@@ -743,8 +759,10 @@ def pruefe_deutsch(vorlage_quelle, deutsch, pfad="", programm="tuner"):
     Satz von Hand nachgebessert worden. Beides waere ein stiller Fehler:
     Die deutsche Seite saehe im Browser fast richtig aus.
     """
-    mit  = erzeuge_seite(vorlage_quelle, "de", deutsch, pfad, programm, ersetze=True)
-    ohne = erzeuge_seite(vorlage_quelle, "de", deutsch, pfad, programm, ersetze=False)
+    mit  = erzeuge_seite(vorlage_quelle, "de", deutsch, pfad, programm,
+                         ersetze=True, fassung=fassung)
+    ohne = erzeuge_seite(vorlage_quelle, "de", deutsch, pfad, programm,
+                         ersetze=False, fassung=fassung)
     if mit == ohne:
         return True
     for n, (a, b) in enumerate(zip(ohne, mit)):
@@ -1001,6 +1019,15 @@ def main():
             return 1
         kataloge[kuerzel] = json.loads(io.open(p, encoding="utf-8").read())
 
+    # Die Fassungsnummer steht genau einmal im Haus: im Ladeverweis der
+    # Landeseite. Von dort holt sie sich auch das JSON-LD.
+    fassung = fassung_aus(quellen.get("", ""))
+    if not fassung:
+        print("  ✘ kein Ladeverweis auf eine DMG in apps/index.html gefunden — "
+              "das JSON-LD haette keine Fassungsnummer")
+        return 1
+    print(f"  ✔ Fassung aus dem Ladeverweis gelesen: {fassung}")
+
     gut = True
     for pfad, quelle in quellen.items():
         wie = SEITEN[pfad]
@@ -1026,7 +1053,8 @@ def main():
         wie = SEITEN[pfad]
         for kuerzel in SPRACHEN:
             texte = {**kataloge["de"], **kataloge[kuerzel]}
-            seite = erzeuge_seite(quelle, kuerzel, texte, pfad, wie["programm"])
+            seite = erzeuge_seite(quelle, kuerzel, texte, pfad, wie["programm"],
+                                  fassung=fassung)
             seiten[(pfad, kuerzel)] = seite
             if not pruefe_seite(kuerzel, seite, texte, pfad,
                                 wie["rueckgrat"], wie["programm"]):
