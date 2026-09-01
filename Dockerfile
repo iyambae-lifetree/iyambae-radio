@@ -18,10 +18,15 @@ COPY . .
 # Der Erzeuger prüft sich selbst: Er muss index.html mit dem deutschen
 # Katalog zeichengenau reproduzieren. Schlägt das fehl, bricht der Bau hier
 # ab — und nicht erst im Browser eines Besuchers.
+#
+# pruefe-zwischenspeicher.py steht bewusst NACH den drei Bauskripten: Die
+# Sprachseiten entstehen erst dabei, und genau sie sind es, die zuletzt
+# unbemerkt im Zwischenspeicher veralteten.
 RUN python3 Scripts/baue-sprachen.py \
  && python3 Scripts/baue-recht.py \
  && python3 Scripts/baue-apps-sprachen.py \
  && python3 Scripts/pruefe-shell-dateien.py \
+ && python3 Scripts/pruefe-zwischenspeicher.py \
  && node Scripts/pruefe-messung.mjs \
  && node Scripts/pruefe-verlauf.mjs \
  && node Scripts/pruefe-konto.mjs
