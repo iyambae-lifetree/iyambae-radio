@@ -90,10 +90,17 @@ h3 { font-family: var(--daten); font-size: .82rem; letter-spacing: .04em; margin
 
 /* ── Die Ablegefläche ───────────────────────────────────────────── */
 .zone {
+  /* display:block und position:relative sind hier Pflicht, nicht Geschmack:
+     Ein <label> ist von Haus aus inline. Ohne die erste Zeile bricht der
+     gestrichelte Rahmen um die Zeilen herum auseinander, und die Schrift
+     steht daneben statt darin — beim ersten Bildschirmfoto genau so
+     gesehen. Ohne die zweite bezieht sich das versteckte Eingabefeld auf
+     einen Vorfahren irgendwo weiter oben. */
+  display: block; position: relative;
   border: 2px dashed var(--kante-hell); border-radius: 3px;
   background: var(--grund-hoch);
   padding: clamp(1.6rem, 5vw, 2.8rem) 1.2rem;
-  text-align: center;
+  text-align: center; cursor: pointer;
   transition: border-color .18s, background .18s;
 }
 .zone.ist-bereit { border-color: var(--akzent); background: var(--kante); }
@@ -400,8 +407,24 @@ function zeige(f, puffer, m) {
     return;
   }
 
-  document.getElementById('ergebnisZahl').innerHTML =
-    zahl(m.a4, 1) + ' <small>Hz</small>';
+  /*
+   UNTER DER SCHWELLE WIRD KEINE ZAHL BEHAUPTET.
+
+   Beim ersten Durchlauf mit rosa Rauschen stand hier gross „435,4 Hz" und
+   darunter „Das ist praktisch genau 435 Hz — Paris 1859". Die Sicherheit
+   war null, und die Warnung stand auch da — aber wer eine grosse Zahl und
+   einen sicheren Satz sieht, liest die Warnung nicht mehr.
+
+   Das ist genau die Sorte Aussage, gegen die diese Seite sonst antritt.
+   Also: unter 35 Prozent gibt es keine Zahl und keinen Satz, der etwas
+   feststellt. Die Messwerte bleiben trotzdem stehen — wer nachsehen will,
+   soll nachsehen können.
+  */
+  const traegt = m.sicherheit >= 0.35;
+
+  document.getElementById('ergebnisZahl').innerHTML = traegt
+    ? zahl(m.a4, 1) + ' <small>Hz</small>'
+    : '<small>—</small>';
 
   /* Der Satz darunter ist die eigentliche Antwort. Er nennt den nächsten
      gebräuchlichen Kammerton, und zwar mit dem Abstand dazu — „praktisch
@@ -409,9 +432,11 @@ function zeige(f, puffer, m) {
      daneben", und beides kommt vor. */
   const k = m.naechster;
   const nah = k.abstandCent < 4;
-  const satz = nah
-    ? wort('satzNah', 'Das ist praktisch genau {kammerton} Hz — {name}.')
-    : wort('satzFern', 'Am nächsten liegt {kammerton} Hz ({name}), aber {cent} Cent daneben.');
+  const satz = !traegt
+    ? wort('satzUnsicher', 'Hier ist keine Stimmung zu erkennen — die Messwerte widersprechen sich.')
+    : nah
+      ? wort('satzNah', 'Das ist praktisch genau {kammerton} Hz — {name}.')
+      : wort('satzFern', 'Am nächsten liegt {kammerton} Hz ({name}), aber {cent} Cent daneben.');
   document.getElementById('ergebnisSatz').innerHTML = satz
     .replace('{kammerton}', `<strong>${zahl(k.hz, k.hz % 1 ? 1 : 0)}</strong>`)
     .replace('{name}', k.name)
@@ -433,7 +458,7 @@ function zeige(f, puffer, m) {
     `style="width:${Math.min(100, sicher)}%"></div></div></div>`;
 
   const unsicher = document.getElementById('ergebnisUnsicher');
-  unsicher.hidden = m.sicherheit >= 0.35;
+  unsicher.hidden = traegt;
   unsicher.textContent = wort('warnUnsicher',
     'Die Sicherheit liegt unter 35 Prozent. Bei Perkussion, Sprache oder sehr dichtem Satz trägt diese Zahl nicht — nimm eine andere Aufnahme.');
 }
@@ -450,6 +475,7 @@ function zeige(f, puffer, m) {
   <span data-wort="fehlerLesen" data-text="mess.wort.fehlerLesen">Diese Datei kann der Browser nicht lesen. Versuch es mit MP3, M4A, WAV oder FLAC.</span>
   <span data-wort="zuKurz" data-text="mess.wort.zuKurz">Die Aufnahme ist zu kurz zum Messen.</span>
   <span data-wort="keinKlang" data-text="mess.wort.keinKlang">Hier ist kein Ton, der eine Stimmung hätte.</span>
+  <span data-wort="satzUnsicher" data-text="mess.wort.satzUnsicher">Hier ist keine Stimmung zu erkennen — die Messwerte widersprechen sich.</span>
   <span data-wort="satzNah" data-text="mess.wort.satzNah">Das ist praktisch genau {kammerton} Hz — {name}.</span>
   <span data-wort="satzFern" data-text="mess.wort.satzFern">Am nächsten liegt {kammerton} Hz ({name}), aber {cent} Cent daneben.</span>
   <span data-wort="wertAbstand440" data-text="mess.wort.wertAbstand440">Abstand zu 440</span>

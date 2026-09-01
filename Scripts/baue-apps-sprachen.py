@@ -795,7 +795,7 @@ def pruefe_ruecken(kataloge):
 
 
 def pruefe_sitemap(quelle):
-    """Wohlgeformtes XML, sieben Eintraege, jeder mit allen Alternativen."""
+    """Wohlgeformtes XML, jede Seite in jeder Sprache, mit allen Alternativen."""
     import xml.etree.ElementTree as ET
     fehler = []
     try:
@@ -807,8 +807,9 @@ def pruefe_sitemap(quelle):
     raum = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
     xhtml = "{http://www.w3.org/1999/xhtml}"
     adressen = wurzel.findall(f"{raum}url")
-    if len(adressen) != len(SPRACHEN):
-        fehler.append(f"{len(adressen)} Eintraege statt {len(SPRACHEN)}")
+    soll = len(SEITEN) * len(SPRACHEN)
+    if len(adressen) != soll:
+        fehler.append(f"{len(adressen)} Eintraege statt {soll}")
 
     gefunden = set()
     erwartet = set(SPRACHEN) | {"x-default"}
@@ -819,7 +820,7 @@ def pruefe_sitemap(quelle):
         if sprachen != erwartet:
             fehler.append(f"{ort}: Alternativen {sorted(sprachen)} "
                           f"statt {sorted(erwartet)}")
-    fehlt = {f"{HAUS}/{k}/" for k in SPRACHEN} - gefunden
+    fehlt = {f"{HAUS}/{k}/{p}" for k in SPRACHEN for p in SEITEN} - gefunden
     if fehlt:
         fehler.append(f"nicht aufgefuehrt: {', '.join(sorted(fehlt))}")
 
