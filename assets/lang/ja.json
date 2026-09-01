@@ -1,6 +1,6 @@
 {
   "seite.titel": "IYAMBAE Radio — 耳で掘るレコード店、432 Hz で",
-  "seite.beschreibung": "IYAMBAE Radio — 一枚ずつ選んだ、耳で掘るレコード店。{laenderzahl}カ国 {senderzahl}局、{regalzahl}の棚：Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste。",
+  "seite.beschreibung": "IYAMBAE Radio — 一枚ずつ選んだ、耳で掘るレコード店。{laenderzahl}カ国 {senderzahl}局、{regalzahl}の棚：{regalliste}。",
   "laden.hinweis": "店の鍵を開けています …",
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "局名、地名、キーワード …",

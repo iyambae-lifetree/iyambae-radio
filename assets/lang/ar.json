@@ -1,6 +1,6 @@
 {
   "seite.titel": "راديو IYAMBAE — متجر أسطوانات للاستماع، بتردد 432 هرتز",
-  "seite.beschreibung": "راديو IYAMBAE — متجر أسطوانات منتقى بعناية، تتصفّحه بالاستماع. {senderzahl} محطة من {laenderzahl} بلدًا: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
+  "seite.beschreibung": "راديو IYAMBAE — متجر أسطوانات منتقى بعناية، تتصفّحه بالاستماع. {senderzahl} محطة من {laenderzahl} بلدًا: {regalliste}.",
   "laden.hinweis": "يُفتح متجر الأسطوانات …",
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "محطة، مكان، وسم …",

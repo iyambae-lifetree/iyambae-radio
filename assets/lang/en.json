@@ -1,6 +1,6 @@
 {
   "seite.titel": "IYAMBAE Radio — the listening booth of a record shop, in 432 Hz",
-  "seite.beschreibung": "IYAMBAE Radio — a hand-picked record shop you listen your way through. {senderzahl} stations from {laenderzahl} countries: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
+  "seite.beschreibung": "IYAMBAE Radio — a hand-picked record shop you listen your way through. {senderzahl} stations from {laenderzahl} countries: {regalliste}.",
   "laden.hinweis": "Unlocking the record shop …",
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "Station, place, keyword …",

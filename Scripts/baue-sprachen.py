@@ -398,7 +398,7 @@ def kennzahlen(katalog):
 # Ziffer statt des Platzhalters, hat jemand die Rechnung ueberschrieben —
 # und der Bau bricht ab, statt eine veraltende Zahl auszuliefern.
 GERECHNET = {
-    "seite.beschreibung": ("{senderzahl}", "{laenderzahl}"),
+    "seite.beschreibung": ("{senderzahl}", "{laenderzahl}", "{regalliste}"),
     "hero.ort.start":     ("{senderzahl}", "{laenderzahl}", "{regalzahl}"),
 }
 
@@ -487,6 +487,9 @@ def katalogtext(katalog, texte, kuerzel):
     def regaltext_von(r):
         return uebersetzt.get("regal", {}).get(r["id"]) or r["beschreibung"]
 
+    def regalname_von(r):
+        return uebersetzt.get("regalname", {}).get(r["id"]) or r["name"]
+
     deutsch = "" if kuerzel == "de" else ' lang="de"'
     if SPRACHEN[kuerzel][1] == "rtl":
         deutsch += ' dir="ltr"'
@@ -503,11 +506,21 @@ def katalogtext(katalog, texte, kuerzel):
         drin = [s for s in sender if s["regal"] == regal["id"]]
         if not drin:
             continue
-        # Die Regalnamen sind Eigennamen und bleiben in jeder Sprachfassung
-        # stehen — genauso, wie app.js sie zeichnet und wie sie in
-        # seite.beschreibung stehen.
+        # BERICHTIGT AM 01.09.2026. Hier stand: „Die Regalnamen sind
+        # Eigennamen und bleiben in jeder Sprachfassung stehen."
+        #
+        # Das war falsch, und Sāmi-Ra hat es gesehen: „hm, die Regale haben
+        # immer noch deutsche Namen…" Eigennamen sind „NTS" und „ByteFM" —
+        # „Die Wuehlkiste" und „Rueckspiegel" sind Bilder, und ein Bild, das
+        # niemand versteht, ist kein Name mehr, sondern ein Hindernis.
+        #
+        # Ein uebersetzter Absatz unter einer deutschen Ueberschrift ist
+        # ausserdem schlimmer als beides deutsch: Es sieht nach
+        # Nachlaessigkeit aus, nicht nach Absicht.
         teile.append('<div class="katalogtext__regal">')
-        teile.append(f'<h3 class="katalogtext__name">{esc(regal["name"])} '
+        teile.append(f'<h3 class="katalogtext__name"'
+                     f'{sprachmarke(regal["id"], "regalname")}>'
+                     f'{esc(regalname_von(regal))} '
                      f'<span class="katalogtext__zahl">'
                      f'{esc(fuelle(t("regalwand.sender"), anzahl=len(drin)))}</span></h3>')
         teile.append(f'<p class="katalogtext__was"{sprachmarke(regal["id"], "regal")}>'
@@ -554,7 +567,16 @@ def katalog_jsonld(katalog, texte, kuerzel):
         return texte.get(schluessel, schluessel)
 
     sender = katalog["sender"]
-    regalname = {r["id"]: r["name"] for r in katalog["regale"]}
+    # Auch hier der uebersetzte Name: Das JSON-LD beschreibt dieselbe Seite,
+    # und zwei verschiedene Namen fuer dasselbe Regal waeren ein Widerspruch
+    # zwischen dem, was der Mensch liest, und dem, was die Maschine liest.
+    uebersetzt_ld = {}
+    quelle_ld = ROOT / "data" / f"sender-texte.{kuerzel}.json"
+    if kuerzel != "de" and quelle_ld.exists():
+        uebersetzt_ld = json.loads(io.open(quelle_ld, encoding="utf-8").read())
+    regalname = {r["id"]: (uebersetzt_ld.get("regalname", {}).get(r["id"])
+                           or r["name"])
+                 for r in katalog["regale"]}
     seite = f"{HAUS}/{kuerzel}/"
 
     haus = {
@@ -910,6 +932,26 @@ def main():
     gut = True
     zahlen = kennzahlen(senderkatalog)
 
+    def regalliste(kuerzel):
+        """Die elf Regalnamen als Aufzaehlung, in der Sprache der Seite.
+
+        WARUM ALS PLATZHALTER UND NICHT ALS TEXT: Bis zum 01.09.2026 stand
+        die Liste in jeder der sieben Sprachdateien fest eingetippt — und
+        zwar siebenmal auf DEUTSCH, auch in der japanischen Beschreibung.
+        Sāmi-Ra hat es gesehen.
+
+        Es war ausserdem eine zweite Wahrheit: Wer ein Regal umbenennt oder
+        eines dazunimmt, muesste sieben Dateien nachziehen. Das merkt
+        niemand, wenn er es vergisst — die Seite sieht danach genauso aus.
+
+        Jetzt kommt sie aus demselben Ort wie die Ueberschriften.
+        """
+        u = {}
+        q = ROOT / "data" / f"sender-texte.{kuerzel}.json"
+        if kuerzel != "de" and q.exists():
+            u = json.loads(io.open(q, encoding="utf-8").read()).get("regalname", {})
+        return ", ".join(u.get(r["id"]) or r["name"] for r in senderkatalog["regale"])
+
     # Bevor irgendein Text benutzt wird: pruefen, dass die gerechneten
     # Stellen noch Platzhalter tragen. Danach einsetzen.
     for kuerzel in SPRACHEN:
@@ -923,7 +965,8 @@ def main():
 
     for kuerzel in SPRACHEN:
         texte = {**grund, **kataloge[kuerzel]}
-        texte = {k: fuelle(v, **zahlen) if isinstance(v, str) else v
+        texte = {k: fuelle(v, **zahlen, regalliste=regalliste(kuerzel))
+                    if isinstance(v, str) else v
                  for k, v in texte.items()}
         seite = erzeuge_seite(vorlage_quelle, kuerzel, texte, list(SPRACHEN),
                               senderkatalog)

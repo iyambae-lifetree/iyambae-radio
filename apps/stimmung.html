@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title data-text="mess.seite.titel">Auf welche Frequenz ist meine Musik gestimmt? — kostenlos messen</title>
+<meta name="description" data-inhalt="mess.seite.beschreibung" content="Zieh eine Musikdatei ins Fenster und erfahre, auf welchem Kammerton sie wirklich steht — 432, 440, 443 Hz oder etwas dazwischen. Gerechnet wird im Browser: Deine Datei verlässt deinen Rechner nicht. Kostenlos, ohne Konto, ohne Hochladen.">
+<meta name="theme-color" content="#0A0908">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IYAMBAE Tuner">
+<meta property="og:title" data-inhalt="mess.seite.titel" content="Auf welche Frequenz ist meine Musik gestimmt? — kostenlos messen">
+<meta property="og:description" data-inhalt="mess.seite.beschreibung" content="Zieh eine Musikdatei ins Fenster und erfahre, auf welchem Kammerton sie wirklich steht — 432, 440, 443 Hz oder etwas dazwischen. Gerechnet wird im Browser: Deine Datei verlässt deinen Rechner nicht. Kostenlos, ohne Konto, ohne Hochladen.">
+<meta property="og:url" content="https://apps.iyambae.fm/de/stimmung/">
+<meta property="og:locale" content="de">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://apps.iyambae.fm/de/stimmung/">
+<link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/schrift/schriften.css">
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   Diese Seite trägt ihr eigenes, knappes Stilblatt.
+
+   NICHT das der Landeseite: Deren 1400 Zeilen beschreiben ein Gerät, eine
+   FAQ, eine Umfrage und drei Plattformkarten — nichts davon gibt es hier.
+   Geteilt werden die Marken, nicht die Regeln; deshalb steht :root
+   zeichengleich hier wie dort. Wer eine Farbe ändert, ändert sie an zwei
+   Stellen — das ist der Preis, und er ist kleiner als der von 1400
+   mitgeschleppten Zeilen auf einer Seite, die eine Datei messen soll.
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  --nacht:        #0B0B0E;
+  --grund:        #121216;
+  --grund-hoch:   #1C1D23;
+  --kante:        #2A2B33;
+  --kante-hell:   #38393F;
+  --r1: #FF5252;
+  --r2: #FABF33;
+  --r3: #4CD973;
+  --r4: #4C9EFA;
+  --r5: #B866FA;
+  --regenbogen: linear-gradient(45deg, #FF5252, #FABF33, #4CD973, #4C9EFA, #B866FA);
+  --akzent:       #4CD973;
+  --akzent-hell:  #7DE89A;
+  --kalt:         #8B93A8;
+  --warm:         #FABF33;
+  --text:         #ECECF0;
+  --leise:        #A6A7B2;
+  --leiser:       #74757F;
+  --anzeige: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --grotesk: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --daten: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--grund); color: var(--text);
+  font-family: var(--grotesk); font-size: 1rem; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.rahmen { max-width: 46rem; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2rem); }
+a { color: var(--akzent-hell); }
+
+.kopfleiste { border-bottom: 1px solid var(--kante); background: var(--nacht); }
+.kopfleiste__inhalt { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; padding-block: .9rem; }
+.marke { display: flex; align-items: center; gap: .5rem; text-decoration: none; color: var(--text); }
+.marke__wort { font-family: var(--daten); font-size: .76rem; font-weight: 700; letter-spacing: .08em; }
+.marke__wort span { color: var(--leise); font-weight: 400; }
+.kopf__wege { display: flex; align-items: center; gap: .5rem; margin-inline-start: auto; }
+.kopfknopf {
+  font-family: var(--daten); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;
+  padding: .4rem .8rem; border: 1px solid var(--kante-hell); border-radius: 2px;
+  color: var(--leise); text-decoration: none;
+}
+.kopfknopf:hover { color: var(--text); border-color: var(--kalt); }
+.kopfknopf--haupt { color: var(--nacht); background: var(--akzent); border-color: var(--akzent); font-weight: 700; }
+
+.sprachwahl { position: relative; font-family: var(--daten); font-size: .7rem; }
+.sprachwahl__knopf { cursor: pointer; padding: .4rem .6rem; border: 1px solid var(--kante-hell); border-radius: 2px; color: var(--leise); list-style: none; }
+.sprachwahl__knopf::-webkit-details-marker { display: none; }
+.sprachwahl__liste { position: absolute; inset-inline-end: 0; margin: .3rem 0 0; padding: .3rem; list-style: none; background: var(--grund-hoch); border: 1px solid var(--kante-hell); z-index: 20; min-width: 9rem; }
+.sprachwahl__liste a { display: block; padding: .35rem .5rem; color: var(--leise); text-decoration: none; }
+.sprachwahl__liste a:hover, .sprachwahl__liste a[aria-current] { color: var(--text); background: var(--kante); }
+
+.eyebrow { font-family: var(--daten); font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--akzent); margin: 0 0 .6rem; }
+h1 { font-family: var(--anzeige); font-weight: 400; font-size: clamp(2rem, 6vw, 3.1rem); line-height: 1.08; margin: 0 0 .8rem; }
+h2 { font-family: var(--anzeige); font-weight: 400; font-size: clamp(1.4rem, 3.6vw, 1.9rem); line-height: 1.2; margin: 2.6rem 0 .7rem; }
+h3 { font-family: var(--daten); font-size: .82rem; letter-spacing: .04em; margin: 1.6rem 0 .4rem; color: var(--text); }
+.vorwort { font-size: 1.08rem; color: var(--leise); margin: 0 0 1.6rem; }
+.teil { padding-block: clamp(2.2rem, 6vw, 3.4rem); }
+.teil--linie { border-top: 1px solid var(--kante); }
+
+/* ── Die Ablegefläche ───────────────────────────────────────────── */
+.zone {
+  border: 2px dashed var(--kante-hell); border-radius: 3px;
+  background: var(--grund-hoch);
+  padding: clamp(1.6rem, 5vw, 2.8rem) 1.2rem;
+  text-align: center;
+  transition: border-color .18s, background .18s;
+}
+.zone.ist-bereit { border-color: var(--akzent); background: var(--kante); }
+.zone__gross { font-family: var(--anzeige); font-size: clamp(1.2rem, 3.4vw, 1.6rem); display: block; margin-bottom: .5rem; }
+.zone__klein { font-size: .86rem; color: var(--leiser); display: block; }
+.zone__knopf {
+  margin-top: 1.1rem; display: inline-block; cursor: pointer;
+  font-family: var(--daten); font-size: .78rem; letter-spacing: .06em; font-weight: 700;
+  padding: .7rem 1.4rem; border: 0; border-radius: 2px;
+  background: var(--akzent); color: var(--nacht);
+}
+.zone__knopf:hover { background: var(--akzent-hell); }
+.zone input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+.arbeit { font-family: var(--daten); font-size: .8rem; color: var(--leise); margin-top: 1rem; }
+.balken { height: 3px; background: var(--kante); margin-top: .5rem; overflow: hidden; }
+.balken__fuellung { height: 100%; width: 0; background: var(--regenbogen); transition: width .2s linear; }
+
+/* ── Das Ergebnis ───────────────────────────────────────────────── */
+.ergebnis { margin-top: 1.6rem; border: 1px solid var(--kante-hell); border-radius: 3px; background: var(--grund-hoch); }
+.ergebnis__kopf { padding: 1.4rem clamp(1rem, 3vw, 1.6rem); border-bottom: 1px solid var(--kante); }
+.ergebnis__datei { font-family: var(--daten); font-size: .72rem; color: var(--leiser); word-break: break-all; }
+.ergebnis__zahl {
+  font-family: var(--anzeige); font-size: clamp(2.6rem, 9vw, 4.2rem); line-height: 1;
+  margin: .3rem 0 .2rem;
+}
+.ergebnis__zahl small { font-size: .34em; color: var(--leise); }
+.ergebnis__satz { font-size: 1.02rem; color: var(--leise); margin: .6rem 0 0; }
+.ergebnis__satz strong { color: var(--text); }
+.werte { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0; }
+.wert { padding: .9rem clamp(1rem, 3vw, 1.6rem); border-top: 1px solid var(--kante); border-inline-end: 1px solid var(--kante); }
+.wert__name { font-family: var(--daten); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--leiser); }
+.wert__zahl { font-family: var(--daten); font-size: 1rem; margin-top: .2rem; }
+.leiste { height: 4px; background: var(--kante); margin-top: .45rem; }
+.leiste__voll { height: 100%; background: var(--akzent); }
+.leiste__voll--mau { background: var(--warm); }
+
+.unsicher { padding: .9rem clamp(1rem, 3vw, 1.6rem); border-top: 1px solid var(--kante); color: var(--warm); font-size: .9rem; }
+
+/* ── Der Übergang zum Tuner ─────────────────────────────────────── */
+.brücke { border: 1px solid var(--akzent); border-radius: 3px; padding: clamp(1.2rem, 4vw, 1.8rem); background: rgba(76, 217, 115, .05); }
+.brücke h2 { margin-top: 0; }
+.brücke__knopf {
+  display: inline-block; margin-top: .8rem; text-decoration: none;
+  font-family: var(--daten); font-size: .78rem; letter-spacing: .06em; font-weight: 700;
+  padding: .7rem 1.3rem; border-radius: 2px; background: var(--akzent); color: var(--nacht);
+}
+
+.frage { border-top: 1px solid var(--kante); padding-block: 1.1rem; }
+.frage__titel { font-family: var(--grotesk); font-weight: 600; font-size: 1.02rem; margin: 0 0 .35rem; color: var(--text); }
+.frage p { margin: 0 0 .5rem; color: var(--leise); }
+.frage p:last-child { margin-bottom: 0; }
+
+.fuss { border-top: 1px solid var(--kante); background: var(--nacht); padding-block: 2rem; margin-top: 2rem; }
+.merksatz { font-family: var(--anzeige); font-size: 1.2rem; margin: 0 0 .6rem; color: var(--text); }
+.fuss__recht { font-size: .84rem; color: var(--leiser); margin: 0 0 1.2rem; }
+.fuss__reihe { display: flex; flex-wrap: wrap; gap: .8rem 1.4rem; align-items: center; font-size: .8rem; color: var(--leiser); }
+.fuss__wege { display: flex; gap: 1rem; margin-inline-start: auto; }
+.fuss__wege a { color: var(--leiser); text-decoration: none; }
+.fuss__wege a:hover { color: var(--text); }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="kopfleiste">
+  <div class="rahmen kopfleiste__inhalt">
+    <a class="marke" href="/">
+      <img src="assets/iyambae-marke.svg" alt="" width="28" height="28">
+      <span class="marke__wort">IYAMBAE <span>Tuner</span></span>
+    </a>
+    <nav class="kopf__wege">
+      <!--SPRACHWAHL-->
+      <a class="kopfknopf" href="https://iyambae.fm" data-text="kopf.radio">zum Radio</a>
+      <a class="kopfknopf kopfknopf--haupt" href="/" data-text="mess.kopf.tuner">Zum Tuner</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="rahmen teil">
+  <p class="eyebrow" data-text="mess.eyebrow">Kostenlos · nichts wird hochgeladen</p>
+  <h1 data-text="mess.titel">Auf welchem Kammerton steht deine Musik?</h1>
+  <p class="vorwort" data-text="mess.vorwort">Zieh eine Datei hierher. Du erfährst in ein paar Sekunden, worauf die Aufnahme wirklich gestimmt ist — und wie weit das von 432 Hz entfernt ist.</p>
+
+  <!-- Die Ablegefläche ist zugleich das Formular. Ein <label> um alles,
+       damit auch ein Klick irgendwo in die Fläche den Dateiwähler öffnet —
+       und damit die Tastatur denselben Weg hat wie die Maus. -->
+  <label class="zone" id="zone">
+    <span class="zone__gross" data-text="mess.zone.gross">Musikdatei hierher ziehen</span>
+    <span class="zone__klein" data-text="mess.zone.klein">MP3, M4A, WAV, FLAC, OGG — was dein Browser abspielen kann</span>
+    <input type="file" id="datei" accept="audio/*,.flac,.m4a,.aac,.opus,.wav,.aiff,.aif">
+    <span class="zone__knopf" data-text="mess.zone.knopf">Datei wählen</span>
+  </label>
+
+  <div class="arbeit" id="arbeit" hidden>
+    <span id="arbeitText" data-text="mess.arbeit">Wird gemessen …</span>
+    <div class="balken"><div class="balken__fuellung" id="balken"></div></div>
+  </div>
+
+  <div class="ergebnis" id="ergebnis" hidden>
+    <div class="ergebnis__kopf">
+      <p class="ergebnis__datei" id="ergebnisDatei"></p>
+      <p class="ergebnis__zahl" id="ergebnisZahl"></p>
+      <p class="ergebnis__satz" id="ergebnisSatz"></p>
+    </div>
+    <div class="werte" id="ergebnisWerte"></div>
+    <p class="unsicher" id="ergebnisUnsicher" hidden></p>
+  </div>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <div class="brücke">
+    <h2 data-text="mess.bruecke.titel">Und jetzt?</h2>
+    <p data-html="mess.bruecke.text">Diese Seite <em>sagt dir</em>, worauf deine Musik steht. Der <strong>IYAMBAE Tuner</strong> <em>ändert</em> es — für alles, was aus deinen Lautsprechern kommt: Spotify, YouTube, dein Player, ohne eine einzige Datei anzufassen. Und er misst dabei genauso, statt 440 anzunehmen.</p>
+    <a class="brücke__knopf" href="/" data-text="mess.bruecke.knopf">Den Tuner ansehen</a>
+  </div>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="mess.fragen.titel">Was dabei zu wissen ist</h2>
+
+  <!-- Die Überschriften sind Fragen im Wortlaut, nicht Schlagwörter.
+
+       Das ist kein Stil, sondern der Zweck dieser Seite: Wer „auf welche
+       frequenz ist mein lied gestimmt" eintippt, soll GENAU diesen Satz
+       finden — und eine Antwortmaschine soll den Absatz darunter zitieren
+       können, ohne ihn umzubauen. Deshalb steht die Antwort im ersten
+       Satz und die Begründung erst danach. -->
+  <div class="frage">
+    <p class="frage__titel" data-text="mess.frage.hochladen.titel">Wird meine Datei hochgeladen?</p>
+    <p data-html="mess.frage.hochladen.text"><strong>Nein.</strong> Die Rechnung läuft in deinem Browser, auf deinem Gerät. Die Datei wird nicht übertragen, nicht zwischengespeichert und nicht gespeichert. Du kannst die Netzwerkverbindung trennen, nachdem diese Seite geladen ist — das Messen funktioniert weiter.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="mess.frage.kammerton.titel">Was heißt „Kammerton A"?</p>
+    <p data-html="mess.frage.kammerton.text">Der Kammerton ist der Bezugston, auf den ein Stück gestimmt ist — angegeben als Frequenz des Tons A über dem mittleren C. <strong>Heute üblich sind 440 Hz</strong>, festgelegt 1955 in der Norm ISO 16. Wer 432 Hz hört, hat sein Material um rund 1,8 Prozent tiefer gestimmt: 31,8 Cent, knapp ein Drittel Halbton.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="mess.frage.abweichung.titel">Warum steht meine Musik nicht auf 440 Hz?</p>
+    <p data-html="mess.frage.abweichung.text">Weil kaum eine Aufnahme genau dort steht. Orchester stimmen heute vielfach auf <strong>442 oder 443 Hz</strong>, historische Aufführungspraxis auf 415, ältere Bänder haben ihre Geschwindigkeit über Jahrzehnte verändert, und beim Digitalisieren wird nachgeholfen oder eben nicht. Die 440 sind eine Norm, kein Naturgesetz.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="mess.frage.genau.titel">Wie genau ist die Messung?</p>
+    <p data-html="mess.frage.genau.text">An reinen Tönen von 432 bis 445 Hz liegt der Fehler unter <strong>0,2 Cent</strong>, an echter Musik unter <strong>1 Cent</strong> — nachgeprüft an Aufnahmen, die wir selbst absichtlich verstimmt haben, damit die Wahrheit bekannt war. Ein Cent ist der hundertste Teil eines Halbtons; Menschen unterscheiden bestenfalls fünf bis zehn.</p>
+    <p data-html="mess.frage.genau.wie">Gerechnet wird über die Gipfel im Frequenzspektrum: Jeder Ton wird gefragt, wie weit er von der nächsten gleichstufigen Stufe abweicht, und aus allen zusammen wird ein <em>zirkulärer</em> Mittelwert gebildet — zirkulär, weil +49 und −51 Cent dieselbe Stimmung sind. Es ist dasselbe Verfahren, das im IYAMBAE Tuner die Quellstimmung schätzt.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="mess.frage.grenze.titel">Was kann diese Messung nicht?</p>
+    <p data-html="mess.frage.grenze.text"><strong>Sie erkennt die Stimmung nur bis auf einen Halbton genau.</strong> Barockstimmung 415,3 Hz liegt exakt einen Halbton unter 440 — für die Rechnung sieht beides gleich aus, und sie meldet 440. Das ist keine Schwäche des Verfahrens, sondern liegt in der Sache: Einen Halbton tiefer ist dieselbe Stimmung, nur eine andere Tonart. Wer historische Aufnahmen misst, muss das mitdenken.</p>
+    <p data-html="mess.frage.grenze.mehr">Und sie braucht Töne. Bei reiner Perkussion, Sprache oder Rauschen heben sich die Messwerte gegenseitig auf — dann meldet die Seite eine niedrige Sicherheit statt einer erfundenen Zahl.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="mess.frage.sicherheit.titel">Was bedeutet die Sicherheit in Prozent?</p>
+    <p data-html="mess.frage.sicherheit.text">Sie sagt, wie einig sich die Proben aus dem Stück sind. Wir messen an bis zu 24 Stellen, über das ganze Stück verteilt, und vergleichen sie. <strong>Ab 35 Prozent gilt die Schätzung als tragfähig</strong> — bei sauberem Musikmaterial liegt sie meist über 90. Fällt sie darunter, steht das ausdrücklich da.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="mess.frage.formate.titel">Welche Dateien kann ich messen?</p>
+    <p data-html="mess.frage.formate.text">Alles, was dein Browser abspielen kann: <strong>MP3, M4A/AAC, WAV, FLAC, OGG, Opus</strong>. Auch die Tonspur eines Videos, wenn du die Videodatei hineinziehst. Sehr lange Dateien dauern etwas — gemessen wird trotzdem über das ganze Stück verteilt, nicht nur am Anfang.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="fuss">
+  <div class="rahmen">
+    <blockquote class="merksatz" data-text="fuss.merksatz">
+      Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.
+    </blockquote>
+    <p class="fuss__recht" data-html="fuss.recht">
+      Der IYAMBAE Tuner ist <strong>kein Medizinprodukt</strong> und kein
+      Heilmittel. Er verändert Tonhöhe, sonst nichts.
+    </p>
+    <div class="fuss__reihe">
+      <span data-text="fuss.zeile">IYAMBAE — kuratiertes Webradio und Werkzeuge fürs Hören.</span>
+      <nav class="fuss__wege">
+        <a href="https://iyambae.fm">iyambae.fm</a>
+        <a href="https://iyambae.fm/recht/impressum/" data-text="fuss.impressum">Impressum</a>
+        <a href="https://iyambae.fm/recht/datenschutz/" data-text="fuss.datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════════════════
+   Das Messwerkzeug.
+
+   Alles läuft hier: Datei einlesen, dekodieren, messen, anzeigen. Nichts
+   wird übertragen — und das ist keine Behauptung, sondern eine Eigenschaft
+   des Codes: Es gibt in dieser Datei kein fetch() und kein XHR, das die
+   Musikdaten anfasst. Wer es nachsehen will, sucht danach.
+
+   WARUM KEIN WEB WORKER: Gemessen wird an höchstens 24 Proben zu vier
+   Sekunden. Das sind rund 250 ms Rechnung für ein Stück beliebiger Länge —
+   kurz genug, dass ein eigener Faden mehr Umstand als Nutzen wäre. Der
+   lange Teil ist das Dekodieren, und das erledigt der Browser ohnehin
+   nebenher.
+   ═══════════════════════════════════════════════════════════════════ */
+import { messeStimmung, KAMMERTOENE } from '/assets/lib/stimmung.mjs';
+
+const zone = document.getElementById('zone');
+const datei = document.getElementById('datei');
+const arbeit = document.getElementById('arbeit');
+const arbeitText = document.getElementById('arbeitText');
+const balken = document.getElementById('balken');
+const ergebnis = document.getElementById('ergebnis');
+
+/* Die Seite ist übersetzt; die Wörter für das Ergebnis stehen deshalb
+   nicht hier im Code, sondern werden aus dem Dokument gelesen. Fehlt
+   eines, bleibt der deutsche Rückfall — sichtbar, aber nicht kaputt. */
+function wort(name, rueckfall) {
+  const el = document.querySelector(`[data-wort="${name}"]`);
+  return el ? el.textContent : rueckfall;
+}
+
+const zahl = (n, stellen) =>
+  n.toLocaleString(document.documentElement.lang || 'de',
+                   { minimumFractionDigits: stellen, maximumFractionDigits: stellen });
+
+['dragenter', 'dragover'].forEach(art =>
+  zone.addEventListener(art, e => { e.preventDefault(); zone.classList.add('ist-bereit'); }));
+['dragleave', 'drop'].forEach(art =>
+  zone.addEventListener(art, () => zone.classList.remove('ist-bereit')));
+zone.addEventListener('drop', e => {
+  e.preventDefault();
+  const f = e.dataTransfer?.files?.[0];
+  if (f) nimm(f);
+});
+datei.addEventListener('change', () => { if (datei.files[0]) nimm(datei.files[0]); });
+
+async function nimm(f) {
+  ergebnis.hidden = true;
+  arbeit.hidden = false;
+  arbeitText.textContent = wort('lese', 'Datei wird gelesen …');
+  balken.style.width = '8%';
+
+  let puffer;
+  try {
+    const roh = await f.arrayBuffer();
+    balken.style.width = '25%';
+    arbeitText.textContent = wort('dekodiere', 'Wird dekodiert …');
+    const hof = new (window.AudioContext || window.webkitAudioContext)();
+    puffer = await hof.decodeAudioData(roh);
+    hof.close();
+  } catch {
+    zeigeFehler(wort('fehlerLesen', 'Diese Datei kann der Browser nicht lesen. Versuch es mit MP3, M4A, WAV oder FLAC.'));
+    return;
+  }
+
+  balken.style.width = '45%';
+  arbeitText.textContent = wort('messe', 'Wird gemessen …');
+  // Einen Atemzug warten, damit der Browser den Text wirklich zeichnet,
+  // bevor die Rechnung den Faden belegt.
+  await new Promise(r => setTimeout(r, 30));
+
+  /* Auf ein Kanalgemisch herunter: Die Stimmung ist dieselbe, und die
+     halbe Rechnung reicht. Bei mehr als zwei Kanälen zählen die ersten
+     zwei — bei Filmton sind das links und rechts, und der Mittenkanal
+     trägt Sprache, die hier nichts beiträgt. */
+  const n = puffer.length;
+  const kanaele = Math.min(2, puffer.numberOfChannels);
+  const mono = new Float32Array(n);
+  for (let k = 0; k < kanaele; k++) {
+    const d = puffer.getChannelData(k);
+    for (let i = 0; i < n; i++) mono[i] += d[i] / kanaele;
+  }
+
+  const mess = messeStimmung(mono, puffer.sampleRate,
+                             a => { balken.style.width = (45 + a * 50) + '%'; });
+  balken.style.width = '100%';
+  arbeit.hidden = true;
+  zeige(f, puffer, mess);
+}
+
+function zeigeFehler(satz) {
+  arbeit.hidden = true;
+  ergebnis.hidden = false;
+  document.getElementById('ergebnisDatei').textContent = '';
+  document.getElementById('ergebnisZahl').textContent = '—';
+  document.getElementById('ergebnisSatz').textContent = satz;
+  document.getElementById('ergebnisWerte').innerHTML = '';
+  document.getElementById('ergebnisUnsicher').hidden = true;
+}
+
+function zeige(f, puffer, m) {
+  ergebnis.hidden = false;
+  document.getElementById('ergebnisDatei').textContent = f.name;
+
+  if (!m.genug) {
+    document.getElementById('ergebnisZahl').textContent = '—';
+    document.getElementById('ergebnisSatz').textContent = m.grund === 'zu_kurz'
+      ? wort('zuKurz', 'Die Aufnahme ist zu kurz zum Messen.')
+      : wort('keinKlang', 'Hier ist kein Ton, der eine Stimmung hätte.');
+    document.getElementById('ergebnisWerte').innerHTML = '';
+    document.getElementById('ergebnisUnsicher').hidden = true;
+    return;
+  }
+
+  document.getElementById('ergebnisZahl').innerHTML =
+    zahl(m.a4, 1) + ' <small>Hz</small>';
+
+  /* Der Satz darunter ist die eigentliche Antwort. Er nennt den nächsten
+     gebräuchlichen Kammerton, und zwar mit dem Abstand dazu — „praktisch
+     genau 440" ist etwas anderes als „nahe bei 440, aber neun Cent
+     daneben", und beides kommt vor. */
+  const k = m.naechster;
+  const nah = k.abstandCent < 4;
+  const satz = nah
+    ? wort('satzNah', 'Das ist praktisch genau {kammerton} Hz — {name}.')
+    : wort('satzFern', 'Am nächsten liegt {kammerton} Hz ({name}), aber {cent} Cent daneben.');
+  document.getElementById('ergebnisSatz').innerHTML = satz
+    .replace('{kammerton}', `<strong>${zahl(k.hz, k.hz % 1 ? 1 : 0)}</strong>`)
+    .replace('{name}', k.name)
+    .replace('{cent}', zahl(k.abstandCent, 1));
+
+  const zu432 = 1200 * Math.log2(m.a4 / 432);
+  const werte = [
+    [wort('wertAbstand440', 'Abstand zu 440'), (m.cent >= 0 ? '+' : '') + zahl(m.cent, 1) + ' ct'],
+    [wort('wertAbstand432', 'Abstand zu 432'), (zu432 >= 0 ? '+' : '') + zahl(zu432, 1) + ' ct'],
+    [wort('wertDauer', 'Gemessene Länge'), zahl(m.proben.length * 4, 0) + ' s'],
+  ];
+  const sicher = Math.round(m.sicherheit * 100);
+  document.getElementById('ergebnisWerte').innerHTML =
+    werte.map(([name, w]) =>
+      `<div class="wert"><div class="wert__name">${name}</div><div class="wert__zahl">${w}</div></div>`).join('') +
+    `<div class="wert"><div class="wert__name">${wort('wertSicherheit', 'Sicherheit')}</div>` +
+    `<div class="wert__zahl">${sicher} %</div>` +
+    `<div class="leiste"><div class="leiste__voll${m.sicherheit < 0.35 ? ' leiste__voll--mau' : ''}" ` +
+    `style="width:${Math.min(100, sicher)}%"></div></div></div>`;
+
+  const unsicher = document.getElementById('ergebnisUnsicher');
+  unsicher.hidden = m.sicherheit >= 0.35;
+  unsicher.textContent = wort('warnUnsicher',
+    'Die Sicherheit liegt unter 35 Prozent. Bei Perkussion, Sprache oder sehr dichtem Satz trägt diese Zahl nicht — nimm eine andere Aufnahme.');
+}
+</script>
+
+<!-- Die Wörter fürs Ergebnis. Sie stehen im Dokument und nicht im Skript,
+     damit Scripts/baue-apps-sprachen.py sie wie jeden anderen Satz ernten
+     und übersetzen kann. Unsichtbar, aber vorhanden — genau wie beim
+     Schwebungsmesser auf der Landeseite. -->
+<div hidden>
+  <span data-wort="lese" data-text="mess.wort.lese">Datei wird gelesen …</span>
+  <span data-wort="dekodiere" data-text="mess.wort.dekodiere">Wird dekodiert …</span>
+  <span data-wort="messe" data-text="mess.wort.messe">Wird gemessen …</span>
+  <span data-wort="fehlerLesen" data-text="mess.wort.fehlerLesen">Diese Datei kann der Browser nicht lesen. Versuch es mit MP3, M4A, WAV oder FLAC.</span>
+  <span data-wort="zuKurz" data-text="mess.wort.zuKurz">Die Aufnahme ist zu kurz zum Messen.</span>
+  <span data-wort="keinKlang" data-text="mess.wort.keinKlang">Hier ist kein Ton, der eine Stimmung hätte.</span>
+  <span data-wort="satzNah" data-text="mess.wort.satzNah">Das ist praktisch genau {kammerton} Hz — {name}.</span>
+  <span data-wort="satzFern" data-text="mess.wort.satzFern">Am nächsten liegt {kammerton} Hz ({name}), aber {cent} Cent daneben.</span>
+  <span data-wort="wertAbstand440" data-text="mess.wort.wertAbstand440">Abstand zu 440</span>
+  <span data-wort="wertAbstand432" data-text="mess.wort.wertAbstand432">Abstand zu 432</span>
+  <span data-wort="wertDauer" data-text="mess.wort.wertDauer">Gemessene Länge</span>
+  <span data-wort="wertSicherheit" data-text="mess.wort.wertSicherheit">Sicherheit</span>
+  <span data-wort="warnUnsicher" data-text="mess.wort.warnUnsicher">Die Sicherheit liegt unter 35 Prozent. Bei Perkussion, Sprache oder sehr dichtem Satz trägt diese Zahl nicht — nimm eine andere Aufnahme.</span>
+</div>
+
+</body>
+</html>

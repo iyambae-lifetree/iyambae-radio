@@ -151,6 +151,20 @@ if (sprache() !== 'de') {
       for (const r of REGALE) {
         const w = uebersetzt.regal?.[r.id];
         if (w) r.beschreibung = w;
+        /*
+         DER NAME AUCH, seit dem 01.09.2026.
+
+         Bis dahin stand nur die Beschreibung hier. Das Ergebnis: Auf der
+         japanischen Seite war das Kaertchen japanisch, die Ueberschrift
+         darueber aber „Grenzgaenger" — neunundzwanzigmal. Sāmi-Ra hat es
+         gesehen: „hm, die Regale haben immer noch deutsche Namen…"
+
+         Ein uebersetzter Absatz unter einer deutschen Ueberschrift ist
+         schlimmer als beides deutsch: Es sieht nach Nachlaessigkeit aus,
+         nicht nach Absicht.
+        */
+        const n = uebersetzt.regalname?.[r.id];
+        if (n) r.name = n;
       }
     }
   } catch { /* deutsches Kaertchen bleibt stehen */ }

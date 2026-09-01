@@ -8,6 +8,9 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v31: Die Regalnamen sind jetzt auch uebersetzt. app.js und alle sieben
+// Sprachseiten haben sich geaendert.
+//
 // v30: NACHGEZOGEN, NICHT SELBST VERURSACHT.
 //
 // 97250be hat die Katalogtexte in sechs Sprachen uebersetzt — 165 Sender
@@ -35,7 +38,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v30';
+const SW_VERSION = 'iyambae-v31';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

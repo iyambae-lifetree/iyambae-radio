@@ -1,4 +1,17 @@
 {
+  "regalname": {
+    "grenzgaenger": "Fronterizos",
+    "freakshow": "Barraca de rarezas",
+    "tiefe": "La hondura",
+    "japan": "Japón",
+    "maschinenraum": "Sala de máquinas",
+    "barrio": "Barrio",
+    "rueckspiegel": "Retrovisor",
+    "fundstuecke": "Hallazgos",
+    "klassik": "Clásica",
+    "jazz": "Jazz y aledaños",
+    "wuehlkiste": "El cajón de saldos"
+  },
   "regal": {
     "grenzgaenger": "Emisoras que se niegan a tener un género.",
     "freakshow": "Mashups, Vaporwave, accidentes de género con aviso previo.",
@@ -113,7 +126,7 @@
     "gamesboro": "Música de videojuegos de cuatro décadas, desde partituras orquestales hasta piezas de 8 bits, gestionada por un colectivo de Viena. Un repertorio que hoy llena salas de concierto serias y que, aun así, casi nunca suena en la radio.",
     "soma-sf1033": "Capas de ambient bajo las que se mezcla la radio policial real de San Francisco — intervenciones, códigos, nombres de calles, todo en directo. Suena como la banda sonora de una película que se está rodando ahí fuera en ese mismo momento.",
     "soma-missioncontrol": "Ambient con comunicaciones espaciales mezcladas — Apolo, transbordador espacial, control en tierra. Las voces son reales y proceden de archivos de la NASA, lo que le da a la música una seriedad que el space ambient puro nunca alcanza.",
-    "soma-sonicuniverse": "El canal en el que el jazz y la música electrónica se encuentran sin que uno se trague al otro — nu jazz, free jazz, broken beat. Está entre los Grenzgänger porque no encaja en ninguno de los dos cajones.",
+    "soma-sonicuniverse": "El canal en el que el jazz y la música electrónica se encuentran sin que uno se trague al otro — nu jazz, free jazz, broken beat. Está entre los Fronterizos porque no encaja en ninguno de los dos cajones.",
     "soma-suburbsofgoa": "Clásica india y hallazgos de Bollywood, entrelazados con downtempo y dub — una mezcla de géneros que así no existe en ningún otro sitio. Ni música del mundo ni electrónica, sino una tercera cosa que no tiene nombre.",
     "soma-illstreet": "Exotica y música space-age bachelor-pad de los años cincuenta y sesenta — esos discos con los que los suburbios de posguerra soñaban con Tahití. Absurda, kitsch y musicalmente sorprendente por su refinamiento.",
     "soma-tikitime": "El gemelo aún más peculiar de Illinois Street Lounge: cultura tiki, guitarras hawaianas, cantos de pájaros entre tema y tema. Un género que procede de los bares de cócteles estadounidenses y que está completamente inventado.",
@@ -132,7 +145,7 @@
     "radio-swiss-jazz": "El canal de jazz de la radiotelevisión suiza, sin publicidad y sin locución — suena música, y nada más. La forma más tranquila de dejar el jazz de fondo, sin que nadie interrumpa.",
     "jazzradio-hu": "Desde Budapest, y una de las poquísimas emisoras que transmiten en Ogg Vorbis en vez de MP3 — con la misma tasa de bits, audiblemente más limpia en los agudos. El jazz húngaro aparece aquí con más frecuencia que en otros sitios.",
     "xjazz-movin-grooves": "El canal de groove del festival XJAZZ de Berlín, con 320 kbit/s uno de los streams de jazz de sonido más potente que existen. Jazz con pulso: jazz-funk, broken beat, piezas en las que el bajo marca la dirección.",
-    "xjazz-electronic": "El canal en el que el jazz y la electrónica no se alternan, sino que se compenetran — música improvisada con máquinas dentro. Quien se sienta en casa en Maschinenraum y aun así eche de menos los instrumentos de viento, empieza aquí.",
+    "xjazz-electronic": "El canal en el que el jazz y la electrónica no se alternan, sino que se compenetran — música improvisada con máquinas dentro. Quien se sienta en casa en Sala de máquinas y aun así eche de menos los instrumentos de viento, empieza aquí.",
     "le-grigri": "Una pequeña emisora francesa que echa música africana, free jazz y hip-hop en la misma olla y remueve. Exactamente el tipo de vecindad en la que surgen mezclas de género que nadie más pincha.",
     "klcbs-fusion": "KLCBS se llama a sí misma «The Jazz Wave» y emite desde Bandung, en Java. El canal de fusion pincha lo que en Indonesia se entiende por jazz — y eso está bastante más cerca de Weather Report que de Wynton Marsalis.",
     "wwoz": "La radio comunitaria de New Orleans, sostenida por oyentes y locutores voluntarios. No es una emisora de jazz en sentido de museo, sino la emisora de una ciudad donde el jazz es música de uso cotidiano — con brass bands, funk y todo lo que eso conlleva.",
@@ -174,7 +187,7 @@
     "kusc": "La mayor emisora de clásica financiada por oyentes de EE. UU., sostenida por una universidad de Los Angeles. Las radios de clásica estadounidenses suenan más accesibles que las europeas — menos reverencia, más narración.",
     "wqxr": "Desde 1936, la emisora de clásica de New York, antes propiedad del New York Times y hoy financiada por oyentes. Retransmite con regularidad desde el Carnegie Hall y desde las orquestas de la ciudad. Para las orquestas y los compositores estadounidenses, la mejor dirección del catálogo.",
     "venice-classic": "Una pequeña emisora veneciana centrada en el barroco y el repertorio italiano — Vivaldi, Albinoni, Marcello, en su propia ciudad. Sin publicidad y sin locución. Quien quiera oír el barroco no como fondo, sino como repertorio, encuentra aquí la profundidad para ello.",
-    "early-music": "Exclusivamente música antigua: Edad Media, Renacimiento, primer barroco, con instrumentos históricos. El complemento de Ancient FM en Fundstücke — el mismo terreno, otra caligrafía. Música de siglos en los que el diapasón aún no estaba fijado en 440 Hz.",
+    "early-music": "Exclusivamente música antigua: Edad Media, Renacimiento, primer barroco, con instrumentos históricos. El complemento de Ancient FM en Hallazgos — el mismo terreno, otra caligrafía. Música de siglos en los que el diapasón aún no estaba fijado en 440 Hz.",
     "walm2-opus": "Clásica de discos de pizarra originales, emitida en Opus a 192 kbit/s. La misma gente que gestiona Adroit Jazz en el estante de jazz — se oye el disco, no la reedición remasterizada.",
     "flowstate-classical": "Clásica a 320 kbit/s y 48 kHz, seleccionada para una escucha larga y concentrada, no para el clímax rápido. La entrada de mejor sonido de este estante después de WALM. Los movimientos largos se mantienen enteros, en vez de recortarse a la medida de la capacidad de atención.",
     "fine-music-radio": "Clásica y jazz desde Ciudad del Cabo, hecha por voluntarios. La única emisora del estante que pincha ambos géneros en igualdad de condiciones — y la única del continente africano."

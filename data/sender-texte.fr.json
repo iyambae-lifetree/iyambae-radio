@@ -1,4 +1,17 @@
 {
+  "regalname": {
+    "grenzgaenger": "Passe-frontières",
+    "freakshow": "Cabinet de curiosités",
+    "tiefe": "Les profondeurs",
+    "japan": "Japon",
+    "maschinenraum": "Salle des machines",
+    "barrio": "Barrio",
+    "rueckspiegel": "Rétroviseur",
+    "fundstuecke": "Trouvailles",
+    "klassik": "Classique",
+    "jazz": "Jazz et voisinage",
+    "wuehlkiste": "Le bac à fouilles"
+  },
   "regal": {
     "grenzgaenger": "Des stations qui refusent d'avoir un genre.",
     "freakshow": "Mashups, vaporwave, accidents de genre annoncés.",

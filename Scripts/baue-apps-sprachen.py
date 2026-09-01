@@ -93,6 +93,14 @@ SEITEN = {
         # Nur hier stehen die Saetze, die rechtlich tragen muessen.
         "rueckgrat": True,
     },
+    "stimmung/": {
+        "vorlage": "stimmung.html",
+        # Kein Programm zum Herunterladen — das Werkzeug laeuft im Browser.
+        "programm": "messwerkzeug",
+        # Der Merksatz und der Medizinprodukt-Satz stehen auch hier: Sie
+        # gehoeren der Marke, nicht der einen Seite.
+        "rueckgrat": True,
+    },
 }
 
 # Schreibrichtung und Zahlenformat je Sprache.
@@ -839,7 +847,8 @@ def pruefe_robots(quelle):
     return not fehler
 
 
-def pruefe_seite(kuerzel, seite, texte, pfad="", rueckgrat=True):
+def pruefe_seite(kuerzel, seite, texte, pfad="", rueckgrat=True,
+                 programm="tuner"):
     """Traegt die erzeugte Seite, was sie tragen soll?"""
     fehler = []
 
@@ -891,7 +900,8 @@ def pruefe_seite(kuerzel, seite, texte, pfad="", rueckgrat=True):
         else:
             knoten = {k.get("@type"): k for k in daten.get("@graph", [])}
             gefordert = ("Organization", "WebPage",
-                         "SoftwareApplication" if rueckgrat else "WebApplication")
+                         "WebApplication" if programm == "messwerkzeug"
+                         else "SoftwareApplication")
             for art in gefordert:
                 if art not in knoten:
                     fehler.append(f"JSON-LD ohne {art}")
@@ -1003,7 +1013,8 @@ def main():
             texte = {**kataloge["de"], **kataloge[kuerzel]}
             seite = erzeuge_seite(quelle, kuerzel, texte, pfad, wie["programm"])
             seiten[(pfad, kuerzel)] = seite
-            if not pruefe_seite(kuerzel, seite, texte, pfad, wie["rueckgrat"]):
+            if not pruefe_seite(kuerzel, seite, texte, pfad,
+                                wie["rueckgrat"], wie["programm"]):
                 print(f"    (in apps/{kuerzel}/{pfad})")
                 gut = False
 

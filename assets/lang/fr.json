@@ -1,6 +1,6 @@
 {
   "seite.titel": "IYAMBAE Radio — la cabine d'écoute d'un disquaire, en 432 Hz",
-  "seite.beschreibung": "IYAMBAE Radio — un disquaire trié à la main, que l'on parcourt à l'oreille. {senderzahl} stations de {laenderzahl} pays : Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
+  "seite.beschreibung": "IYAMBAE Radio — un disquaire trié à la main, que l'on parcourt à l'oreille. {senderzahl} stations de {laenderzahl} pays : {regalliste}.",
   "laden.hinweis": "On ouvre chez le disquaire …",
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "Station, lieu, mot-clé …",

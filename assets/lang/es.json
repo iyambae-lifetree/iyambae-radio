@@ -1,6 +1,6 @@
 {
   "seite.titel": "IYAMBAE Radio — la cabina de escucha de una tienda de discos, en 432 Hz",
-  "seite.beschreibung": "IYAMBAE Radio — una tienda de discos escogida a mano que se recorre escuchando. {senderzahl} emisoras de {laenderzahl} países: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.",
+  "seite.beschreibung": "IYAMBAE Radio — una tienda de discos escogida a mano que se recorre escuchando. {senderzahl} emisoras de {laenderzahl} países: {regalliste}.",
   "laden.hinweis": "Abriendo la tienda de discos …",
   "kopf.marke": "IYAMBAE Radio",
   "kopf.suche.platzhalter": "Emisora, lugar, palabra clave …",

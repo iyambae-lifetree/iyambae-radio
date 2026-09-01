@@ -1,4 +1,17 @@
 {
+  "regalname": {
+    "grenzgaenger": "Border Crossers",
+    "freakshow": "Freak Show",
+    "tiefe": "The Deep",
+    "japan": "Japan",
+    "maschinenraum": "Engine Room",
+    "barrio": "Barrio",
+    "rueckspiegel": "Rear-View Mirror",
+    "fundstuecke": "Finds",
+    "klassik": "Classical",
+    "jazz": "Jazz & Kin",
+    "wuehlkiste": "The Bargain Bin"
+  },
   "regal": {
     "grenzgaenger": "Stations that refuse to have a genre.",
     "freakshow": "Mashups, vaporwave, genre accidents on purpose.",

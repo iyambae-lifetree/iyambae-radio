@@ -1,4 +1,17 @@
 {
+  "regalname": {
+    "grenzgaenger": "Sconfinati",
+    "freakshow": "Baraccone",
+    "tiefe": "Il profondo",
+    "japan": "Giappone",
+    "maschinenraum": "Sala macchine",
+    "barrio": "Barrio",
+    "rueckspiegel": "Specchietto retrovisore",
+    "fundstuecke": "Ritrovamenti",
+    "klassik": "Classica",
+    "jazz": "Jazz e dintorni",
+    "wuehlkiste": "Il cesto delle occasioni"
+  },
   "regal": {
     "grenzgaenger": "Emittenti che si rifiutano di avere un genere.",
     "freakshow": "Mashup, vaporwave, incidenti di genere annunciati.",
@@ -113,7 +126,7 @@
     "gamesboro": "Musica da videogiochi di quattro decenni, da partiture orchestrali a brani a 8 bit, gestita da un collettivo viennese. Un repertorio che ormai riempie sale da concerto serie e che comunque in radio compare a malapena.",
     "soma-sf1033": "Superfici ambient sotto cui è mixata la vera radio della polizia di San Francisco — interventi, codici, nomi di strade, tutto dal vivo. Suona come la colonna sonora di un film che si sta girando proprio fuori.",
     "soma-missioncontrol": "Ambient con comunicazioni radio spaziali mixate — Apollo, Space Shuttle, controllo a terra. Le voci sono vere e provengono da archivi della NASA, il che dà alla musica una serietà che il puro space ambient non raggiunge mai.",
-    "soma-sonicuniverse": "Il canale in cui jazz e musica elettronica si incontrano senza che l’uno inghiotta l’altro — nu jazz, free jazz, broken beat. Sta tra i Grenzgänger perché non entra in nessuno dei due cassetti.",
+    "soma-sonicuniverse": "Il canale in cui jazz e musica elettronica si incontrano senza che l’uno inghiotta l’altro — nu jazz, free jazz, broken beat. Sta tra i Sconfinati perché non entra in nessuno dei due cassetti.",
     "soma-suburbsofgoa": "Classica indiana e chicche bollywoodiane, intrecciate con downtempo e dub — un mix di generi che così non esiste altrove. Né world music né elettronica, ma una terza cosa per cui non c’è un nome.",
     "soma-illstreet": "Exotica e space-age bachelor-pad music degli anni Cinquanta e Sessanta — quei dischi con cui i sobborghi del dopoguerra sognavano Tahiti. Assurdo, kitsch e musicalmente sorprendentemente raffinato.",
     "soma-tikitime": "Il gemello ancora più particolare della Illinois Street Lounge: cultura tiki, chitarre hawaiane, versi d’uccello tra un brano e l’altro. Un genere che nasce dai cocktail bar americani ed è completamente inventato.",
@@ -132,7 +145,7 @@
     "radio-swiss-jazz": "Il canale jazz della radiotelevisione svizzera, senza pubblicità e senza conduzione — gira musica, nient’altro. Il modo più pacato di tenere il jazz in sottofondo, senza che nessuno interrompa.",
     "jazzradio-hu": "Da Budapest, e una delle pochissime emittenti che trasmettono in Ogg Vorbis invece che in MP3 — a parità di bitrate, percettibilmente più pulita negli acuti. Il jazz ungherese compare qui più spesso che altrove.",
     "xjazz-movin-grooves": "Il canale groove del festival berlinese XJAZZ, a 320 kbit/s uno degli stream jazz con la resa sonora più forte in assoluto. Jazz col battito: jazz-funk, broken beat, brani in cui il basso detta la direzione.",
-    "xjazz-electronic": "Il canale in cui jazz ed elettronica non si alternano, ma si compenetrano — musica improvvisata con macchine dentro. Chi si trova a casa nel Maschinenraum ma sente comunque la mancanza dei fiati, comincia da qui.",
+    "xjazz-electronic": "Il canale in cui jazz ed elettronica non si alternano, ma si compenetrano — musica improvvisata con macchine dentro. Chi si trova a casa nel Sala macchine ma sente comunque la mancanza dei fiati, comincia da qui.",
     "le-grigri": "Una piccola emittente francese che getta musica africana, free jazz e hip-hop nella stessa pentola e mescola. Esattamente il tipo di vicinato in cui nascono mix di generi che altrimenti nessuno mette in onda.",
     "klcbs-fusion": "KLCBS si definisce «The Jazz Wave» e trasmette da Bandung, a Giava. Il canale fusion suona quello che in Indonesia passa per jazz — ed è decisamente più vicino ai Weather Report che a Wynton Marsalis.",
     "wwoz": "La radio di comunità di New Orleans, sostenuta da ascoltatori e conduttori volontari. Non un’emittente jazz da museo, ma quella di una città in cui il jazz è musica d’uso quotidiano — con brass band, funk e tutto ciò che ne fa parte.",
@@ -174,7 +187,7 @@
     "kusc": "La più grande emittente classica finanziata dagli ascoltatori negli Stati Uniti, sostenuta da un’università di Los Angeles. Le radio classiche americane suonano più accessibili di quelle europee — meno reverenza, più narrazione.",
     "wqxr": "Dal 1936 l’emittente classica di New York, un tempo di proprietà del New York Times, oggi finanziata dagli ascoltatori. Trasmette regolarmente dalla Carnegie Hall e dalle orchestre della città. Per orchestre e compositori americani il miglior indirizzo del catalogo.",
     "venice-classic": "Una piccola emittente veneziana con un focus su barocco e repertorio italiano — Vivaldi, Albinoni, Marcello, nella loro città. Senza pubblicità e senza conduzione. Chi vuole ascoltare il barocco non come sottofondo ma come repertorio, trova qui la profondità necessaria.",
-    "early-music": "Esclusivamente musica antica: Medioevo, Rinascimento, primo barocco, su strumenti storici. Il complemento di Ancient FM tra i Fundstücke — lo stesso campo, una firma diversa. Musica da secoli in cui il diapason non era ancora fissato a 440 Hz.",
+    "early-music": "Esclusivamente musica antica: Medioevo, Rinascimento, primo barocco, su strumenti storici. Il complemento di Ancient FM tra i Ritrovamenti — lo stesso campo, una firma diversa. Musica da secoli in cui il diapason non era ancora fissato a 440 Hz.",
     "walm2-opus": "Classica da originali dischi in gommalacca, trasmessa in Opus a 192 kbit/s. Le stesse persone che nello scaffale jazz gestiscono Adroit Jazz — si sente il disco, non la ristampa rimasterizzata.",
     "flowstate-classical": "Classica a 320 kbit/s e 48 kHz, selezionata per un ascolto lungo e concentrato invece che per il picco rapido. La voce dal suono migliore di questo scaffale dopo WALM. I movimenti lunghi restano interi, invece di essere tagliati su misura per la soglia di attenzione.",
     "fine-music-radio": "Classica e jazz da Città del Capo, fatti da volontari. L’unica emittente dello scaffale che suona entrambi alla pari — e l’unica dal continente africano."
