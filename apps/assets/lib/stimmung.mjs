@@ -46,10 +46,24 @@
 
 export const STANDARD_A4 = 440.0;
 
-/* Die Kammertoene, die in freier Wildbahn vorkommen. */
+/*
+ Die Kammertoene, die in freier Wildbahn vorkommen.
+
+ BERICHTIGT AM 01.09.2026 nach der Tiefenrecherche in
+ docs/recherche-stimmtonhoehen-432hz.md:
+
+   „Mailand 1880"       war falsch. Der Congresso dei Musicisti Italiani
+                        tagte im Juni 1881; belegt in der Gazzetta musicale
+                        di Milano vom 13.11.1881.
+   „Verdi · …"          ist als Name irrefuehrend. Verdi trat fuer die
+                        franzoesischen 435 ein und nahm 432 nur an — „la
+                        differenza e cosi piccola, quasi impercettibile
+                        all'orecchio". Der Kampfbegriff „Verdi-Stimmung"
+                        fuer 432 stammt von 1988, nicht von Verdi.
+*/
 export const KAMMERTOENE = [
   { hz: 415.30, name: 'Barock',            kurz: '415' },
-  { hz: 432.00, name: 'Verdi · Mailand 1880', kurz: '432' },
+  { hz: 432.00, name: 'Mailand 1881',        kurz: '432' },
   { hz: 435.00, name: 'Paris 1859',        kurz: '435' },
   { hz: 440.00, name: 'ISO 16',            kurz: '440' },
   { hz: 442.00, name: 'viele Orchester',   kurz: '442' },
