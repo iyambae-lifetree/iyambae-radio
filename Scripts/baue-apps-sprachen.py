@@ -113,6 +113,11 @@ SEITEN = {
         "programm": "messwerkzeug",
         "rueckgrat": True,
     },
+    "solfeggio/": {
+        "vorlage": "solfeggio.html",
+        "programm": "messwerkzeug",
+        "rueckgrat": True,
+    },
     "hoertest/": {
         "vorlage": "hoertest.html",
         # Auch kein Programm zum Herunterladen — ein Pruefstand im Browser.
