@@ -16,79 +16,13 @@
 <link rel="canonical" href="https://apps.iyambae.fm/de/hoertest/">
 <link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/schrift/schriften.css">
+<link rel="stylesheet" href="/assets/werkzeug.css">
 <style>
 /* ═══════════════════════════════════════════════════════════════════
    Eigenes, knappes Stilblatt — wie bei /stimmung/, aus demselben Grund.
    :root steht zeichengleich in allen drei Seiten.
    ═══════════════════════════════════════════════════════════════════ */
-:root {
-  --nacht:        #0B0B0E;
-  --grund:        #121216;
-  --grund-hoch:   #1C1D23;
-  --kante:        #2A2B33;
-  --kante-hell:   #38393F;
-  --r1: #FF5252;
-  --r2: #FABF33;
-  --r3: #4CD973;
-  --r4: #4C9EFA;
-  --r5: #B866FA;
-  --regenbogen: linear-gradient(45deg, #FF5252, #FABF33, #4CD973, #4C9EFA, #B866FA);
-  --akzent:       #4CD973;
-  --akzent-hell:  #7DE89A;
-  --kalt:         #8B93A8;
-  --warm:         #FABF33;
-  --text:         #ECECF0;
-  --leise:        #A6A7B2;
-  --leiser:       #74757F;
-  --anzeige: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
-  --grotesk: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --daten: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
-}
-* { box-sizing: border-box; }
-/* [hidden] MUSS hier ueberschreiben duerfen.
-
-   `.paare { display: grid }` ist eine Autorenregel und schlaegt das
-   `display: none`, das der Browser dem hidden-Attribut mitgibt — die
-   Regel des Autors gewinnt gegen die des Browsers. Ergebnis: Nach dem
-   letzten Durchgang blieben die Knoepfe stehen, obwohl das Ergebnis
-   schon darunter stand. Im Bildschirmfoto gesehen. */
-[hidden] { display: none !important; }
-body {
-  margin: 0; background: var(--grund); color: var(--text);
-  font-family: var(--grotesk); font-size: 1rem; line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-.rahmen { max-width: 46rem; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2rem); }
-a { color: var(--akzent-hell); }
-
-.kopfleiste { border-bottom: 1px solid var(--kante); background: var(--nacht); }
-.kopfleiste__inhalt { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; padding-block: .9rem; }
-.marke { display: flex; align-items: center; gap: .5rem; text-decoration: none; color: var(--text); }
-.marke__wort { font-family: var(--daten); font-size: .76rem; font-weight: 700; letter-spacing: .08em; }
-.marke__wort span { color: var(--leise); font-weight: 400; }
-.kopf__wege { display: flex; align-items: center; gap: .5rem; margin-inline-start: auto; }
-.kopfknopf {
-  font-family: var(--daten); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;
-  padding: .4rem .8rem; border: 1px solid var(--kante-hell); border-radius: 2px;
-  color: var(--leise); text-decoration: none;
-}
-.kopfknopf:hover { color: var(--text); border-color: var(--kalt); }
-.kopfknopf--haupt { color: var(--nacht); background: var(--akzent); border-color: var(--akzent); font-weight: 700; }
-
-.sprachwahl { position: relative; font-family: var(--daten); font-size: .7rem; }
-.sprachwahl__knopf { cursor: pointer; padding: .4rem .6rem; border: 1px solid var(--kante-hell); border-radius: 2px; color: var(--leise); list-style: none; }
-.sprachwahl__knopf::-webkit-details-marker { display: none; }
-.sprachwahl__liste { position: absolute; inset-inline-end: 0; margin: .3rem 0 0; padding: .3rem; list-style: none; background: var(--grund-hoch); border: 1px solid var(--kante-hell); z-index: 20; min-width: 9rem; }
-.sprachwahl__liste a { display: block; padding: .35rem .5rem; color: var(--leise); text-decoration: none; }
-.sprachwahl__liste a:hover, .sprachwahl__liste a[aria-current] { color: var(--text); background: var(--kante); }
-
-.eyebrow { font-family: var(--daten); font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--akzent); margin: 0 0 .6rem; }
-h1 { font-family: var(--anzeige); font-weight: 400; font-size: clamp(2rem, 6vw, 3.1rem); line-height: 1.08; margin: 0 0 .8rem; }
-h2 { font-family: var(--anzeige); font-weight: 400; font-size: clamp(1.4rem, 3.6vw, 1.9rem); line-height: 1.2; margin: 2.6rem 0 .7rem; }
-.vorwort { font-size: 1.08rem; color: var(--leise); margin: 0 0 1.6rem; }
-.teil { padding-block: clamp(2.2rem, 6vw, 3.4rem); }
-.teil--linie { border-top: 1px solid var(--kante); }
-
+/* Nur diese Seite. Das Gerüst steht in /assets/werkzeug.css. */
 /* ── Der Prüfstand ───────────────────────────────────────────────── */
 .stand { border: 1px solid var(--kante-hell); border-radius: 3px; background: var(--grund-hoch); padding: clamp(1.2rem, 4vw, 2rem); }
 .stand__runde { font-family: var(--daten); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--akzent); }
@@ -136,19 +70,6 @@ h2 { font-family: var(--anzeige); font-weight: 400; font-size: clamp(1.4rem, 3.6
   font-family: var(--daten); font-size: .78rem; letter-spacing: .06em; font-weight: 700;
   padding: .7rem 1.3rem; border: 0; border-radius: 2px; background: var(--akzent); color: var(--nacht);
 }
-
-.frage { border-top: 1px solid var(--kante); padding-block: 1.1rem; }
-.frage__titel { font-weight: 600; font-size: 1.02rem; margin: 0 0 .35rem; color: var(--text); }
-.frage p { margin: 0 0 .5rem; color: var(--leise); }
-.frage p:last-child { margin-bottom: 0; }
-
-.fuss { border-top: 1px solid var(--kante); background: var(--nacht); padding-block: 2rem; margin-top: 2rem; }
-.merksatz { font-family: var(--anzeige); font-size: 1.2rem; margin: 0 0 .6rem; color: var(--text); }
-.fuss__recht { font-size: .84rem; color: var(--leiser); margin: 0 0 1.2rem; }
-.fuss__reihe { display: flex; flex-wrap: wrap; gap: .8rem 1.4rem; align-items: center; font-size: .8rem; color: var(--leiser); }
-.fuss__wege { display: flex; gap: 1rem; margin-inline-start: auto; }
-.fuss__wege a { color: var(--leiser); text-decoration: none; }
-.fuss__wege a:hover { color: var(--text); }
 
 @media (max-width: 30rem) { .paare, .wahl { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -249,6 +170,15 @@ h2 { font-family: var(--anzeige); font-weight: 400; font-size: clamp(1.4rem, 3.6
     <blockquote class="merksatz" data-text="fuss.merksatz">
       Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.
     </blockquote>
+    <nav class="fuss__werkzeuge">
+      <span class="fuss__werkzeuge-titel" data-text="werk.titel">Alles hier</span>
+      <a href="/de/" data-text="werk.tuner">Der Tuner</a>
+      <a href="/de/stimmung/" data-text="werk.stimmung">Stimmung messen</a>
+      <a href="/de/hoertest/" data-text="werk.hoertest">Hörtest</a>
+      <a href="/de/spotify/" data-text="werk.spotify">Spotify in 432 Hz</a>
+      <a href="/de/samplerate/" data-text="werk.samplerate">Samplerate und Tonhöhe</a>
+      <a href="/de/berichtigungen/" data-text="werk.berichtigungen">Berichtigungen</a>
+    </nav>
     <p class="fuss__recht" data-html="fuss.recht">
       Der IYAMBAE Tuner ist <strong>kein Medizinprodukt</strong> und kein
       Heilmittel. Er verändert Tonhöhe, sonst nichts.
@@ -368,8 +298,8 @@ async function bereite() {
    Die ABSTAENDE waeren trotzdem richtig gewesen, denn ein Faktor ist ein
    Verhaeltnis: 432/440 und 433/440 auf dieselbe Quelle ergeben zwischen
    sich exakt 4,002 Cent, ganz gleich, wo die Quelle liegt. Falsch waere
-   nur die BESCHRIFTUNG gewesen — „432 gegen 440", wo in Wahrheit
-   „432 gegen 439,7" steht.
+   nur die BESCHRIFTUNG gewesen — „432 gegen 440“, wo in Wahrheit
+   „432 gegen 439,7“ steht.
 
    Auf einer Seite, deren einziger Zweck Genauigkeit ist, geht das nicht.
    Also misst diese Seite ihren eigenen Ausschnitt mit demselben Modul,

@@ -1467,6 +1467,10 @@ code {
 .umfrage__danke { text-align: center; padding: 1rem 0; }
 .umfrage__danke .umfrage__frage { margin-bottom: .6rem; }
 .umfrage__fehler { color: #E08B6A; font-size: .85rem; margin-top: .8rem; }
+.fuss__werkzeuge { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1.1rem; margin: 0 0 1.4rem; }
+.fuss__werkzeuge-titel { font-family: var(--daten); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--leiser); }
+.fuss__werkzeuge a { font-size: .86rem; color: var(--leise); text-decoration: none; border-bottom: 1px solid var(--kante); }
+.fuss__werkzeuge a:hover { color: var(--text); border-bottom-color: var(--akzent); }
 </style>
 </head>
 <body>
@@ -2611,6 +2615,15 @@ code {
     <blockquote class="merksatz" data-text="fuss.merksatz">
       Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.
     </blockquote>
+    <nav class="fuss__werkzeuge">
+      <span class="fuss__werkzeuge-titel" data-text="werk.titel">Alles hier</span>
+      <a href="/de/" data-text="werk.tuner">Der Tuner</a>
+      <a href="/de/stimmung/" data-text="werk.stimmung">Stimmung messen</a>
+      <a href="/de/hoertest/" data-text="werk.hoertest">Hörtest</a>
+      <a href="/de/spotify/" data-text="werk.spotify">Spotify in 432 Hz</a>
+      <a href="/de/samplerate/" data-text="werk.samplerate">Samplerate und Tonhöhe</a>
+      <a href="/de/berichtigungen/" data-text="werk.berichtigungen">Berichtigungen</a>
+    </nav>
     <p class="fuss__recht" data-html="fuss.recht">
       Der IYAMBAE Tuner ist <strong>kein Medizinprodukt</strong> und kein
       Heilmittel. Er verändert Tonhöhe, sonst nichts.

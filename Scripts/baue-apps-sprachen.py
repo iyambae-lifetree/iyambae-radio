@@ -93,6 +93,21 @@ SEITEN = {
         # Nur hier stehen die Saetze, die rechtlich tragen muessen.
         "rueckgrat": True,
     },
+    "spotify/": {
+        "vorlage": "spotify.html",
+        "programm": "messwerkzeug",
+        "rueckgrat": True,
+    },
+    "samplerate/": {
+        "vorlage": "samplerate.html",
+        "programm": "messwerkzeug",
+        "rueckgrat": True,
+    },
+    "berichtigungen/": {
+        "vorlage": "berichtigungen.html",
+        "programm": "messwerkzeug",
+        "rueckgrat": True,
+    },
     "hoertest/": {
         "vorlage": "hoertest.html",
         # Auch kein Programm zum Herunterladen — ein Pruefstand im Browser.

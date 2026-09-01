@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title data-text="ber.seite.titel">Berichtigungen — was auf dieser Seite falsch stand</title>
+<meta name="description" data-inhalt="ber.seite.beschreibung" content="Jede Aussage auf diesen Seiten, die sich als falsch herausgestellt hat — mit Datum, altem Wortlaut und dem, was jetzt dasteht. Wir korrigieren öffentlich, statt still zu ändern.">
+<meta name="theme-color" content="#0A0908">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IYAMBAE Tuner">
+<meta property="og:title" data-inhalt="ber.seite.titel" content="Berichtigungen — was auf dieser Seite falsch stand">
+<meta property="og:description" data-inhalt="ber.seite.beschreibung" content="Jede Aussage auf diesen Seiten, die sich als falsch herausgestellt hat — mit Datum, altem Wortlaut und dem, was jetzt dasteht. Wir korrigieren öffentlich, statt still zu ändern.">
+<meta property="og:url" content="https://apps.iyambae.fm/de/berichtigungen/">
+<meta property="og:locale" content="de">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://apps.iyambae.fm/de/berichtigungen/">
+<link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/schrift/schriften.css">
+<link rel="stylesheet" href="/assets/werkzeug.css">
+<style>
+/* Nur diese Seite. Das Gerüst steht in /assets/werkzeug.css. */
+.eintrag { border-top: 1px solid var(--kante); padding-block: 1.6rem; }
+.eintrag__kopf { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: baseline; }
+.eintrag__datum { font-family: var(--daten); font-size: .7rem; letter-spacing: .12em; color: var(--akzent); }
+.eintrag__wo { font-family: var(--daten); font-size: .7rem; color: var(--leiser); }
+.eintrag__titel { font-family: var(--anzeige); font-size: clamp(1.2rem, 3.2vw, 1.55rem); margin: .3rem 0 .8rem; }
+.stand { display: grid; gap: .8rem; margin-bottom: .8rem; }
+@media (min-width: 44rem) { .stand { grid-template-columns: 1fr 1fr; } }
+.stand__teil { padding: .9rem 1.1rem; border-radius: 3px; font-size: .94rem; line-height: 1.55; }
+.stand__teil--alt { background: rgba(255, 82, 82, .07); border: 1px solid rgba(255, 82, 82, .32); }
+.stand__teil--neu { background: rgba(76, 217, 115, .06); border: 1px solid rgba(76, 217, 115, .34); }
+.stand__marke { display: block; font-family: var(--daten); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; margin-bottom: .4rem; }
+.stand__teil--alt .stand__marke { color: var(--r1); }
+.stand__teil--neu .stand__marke { color: var(--akzent); }
+.warum { color: var(--leise); margin: 0; }
+.warum strong { color: var(--text); }
+.quelle { font-family: var(--daten); font-size: .72rem; color: var(--leiser); margin-top: .6rem; }
+</style>
+</head>
+<body>
+
+<header class="kopfleiste">
+  <div class="rahmen kopfleiste__inhalt">
+    <a class="marke" href="/de/">
+      <img src="assets/iyambae-marke.svg" alt="" width="28" height="28">
+      <span class="marke__wort">IYAMBAE <span>Tuner</span></span>
+    </a>
+    <nav class="kopf__wege">
+      <!--SPRACHWAHL-->
+      <a class="kopfknopf" href="https://iyambae.fm" data-text="kopf.radio">zum Radio</a>
+      <a class="kopfknopf kopfknopf--haupt" href="/de/" data-text="ber.kopf.tuner">Zum Tuner</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="rahmen teil">
+  <p class="eyebrow" data-text="ber.eyebrow">Öffentliche Korrekturen</p>
+  <h1 data-text="ber.titel">Was hier falsch stand</h1>
+  <p class="vorwort" data-html="ber.vorwort">Jede Aussage auf diesen Seiten, die sich als falsch herausgestellt hat — mit Datum, altem Wortlaut und dem, was jetzt dasteht. <strong>Wir ändern nicht still.</strong></p>
+
+  <p data-html="ber.warum">In einem Feld, in dem fast alle übertreiben, ist die einzige Währung, die zählt, Nachprüfbarkeit. Eine Seite, die immer recht hatte, hat entweder nie etwas Konkretes behauptet oder ihre Fehler weggeräumt. <strong>Wir stellen sie lieber aus.</strong> Wer hier eine Korrektur findet, die wir übersehen haben, soll sie uns schicken — sie kommt dann hierher.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+
+  <div class="eintrag">
+    <div class="eintrag__kopf">
+      <span class="eintrag__datum">01.09.2026</span>
+      <span class="eintrag__wo" data-text="ber.1.wo">Startseite · FAQ „Was ist bisher gemessen worden?“</span>
+    </div>
+    <p class="eintrag__titel" data-text="ber.1.titel">Eine Cortisol-Zahl, die die Daten nicht hergeben</p>
+    <div class="stand">
+      <div class="stand__teil stand__teil--alt">
+        <span class="stand__marke" data-text="ber.stand.alt">stand hier</span>
+        <span data-text="ber.1.alt">Beim Speichel-Cortisol lag die 432-Gruppe deutlich niedriger als beide anderen: 0,49 gegenüber 1,35 und 1,59 µg/dL.</span>
+      </div>
+      <div class="stand__teil stand__teil--neu">
+        <span class="stand__marke" data-text="ber.stand.neu">steht jetzt</span>
+        <span data-text="ber.1.neu">Bei der Angst wirkten beide Musikgruppen gleich gut — zwischen 432 und 440 kein Unterschied. Der oft zitierte Cortisol-Befund hält der Nachprüfung am Volltext nicht stand.</span>
+      </div>
+    </div>
+    <p class="warum" data-html="ber.1.warum">Wir hatten die Zahlen aus der <strong>Zusammenfassung</strong> der Studie übernommen, nicht aus den Daten. Beim Nachlesen des Volltextes zeigte sich: <strong>Die 1,35 ist der Anfangswert</strong> der 440-Gruppe, nicht ihr Endwert — wir hatten Anfang und Ende vermischt. Und die Veränderungen <em>innerhalb</em> der Gruppen waren alle nicht statistisch belastbar; die 432-Gruppe startete bereits bei halbem Wert. Bei fünfzehn Personen je Gruppe ist der Endwertunterschied mit hoher Wahrscheinlichkeit ein Zufall der Gruppeneinteilung.</p>
+    <p class="quelle" data-text="ber.1.quelle">Aravena u. a., J Appl Oral Sci 28 (2020), e20190601 · unabhängiges Review der Universität Padua, 2023</p>
+  </div>
+
+  <div class="eintrag">
+    <div class="eintrag__kopf">
+      <span class="eintrag__datum">01.09.2026</span>
+      <span class="eintrag__wo" data-text="ber.2.wo">Startseite · Klangprobe und Skala</span>
+    </div>
+    <p class="eintrag__titel" data-text="ber.2.titel">Mailand war 1881, und 432 war nicht Verdis Zahl</p>
+    <div class="stand">
+      <div class="stand__teil stand__teil--alt">
+        <span class="stand__marke" data-text="ber.stand.alt">stand hier</span>
+        <span data-text="ber.2.alt">Mailand 1880, Verdis Zahl · Mailand 1880, die Zahl, für die Verdi eintrat</span>
+      </div>
+      <div class="stand__teil stand__teil--neu">
+        <span class="stand__marke" data-text="ber.stand.neu">steht jetzt</span>
+        <span data-text="ber.2.neu">Mailand 1881 — Verdi trat für 435 ein und ließ 432 gelten</span>
+      </div>
+    </div>
+    <p class="warum" data-html="ber.2.warum">Zwei Fehler in einer Zeile. Der Congresso dei Musicisti Italiani tagte im <strong>Juni 1881</strong>, nicht 1880. Und Verdi war zwar der prominenteste Fürsprecher eines <em>tieferen</em> Stimmtons — sein Favorit waren aber die französischen <strong>435</strong>; 432 nahm er nur an, mit der Begründung, der Unterschied sei „so klein, fast unhörbar fürs Ohr“. Der Kampfbegriff „Verdi-Stimmung“ für 432 wurde erst <strong>1988</strong> geprägt, gut achtzig Jahre nach seinem Tod.</p>
+    <p class="quelle" data-text="ber.2.quelle">Gazzetta musicale di Milano, 13.11.1881 · Carteggio Verdi-Ricordi 1882–1885 · Rosenberg, J Popular Music Studies 33 (2021)</p>
+  </div>
+
+  <div class="eintrag">
+    <div class="eintrag__kopf">
+      <span class="eintrag__datum">01.09.2026</span>
+      <span class="eintrag__wo" data-text="ber.3.wo">Startseite · FAQ, dieselbe Antwort</span>
+    </div>
+    <p class="eintrag__titel" data-text="ber.3.titel">Ein Vorbehalt gefehlt, den die Autoren selbst nennen</p>
+    <p class="warum" data-html="ber.3.warum">Zur Studie, die bei 432 Hz einen niedrigeren Puls fand, fehlte ein Satz: <strong>Die Autoren schreiben selbst, sie könnten nicht sagen, ob das an der Zahl 432 liegt oder schlicht daran, dass es tiefer ist.</strong> Der Befund bleibt — die Einschränkung gehört dazu, und sie stand nicht da.</p>
+    <p class="quelle" data-text="ber.3.quelle">Hohneck u. a., BMC Complement Med Ther (2025), PMID 39844155</p>
+  </div>
+
+  <div class="eintrag">
+    <div class="eintrag__kopf">
+      <span class="eintrag__datum">01.09.2026</span>
+      <span class="eintrag__wo" data-text="ber.4.wo">Startseite · strukturierte Daten</span>
+    </div>
+    <p class="eintrag__titel" data-text="ber.4.titel">Eine Fassungsnummer, die zwanzig Ausgaben alt war</p>
+    <div class="stand">
+      <div class="stand__teil stand__teil--alt">
+        <span class="stand__marke" data-text="ber.stand.alt">stand hier</span>
+        <span data-text="ber.4.alt">softwareVersion: 0.1.0</span>
+      </div>
+      <div class="stand__teil stand__teil--neu">
+        <span class="stand__marke" data-text="ber.stand.neu">steht jetzt</span>
+        <span data-text="ber.4.neu">softwareVersion: die Nummer aus dem Ladeverweis, automatisch</span>
+      </div>
+    </div>
+    <p class="warum" data-html="ber.4.warum">Sichtbar war das nie: Die Angabe steht in den strukturierten Daten und wird nur von Maschinen gelesen. Genau deshalb veraltete sie unbemerkt — für Suchmaschinen war der Tuner monatelang eine 0.1.0, während die Seite eine 0.21.1 anbot. <strong>Eine Zahl, die niemand sieht, prüft auch niemand.</strong> Sie kommt jetzt aus derselben Zeile wie der Knopf; fehlt der Verweis, bricht der Bau ab.</p>
+  </div>
+
+  <div class="eintrag">
+    <div class="eintrag__kopf">
+      <span class="eintrag__datum">31.08.2026</span>
+      <span class="eintrag__wo" data-text="ber.5.wo">iyambae.fm · Statusleiste des Abspielers</span>
+    </div>
+    <p class="eintrag__titel" data-text="ber.5.titel">„Gemessen“, wo nichts gemessen wurde</p>
+    <div class="stand">
+      <div class="stand__teil stand__teil--alt">
+        <span class="stand__marke" data-text="ber.stand.alt">stand hier</span>
+        <span data-text="ber.5.alt">Live — 432Hz gemessen</span>
+      </div>
+      <div class="stand__teil stand__teil--neu">
+        <span class="stand__marke" data-text="ber.stand.neu">steht jetzt</span>
+        <span data-text="ber.5.neu">Live — 432 Hz, Tempo bleibt</span>
+      </div>
+    </div>
+    <p class="warum" data-html="ber.5.warum">Das Radio nimmt bei jedem Sender an, er stehe auf 440, und zieht pauschal 1,8 Prozent ab. <strong>Gemessen wird dort nichts</strong> — und drei andere Stellen derselben Seite sagen das auch ausdrücklich. Ein Wort in der Statusleiste, das dem widerspricht, kostet nicht nur Wahrheit; es entwertet ausgerechnet das Argument, mit dem wir den Tuner von allen anderen unterscheiden.</p>
+  </div>
+
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="ber.regel.titel">Wie wir es halten</h2>
+  <div class="frage">
+    <p class="frage__titel" data-text="ber.regel.1.titel">Was hierher kommt</p>
+    <p data-html="ber.regel.1.text">Jede sachliche Aussage, die falsch war — Zahlen, Jahreszahlen, Zuschreibungen, technische Angaben. <strong>Nicht</strong> Tippfehler, Umformulierungen oder Meinungsänderungen über Gestaltung.</p>
+  </div>
+  <div class="frage">
+    <p class="frage__titel" data-text="ber.regel.2.titel">Der alte Wortlaut bleibt stehen</p>
+    <p data-html="ber.regel.2.text">Eine Korrektur, die den Fehler nicht zeigt, ist keine. Deshalb steht hier beides nebeneinander — <strong>und der alte Satz wird nicht geschönt.</strong></p>
+  </div>
+  <div class="frage">
+    <p class="frage__titel" data-text="ber.regel.3.titel">Wer etwas findet</p>
+    <p data-html="ber.regel.3.text">Schreib es uns. Wir prüfen es an der Primärquelle, nicht an einer Zusammenfassung — genau das war der Fehler beim ersten Eintrag oben. Stimmt es, kommt es hierher, mit Datum.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="fuss">
+  <div class="rahmen">
+    <blockquote class="merksatz" data-text="fuss.merksatz">
+      Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.
+    </blockquote>
+    <nav class="fuss__werkzeuge">
+      <span class="fuss__werkzeuge-titel" data-text="werk.titel">Alles hier</span>
+      <a href="/de/" data-text="werk.tuner">Der Tuner</a>
+      <a href="/de/stimmung/" data-text="werk.stimmung">Stimmung messen</a>
+      <a href="/de/hoertest/" data-text="werk.hoertest">Hörtest</a>
+      <a href="/de/spotify/" data-text="werk.spotify">Spotify in 432 Hz</a>
+      <a href="/de/samplerate/" data-text="werk.samplerate">Samplerate und Tonhöhe</a>
+      <a href="/de/berichtigungen/" data-text="werk.berichtigungen">Berichtigungen</a>
+    </nav>
+    <p class="fuss__recht" data-html="fuss.recht">
+      Der IYAMBAE Tuner ist <strong>kein Medizinprodukt</strong> und kein
+      Heilmittel. Er verändert Tonhöhe, sonst nichts.
+    </p>
+    <div class="fuss__reihe">
+      <span data-text="fuss.zeile">IYAMBAE — kuratiertes Webradio und Werkzeuge fürs Hören.</span>
+      <nav class="fuss__wege">
+        <a href="https://iyambae.fm">iyambae.fm</a>
+        <a href="https://iyambae.fm/recht/impressum/" data-text="fuss.impressum">Impressum</a>
+        <a href="https://iyambae.fm/recht/datenschutz/" data-text="fuss.datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

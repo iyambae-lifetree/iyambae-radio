@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title data-text="sam.seite.titel">44,1 kHz ist keine Tonhöhe — Samplerate und 432 Hz sind zweierlei</title>
+<meta name="description" data-inhalt="sam.seite.beschreibung" content="„Wie stelle ich meine Soundkarte auf 432 Hz?“ — gar nicht. Die Abtastrate und der Kammerton sind zwei verschiedene Dinge, und die Verwechslung erklärt Dutzende Forenfragen. Hier steht, was welche Zahl bedeutet.">
+<meta name="theme-color" content="#0A0908">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IYAMBAE Tuner">
+<meta property="og:title" data-inhalt="sam.seite.titel" content="44,1 kHz ist keine Tonhöhe — Samplerate und 432 Hz sind zweierlei">
+<meta property="og:description" data-inhalt="sam.seite.beschreibung" content="„Wie stelle ich meine Soundkarte auf 432 Hz?“ — gar nicht. Die Abtastrate und der Kammerton sind zwei verschiedene Dinge, und die Verwechslung erklärt Dutzende Forenfragen. Hier steht, was welche Zahl bedeutet.">
+<meta property="og:url" content="https://apps.iyambae.fm/de/samplerate/">
+<meta property="og:locale" content="de">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://apps.iyambae.fm/de/samplerate/">
+<link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/schrift/schriften.css">
+<link rel="stylesheet" href="/assets/werkzeug.css">
+<style>
+/* Nur diese Seite. Das Gerüst steht in /assets/werkzeug.css. */
+.zwei { display: grid; gap: 1rem; margin: 1.6rem 0; }
+@media (min-width: 42rem) { .zwei { grid-template-columns: 1fr 1fr; } }
+.karte { border: 1px solid var(--kante-hell); border-radius: 3px; background: var(--grund-hoch); padding: 1.2rem; }
+.karte__zahl { font-family: var(--anzeige); font-size: clamp(1.8rem, 5vw, 2.4rem); line-height: 1; margin: 0 0 .2rem; }
+.karte__was { font-family: var(--daten); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--akzent); }
+.karte p { margin: .7rem 0 0; color: var(--leise); font-size: .96rem; }
+.merk {
+  border-inline-start: 3px solid var(--akzent); padding: .2rem 0 .2rem 1.1rem;
+  margin: 1.6rem 0; font-family: var(--anzeige); font-size: clamp(1.15rem, 3.4vw, 1.45rem);
+  line-height: 1.35;
+}
+.tabelle { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: .94rem; }
+.tabelle th, .tabelle td { text-align: start; padding: .6rem .5rem; border-bottom: 1px solid var(--kante); vertical-align: top; }
+.tabelle th { font-family: var(--daten); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--leiser); font-weight: 400; }
+.tabelle td:first-child { font-family: var(--daten); font-size: .84rem; color: var(--text); white-space: nowrap; }
+.tabelle td { color: var(--leise); }
+</style>
+</head>
+<body>
+
+<header class="kopfleiste">
+  <div class="rahmen kopfleiste__inhalt">
+    <a class="marke" href="/de/">
+      <img src="assets/iyambae-marke.svg" alt="" width="28" height="28">
+      <span class="marke__wort">IYAMBAE <span>Tuner</span></span>
+    </a>
+    <nav class="kopf__wege">
+      <!--SPRACHWAHL-->
+      <a class="kopfknopf" href="/de/stimmung/" data-text="sam.kopf.messen">Stimmung messen</a>
+      <a class="kopfknopf kopfknopf--haupt" href="/de/" data-text="sam.kopf.tuner">Zum Tuner</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="rahmen teil">
+  <p class="eyebrow" data-text="sam.eyebrow">Der häufigste Irrtum im Feld</p>
+  <h1 data-text="sam.titel">44,1 kHz ist keine Tonhöhe</h1>
+  <p class="vorwort" data-html="sam.vorwort">„Wie stelle ich meine Soundkarte auf 432 Hz?“ — <strong>gar nicht.</strong> Die Zahl auf deiner Soundkarte und der Kammerton deiner Musik sind zwei verschiedene Dinge, die zufällig dieselbe Einheit tragen. Das erklärt mehr Forenfragen als alles andere in diesem Thema.</p>
+
+  <div class="zwei">
+    <div class="karte">
+      <p class="karte__was" data-text="sam.karte.a.was">Abtastrate</p>
+      <p class="karte__zahl">44 100 Hz</p>
+      <p data-html="sam.karte.a.text"><strong>Wie oft der Ton gemessen wurde</strong> — 44 100 Momentaufnahmen je Sekunde. Eine Eigenschaft der <em>Aufzeichnung</em>, nicht der Musik. Sie sagt nichts darüber, wie hoch oder tief etwas klingt.</p>
+    </div>
+    <div class="karte">
+      <p class="karte__was" data-text="sam.karte.b.was">Kammerton</p>
+      <p class="karte__zahl">432 Hz</p>
+      <p data-html="sam.karte.b.text"><strong>Wie schnell die Luft schwingt</strong> — bei einem bestimmten Ton, dem A über dem mittleren C. Eine Eigenschaft der <em>Musik</em>. Sie sagt nichts darüber, wie fein aufgezeichnet wurde.</p>
+    </div>
+  </div>
+
+  <p class="merk" data-text="sam.merksatz">Ein Film hat 24 Bilder je Sekunde. Wie schnell der Schauspieler geht, steht auf einem anderen Blatt.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="sam.fragen.titel">Die Fragen, die daraus entstehen</h2>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="sam.f1.titel">Kann ich meine Soundkarte auf 432 Hz stellen?</p>
+    <p data-html="sam.f1.text"><strong>Nein — die Einstellung, die du dort findest, ist etwas anderes.</strong> Soundkarten kennen 44,1 kHz, 48 kHz, 96 kHz und ähnliche Werte. Das sind Abtastraten. 432 wäre dort keine gültige Angabe, und selbst wenn du sie eintragen könntest, käme kein 432-Hz-Kammerton dabei heraus, sondern eine unbrauchbare Aufzeichnung.</p>
+    <p data-html="sam.f1.was">Was du eigentlich suchst, macht ein Programm, das <em>zwischen</em> Musik und Lautsprecher sitzt und die Tonhöhe verschiebt. Genau das ist der <a href="/de/">IYAMBAE Tuner</a>.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="sam.f2.titel">Wie wandle ich einen Song von 44.100 kHz auf 432 Hz um?</p>
+    <p data-html="sam.f2.text">Die Frage steht so in Dutzenden Foren, und sie lässt sich nicht beantworten, weil sie zwei Größen verrechnet, die nichts miteinander zu tun haben. <strong>Die Abtastrate bleibt, wo sie ist.</strong> Verändert wird die Tonhöhe des Inhalts — von 440 (oder wo die Aufnahme wirklich steht) auf 432. Das sind <strong>1,8 Prozent tiefer</strong>, oder 31,8 Cent.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="sam.f3.titel">Aber wenn ich die Abtastrate ändere, klingt es doch tiefer?</p>
+    <p data-html="sam.f3.text"><strong>Ja — und genau das ist die Verwechslung, die den Irrtum am Leben hält.</strong> Wenn du eine mit 44 100 aufgezeichnete Datei mit 43 309 abspielst, klingt sie tiefer. Sie läuft dann aber auch <em>langsamer</em>: Ein Stück von vier Minuten dauert plötzlich vier Minuten und vier Sekunden.</p>
+    <p data-html="sam.f3.wann">Es ist trotzdem ein sauberer Weg, wenn man ihn will: Es wird <strong>keine einzige Zahl neu gerechnet</strong>, nur eine andere Rate in den Dateikopf geschrieben. Bitgenau, ohne jeden Verlust — bezahlt mit dem Tempo. Wer das Tempo behalten will, kommt daran nicht vorbei, dass gerechnet werden muss.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="sam.f4.titel">Verliert die Musik beim Umstimmen an Qualität?</p>
+    <p data-html="sam.f4.text">Bei verlustfreiem Material — FLAC, WAV, AIFF, ALAC — wird der Ton <strong>einmal neu berechnet</strong> und dann wieder verlustfrei abgelegt. Kein zweiter Komprimierungsschritt, kein Stapeln von Artefakten.</p>
+    <p data-html="sam.f4.lossy">Bei MP3 oder AAC liegt es anders: Was schon einmal stark komprimiert wurde, müsste beim Zurückschreiben ein zweites Mal komprimiert werden. Deshalb ist verlustfreies Ausgangsmaterial hier keine Feinheit, sondern der Unterschied.</p>
+  </div>
+
+  <div class="frage">
+    <p class="frage__titel" data-text="sam.f5.titel">Und was ist mit „mein Stück ist in 432 Hz“?</p>
+    <p data-html="sam.f5.text">Auch das ist streng genommen schief, aber es ist eine nützliche Abkürzung. <strong>Ein Musikstück hat nicht eine Frequenz</strong> — es hat viele, gleichzeitig, ständig wechselnd. Gemeint ist immer der <em>Bezugston</em>: Wenn das A über dem mittleren C auf 432 Hz liegt, liegen alle anderen Töne entsprechend. Die Stimmung ist ein Raster, kein einzelner Ton.</p>
+  </div>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="sam.tab.titel">Welche Zahl bedeutet was</h2>
+  <table class="tabelle">
+    <thead>
+      <tr>
+        <th data-text="sam.tab.k1">Zahl</th>
+        <th data-text="sam.tab.k2">wo sie vorkommt</th>
+        <th data-text="sam.tab.k3">was sie bedeutet</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>44 100 Hz</td><td data-text="sam.tab.a1">CD, die meisten Dateien</td><td data-text="sam.tab.a2">Messungen je Sekunde</td></tr>
+      <tr><td>48 000 Hz</td><td data-text="sam.tab.b1">Film, Video, viele Geräte</td><td data-text="sam.tab.b2">Messungen je Sekunde</td></tr>
+      <tr><td>16 Bit</td><td data-text="sam.tab.c1">CD</td><td data-text="sam.tab.c2">Feinheit jeder einzelnen Messung</td></tr>
+      <tr><td>320 kbit/s</td><td data-text="sam.tab.d1">MP3</td><td data-text="sam.tab.d2">Datenmenge je Sekunde nach dem Komprimieren</td></tr>
+      <tr><td>432 Hz</td><td data-text="sam.tab.e1">Stimmung</td><td data-text="sam.tab.e2">Schwingung des Bezugstons A</td></tr>
+      <tr><td>440 Hz</td><td data-text="sam.tab.f1">Stimmung, Norm ISO 16</td><td data-text="sam.tab.f2">dasselbe, anderer Wert</td></tr>
+    </tbody>
+  </table>
+  <p data-html="sam.tab.fuss"><strong>Die ersten vier Zeilen beschreiben die Datei. Die letzten zwei beschreiben die Musik.</strong> Dass beide in Hertz gemessen werden, ist der ganze Grund für die Verwirrung.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="sam.danach.titel">Willst du wissen, worauf deine Musik wirklich steht?</h2>
+  <p data-html="sam.danach.text">Zieh eine Datei ins Fenster — das <a href="/de/stimmung/">Messwerkzeug</a> sagt dir in ein paar Sekunden den Kammerton. Kostenlos, im Browser, nichts wird hochgeladen.</p>
+  <p><a class="grossknopf" href="/de/stimmung/" data-text="sam.danach.knopf">Stimmung messen</a></p>
+</section>
+
+</main>
+
+<footer class="fuss">
+  <div class="rahmen">
+    <blockquote class="merksatz" data-text="fuss.merksatz">
+      Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.
+    </blockquote>
+    <nav class="fuss__werkzeuge">
+      <span class="fuss__werkzeuge-titel" data-text="werk.titel">Alles hier</span>
+      <a href="/de/" data-text="werk.tuner">Der Tuner</a>
+      <a href="/de/stimmung/" data-text="werk.stimmung">Stimmung messen</a>
+      <a href="/de/hoertest/" data-text="werk.hoertest">Hörtest</a>
+      <a href="/de/spotify/" data-text="werk.spotify">Spotify in 432 Hz</a>
+      <a href="/de/samplerate/" data-text="werk.samplerate">Samplerate und Tonhöhe</a>
+      <a href="/de/berichtigungen/" data-text="werk.berichtigungen">Berichtigungen</a>
+    </nav>
+    <p class="fuss__recht" data-html="fuss.recht">
+      Der IYAMBAE Tuner ist <strong>kein Medizinprodukt</strong> und kein
+      Heilmittel. Er verändert Tonhöhe, sonst nichts.
+    </p>
+    <div class="fuss__reihe">
+      <span data-text="fuss.zeile">IYAMBAE — kuratiertes Webradio und Werkzeuge fürs Hören.</span>
+      <nav class="fuss__wege">
+        <a href="https://iyambae.fm">iyambae.fm</a>
+        <a href="https://iyambae.fm/recht/impressum/" data-text="fuss.impressum">Impressum</a>
+        <a href="https://iyambae.fm/recht/datenschutz/" data-text="fuss.datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
