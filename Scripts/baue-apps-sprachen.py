@@ -108,6 +108,11 @@ SEITEN = {
         "programm": "messwerkzeug",
         "rueckgrat": True,
     },
+    "gitarre/": {
+        "vorlage": "gitarre.html",
+        "programm": "messwerkzeug",
+        "rueckgrat": True,
+    },
     "hoertest/": {
         "vorlage": "hoertest.html",
         # Auch kein Programm zum Herunterladen — ein Pruefstand im Browser.

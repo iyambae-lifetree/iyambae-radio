@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title data-text="gtr.seite.titel">Gitarre auf 432 Hz stimmen — und warum ein halber Ton etwas anderes ist</title>
+<meta name="description" data-inhalt="gtr.seite.beschreibung" content="Einen halben Ton herunterstimmen ist nicht 432 Hz. Das eine sind 100 Cent, das andere 31,8 — gut dreimal so viel. Hier stehen die Saitenfrequenzen, der Unterschied zum E♭ und was am Hendrix-Argument dran ist.">
+<meta name="theme-color" content="#0A0908">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IYAMBAE Tuner">
+<meta property="og:title" data-inhalt="gtr.seite.titel" content="Gitarre auf 432 Hz stimmen — und warum ein halber Ton etwas anderes ist">
+<meta property="og:description" data-inhalt="gtr.seite.beschreibung" content="Einen halben Ton herunterstimmen ist nicht 432 Hz. Das eine sind 100 Cent, das andere 31,8 — gut dreimal so viel. Hier stehen die Saitenfrequenzen, der Unterschied zum E♭ und was am Hendrix-Argument dran ist.">
+<meta property="og:url" content="https://apps.iyambae.fm/de/gitarre/">
+<meta property="og:locale" content="de">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://apps.iyambae.fm/de/gitarre/">
+<link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/schrift/schriften.css">
+<link rel="stylesheet" href="/assets/werkzeug.css">
+<style>
+/* Nur diese Seite. Das Gerüst steht in /assets/werkzeug.css. */
+.karte__zahl--weit { letter-spacing: -.02em; }
+.schritt { display: flex; gap: .9rem; margin-bottom: 1.1rem; }
+.schritt__zahl {
+  flex: none; width: 1.7rem; height: 1.7rem; border-radius: 50%;
+  border: 1px solid var(--akzent); color: var(--akzent);
+  font-family: var(--daten); font-size: .78rem;
+  display: grid; place-items: center;
+}
+.schritt p { margin: 0; color: var(--leise); }
+.schritt p strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<header class="kopfleiste">
+  <div class="rahmen kopfleiste__inhalt">
+    <a class="marke" href="/de/">
+      <img src="assets/iyambae-marke.svg" alt="" width="28" height="28">
+      <span class="marke__wort">IYAMBAE <span>Tuner</span></span>
+    </a>
+    <nav class="kopf__wege">
+      <!--SPRACHWAHL-->
+      <a class="kopfknopf" href="/de/stimmung/" data-text="gtr.kopf.messen">Stimmung messen</a>
+      <a class="kopfknopf kopfknopf--haupt" href="/de/" data-text="gtr.kopf.tuner">Zum Tuner</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="rahmen teil">
+  <p class="eyebrow" data-text="gtr.eyebrow">Die Verwechslung, die auf jedem Griffbrett sitzt</p>
+  <h1 data-text="gtr.titel">432 Hz auf der Gitarre</h1>
+  <p data-html="gtr.vorwort">In den Foren stehen beide Sätze nebeneinander, als meinten sie dasselbe: „stimm einen halben Ton runter“ und „stimm auf 432“. <strong>Sie meinen nicht dasselbe.</strong> Zwischen den beiden liegen gut zwei Drittel eines Halbtons — mehr als genug, um jedes Zusammenspiel zu zerlegen.</p>
+
+  <div class="zwei">
+    <div class="karte">
+      <p class="karte__was" data-text="gtr.karte.a.was">432 statt 440</p>
+      <p class="karte__zahl karte__zahl--weit">−31,8 ct</p>
+      <p data-html="gtr.karte.a.text">Ein <strong>Achtel</strong> eines Halbtons, ungefähr. Man hört es im Vergleich, aber es verrutscht kein Griff und keine Saite hängt durch.</p>
+    </div>
+    <div class="karte">
+      <p class="karte__was" data-text="gtr.karte.b.was">Einen halben Ton herunter (E♭)</p>
+      <p class="karte__zahl karte__zahl--weit">−100 ct</p>
+      <p data-html="gtr.karte.b.text">Ein <strong>ganzer</strong> Halbton. Aus E wird E♭, aus jedem Akkordnamen ein anderer. Die Saiten werden merklich weicher.</p>
+    </div>
+  </div>
+
+  <p class="merk" data-text="gtr.merk">Beides klingt tiefer. Das eine ist gut dreimal so tief wie das andere.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="gtr.tab.titel">Die sechs Saiten in Zahlen</h2>
+  <table class="tabelle">
+    <thead>
+      <tr>
+        <th data-text="gtr.tab.k1">Saite</th>
+        <th data-text="gtr.tab.k2">bei 440 Hz</th>
+        <th data-text="gtr.tab.k3">bei 432 Hz</th>
+        <th data-text="gtr.tab.k4">E♭, bei 440 Hz</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td data-text="gtr.tab.s6">E (tief)</td><td>82,41 Hz</td><td>80,91 Hz</td><td>77,78 Hz</td></tr>
+      <tr><td>A</td><td>110,00 Hz</td><td>108,00 Hz</td><td>103,83 Hz</td></tr>
+      <tr><td>D</td><td>146,83 Hz</td><td>144,16 Hz</td><td>138,59 Hz</td></tr>
+      <tr><td>G</td><td>195,99 Hz</td><td>192,43 Hz</td><td>185,00 Hz</td></tr>
+      <tr><td data-text="gtr.tab.s2">H</td><td>246,94 Hz</td><td>242,45 Hz</td><td>233,08 Hz</td></tr>
+      <tr><td data-text="gtr.tab.s1">E (hoch)</td><td>329,63 Hz</td><td>323,63 Hz</td><td>311,13 Hz</td></tr>
+    </tbody>
+  </table>
+  <p data-html="gtr.tab.fuss">Die mittlere Spalte ist die erste, mal <strong>432 geteilt durch 440</strong> — also überall derselbe Faktor, 0,9818. Die rechte ist die erste, mal die zwölfte Wurzel aus einem Halbton. <strong>Zwei verschiedene Rechnungen, zwei verschiedene Ergebnisse</strong>, und deshalb passen die beiden Spalten auch nicht zueinander.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="gtr.wie.titel">Wie du wirklich auf 432 stimmst</h2>
+
+  <div class="schritt">
+    <span class="schritt__zahl">1</span>
+    <p data-html="gtr.wie.1"><strong>Sieh im Stimmgerät nach dem Bezugston.</strong> Fast jedes Clip-Gerät hat ihn, meist als <em>Calibration</em>, <em>A4</em> oder <em>Pitch</em> beschriftet. Er steht ab Werk auf 440.</p>
+  </div>
+  <div class="schritt">
+    <span class="schritt__zahl">2</span>
+    <p data-html="gtr.wie.2"><strong>Stell ihn auf 432.</strong> Meist mit derselben Taste, mit der du sonst die Betriebsart wechselst, gedrückt gehalten. Acht Schritte nach unten.</p>
+  </div>
+  <div class="schritt">
+    <span class="schritt__zahl">3</span>
+    <p data-html="gtr.wie.3"><strong>Stimm ganz normal.</strong> E, A, D, G, H, E — das Gerät rechnet für dich. Die Zahlen oben brauchst du nur, wenn dein Stimmgerät keinen Bezugston kennt; dann trägst du sie in eine Stimm-App ein.</p>
+  </div>
+  <div class="schritt">
+    <span class="schritt__zahl">4</span>
+    <p data-html="gtr.wie.4"><strong>Um den Hals musst du dir keine Sorgen machen.</strong> 1,8 Prozent weniger Spannung sind ein Bruchteil dessen, was ein Saitensatz eine Stärke tiefer ausmacht. Bei E♭ oder tiefer sieht das anders aus.</p>
+  </div>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="gtr.hendrix.titel">Und was ist mit Hendrix?</h2>
+  <p data-html="gtr.hendrix.1">Das Argument taucht in jedem zweiten Faden auf: Hendrix habe auf 432 gespielt, deshalb klinge es so. <strong>Die Aufnahmen liegen tatsächlich tiefer als der Kammerton</strong> — aber ungefähr einen <em>halben Ton</em>, also rund 100 Cent. Das ist die linke Spalte oben, nicht die mittlere.</p>
+  <p data-html="gtr.hendrix.2">Warum er das tat, ist kein Geheimnis: <strong>Ein halber Ton weniger Spannung macht das Ziehen leichter</strong>, und der Stimme kommt es entgegen. Es war unter Gitarristen dieser Jahre verbreitet und ist es geblieben.</p>
+  <p data-html="gtr.hendrix.3">Dass er dabei an 432 gedacht hätte, dafür ist uns <strong>keine Quelle bekannt</strong> — und die Zahlen sprechen dagegen. Zwischen 432 und einem halben Ton tiefer liegen <strong>68 Cent</strong>. Das ist mehr als zwei Drittel eines Halbtons; wer beides nebeneinander hört, verwechselt es nicht.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="gtr.mit.titel">Das eigentliche Problem kommt danach</h2>
+  <p data-html="gtr.mit.1">Deine Gitarre steht jetzt auf 432. <strong>Die Aufnahme, zu der du spielen willst, steht auf 440</strong> — und damit klingt zusammen, was nicht zusammengehört. Entweder du stimmst zurück, oder die Aufnahme kommt zu dir.</p>
+  <p data-html="gtr.mit.2">Genau dafür gibt es den <a href="/de/">IYAMBAE Tuner</a>: Er verschiebt den Ton auf dem Weg zum Lautsprecher, ohne das Tempo anzufassen. Was aus dem Rechner kommt, steht dann da, wo dein Instrument steht.</p>
+  <p data-html="gtr.mit.3">Bleibt eine Frage, die sich lohnt: <strong>Steht die Aufnahme überhaupt auf 440?</strong> Viele stehen es nicht — Bandmaschinen liefen ungenau, und wer im Studio ein Klavier vorfand, nahm dessen Stimmung. Zieh die Datei ins <a href="/de/stimmung/">Messwerkzeug</a>, dann weißt du es, statt es anzunehmen.</p>
+  <p><a class="grossknopf" href="/de/stimmung/" data-text="gtr.mit.knopf">Eine Aufnahme vermessen</a></p>
+</section>
+
+</main>
+
+<footer class="fuss">
+  <div class="rahmen">
+    <blockquote class="merksatz" data-text="fuss.merksatz">
+      Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.
+    </blockquote>
+    <nav class="fuss__werkzeuge">
+      <span class="fuss__werkzeuge-titel" data-text="werk.titel">Alles hier</span>
+      <a href="/de/" data-text="werk.tuner">Der Tuner</a>
+      <a href="/de/stimmung/" data-text="werk.stimmung">Stimmung messen</a>
+      <a href="/de/hoertest/" data-text="werk.hoertest">Hörtest</a>
+      <a href="/de/spotify/" data-text="werk.spotify">Spotify in 432 Hz</a>
+      <a href="/de/samplerate/" data-text="werk.samplerate">Samplerate und Tonhöhe</a>
+      <a href="/de/gitarre/" data-text="werk.gitarre">Gitarre auf 432</a>
+      <a href="/de/berichtigungen/" data-text="werk.berichtigungen">Berichtigungen</a>
+    </nav>
+    <p class="fuss__recht" data-html="fuss.recht">
+      Der IYAMBAE Tuner ist <strong>kein Medizinprodukt</strong> und kein
+      Heilmittel. Er verändert Tonhöhe, sonst nichts.
+    </p>
+    <div class="fuss__reihe">
+      <span data-text="fuss.zeile">IYAMBAE — kuratiertes Webradio und Werkzeuge fürs Hören.</span>
+      <nav class="fuss__wege">
+        <a href="https://iyambae.fm">iyambae.fm</a>
+        <a href="https://iyambae.fm/recht/impressum/" data-text="fuss.impressum">Impressum</a>
+        <a href="https://iyambae.fm/recht/datenschutz/" data-text="fuss.datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

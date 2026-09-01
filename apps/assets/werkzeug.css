@@ -114,3 +114,21 @@ h3 { font-family: var(--daten); font-size: .82rem; letter-spacing: .04em; margin
 .fuss__werkzeuge-titel { font-family: var(--daten); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--leiser); }
 .fuss__werkzeuge a { font-size: .86rem; color: var(--leise); text-decoration: none; border-bottom: 1px solid var(--kante); }
 .fuss__werkzeuge a:hover { color: var(--text); border-bottom-color: var(--akzent); }
+
+/* Von mehreren Werkzeugseiten benutzt: Kartenpaar, Merksatz, Tabelle. */
+.zwei { display: grid; gap: 1rem; margin: 1.6rem 0; }
+@media (min-width: 42rem) { .zwei { grid-template-columns: 1fr 1fr; } }
+.karte { border: 1px solid var(--kante-hell); border-radius: 3px; background: var(--grund-hoch); padding: 1.2rem; }
+.karte .karte__zahl { font-family: var(--anzeige); font-size: clamp(1.8rem, 5vw, 2.4rem); line-height: 1; margin: 0 0 .2rem; }
+.karte .karte__was { font-family: var(--daten); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--akzent); }
+.karte p { margin: .7rem 0 0; color: var(--leise); font-size: .96rem; }
+.merk {
+  border-inline-start: 3px solid var(--akzent); padding: .2rem 0 .2rem 1.1rem;
+  margin: 1.6rem 0; font-family: var(--anzeige); font-size: clamp(1.15rem, 3.4vw, 1.45rem);
+  line-height: 1.35;
+}
+.tabelle { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: .94rem; }
+.tabelle th, .tabelle td { text-align: start; padding: .6rem .5rem; border-bottom: 1px solid var(--kante); vertical-align: top; }
+.tabelle th { font-family: var(--daten); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--leiser); font-weight: 400; }
+.tabelle td:first-child { font-family: var(--daten); font-size: .84rem; color: var(--text); white-space: nowrap; }
+.tabelle td { color: var(--leise); }
