@@ -461,6 +461,32 @@ def katalogtext(katalog, texte, kuerzel):
     # Punkt steht am Zeilenanfang. Das Aussehen richtet zwar schon styles.css,
     # aber die Leserichtung ist eine Eigenschaft des Textes — sie muss auch
     # dann stimmen, wenn kein Stylesheet geladen wird.
+    # Die Uebersetzungen der Kaertchen und Regalbeschreibungen, falls es sie
+    # fuer diese Sprache gibt. Bis 01.09.2026 gab es sie fuer keine — dann
+    # standen sie auf allen sieben Seiten deutsch, und der Kopf dieser
+    # Funktion begruendet, warum sie deshalb lang="de" bekamen.
+    #
+    # Jetzt gilt: Was uebersetzt vorliegt, wird uebersetzt ausgegeben UND
+    # verliert das lang="de" — die Angabe waere dann falsch, und eine falsche
+    # Sprachangabe ist schlechter als keine. Was fehlt, bleibt deutsch und
+    # behaelt sie. Beides Satz fuer Satz, nicht seitenweise.
+    uebersetzt = {"regal": {}, "sender": {}}
+    quelle = ROOT / "data" / f"sender-texte.{kuerzel}.json"
+    if kuerzel != "de" and quelle.exists():
+        uebersetzt = json.loads(io.open(quelle, encoding="utf-8").read())
+
+    def sprachmarke(schluessel, art):
+        """lang="de" nur, wo wirklich Deutsch steht."""
+        if kuerzel == "de" or uebersetzt.get(art, {}).get(schluessel):
+            return ""
+        return ' lang="de"'
+
+    def kaertchen_von(s):
+        return uebersetzt.get("sender", {}).get(s["id"]) or s["kaertchen"]
+
+    def regaltext_von(r):
+        return uebersetzt.get("regal", {}).get(r["id"]) or r["beschreibung"]
+
     deutsch = "" if kuerzel == "de" else ' lang="de"'
     if SPRACHEN[kuerzel][1] == "rtl":
         deutsch += ' dir="ltr"'
@@ -484,8 +510,8 @@ def katalogtext(katalog, texte, kuerzel):
         teile.append(f'<h3 class="katalogtext__name">{esc(regal["name"])} '
                      f'<span class="katalogtext__zahl">'
                      f'{esc(fuelle(t("regalwand.sender"), anzahl=len(drin)))}</span></h3>')
-        teile.append(f'<p class="katalogtext__was"{deutsch}>'
-                     f'{esc(regal["beschreibung"])}</p>')
+        teile.append(f'<p class="katalogtext__was"{sprachmarke(regal["id"], "regal")}>'
+                     f'{esc(regaltext_von(regal))}</p>')
         teile.append('<ul class="katalogtext__liste">')
         for s in drin:
             # Die Etiketten gibt es uebersetzt (etikett.*) — anders als die
@@ -497,7 +523,8 @@ def katalogtext(katalog, texte, kuerzel):
             teile.append(
                 f'<li><a href="{html.escape(s["homepage"], quote=True)}" rel="noopener">'
                 f"{esc(s['name'])}</a> — {esc(angaben)}"
-                f'<span class="katalogtext__karte"{deutsch}>{esc(s["kaertchen"])}</span></li>')
+                f'<span class="katalogtext__karte"{sprachmarke(s["id"], "sender")}>'
+                f'{esc(kaertchen_von(s))}</span></li>')
         teile.append("</ul></div>")
 
     teile.append("</details></section>")

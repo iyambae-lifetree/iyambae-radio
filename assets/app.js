@@ -120,6 +120,43 @@ const FASSUNG = KATALOG._version ?? 'unbekannt';
 const SENDER = KATALOG.sender.filter(s => s.status !== 'tot');
 
 /*
+ Die Kaertchen in der Sprache des Lesers.
+
+ WARUM SIE NICHT IN sender.json STEHEN: Die Datei traegt 165 Sender und wird
+ bei jedem Aufruf geladen. Sechs Uebersetzungen darin haetten sie versechsfacht
+ — fuer sechs Fassungen, von denen jeder Leser genau eine braucht. So liegt je
+ Sprache eine eigene Datei daneben, und geholt wird nur die eine.
+
+ WARUM ES DIESE DATEIEN UEBERHAUPT GIBT: Bis hierher standen die Kaertchen und
+ die Regalbeschreibungen auf ALLEN sieben Seiten auf Deutsch —
+ Scripts/baue-sprachen.py hat sie deshalb mit lang="de" ausgewiesen und dazu
+ vermerkt, das sei „auf der japanischen Seite ein Drittel deutscher Text".
+ Ausgewiesen ist besser als versteckt, aber uebersetzt ist besser als beides.
+
+ FEHLSCHLAG IST KEIN FEHLER: Faellt der Abruf aus — offline, oder die Datei
+ fehlt fuer eine Sprache —, bleibt das deutsche Kaertchen stehen. Es ist der
+ Zustand von gestern, nicht ein kaputter. Deshalb steht diese Datei auch NICHT
+ in SHELL_FILES: sechs Uebersetzungen vorzuhalten, von denen fuenf nie
+ gebraucht werden, waere teurer als der eine Rueckfall.
+*/
+if (sprache() !== 'de') {
+  try {
+    const texte = await fetch(`/data/sender-texte.${sprache()}.json`);
+    if (texte.ok) {
+      const uebersetzt = await texte.json();
+      for (const s of KATALOG.sender) {
+        const w = uebersetzt.sender?.[s.id];
+        if (w) s.kaertchen = w;
+      }
+      for (const r of REGALE) {
+        const w = uebersetzt.regal?.[r.id];
+        if (w) r.beschreibung = w;
+      }
+    }
+  } catch { /* deutsches Kaertchen bleibt stehen */ }
+}
+
+/*
  Die Groesse des Ladens, einmal ausgerechnet und in die Sprachschicht
  gegeben. Ab hier setzt `t()` sie ueberall selbst ein.
 

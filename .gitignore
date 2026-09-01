@@ -35,3 +35,7 @@ dienst/node_modules/
 # Werkzeugen als Pfad statt als Schalter gelesen, und dann liegt ploetzlich
 # ein Verzeichnis da. Einmal passiert, 24 MB gross, im Abbild gelandet.
 /--*
+
+# Arbeitsordner der Uebersetzungslaeufe. Die Ergebnisse liegen in
+# data/sender-texte.*.json, geprueft von Scripts/pruefe-uebersetzungen.py.
+.uebersetzung/
