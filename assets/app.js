@@ -18,7 +18,8 @@ import { senderbild, labelbild, hatEigenesLogo, regalton, REGALTON, MARKE, LABEL
   from './lib/senderbild.mjs';
 import { symbol, setzeSymbole } from './lib/symbole.mjs';
 import { leererFilter, istGefiltert, anzahlAktiv, wendeAn, vorschau,
-         regionVon, etikettName, regionName, SCHNELL } from './lib/achsen.mjs';
+         regionVon, etikettName, regionName, SCHNELL,
+         istEinschlafen, schalteEinschlafen } from './lib/achsen.mjs';
 import { beobachteAktualisierung } from './lib/aktualisierung.mjs';
 import { beobachteFehler, einwilligungsstand, widerrufeEinwilligung }
   from './lib/fehlerbericht.mjs';
@@ -1696,6 +1697,7 @@ class UI {
                 : achse === 'region'  ? this.filter.regionen.has(wert)
                 : achse === 'guete'   ? this.filter.guete === wert
                 : achse === 'gemerkte' ? this.filter.nurGemerkte
+                : achse === 'einschlafen' ? istEinschlafen(this.filter)
                 : false;
     // Wie viele Sender bleiben, wenn man DIESEN Chip zusaetzlich waehlt.
     // Bei einem bereits aktiven Chip ist die Zahl der Ist-Zustand.
@@ -1744,6 +1746,24 @@ class UI {
     const chips = SCHNELL.filter(e => vorhanden.has(e))
       .map(e => this._chip('wofuer', 'etikett', e, etikettName(e),
                            this._etikettenNachHaeufigkeit.find(([k]) => k === e)?.[1] ?? 0));
+    /*
+     „Zum Einschlafen" steht vorn, weil es der einzige Zugriff ist, der eine
+     Absicht beschreibt und nicht eine Eigenschaft. Die Zahl daran rechnet
+     vorschau() mit allen drei Bedingungen — sie verspricht also, was sie
+     liefert.
+    */
+    /*
+     Die Zahl wird MITGEGEBEN, nicht dem Chip ueberlassen: _chip() rechnet
+     nur, solange ein Chip noch nicht aktiv ist, und zeigt sonst den
+     Rueckfallwert. Bei einem aktiven Chip stuende dort eine 0 — also
+     ausgerechnet dann, wenn 42 Sender vor einem liegen.
+
+     vorschau() mit 'einschlafen' ist in beiden Zustaenden dieselbe Zahl:
+     Sind die drei Bedingungen schon gesetzt, aendert das erneute Setzen
+     nichts.
+    */
+    chips.unshift(this._chip('einschlafen', 'einschlafen', 'ja', t('filter.einschlafen'),
+      vorschau(this.sender, this.filter, (id) => this.istFavorit(id), 'einschlafen', 'ja')));
     if (this.favoriten.size) {
       chips.unshift(this._chip('meine', 'gemerkte', 'ja', t('filter.meine.knopf'), this.favoriten.size));
     }
@@ -1760,6 +1780,7 @@ class UI {
     else if (achse === 'guete') f.guete = f.guete === wert ? null : wert;
     else if (achse === 'gemerkte') f.nurGemerkte = !f.nurGemerkte;
     else if (achse === 'regal') f.regal = f.regal === wert ? null : wert;
+    else if (achse === 'einschlafen') schalteEinschlafen(f);
     this.wendeFilterAn();
   }
 

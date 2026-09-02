@@ -236,5 +236,6 @@
   "menue.samplerate": "Muestreo y altura",
   "menue.gitarre": "Guitarra en 432",
   "menue.solfeggio": "Frecuencias Solfeggio",
-  "menue.berichtigungen": "Rectificaciones"
+  "menue.berichtigungen": "Rectificaciones",
+  "filter.einschlafen": "Para dormirse"
 }

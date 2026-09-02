@@ -107,6 +107,45 @@ export function regionName(id) {
 export const SCHNELL = ['ohne-werbung', 'nur-instrumental', 'nachts'];
 
 /*
+ ═══ „Zum Einschlafen" ═══════════════════════════════════════════════
+
+ Der einzige Zugriff, der etwas AUSSCHLIESST statt einzuschliessen.
+
+ Der Grund steht in den Zahlen: 52 Sender im Katalog sind instrumental und
+ haben niemanden am Mikrofon, 42 davon auch ohne Werbung. Sie liegen ueber
+ NEUN Regale verteilt — Maschinenraum, Tiefe, Freakshow, Klassik und
+ einzeln bis in die Wuehlkiste. Ein eigenes Regal haette sie aus ihrem
+ Fach reissen oder doppelt fuehren muessen. Ein Zugriff findet sie, wo sie
+ stehen.
+
+ Warum Ausschluss und nicht ein weiteres Etikett: Beim Einschlafen stoert
+ nicht, was fehlt, sondern was dazukommt — eine Stimme. „nur-instrumental"
+ sagt etwas ueber die Musik, nicht ueber die Moderation dazwischen. Ein
+ Sender kann instrumental spielen und trotzdem alle zwanzig Minuten jemanden
+ ans Mikrofon lassen.
+*/
+export const STIMMEN = ['mensch-am-mikro', 'live-dj'];
+export const EINSCHLAFEN = { etiketten: ['nur-instrumental', 'ohne-werbung'], ohneStimme: true };
+
+/** Ob der Zugriff gerade vollstaendig greift. */
+export function istEinschlafen(f) {
+  return f.ohneStimme && EINSCHLAFEN.etiketten.every(e => f.etiketten.has(e));
+}
+
+/*
+ Ein Klick setzt alle drei Bedingungen, der naechste nimmt genau sie wieder
+ weg. Wer vorher „instrumental" von Hand gewaehlt hatte, verliert es dabei —
+ das ist der Preis dafuer, dass ein Knopf beim zweiten Druck wieder dorthin
+ zurueckfuehrt, wo er hinzeigt. Alles andere waere ein Knopf, dessen
+ Wirkung davon abhaengt, was vorher war.
+*/
+export function schalteEinschlafen(f) {
+  const an = istEinschlafen(f);
+  for (const e of EINSCHLAFEN.etiketten) an ? f.etiketten.delete(e) : f.etiketten.add(e);
+  f.ohneStimme = !an;
+}
+
+/*
  Der Filterzustand — und warum jede Achse eine MENGE ist.
 
  Vorher hielt jede Achse genau einen Wert; ein zweiter Klick warf den ersten
@@ -125,6 +164,9 @@ export function leererFilter() {
     regal: null,          // kommt aus der Regalwand, nicht aus der Leiste
     etiketten: new Set(),
     regionen: new Set(),
+    // Die einzige Achse, die etwas WEGNIMMT: kein Mensch am Mikrofon,
+    // kein DJ. Siehe EINSCHLAFEN weiter oben.
+    ohneStimme: false,
     nurGemerkte: false,
     suche: '',
   };
@@ -133,7 +175,8 @@ export function leererFilter() {
 /** Wie viele Achsen gerade greifen — die Zahl am Filterknopf. */
 export function anzahlAktiv(f) {
   return (f.guete ? 1 : 0) + (f.regal ? 1 : 0) + f.etiketten.size
-       + f.regionen.size + (f.nurGemerkte ? 1 : 0) + (f.suche.trim() ? 1 : 0);
+       + f.regionen.size + (f.ohneStimme ? 1 : 0)
+       + (f.nurGemerkte ? 1 : 0) + (f.suche.trim() ? 1 : 0);
 }
 
 export function istGefiltert(f) {
@@ -213,6 +256,7 @@ export function wendeAn(sender, f, istFavorit, regalName = null) {
     (!f.regal || x.regal === f.regal) &&
     (!f.etiketten.size || [...f.etiketten].every(e => (x.etiketten ?? []).includes(e))) &&
     (!f.regionen.size || f.regionen.has(regionVon(x))) &&
+    (!f.ohneStimme || !(x.etiketten ?? []).some(e => STIMMEN.includes(e))) &&
     (!f.nurGemerkte || istFavorit(x.id)) &&
     (!suchtext || suchTest(x)));
 }
@@ -237,5 +281,11 @@ export function vorschau(sender, f, istFavorit, achse, wert, regalName = null) {
   else if (achse === 'region') probe.regionen.add(wert);
   else if (achse === 'guete') probe.guete = wert;
   else if (achse === 'gemerkte') probe.nurGemerkte = true;
+  /* Der Zugriff zeigt, was NACH dem Klick uebrig bliebe — also mit allen
+     drei Bedingungen, nicht nur mit einer. */
+  else if (achse === 'einschlafen') {
+    for (const e of EINSCHLAFEN.etiketten) probe.etiketten.add(e);
+    probe.ohneStimme = true;
+  }
   return wendeAn(sender, probe, istFavorit, regalName).length;
 }

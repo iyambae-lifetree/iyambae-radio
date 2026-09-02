@@ -236,5 +236,6 @@
   "menue.samplerate": "Samplerate und Tonhöhe",
   "menue.gitarre": "Gitarre auf 432",
   "menue.solfeggio": "Solfeggio-Frequenzen",
-  "menue.berichtigungen": "Berichtigungen"
+  "menue.berichtigungen": "Berichtigungen",
+  "filter.einschlafen": "Zum Einschlafen"
 }

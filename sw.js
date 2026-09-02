@@ -8,6 +8,9 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v34: „Zum Einschlafen" in der Filterleiste — und die Chips haben endlich
+// einen Stil. app.js, achsen.mjs, styles.css und alle sieben Kataloge.
+//
 // v33: Der Sender der Woche zieht wieder aus der gefilterten Menge. Nur
 // app.js hat sich geaendert — aber die steht im Vorrat, also zaehlt es.
 //
@@ -49,7 +52,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v33';
+const SW_VERSION = 'iyambae-v34';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

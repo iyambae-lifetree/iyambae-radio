@@ -908,6 +908,49 @@ body.spielt .glanz {
 .filter__schnell,
 .filter__aktive { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
+/* ── Die Chips ───────────────────────────────────────────────────
+   HIER STAND NICHTS. Gefunden am 02.09.2026: `.chip` hatte in dieser
+   Datei keine einzige Regel — die Filterknöpfe kamen als graue
+   Systembuttons in Arial mit `outset`-Rahmen auf die dunkle Seite,
+   einundzwanzig Stück, live. Sichtbar für jeden, gemeldet von
+   niemandem.
+
+   Der Bau darunter ist der der Nachbarn: dieselben Kanten wie
+   `.filter__zuruecksetzen`, dieselbe Schrift, dieselbe Rundung. Ein
+   Chip ist ein kleiner Schalter, kein eigenes Gestaltungsthema. */
+.chip {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--karte);
+    color: var(--text-leise);
+    border: 1px solid var(--rand); border-radius: var(--rund);
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+}
+.chip:hover { color: var(--text); border-color: var(--rand-hell); }
+.chip span {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.66rem; color: var(--text-leise); opacity: 0.7;
+}
+
+.chip.ist-aktiv {
+    color: var(--grund); background: var(--pink); border-color: var(--pink);
+}
+.chip.ist-aktiv span { color: var(--grund); opacity: 0.72; }
+
+/* Ein Chip, der ins Leere führte, wird stumpf statt unsichtbar: Wer ihn
+   sucht, soll sehen, dass es ihn gibt und dass er hier nichts brächte. */
+.chip.ist-stumpf { opacity: 0.38; cursor: default; }
+.chip.ist-stumpf:hover { color: var(--text-leise); border-color: var(--rand); }
+
+/* „Zum Einschlafen" ist der einzige Chip, der eine Absicht nennt und nicht
+   eine Eigenschaft. Er trägt deshalb die Akzentkante — leise, aber vorn. */
+.chip--einschlafen { border-color: var(--rand-hell); color: var(--text); }
+.chip--einschlafen:hover { border-color: var(--gold); }
+.chip--einschlafen.ist-aktiv { background: var(--gold); border-color: var(--gold); color: var(--grund); }
+.chip--einschlafen.ist-aktiv span { color: var(--grund); }
+
 .filter__stand {
     display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
     margin-inline-start: auto;

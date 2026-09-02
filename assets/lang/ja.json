@@ -236,5 +236,6 @@
   "menue.samplerate": "標本化周波数と音の高さ",
   "menue.gitarre": "ギターを 432 に",
   "menue.solfeggio": "ソルフェジオ周波数",
-  "menue.berichtigungen": "訂正"
+  "menue.berichtigungen": "訂正",
+  "filter.einschlafen": "眠りにつくために"
 }

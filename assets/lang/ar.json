@@ -236,5 +236,6 @@
   "menue.samplerate": "معدّل العيّنات ودرجة الصوت",
   "menue.gitarre": "الغيتار على 432",
   "menue.solfeggio": "ترددات السولفيجيو",
-  "menue.berichtigungen": "تصويبات"
+  "menue.berichtigungen": "تصويبات",
+  "filter.einschlafen": "للنوم"
 }
