@@ -8,6 +8,9 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v33: Der Sender der Woche zieht wieder aus der gefilterten Menge. Nur
+// app.js hat sich geaendert — aber die steht im Vorrat, also zaehlt es.
+//
 // v32: Das Menue im Kopf. index.html, styles.css, app.js, symbole.mjs und
 // alle sieben Kataloge haben sich geaendert — und damit auch alle sieben
 // Sprachseiten.
@@ -46,7 +49,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v32';
+const SW_VERSION = 'iyambae-v33';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

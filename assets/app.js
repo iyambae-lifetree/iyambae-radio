@@ -2435,8 +2435,19 @@ class App {
 
   // Der Sender der Woche. Erfindet nichts: er kommt aus dem eigenen,
   // geprueften Katalog und steht fuer alle Besucher derselben Woche fest.
+  //
+  // AUS DER GEFILTERTEN MENGE, seit dem 02.09.2026. Hier stand
+  // `this.ui.sender` — die ungefilterte Liste. Damit konnte der Sender der
+  // Woche aus der Wuehlkiste kommen, obwohl der Kommentar ueber
+  // _ziehbareSender() ausdruecklich sagt: „Das gilt fuer Nadel, Auslage und
+  // Sender der Woche."
+  //
+  // Nachgerechnet: In 5 von 104 kommenden Wochen haette es zugeschlagen,
+  // also etwa alle fuenf Monate. Gefunden hat es tools/test/zufall.test.mjs
+  // — ein Test, den es seit Wochen gab und der in einem Repository lag, in
+  // dem niemand ihn mehr laufen liess.
   zeichneWochentipp() {
-    const tipp = tippDerWoche(this.ui.sender);
+    const tipp = tippDerWoche(this._ziehbareSender());
     const abschnitt = document.getElementById('tipp');
     if (!tipp || !abschnitt) return;
     const s = tipp.sender;

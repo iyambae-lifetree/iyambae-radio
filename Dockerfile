@@ -22,6 +22,16 @@ COPY . .
 # pruefe-zwischenspeicher.py steht bewusst NACH den drei Bauskripten: Die
 # Sprachseiten entstehen erst dabei, und genau sie sind es, die zuletzt
 # unbemerkt im Zwischenspeicher veralteten.
+#
+# Scripts/test/ am Ende: 58 Tests, die den ausgelieferten Code selbst
+# festnageln — Gewichtung, Wochentipp, Senderbild, Verwandtschaft, der
+# Wechsel zwischen Sendern mit und ohne CORS, die Regel des Service Workers.
+#
+# Sie lagen bis zum 02.09.2026 im privaten Repository und liefen dort gegen
+# eine eingefrorene Kopie des Codes. Einer von ihnen hat dabei seit Wochen
+# einen echten Fehler gemeldet, den niemand hoerte: Der Sender der Woche zog
+# aus der ungefilterten Menge und konnte aus der Wuehlkiste kommen. Ein Test,
+# den keine Auslieferung laufen laesst, ist kein Test.
 RUN python3 Scripts/baue-sprachen.py \
  && python3 Scripts/baue-recht.py \
  && python3 Scripts/baue-apps-sprachen.py \
@@ -29,7 +39,8 @@ RUN python3 Scripts/baue-sprachen.py \
  && python3 Scripts/pruefe-zwischenspeicher.py \
  && node Scripts/pruefe-messung.mjs \
  && node Scripts/pruefe-verlauf.mjs \
- && node Scripts/pruefe-konto.mjs
+ && node Scripts/pruefe-konto.mjs \
+ && node --test "Scripts/test/*.test.mjs"
 
 # ── Stufe 2: ausliefern ─────────────────────────────────────────────
 #
