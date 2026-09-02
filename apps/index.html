@@ -272,8 +272,17 @@ strong { font-weight: 600; }
 
 .aufmacher__vorwort {
   font-size: clamp(1.02rem, 2vw, 1.2rem);
-  color: var(--leise); max-width: 30rem; margin: 0 0 2rem;
+  color: var(--leise); max-width: 30rem; margin: 0 0 1rem;
 }
+
+/* Der Claim. Leiser als das Vorwort, mit einer Kante an der Leseseite —
+   er ist ein Nachsatz, kein zweiter Aufmacher. */
+.aufmacher__claim {
+  font-size: .96rem; color: var(--leiser); max-width: 30rem;
+  margin: 0 0 2rem; padding-inline-start: .9rem;
+  border-inline-start: 2px solid var(--kante-hell);
+}
+.aufmacher__claim strong { color: var(--leise); }
 
 /* ── Der eine Knopf, und wie er sein System findet ───────────────── */
 
@@ -1514,6 +1523,21 @@ code {
         nicht in der Datei.
       </p>
 
+      <!-- Der Claim. Sāmi-Ras Wahl vom 02.09.2026 aus drei Vorschlaegen,
+           mit der Auflage „es soll lustig sein".
+
+           Der naheliegende Witz waere gewesen, die Versprechen der
+           Konkurrenz zu zitieren und sich darueber lustig zu machen. Genau
+           das geht nicht: Abschnitt H.5.4 der Recherche haelt fest, dass ein
+           Augenzwinkern rechtlich nicht schuetzt und der Gesamteindruck
+           zaehlt — wer die verbotenen Wirkungen ironisch aufzaehlt, wirbt
+           mit ihnen. Der Witz geht deshalb auf unsere eigenen Kosten. -->
+      <p class="aufmacher__claim" data-html="auf.claim">
+        Ob du den Unterschied hörst, weiß niemand. Auch wir nicht.
+        <strong>Besonders wir nicht.</strong> Deshalb: ein Regler, dein Ohr,
+        eine ruhige Stunde.
+      </p>
+
     </div>
 
     <!-- ── Die Probe. Sie verlangt keinen Download und dauert acht
@@ -2249,6 +2273,27 @@ code {
           </p>
           <p data-html="frage.forschung.4">
             Was daraus folgt: Es ist etwas gemessen worden, und es ist wenig. <strong>Wir versprechen dir nichts.</strong> Hier stand bis zum 01.09.2026 eine Cortisol-Zahl, die wir aus der Zusammenfassung einer Studie übernommen hatten. Die Nachprüfung am Volltext hat sie nicht gehalten — und dann berichtigt man sie, statt sie stehen zu lassen. Die Volltexte stehen unten unter „Was andere dazu schreiben“ — lies sie selbst nach, statt uns zu glauben. Und dann hör hin. Die einzige Messung, die für dich zählt, machst du mit deinen eigenen Ohren.
+          </p>
+        </div>
+      </details>
+
+      <!-- Placebo. Sāmi-Ras Entscheidung vom 02.09.2026: Das Wort kommt auf
+           die Seite, und zwar von uns.
+
+           Der Gedanke dahinter: Wer es selbst sagt, kann damit nicht mehr
+           angegriffen werden. Und es ist wahr — Runde 2 des Hoertests zeigt
+           bei 432 gegen 433 tatsaechlich Rateniveau, und das steht dort
+           ungeschoent. Ein Verkaeufer, der seinem Kaeufer sagt, die Wirkung
+           koenne in ihm selbst liegen, hat entweder nichts zu verlieren oder
+           nichts zu verbergen. -->
+      <details class="frage">
+        <summary data-text="frage.placebo.titel">Und wenn es nur Placebo ist?</summary>
+        <div class="antwort">
+          <p data-html="frage.placebo.1">
+            <strong>Vielleicht ist es Placebo.</strong> Das ist kein Einwand gegen das Hören — es ist der Grund, warum wir dir den <a href="/de/hoertest/">Blindtest</a> hinstellen, statt dir zu sagen, was du empfindest. Fällt er gegen uns aus, steht das da.
+          </p>
+          <p data-html="frage.placebo.2">
+            Und selbst wenn: <strong>Ein Abend, an dem du ruhiger geworden bist, war ein ruhiger Abend.</strong> Ob die Ursache im Ton lag oder darin, dass du dir eine Stunde genommen hast — das eine ist nicht weniger wert als das andere. Wir verkaufen dir nur nicht das eine als das andere.
           </p>
         </div>
       </details>

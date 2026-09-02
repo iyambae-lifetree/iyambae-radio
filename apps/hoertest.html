@@ -64,6 +64,8 @@
 .ergebnis__satz { color: var(--leise); margin: .4rem 0; }
 .ergebnis__satz strong { color: var(--text); }
 .ergebnis__zufall { font-family: var(--daten); font-size: .74rem; color: var(--leiser); margin-top: .6rem; }
+.ergebnis__placebo { font-size: .88rem; color: var(--leiser); margin-top: 1rem; padding-top: .8rem; border-top: 1px solid var(--kante); }
+.ergebnis__placebo strong { color: var(--leise); }
 
 .weiter {
   display: inline-block; margin-top: 1rem; text-decoration: none; cursor: pointer;
@@ -126,6 +128,7 @@
       <p class="ergebnis__zahl" id="ergebnisZahl"></p>
       <p class="ergebnis__satz" id="ergebnisSatz"></p>
       <p class="ergebnis__zufall" id="ergebnisZufall"></p>
+      <p class="ergebnis__placebo" data-html="hoer.placebo"><strong>Vielleicht ist es Placebo.</strong> Das ist kein Einwand gegen das Hören — es ist der Grund, warum hier ein Blindtest steht und keine Behauptung.</p>
       <button class="weiter" id="weiter" type="button"></button>
     </div>
   </div>
