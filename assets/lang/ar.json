@@ -225,5 +225,16 @@
   "mitnehmen.wie.edge": "في Edge: القائمة ⋯ ← الإعدادات ← البدء والصفحة الرئيسية وعلامات التبويب الجديدة ← افتح هذه الصفحات.",
   "mitnehmen.wie.safari": "في Safari: ‏Safari ← الإعدادات ← عام ← الصفحة الرئيسية ← الصق هذا العنوان.",
   "mitnehmen.wie.ios": "على iPhone: اضغط رمز المشاركة ← «إضافة إلى الشاشة الرئيسية». لا توجد صفحة بدء في Safari على iPhone.",
-  "mitnehmen.wie.android": "على Android: القائمة ⋮ ← «إضافة إلى الشاشة الرئيسية». يمكن أيضًا وضع هذا العنوان في إعدادات Chrome تحت «الصفحة الرئيسية»."
+  "mitnehmen.wie.android": "على Android: القائمة ⋮ ← «إضافة إلى الشاشة الرئيسية». يمكن أيضًا وضع هذا العنوان في إعدادات Chrome تحت «الصفحة الرئيسية».",
+  "menue.hinweis": "المزيد من IYAMBAE",
+  "menue.werkzeuge": "أدوات",
+  "menue.tuner": "الـ IYAMBAE Tuner",
+  "menue.stimmung": "قياس الضبط",
+  "menue.hoertest": "اختبار أعمى",
+  "menue.lesen": "للقراءة",
+  "menue.spotify": "سبوتيفاي على 432 هرتز",
+  "menue.samplerate": "معدّل العيّنات ودرجة الصوت",
+  "menue.gitarre": "الغيتار على 432",
+  "menue.solfeggio": "ترددات السولفيجيو",
+  "menue.berichtigungen": "تصويبات"
 }

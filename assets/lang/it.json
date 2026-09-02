@@ -225,5 +225,16 @@
   "mitnehmen.wie.edge": "In Edge: menu ⋯ → Impostazioni → Avvio, home e nuove schede → Apri queste pagine.",
   "mitnehmen.wie.safari": "In Safari: Safari → Impostazioni → Generali → Homepage → incolla questo indirizzo.",
   "mitnehmen.wie.ios": "Su iPhone: tocca l’icona di condivisione → «Aggiungi a Home». Safari su iPhone non ha una pagina iniziale.",
-  "mitnehmen.wie.android": "Su Android: menu ⋮ → «Aggiungi a schermata Home». Nelle impostazioni di Chrome puoi anche indicare questo indirizzo sotto «Pagina iniziale»."
+  "mitnehmen.wie.android": "Su Android: menu ⋮ → «Aggiungi a schermata Home». Nelle impostazioni di Chrome puoi anche indicare questo indirizzo sotto «Pagina iniziale».",
+  "menue.hinweis": "Altro da IYAMBAE",
+  "menue.werkzeuge": "Strumenti",
+  "menue.tuner": "Il IYAMBAE Tuner",
+  "menue.stimmung": "Misurare l’accordatura",
+  "menue.hoertest": "Test alla cieca",
+  "menue.lesen": "Da leggere",
+  "menue.spotify": "Spotify a 432 Hz",
+  "menue.samplerate": "Campionamento e altezza",
+  "menue.gitarre": "Chitarra a 432",
+  "menue.solfeggio": "Frequenze Solfeggio",
+  "menue.berichtigungen": "Rettifiche"
 }

@@ -77,6 +77,10 @@ const PFADE = {
     konto: '<circle cx="12" cy="8.4" r="3.6"/>' +
            '<path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/>',
 
+    // Drei Striche. Ohne Kreis, ohne Kasten — das Zeichen traegt sich
+    // selbst, und der Knopf drumherum gibt ihm schon eine Kante.
+    menue: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+
     // Schliessen.
     zu: '<path d="m6 6 12 12M18 6 6 18"/>',
 };

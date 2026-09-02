@@ -225,5 +225,16 @@
   "mitnehmen.wie.edge": "Edge：メニュー ⋯ → 設定 → [スタート]、[ホーム]、および [新規] タブ → これらのページを開く。",
   "mitnehmen.wie.safari": "Safari：Safari → 設定 → 一般 → ホームページ → このアドレスを貼り付け。",
   "mitnehmen.wie.ios": "iPhone：共有アイコン →「ホーム画面に追加」。iPhone の Safari に起動ページの設定はありません。",
-  "mitnehmen.wie.android": "Android：メニュー ⋮ →「ホーム画面に追加」。Chrome の設定の「ホームページ」にこのアドレスを入れることもできます。"
+  "mitnehmen.wie.android": "Android：メニュー ⋮ →「ホーム画面に追加」。Chrome の設定の「ホームページ」にこのアドレスを入れることもできます。",
+  "menue.hinweis": "IYAMBAE のほかのもの",
+  "menue.werkzeuge": "道具",
+  "menue.tuner": "IYAMBAE Tuner",
+  "menue.stimmung": "調律を測る",
+  "menue.hoertest": "ブラインドテスト",
+  "menue.lesen": "読みもの",
+  "menue.spotify": "Spotify を 432 Hz で",
+  "menue.samplerate": "標本化周波数と音の高さ",
+  "menue.gitarre": "ギターを 432 に",
+  "menue.solfeggio": "ソルフェジオ周波数",
+  "menue.berichtigungen": "訂正"
 }

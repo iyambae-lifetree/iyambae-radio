@@ -2089,6 +2089,52 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .sprachwahl__liste a:hover { background: rgba(255, 255, 255, 0.07); color: var(--text); }
 .sprachwahl__liste a[aria-current] { color: var(--pink); font-weight: 600; }
 
+/* ── Das Menü ────────────────────────────────────────────────────
+   Derselbe Bau wie die Sprachwahl daneben, damit im Kopf nicht zwei
+   verschiedene Klappwerke stehen. Nur der Knopf ist quadratisch: Er
+   trägt ein Zeichen, kein Wort. */
+.menue { position: relative; flex: none; }
+.menue__knopf {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem;
+    background: var(--karte); border: 1px solid var(--rand); border-radius: var(--rund);
+    color: var(--text-leise);
+    cursor: pointer; list-style: none;
+    transition: all 0.15s ease;
+}
+.menue__knopf::-webkit-details-marker { display: none; }
+.menue__knopf:hover { color: var(--text); border-color: var(--rand-hell); }
+.menue[open] .menue__knopf { color: var(--text); border-color: var(--pink); }
+
+.menue__blatt {
+    position: absolute; z-index: 60;
+    inset-block-start: calc(100% + 0.35rem); inset-inline-end: 0;
+    min-width: 13.5rem;
+    padding: 0.4rem;
+    background: var(--grund-hoch);
+    border: 1px solid var(--rand-hell);
+    box-shadow: var(--schatten);
+}
+.menue__gruppe {
+    margin: 0.5rem 0 0.2rem; padding: 0 0.65rem;
+    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-leise); opacity: .75;
+}
+.menue__gruppe:first-child { margin-top: 0.2rem; }
+.menue__blatt a {
+    display: block;
+    padding: 0.4rem 0.65rem;
+    color: var(--text-leise); text-decoration: none;
+    font-size: 0.85rem;
+}
+.menue__blatt a:hover { background: rgba(255, 255, 255, 0.07); color: var(--text); }
+/* Die Berichtigungen gehören dazu, aber niemand kommt ihretwegen. */
+.menue__leise {
+    margin-top: 0.4rem; padding-top: 0.5rem;
+    border-top: 1px solid var(--rand);
+    font-size: 0.78rem !important;
+}
+
 /* ── Rechts nach links ───────────────────────────────────────────
    Arabisch. Was sich mit logischen Eigenschaften ausdrücken lässt, steht
    oben im Bestand und gilt in beide Richtungen. Hier steht nur, wofür CSS

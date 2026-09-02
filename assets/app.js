@@ -109,6 +109,21 @@ sprachwahl?.addEventListener('click', (e) => {
   if (verweis) miss('sprache', { wert: verweis.hreflang });
 });
 
+/*
+ Sprachwahl und Menue sind <details>. Die klappen von selbst auf, aber nicht
+ von selbst wieder zu — ein offenes Blatt, das beim Klick daneben stehen
+ bleibt, wirkt wie ein Fehler. Sechs Zeilen fuer beide, statt eines eigenen
+ Klappwerks je Knopf.
+*/
+const klappen = () => document.querySelectorAll('details.sprachwahl[open], details.menue[open]');
+document.addEventListener('click', (e) => {
+  for (const d of klappen()) if (!d.contains(e.target)) d.open = false;
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  for (const d of klappen()) d.open = false;
+});
+
 // ── Katalog laden ──────────────────────────────────────────────────
 const antwort = await fetch('/data/sender.json');
 if (!antwort.ok) throw new Error('Katalog nicht ladbar: ' + antwort.status);

@@ -225,6 +225,17 @@ def setze_attribut(stueck, name, wert):
 # "assets/app.js" nach /de/assets/app.js. Absolut machen, nicht kopieren.
 RELATIV = re.compile(r'(\s(?:href|src)=")(?!https?:|/|#|data:|mailto:)')
 
+# Die Verweise ins Menue zeigen auf apps.iyambae.fm — einen anderen
+# Hostnamen, also absolut. Sie tragen aber dieselbe Sprachweiche wie diese
+# Seite, und die muss mitwandern.
+#
+# Ein blosses /stimmung/ ginge nicht: Der Server dort leitet auf die
+# Startseite der erkannten Sprache um und verliert den Pfad dabei. Nachgesehen
+# am 01.09.2026 — /stimmung/ antwortet mit 302 auf /en/, nicht auf
+# /en/stimmung/. Wer aus dem Menue kaeme, landete auf der Landeseite und
+# suchte von vorn.
+APPSVERWEIS = re.compile(r'(\shref="https://apps\.iyambae\.fm)/de/')
+
 
 def erzeuge_seite(vorlage_quelle, kuerzel, texte, alle_kuerzel, katalog):
     zerleger = Zerleger()
@@ -275,6 +286,7 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, alle_kuerzel, katalog):
 
     seite = zusammen(stuecke)
     seite = RELATIV.sub(r"\1/", seite)
+    seite = APPSVERWEIS.sub(rf"\1/{kuerzel}/", seite)
 
     # Die arabischen Schriften brauchen hier keine Sonderbehandlung mehr.
     # Frueher stand ein eigener <link> auf Google Fonts im Kopf, und diese

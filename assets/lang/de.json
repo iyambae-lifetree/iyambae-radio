@@ -225,5 +225,16 @@
   "mitnehmen.wie.edge": "In Edge: Menü ⋯ → Einstellungen → Start, Startseite und neue Registerkarten → Diese Seiten öffnen.",
   "mitnehmen.wie.safari": "In Safari: Safari → Einstellungen → Allgemein → Homepage → diese Adresse einfügen.",
   "mitnehmen.wie.ios": "Auf dem iPhone: unten auf das Teilen-Symbol tippen → „Zum Home-Bildschirm\". Eine eigene Startseite kennt Safari auf dem iPhone nicht.",
-  "mitnehmen.wie.android": "Auf Android: Menü ⋮ → „Zum Startbildschirm hinzufügen\". In den Chrome-Einstellungen lässt sich unter „Startseite\" zusätzlich diese Adresse eintragen."
+  "mitnehmen.wie.android": "Auf Android: Menü ⋮ → „Zum Startbildschirm hinzufügen\". In den Chrome-Einstellungen lässt sich unter „Startseite\" zusätzlich diese Adresse eintragen.",
+  "menue.hinweis": "Mehr von IYAMBAE",
+  "menue.werkzeuge": "Werkzeuge",
+  "menue.tuner": "Der IYAMBAE Tuner",
+  "menue.stimmung": "Stimmung messen",
+  "menue.hoertest": "Blindtest",
+  "menue.lesen": "Zum Nachlesen",
+  "menue.spotify": "Spotify in 432 Hz",
+  "menue.samplerate": "Samplerate und Tonhöhe",
+  "menue.gitarre": "Gitarre auf 432",
+  "menue.solfeggio": "Solfeggio-Frequenzen",
+  "menue.berichtigungen": "Berichtigungen"
 }

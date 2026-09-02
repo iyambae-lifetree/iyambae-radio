@@ -225,5 +225,16 @@
   "mitnehmen.wie.edge": "In Edge: menu ⋯ → Settings → Start, home and new tabs → Open these pages.",
   "mitnehmen.wie.safari": "In Safari: Safari → Settings → General → Homepage → paste this address.",
   "mitnehmen.wie.ios": "On iPhone: tap the share icon → “Add to Home Screen”. Safari on iPhone has no start page setting.",
-  "mitnehmen.wie.android": "On Android: menu ⋮ → “Add to Home screen”. Chrome’s settings also let you set this address under “Homepage”."
+  "mitnehmen.wie.android": "On Android: menu ⋮ → “Add to Home screen”. Chrome’s settings also let you set this address under “Homepage”.",
+  "menue.hinweis": "More from IYAMBAE",
+  "menue.werkzeuge": "Tools",
+  "menue.tuner": "The IYAMBAE Tuner",
+  "menue.stimmung": "Measure the tuning",
+  "menue.hoertest": "Blind test",
+  "menue.lesen": "Reading",
+  "menue.spotify": "Spotify in 432 Hz",
+  "menue.samplerate": "Sample rate and pitch",
+  "menue.gitarre": "Guitar at 432",
+  "menue.solfeggio": "Solfeggio frequencies",
+  "menue.berichtigungen": "Corrections"
 }

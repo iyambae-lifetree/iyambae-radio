@@ -107,6 +107,51 @@
          setzt assets/lib/sprache.mjs. -->
     <details class="sprachwahl" id="sprachwahl"></details>
 
+    <!-- Der Weg zu allem, was nicht Radio ist.
+
+         Sāmi-Ra am 01.09.2026: „Wäre ein wenig schade, wenn man die von der
+         Radioseite aus nicht erreichen kann."
+
+         Er hat recht, und das Versäumnis ist meins: Heute sind fünf Seiten
+         auf apps.iyambae.fm dazugekommen, und die einzige Verbindung dorthin
+         war ein Wort im Fuß der Seite. Wer nach unten scrollt, sucht nicht
+         mehr — er ist fertig.
+
+         WARUM <details> UND KEIN NACHBAU: Die Sprachwahl gleich daneben ist
+         schon eins. Ein zweites Klappwerk mit eigener Zustandslogik wäre
+         mehr Code für dasselbe Verhalten. Das Aufklappen kann der Browser
+         allein; app.js schließt es nur wieder, wenn man daneben klickt.
+
+         (Das Zeichen im Knopf kommt aus symbole.mjs, wie bei der Lupe und
+         beim Mitnehmen-Knopf. Ohne Programmcode bleibt der Knopf leer —
+         das gilt hier für die ganze Kopfzeile und ist nichts, was dieses
+         Menü besser machen könnte, ohne aus der Reihe zu tanzen.)
+
+         ACHT VERWEISE, ZWEI GRUPPEN. Mehr Ordnung braucht es nicht, und eine
+         dritte Überschrift für einen einzigen Punkt wäre Ordnung um ihrer
+         selbst willen. Die Berichtigungen stehen ohne Gruppe am Fuß: Sie
+         gehören dazu, aber niemand kommt ihretwegen. -->
+    <details class="menue" id="menue">
+        <summary class="menue__knopf" data-titel="menue.hinweis" data-aria="menue.hinweis"
+                 title="Mehr von IYAMBAE" aria-label="Mehr von IYAMBAE">
+            <span data-symbol="menue" data-symbol-groesse="18"></span>
+        </summary>
+        <div class="menue__blatt">
+            <p class="menue__gruppe" data-text="menue.werkzeuge">Werkzeuge</p>
+            <a href="https://apps.iyambae.fm/de/" data-text="menue.tuner">Der IYAMBAE Tuner</a>
+            <a href="https://apps.iyambae.fm/de/stimmung/" data-text="menue.stimmung">Stimmung messen</a>
+            <a href="https://apps.iyambae.fm/de/hoertest/" data-text="menue.hoertest">Blindtest</a>
+
+            <p class="menue__gruppe" data-text="menue.lesen">Zum Nachlesen</p>
+            <a href="https://apps.iyambae.fm/de/spotify/" data-text="menue.spotify">Spotify in 432 Hz</a>
+            <a href="https://apps.iyambae.fm/de/samplerate/" data-text="menue.samplerate">Samplerate und Tonhöhe</a>
+            <a href="https://apps.iyambae.fm/de/gitarre/" data-text="menue.gitarre">Gitarre auf 432</a>
+            <a href="https://apps.iyambae.fm/de/solfeggio/" data-text="menue.solfeggio">Solfeggio-Frequenzen</a>
+
+            <a class="menue__leise" href="https://apps.iyambae.fm/de/berichtigungen/" data-text="menue.berichtigungen">Berichtigungen</a>
+        </div>
+    </details>
+
 </header>
 
 <section class="hero" id="hero">

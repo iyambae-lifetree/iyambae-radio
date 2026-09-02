@@ -225,5 +225,16 @@
   "mitnehmen.wie.edge": "Dans Edge : menu ⋯ → Paramètres → Démarrage, accueil et nouveaux onglets → Ouvrir ces pages.",
   "mitnehmen.wie.safari": "Dans Safari : Safari → Réglages → Général → Page d’accueil → collez cette adresse.",
   "mitnehmen.wie.ios": "Sur iPhone : touchez l’icône de partage → « Sur l’écran d’accueil ». Safari sur iPhone n’a pas de page de démarrage.",
-  "mitnehmen.wie.android": "Sur Android : menu ⋮ → « Ajouter à l’écran d’accueil ». Les réglages de Chrome permettent aussi d’indiquer cette adresse sous « Page d’accueil »."
+  "mitnehmen.wie.android": "Sur Android : menu ⋮ → « Ajouter à l’écran d’accueil ». Les réglages de Chrome permettent aussi d’indiquer cette adresse sous « Page d’accueil ».",
+  "menue.hinweis": "Plus d’IYAMBAE",
+  "menue.werkzeuge": "Outils",
+  "menue.tuner": "Le IYAMBAE Tuner",
+  "menue.stimmung": "Mesurer l’accord",
+  "menue.hoertest": "Test à l’aveugle",
+  "menue.lesen": "À lire",
+  "menue.spotify": "Spotify en 432 Hz",
+  "menue.samplerate": "Échantillonnage et hauteur",
+  "menue.gitarre": "Guitare en 432",
+  "menue.solfeggio": "Fréquences Solfeggio",
+  "menue.berichtigungen": "Rectifications"
 }

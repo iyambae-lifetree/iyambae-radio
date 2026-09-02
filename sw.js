@@ -8,6 +8,14 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v32: Das Menue im Kopf. index.html, styles.css, app.js, symbole.mjs und
+// alle sieben Kataloge haben sich geaendert — und damit auch alle sieben
+// Sprachseiten.
+//
+// ERSTE FASSUNG, DIE NICHT VON HAND GEFUNDEN WURDE. pruefe-zwischenspeicher.py
+// hat die vierzehn geaenderten Dateien gemeldet, bevor irgendetwas gepusht
+// war. Genau dafuer ist es da.
+//
 // v31: Die Regalnamen sind jetzt auch uebersetzt. app.js und alle sieben
 // Sprachseiten haben sich geaendert.
 //
@@ -38,7 +46,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v31';
+const SW_VERSION = 'iyambae-v32';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
