@@ -652,6 +652,24 @@ body.spielt .glanz {
 .hero__guete { font-family: var(--mono); font-size: 0.72rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; }
 .hero__name { font-family: var(--anzeige); font-size: clamp(1.6rem, 5vw, 2.6rem); font-weight: 900; line-height: 1.15; margin: 0.3rem 0; }
 .hero__ort { font-size: 0.9rem; color: var(--text-leise); }
+
+/* Der grosse Name und sein Teilen-Knopf stehen in einer Zeile. Der Knopf
+   waechst mit der Schrift mit, damit er auf dem Handy nicht neben einer
+   1,75-rem-Ueberschrift verloren wirkt. */
+.hero__zeile { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+.hero__zeile .hero__name { margin-block: 0; }
+.hero__teilen {
+    flex: none;
+    display: grid; place-items: center;
+    width: 2.4rem; height: 2.4rem;
+    padding: 0; border: 0; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07); color: var(--gold);
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+.hero__teilen:hover,
+.hero__teilen:focus-visible { background: rgba(233, 179, 74, 0.22); }
+.hero__teilen[hidden] { display: none; }
 .hero__kaertchen { margin-top: 0.8rem; max-width: 46rem; color: #d8cfe6; }
 .hero__knoepfe { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
 

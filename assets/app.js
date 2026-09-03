@@ -1918,6 +1918,10 @@ class UI {
       }
     }
     document.getElementById('heroName').textContent = sender.name;
+    // Der Teilen-Knopf merkt sich, welcher Sender oben steht — das muss
+    // nicht der laufende sein.
+    const heroTeilen = document.getElementById('heroTeilen');
+    if (heroTeilen) { heroTeilen.dataset.senderId = sender.id; heroTeilen.hidden = false; }
     document.getElementById('heroOrt').textContent  = `${sender.betreiber} · ${sender.ort}, ${sender.land}`;
     document.getElementById('heroKaertchen').textContent = sender.kaertchen;
     const guete = sender.codec === 'flac' ? t('hero.guete.flac')
@@ -3007,6 +3011,13 @@ class App {
        ist. */
     anKlick('barTeilen', () => {
       const sender = this.ui.senderMitId(this.ui.aktuelleId);
+      if (sender) this.teileSender(sender);
+    });
+    /* Teilen vom grossen Namen. Er zeigt den Sender, der oben steht — und
+       das ist nicht immer der laufende. */
+    anKlick('heroTeilen', () => {
+      const knopf = document.getElementById('heroTeilen');
+      const sender = this.ui.senderMitId(knopf?.dataset.senderId);
       if (sender) this.teileSender(sender);
     });
     anKlick('knopf432',          () => this.wechsle432());

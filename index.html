@@ -364,7 +364,18 @@
     </div>
     <div class="hero__text">
         <p class="hero__guete" id="heroGuete" data-text="hero.guete.bereit">bereit</p>
-        <h1 class="hero__name" id="heroName" data-text="hero.name.start">Radio in 432 Hz</h1>
+        <!-- Der Teilen-Knopf steht hier und nicht nur unten in der Leiste.
+             Saemi-Ra: „Meines Erachtens der intuitiv richtige Ort dafuer."
+             Er hat recht — wer den Sender meint, sieht auf den grossen
+             Namen, nicht auf die Fusszeile. -->
+        <div class="hero__zeile">
+            <h1 class="hero__name" id="heroName" data-text="hero.name.start">Radio in 432 Hz</h1>
+            <button class="hero__teilen" id="heroTeilen" type="button" hidden
+                    data-aria="karte.teilen" data-titel="karte.teilen"
+                    aria-label="Sender teilen" title="Sender teilen">
+                <span data-symbol="teilen" data-symbol-groesse="22"></span>
+            </button>
+        </div>
         <p class="hero__ort" id="heroOrt" data-text="hero.ort.start">{senderzahl} Sender aus {laenderzahl} Ländern, in {regalzahl} Regalen</p>
         <!-- Was gerade laeuft. Bleibt leer, wenn der Sender es nicht
              mitschickt — und das tun laengst nicht alle. -->
