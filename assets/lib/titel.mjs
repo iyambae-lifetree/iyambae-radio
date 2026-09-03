@@ -268,10 +268,11 @@ function wegeFuer(u) {
  Startet die Abfrage fuer einen Sender. Ein zweiter Aufruf loest den ersten
  ab — es laeuft immer nur einer, so wie immer nur ein Sender spielt.
 
- Findet der erste Durchgang nichts, wird nicht weiter gefragt. Ein Sender,
- der es einmal nicht herausgibt, gibt es auch beim zwanzigsten Mal nicht
- heraus, und zwanzig vergebliche Anfragen je Minute waeren unhoeflich
- gegenueber einem fremden Server.
+ Gefragt wird, solange gespielt wird — aber nicht ueberall gleich lange.
+ Ein FREMDES Haus, das dreimal nichts sagt, wird nicht weiter behelligt;
+ zwanzig vergebliche Anfragen je Minute waeren unhoeflich. Das EIGENE
+ Brett dagegen wird weiter gefragt, denn es fuellt sich erst, waehrend
+ jemand zuhoert.
 */
 export function beobachteTitel(sender, melde) {
   haltAn();
@@ -281,7 +282,23 @@ export function beobachteTitel(sender, melde) {
   try { u = new URL(sender.stream); } catch { return; }
 
   const wege = wegeFuer(u);
-  let leer = 0;
+  /*
+   Zwei getrennte Zaehler, und das ist der Kern der Berichtigung vom
+   04.09.2026. Vorher gab es einen einzigen: nach fuenf leeren Durchgaengen
+   hoerte die Abfrage GANZ auf — auch die ans eigene Brett.
+
+   Gemessen an ByteFM, live, mit laufendem Ton: Nach 100 Sekunden gab die
+   Seite auf. Das Brett bekam den Titel 80 Sekunden spaeter und hatte ihn
+   dann richtig. Es fragte nur niemand mehr.
+
+   Die Hoeflichkeit, die den Abbruch begruendete, gilt fremden Servern.
+   `/api/titel` ist unser eigener, liefert alle Sender in EINER Antwort und
+   ist genau dafuer gebaut, sich erst zu fuellen, wenn jemand zuhoert. Ihn
+   nicht mehr zu fragen, waere das Gegenteil von hoeflich — es waere
+   sinnlos.
+  */
+  let leerFremd = 0;
+  const FREMD_VERSUCHE = 3;
 
   const versuch = async () => {
     /*
@@ -302,25 +319,32 @@ export function beobachteTitel(sender, melde) {
      solche Adresse haben. Dort ist ein Titel von vor zehn Minuten immer
      noch besser als keiner.
     */
-    for (const [weg, kuerzel] of wege) {
-      const titel = saeubere(await weg(u, kuerzel), sender.name);
-      if (titel) return melde(titel);
+    if (wege.length && leerFremd < FREMD_VERSUCHE) {
+      for (const [weg, kuerzel] of wege) {
+        const titel = saeubere(await weg(u, kuerzel), sender.name);
+        // Zaehler zurueck auf null: Ein Haus, das zwischen zwei Stuecken
+        // kurz nichts sagt, darf deswegen nicht dauerhaft aufgegeben
+        // werden. Vorher wurde nie zurueckgesetzt — fuenf Luecken ueber
+        // einen ganzen Abend genuegten, und der Titel kam nie wieder.
+        if (titel) { leerFremd = 0; return melde(titel); }
+      }
+      leerFremd++;
     }
 
     const vomBrett = await vomDienst(sender);
     if (vomBrett) return melde(vomBrett);
 
     /*
-     Gibt es das Brett, lohnt Geduld: Es fuellt sich erst, wenn jemand den
-     Sender startet — beim ersten Zug ist es fuer ihn noch leer, beim
-     naechsten steht er drin.
+     Aufhoeren nur, wenn wirklich keine Quelle mehr uebrig ist: Das Brett
+     antwortet nicht, UND das fremde Haus hat dreimal geschwiegen. Dann
+     brächte Weiterfragen nichts und kostete einen fremden Server Anfragen.
 
-     Gibt es das Brett nicht, ist ein Sender, der es einmal nicht
-     herausgibt, auch beim zwanzigsten Mal stumm. Dann sofort aufhoeren:
-     zwanzig vergebliche Anfragen je Minute waeren unhoeflich gegenueber
-     einem fremden Server.
+     Antwortet das Brett, wird weitergefragt, solange gespielt wird. Es
+     fuellt sich reihum und bevorzugt seit dem 30.08. Sender, die gerade
+     gehoert werden — dieser Vorzug wirkt aber nur, wenn beim Eintreffen
+     noch jemand hinsieht.
     */
-    if (++leer >= (dienstDa ? 5 : 1)) haltAn();
+    if (dienstDa === false && leerFremd >= FREMD_VERSUCHE) haltAn();
   };
 
   const zeno = /stream\.zeno\.fm\/([a-z0-9]+)/i.exec(sender.stream);

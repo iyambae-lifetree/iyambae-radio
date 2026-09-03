@@ -8,6 +8,9 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v41: Der laufende Titel wurde nie nachgeholt — die Abfrage gab nach 100
+// Sekunden auf, auch die ans eigene Brett. Nur assets/lib/titel.mjs.
+//
 // v40: Senderlogos ueberleben eine Auslieferung. Sie lagen im
 // fassungsabhaengigen Speicher und flogen bei jedem Hochzaehlen raus.
 // Nur sw.js.
@@ -76,7 +79,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v40';
+const SW_VERSION = 'iyambae-v41';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

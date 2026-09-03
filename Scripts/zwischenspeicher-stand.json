@@ -1,5 +1,5 @@
 {
-  "fassung": "iyambae-v40",
+  "fassung": "iyambae-v41",
   "dateien": {
     "/ar/": "498f4395c09eb785",
     "/ar/manifest.webmanifest": "e88c5b64446f6a52",
@@ -22,7 +22,7 @@
     "/assets/lib/senderbild.mjs": "acc12c897088618f",
     "/assets/lib/sprache.mjs": "1fadc773dae1760a",
     "/assets/lib/symbole.mjs": "a3341c00047df815",
-    "/assets/lib/titel.mjs": "54f331eb4d8bb828",
+    "/assets/lib/titel.mjs": "48dda147c7ee64b0",
     "/assets/lib/verlauf.mjs": "2ce51251d5287985",
     "/assets/lib/verwandt.mjs": "d97fbf9dd0689da7",
     "/assets/lib/wochentipp.mjs": "0446677d5cbf1195",
