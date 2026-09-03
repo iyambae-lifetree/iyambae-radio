@@ -8,6 +8,10 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v40: Senderlogos ueberleben eine Auslieferung. Sie lagen im
+// fassungsabhaengigen Speicher und flogen bei jedem Hochzaehlen raus.
+// Nur sw.js.
+//
 // v39: Teilen steht jetzt auch am grossen Sendernamen oben — der Ort, den
 // man ansieht, wenn man den Sender meint. Die Leiste unten behaelt ihren
 // Knopf fuer den Fall, dass man weit heruntergescrollt ist.
@@ -72,9 +76,26 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v39';
+const SW_VERSION = 'iyambae-v40';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
+
+/*
+ Bilder liegen bewusst NICHT im Fassungsspeicher.
+
+ Am 04.09.2026 hat Saemi-Ra gemeldet, dass Senderlogos als kaputte Bilder
+ erscheinen. Ursache war diese Datei: Logos wurden in SHELL_CACHE gelegt,
+ und der traegt die Fassungsnummer im Namen. `activate` loescht jeden
+ Speicher, der nicht der neue ist — also flogen bei JEDER Auslieferung alle
+ 125 Logos raus und mussten auf einen Schlag neu geholt werden. An dem Tag
+ ist die Fassung dreimal gestiegen.
+
+ Ein Logo aendert sich aber nicht, wenn die App sich aendert. Es ist ueber
+ seinen Dateinamen eindeutig; wird eines ausgetauscht, bekommt es einen
+ neuen Namen. Deshalb ein eigener Speicher ohne Fassung, der Auslieferungen
+ ueberlebt.
+*/
+const BILD_CACHE = 'iyambae-bilder';
 
 // Die sieben Sprachen. Muss zu Scripts/baue-sprachen.py und zu
 // assets/lib/sprache.mjs passen — Scripts/pruefe-sprachen.py haelt die drei
@@ -184,7 +205,7 @@ self.addEventListener('activate', (event) => {
         caches.keys().then((keys) =>
             Promise.all(
                 keys
-                    .filter((k) => k !== SHELL_CACHE && k !== RUNTIME_CACHE)
+                    .filter((k) => k !== SHELL_CACHE && k !== RUNTIME_CACHE && k !== BILD_CACHE)
                     .map((k) => caches.delete(k))
             )
         )
@@ -244,14 +265,34 @@ self.addEventListener('fetch', (event) => {
         const istBild = /\/assets\/(logos?|schrift)\//.test(url.pathname);
 
         if (istBild) {
+            /*
+             Zuerst der eigene Bildspeicher, dann das Netz — und wenn das
+             Netz nicht antwortet, ein zweiter Versuch nach kurzer Pause.
+
+             Der zweite Versuch ist kein Schmuck: Ein Bild, dessen Abruf
+             einmal fehlschlaegt, bleibt im Browser kaputt, bis die Seite neu
+             geladen wird. Es gibt kein spaeteres Nachholen. Genau das ist
+             passiert, als nach einer Auslieferung 125 Logos gleichzeitig
+             losliefen.
+            */
             event.respondWith(
-                caches.match(req).then((gespeichert) => gespeichert || fetch(req).then((res) => {
-                    if (res && res.status === 200) {
-                        const kopie = res.clone();
-                        caches.open(SHELL_CACHE).then((c) => c.put(req, kopie));
-                    }
-                    return res;
-                }))
+                caches.open(BILD_CACHE).then((speicher) =>
+                    speicher.match(req).then((gespeichert) => {
+                        if (gespeichert) return gespeichert;
+                        const hole = () => fetch(req).then((res) => {
+                            if (res && res.status === 200) speicher.put(req, res.clone());
+                            return res;
+                        });
+                        return hole().catch(() =>
+                            new Promise((weiter) => setTimeout(weiter, 400))
+                                .then(hole)
+                                // Auch der zweite Versuch kann scheitern. Dann
+                                // eine echte Antwort statt eines unerklaerten
+                                // Netzwerkfehlers.
+                                .catch(() => new Response('', { status: 504, statusText: 'bild nicht erreichbar' }))
+                        );
+                    })
+                )
             );
             return;
         }
