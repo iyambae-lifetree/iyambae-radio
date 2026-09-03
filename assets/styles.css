@@ -1951,20 +1951,25 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .spieler__info { flex: 1 1 8rem; min-width: 0; }
 .spieler__zeile { display: flex; align-items: center; gap: 0.45rem; min-width: 0; }
 .spieler__name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-/* Der Teilen-Knopf neben dem laufenden Sender. Leise wie das Regalwort
-   darunter, aber jederzeit da — er ist der einzige Weg, den Laden
-   weiterzugeben, und der haeufigste Fall ist der Sender, der gerade
-   spielt. */
+/* Der Teilen-Knopf neben dem laufenden Sender.
+   Er stand hier zuerst leise, in der Farbe des Regalworts darunter — und
+   Saemi-Ra hat ihn nicht gefunden, obwohl er genau danach gesucht hat.
+   Fuenfzehn Pixel gedaempftes Grauviolett neben einem fetten weissen Namen
+   sind da und trotzdem unsichtbar. Schlichtheit heisst nicht, dass man das
+   Einzige, was man weitergeben kann, suchen muss.
+   Jetzt in Gold wie der Abspielknopf, auf einem eigenen Grund: eine Taste,
+   die aussieht wie eine. */
 .spieler__teilen {
     flex: none;
     display: grid; place-items: center;
-    width: 1.6rem; height: 1.6rem;
+    width: 1.75rem; height: 1.75rem;
     padding: 0; border: 0; border-radius: 50%;
-    background: none; color: var(--text-leise);
+    background: rgba(255, 255, 255, 0.07); color: var(--gold);
     cursor: pointer;
     transition: color 0.15s ease, background-color 0.15s ease;
 }
-.spieler__teilen:hover { color: var(--gold); background: rgba(255, 255, 255, 0.08); }
+.spieler__teilen:hover,
+.spieler__teilen:focus-visible { background: rgba(233, 179, 74, 0.22); }
 .spieler__teilen[hidden] { display: none; }
 .spieler__regal { font-family: var(--mono); font-size: 0.67rem; color: var(--text-leise); }
 .spieler__mitte { display: flex; align-items: center; gap: 0.8rem; }

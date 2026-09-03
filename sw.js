@@ -8,6 +8,10 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v38: Der Teilen-Knopf im Abspieler war zu leise — Saemi-Ra hat ihn nicht
+// gefunden, obwohl er danach gesucht hat. Jetzt Gold auf eigenem Grund.
+// index.html, styles.css.
+//
 // v37: Teilen neben dem laufenden Sender, Teilen auf der Karte bleibt beim
 // Ueberfahren stehen — und titel.mjs rief an drei Stellen eine Funktion, die
 // es nicht gibt. index.html, styles.css, app.js, lib/titel.mjs.
@@ -63,7 +67,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v37';
+const SW_VERSION = 'iyambae-v38';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
