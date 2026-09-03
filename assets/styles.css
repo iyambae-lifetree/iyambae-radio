@@ -1184,14 +1184,28 @@ body.spielt .glanz {
     background: rgba(5, 2, 10, 0.55);
     color: #e8e3f2;
     cursor: pointer;
-    opacity: 0;
+    /* SICHTBAR, AUCH OHNE MAUS DARUEBER — seit dem 03.09.2026.
+
+       Hier stand `opacity: 0`. Der Knopf erschien erst beim Hover, und das
+       hat er zu gut getan: Saemi-Ra wollte einen Sender weiterempfehlen,
+       hat ihn nicht gefunden und gefragt, ob es die Taste ueberhaupt gibt.
+       Er hat sie selbst in Auftrag gegeben.
+
+       Wer wochenlang mit der Seite arbeitet und sie nicht findet, findet
+       sie nie — und dies ist die einzige Stelle, an der jemand den Laden
+       weitertraegt. Ein unsichtbarer Teilen-Knopf ist ein nicht
+       vorhandener.
+
+       0.45 statt 0.85: Er steht da, ohne sich aufzudraengen. Beim Hover
+       wird er deutlich, wie vorher. */
+    opacity: 0.45;
     transition: opacity 0.18s ease, background 0.18s ease;
 }
 .karte:hover .karte__teilen,
 .karte:focus-within .karte__teilen { opacity: 0.85; }
 .karte__teilen:hover { opacity: 1; background: rgba(5, 2, 10, 0.8); }
-/* Auf Geraeten ohne Zeigegeraet gibt es kein Hover — dort steht er
-   dauerhaft da, sonst waere er unerreichbar. */
+/* Auf Geraeten ohne Zeigegeraet gibt es kein Hover — dort etwas kraeftiger,
+   weil dort auch kein Hover-Zustand nachhilft. */
 @media (hover: none) { .karte__teilen { opacity: 0.7; } }
 
 /* ── Den Laden mitnehmen ─────────────────────────────────────────── */
