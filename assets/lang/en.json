@@ -152,8 +152,8 @@
   "einstellungen.messungAn": "Audience measurement is on.",
   "einstellungen.messungAus": "Audience measurement is off.",
   "stimmung.erklaerung": "What makes this place different: every station can play at 432 Hz instead of the usual 440.",
-  "stimmung.abstand": "This page <em>guesses</em>: it assumes every station sits at 440 Hz and pulls everything down by the same amount. If a recording sits at 443 — common today — what you are hearing right now is <strong>435 Hz, not 432</strong>.",
-  "stimmung.loesung": "The <strong>IYAMBAE Tuner</strong> <em>measures</em> the actual tuning and lands on <strong>432.33 Hz</strong> — across your whole computer, not just here. Free, no account.",
+  "stimmung.abstand": "This page is <em>guessing</em>. It assumes every station sits at 440 and pulls everything down by the same amount. If a recording sits at 443 — common today — what you are hearing right now is <strong>435 Hz, not 432.</strong>",
+  "stimmung.loesung": "The <strong>IYAMBAE Tuner</strong> doesn’t guess, it <em>measures</em> — and then not only here, but in everything: Spotify, YouTube, your own library. <strong>Free, no account.</strong>",
   "stimmung.abstandLangsam": "This station does not let the browser at its audio. The page can only retune it by slowing it down — the music is playing <strong>1.8 % slower</strong> than broadcast right now.",
   "teilen.satz": "{anzahl} records in your crate.",
   "teilen.knopf": "Link to pass on",
@@ -237,5 +237,6 @@
   "menue.gitarre": "Guitar at 432",
   "menue.solfeggio": "Solfeggio frequencies",
   "menue.berichtigungen": "Corrections",
-  "filter.einschlafen": "For falling asleep"
+  "filter.einschlafen": "For falling asleep",
+  "stimmung.probe": "And if you’d rather find out first whether your ear even plays along: <a href=\"https://apps.iyambae.fm/de/hoertest/\">take the blind test</a>. Five rounds, honest arithmetic. We don’t want you installing something you can’t hear."
 }

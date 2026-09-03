@@ -322,6 +322,12 @@ body.stimmt-432 .stimmung__mehr {
 .abstand__satz em { font-style: normal; color: var(--text); }
 .abstand__satz strong { color: var(--text); font-weight: 500; }
 .abstand__satz--loesung strong { color: var(--gold); font-weight: 500; }
+/* Die Einladung zum Blindtest steht leiser als das Angebot darueber — sie
+   ist ein Nachsatz, kein zweites Argument. Der Verweis bleibt aber sichtbar
+   ein Verweis; ein versteckter Link waere hier das Gegenteil der Absicht. */
+.abstand__satz--probe { color: var(--text-leise); opacity: 0.85; }
+.abstand__satz--probe a { color: var(--gold); text-decoration: underline; text-underline-offset: 2px; }
+.abstand__satz--probe a:hover { color: var(--text); }
 .abstand__leiste { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.7rem; }
 
 .abstand__weg {

@@ -152,8 +152,8 @@
   "einstellungen.messungAn": "La misurazione del pubblico è attiva.",
   "einstellungen.messungAus": "La misurazione del pubblico è disattivata.",
   "stimmung.erklaerung": "La particolarità di questo posto: ogni stazione può suonare a 432 Hz invece dei soliti 440.",
-  "stimmung.abstand": "Questa pagina <em>indovina</em>: presume che ogni stazione sia a 440 Hz e abbassa tutto in blocco. Se una registrazione è a 443 — cosa comune oggi —, in questo momento stai ascoltando <strong>435 Hz, non 432</strong>.",
-  "stimmung.loesung": "L’<strong>IYAMBAE Tuner</strong> <em>misura</em> l’accordatura reale e arriva a <strong>432,33 Hz</strong> — su tutto il computer, non solo qui. Gratuito, senza account.",
+  "stimmung.abstand": "Questa pagina <em>tira a indovinare</em>. Dà per scontato che ogni emittente stia a 440 e abbassa tutto della stessa misura. Se una registrazione sta a 443 — oggi comune —, quello che senti in questo momento fa <strong>435 Hz, non 432.</strong>",
+  "stimmung.loesung": "Il <strong>IYAMBAE Tuner</strong> non indovina, <em>misura</em> — e poi non soltanto qui, ma in tutto: Spotify, YouTube, la tua collezione. <strong>Gratis, senza account.</strong>",
   "stimmung.abstandLangsam": "Questa stazione non lascia che il browser acceda al suo audio. La pagina può riaccordarla solo rallentandola — la musica sta andando <strong>1,8 % più lenta</strong> di quanto trasmesso.",
   "teilen.satz": "{anzahl} dischi nella tua cassetta.",
   "teilen.knopf": "Link da passare",
@@ -237,5 +237,6 @@
   "menue.gitarre": "Chitarra a 432",
   "menue.solfeggio": "Frequenze Solfeggio",
   "menue.berichtigungen": "Rettifiche",
-  "filter.einschlafen": "Per addormentarsi"
+  "filter.einschlafen": "Per addormentarsi",
+  "stimmung.probe": "E se prima vuoi sapere se il tuo orecchio ti segue: <a href=\"https://apps.iyambae.fm/de/hoertest/\">fai il test alla cieca</a>. Cinque giri, conteggio onesto. Non vogliamo che installi qualcosa che non senti."
 }

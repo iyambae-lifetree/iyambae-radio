@@ -8,6 +8,10 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v35: Der Kasten im Kopf verkauft jetzt den Tuner — Saemi-Ras Text vom
+// 03.09. Dazu ein neuer Satz mit dem Verweis auf den Blindtest. index.html,
+// styles.css und alle sieben Kataloge.
+//
 // v34: „Zum Einschlafen" in der Filterleiste — und die Chips haben endlich
 // einen Stil. app.js, achsen.mjs, styles.css und alle sieben Kataloge.
 //
@@ -52,7 +56,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v34';
+const SW_VERSION = 'iyambae-v35';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

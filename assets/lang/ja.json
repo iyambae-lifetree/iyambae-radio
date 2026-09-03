@@ -152,8 +152,8 @@
   "einstellungen.messungAn": "利用状況の計測はオンです。",
   "einstellungen.messungAus": "利用状況の計測はオフです。",
   "stimmung.erklaerung": "ここだけの特徴：どの局も、通常の 440 Hz ではなく 432 Hz で鳴らせます。",
-  "stimmung.abstand": "このページは<em>推測</em>しています。どの局も 440 Hz だと仮定して一律に下げています。録音が 443 Hz の場合（今日ではよくあります）、いま聞こえているのは <strong>432 Hz ではなく 435 Hz</strong> です。",
-  "stimmung.loesung": "<strong>IYAMBAE Tuner</strong> は実際の調律を<em>測定</em>し、<strong>432.33 Hz</strong> に合わせます。このページだけでなく、パソコン全体で。無料、アカウント不要。",
+  "stimmung.abstand": "このページは<em>当て推量</em>です。どの局も 440 に立っていると見なし、一律に下げています。録音が 443 に立っていれば — 今日ではよくあることです — いま聞こえているのは <strong>435 Hz であって、432 ではありません。</strong>",
+  "stimmung.loesung": "<strong>IYAMBAE Tuner</strong> は当て推量をせず、<em>測ります</em> — しかもここだけでなく、すべてにおいて。Spotify、YouTube、ご自分の蔵書。<strong>無料、登録なし。</strong>",
   "stimmung.abstandLangsam": "この局はブラウザに音声を触らせません。このページは速度を落とすことでしか調律できず、いま音楽は放送より <strong>1.8 % 遅く</strong> 再生されています。",
   "teilen.satz": "棚に {anzahl} 枚。",
   "teilen.knopf": "共有リンク",
@@ -237,5 +237,6 @@
   "menue.gitarre": "ギターを 432 に",
   "menue.solfeggio": "ソルフェジオ周波数",
   "menue.berichtigungen": "訂正",
-  "filter.einschlafen": "眠りにつくために"
+  "filter.einschlafen": "眠りにつくために",
+  "stimmung.probe": "その前に、ご自分の耳がついてくるかどうかを知りたければ、<a href=\"https://apps.iyambae.fm/de/hoertest/\">ブラインドテストをどうぞ</a>。五回、正直な集計です。聞こえないものを入れていただきたくはありません。"
 }
