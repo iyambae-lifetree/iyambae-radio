@@ -163,7 +163,7 @@ async function holeStand() {
 
 async function vomDienst(sender) {
   const alle = await holeStand();
-  return alle ? sauber(alle[sender.id], sender.name) : null;
+  return alle ? saeubere(alle[sender.id], sender.name) : null;
 }
 
 // ── Die Wege, je nach Haus ────────────────────────────────────────
@@ -239,7 +239,7 @@ function ueberLeitung(mount, name, melde) {
     leitung.onmessage = (e) => {
       let t = null;
       try { t = JSON.parse(e.data)?.streamTitle; } catch { /* kein JSON */ }
-      t = sauber(t, name);
+      t = saeubere(t, name);
       if (t) melde(t);
     };
     leitung.onerror = () => haltAn();
@@ -303,7 +303,7 @@ export function beobachteTitel(sender, melde) {
      noch besser als keiner.
     */
     for (const [weg, kuerzel] of wege) {
-      const titel = sauber(await weg(u, kuerzel), sender.name);
+      const titel = saeubere(await weg(u, kuerzel), sender.name);
       if (titel) return melde(titel);
     }
 

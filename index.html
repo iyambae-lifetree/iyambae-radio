@@ -410,7 +410,7 @@
                 <span class="messung" id="myRetunerMessung" hidden></span>
 
                 <div class="abstand" id="stimmungAbstand">
-                    <p class="abstand__satz" data-html="stimmung.abstand">
+                    <p class="abstand__satz abstand__satz--raet" data-html="stimmung.abstand">
                         Diese Seite <em>rät</em> dabei. Sie nimmt an, jeder Sender läge auf
                         440, und zieht pauschal herunter. Liegt eine Aufnahme auf 443 —
                         heute weit verbreitet —, hörst du gerade <strong>435 Hz, nicht
@@ -894,7 +894,28 @@
 
 <div class="spieler" id="spieler">
     <div class="spieler__info">
-        <div class="spieler__name" id="barName" data-text="spieler.kein">Kein Sender</div>
+        <!-- Teilen steht NEBEN dem Namen, nicht anderswo.
+
+             Saemi-Ra am 03.09.2026: „Was aktuell auf der Platte ist — da
+             stell ich mir vor, rechts neben dem Radiosendernamen das
+             Teilensymbol zu machen. Das ist der Platz, wo ich als Besucher
+             am ehesten suchen wuerde."
+
+             Er hat recht: Wer einen Sender weitergeben will, meint fast
+             immer den, der gerade laeuft. Bis hierher gab es dafuer gar
+             keinen Knopf — nur den auf der Karte, und die muss man erst
+             wiederfinden.
+
+             Verborgen, solange nichts laeuft: Ein Teilen-Knopf neben
+             „Kein Sender" teilt nichts. -->
+        <div class="spieler__zeile">
+            <div class="spieler__name" id="barName" data-text="spieler.kein">Kein Sender</div>
+            <button class="spieler__teilen" id="barTeilen" type="button" hidden
+                    data-aria="karte.teilen" data-titel="karte.teilen"
+                    aria-label="Sender teilen" title="Sender teilen">
+                <span data-symbol="teilen" data-symbol-groesse="15"></span>
+            </button>
+        </div>
         <div class="spieler__regal" id="barRegal"></div>
         <div class="spieler__titel" id="barTitel" hidden></div>
     </div>

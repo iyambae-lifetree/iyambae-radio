@@ -1199,6 +1199,19 @@ body.spielt .glanz {
        0.45 statt 0.85: Er steht da, ohne sich aufzudraengen. Beim Hover
        wird er deutlich, wie vorher. */
     opacity: 0.45;
+    /* Z-INDEX 3 WIE HERZ UND ABSPIELKNOPF — und das fehlte hier.
+
+       Das Kaertchen mit der Senderbeschreibung liegt auf z-index 2 und
+       deckt beim Ueberfahren das ganze Cover zu. Herz und Abspielknopf
+       haben eine 3 und bleiben deshalb oben; dem Teilen-Knopf hat sie nie
+       jemand gegeben. Er verschwand also genau in dem Augenblick, in dem
+       man ihn anzusteuern versuchte.
+
+       Saemi-Ra am 03.09.2026: „Sobald ich mit der Maus darueber gehe und
+       dann die Erklaerung des Senders sehe, verschwindet das Zeichen. Dann
+       klicke ich da auch nicht mehr drauf, bin irritiert und vergesse, dass
+       ich diese Funktion habe." */
+    z-index: 3;
     transition: opacity 0.18s ease, background 0.18s ease;
 }
 .karte:hover .karte__teilen,
@@ -1936,7 +1949,23 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 }
 .spieler.ist-sichtbar { display: flex; }
 .spieler__info { flex: 1 1 8rem; min-width: 0; }
-.spieler__name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spieler__zeile { display: flex; align-items: center; gap: 0.45rem; min-width: 0; }
+.spieler__name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+/* Der Teilen-Knopf neben dem laufenden Sender. Leise wie das Regalwort
+   darunter, aber jederzeit da — er ist der einzige Weg, den Laden
+   weiterzugeben, und der haeufigste Fall ist der Sender, der gerade
+   spielt. */
+.spieler__teilen {
+    flex: none;
+    display: grid; place-items: center;
+    width: 1.6rem; height: 1.6rem;
+    padding: 0; border: 0; border-radius: 50%;
+    background: none; color: var(--text-leise);
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+.spieler__teilen:hover { color: var(--gold); background: rgba(255, 255, 255, 0.08); }
+.spieler__teilen[hidden] { display: none; }
 .spieler__regal { font-family: var(--mono); font-size: 0.67rem; color: var(--text-leise); }
 .spieler__mitte { display: flex; align-items: center; gap: 0.8rem; }
 .spieler__status { display: flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.68rem; color: var(--text-leise); }

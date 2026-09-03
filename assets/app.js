@@ -1936,12 +1936,17 @@ class UI {
      als die Stimmung einer Aufnahme, die von Titel zu Titel wechselt und
      ueber die wir deshalb nichts behaupten.
     */
-    const abstand = document.querySelector('.abstand__satz:not(.abstand__satz--loesung)');
+    const abstand = document.querySelector('.abstand__satz--raet');
     if (abstand) abstand.innerHTML = t(sender.cors ? 'stimmung.abstand' : 'stimmung.abstandLangsam');
     document.getElementById('heroGuete').textContent = guete + pegel;
     document.getElementById('heroLink').href = sender.homepage;
     document.getElementById('barName').textContent = sender.name;
     document.getElementById('barRegal').textContent = this.regale.find(r => r.id === sender.regal)?.name ?? '';
+    /* Der Teilen-Knopf erscheint mit dem ersten Sender und bleibt dann. Er
+       traegt keinen eigenen Zustand: Er fragt beim Klick, was gerade
+       laeuft. */
+    const barTeilen = document.getElementById('barTeilen');
+    if (barTeilen) barTeilen.hidden = false;
     document.querySelector('.spieler')?.classList.add('ist-sichtbar');
     this.aktualisiereFavoritenAnzeige();
   }
@@ -2997,6 +3002,13 @@ class App {
     anKlick('griffNadel',        () => this.nadelFallenLassen());
     anKlick('heroPlay',          () => this.wechselSpiel());
     anKlick('barPlay',           () => this.wechselSpiel());
+    /* Teilen aus der Abspielerleiste. Er fragt beim Klick, was gerade
+       laeuft — so kann er nicht auf einen Sender zeigen, der es nicht mehr
+       ist. */
+    anKlick('barTeilen', () => {
+      const sender = this.ui.senderMitId(this.ui.aktuelleId);
+      if (sender) this.teileSender(sender);
+    });
     anKlick('knopf432',          () => this.wechsle432());
     anKlick('knopfMyRetuner',    () => this.frageMyRetunerAn());
     anKlick('auslageNeu',        () => this.zeichneAuslage());
