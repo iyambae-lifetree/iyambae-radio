@@ -57,6 +57,19 @@ export const TABELLE_VERWEISE = 'verweise';
 export const TABELLE_UMFRAGE = 'umfrage';
 
 /*
+  Die vierte und die fuenfte — die Gegenstelle der beiden Messwerkzeuge auf
+  `apps.iyambae.fm` (432hz-radio#21). Begruendung und Erlaubnislisten stehen
+  in `rueckmeldung.mjs`.
+
+  ZWEI Tabellen und nicht eine, obwohl beide dasselbe Muster haben: Ein
+  Hoertest und eine Messung aus derselben Sitzung duerfen nicht
+  zusammenfindbar sein. Eine gemeinsame Tabelle mit einem Feld `art` laedt
+  genau dazu ein — dieselbe Ueberlegung wie oben, eine Ebene tiefer.
+*/
+export const TABELLE_HOERTEST = 'hoertest';
+export const TABELLE_STIMMUNG = 'stimmung';
+
+/*
   Fehler, bei denen ein zweiter Versuch Sinn ergibt: Table Storage drosselt
   (503 ServerBusy), die Verbindung bricht weg, oder die Anfrage laeuft in
   ihre Zeitgrenze. Alles andere — 401, 403, 404, ein kaputter Schluessel —

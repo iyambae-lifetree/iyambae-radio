@@ -59,6 +59,9 @@ import {
 import { erzeugeFremdanmeldung } from './fremd.mjs';
 import { saeubereAbgabe, legeAbgabeAb, werteAus } from './umfrage.mjs';
 import {
+    saeubereHoertest, saeubereStimmung, legeHoertestAb, legeStimmungAb,
+} from './rueckmeldung.mjs';
+import {
     erzeugeAbfrager, erzeugeZusammenfassung, liesFenster,
     liesSchluessel, schluesselStimmt,
 } from './zahlen.mjs';
@@ -975,6 +978,91 @@ export function baueDienst({
             protokolliere({
                 art: 'umfrage', ergebnis: 'ok',
                 anzahl: Object.keys(antworten).length, dauer: Date.now() - start,
+            });
+            return { status: 204 };
+        },
+
+        /*
+          ── DIE BEIDEN MESSWERKZEUGE ─────────────────────────────────
+
+          `apps.iyambae.fm/stimmung/` und `/hoertest/` rechnen im Browser,
+          zeigen dem Besucher sein Ergebnis — und warfen es bis hierher weg.
+          Der Anlass steht in 432hz-radio#21; die Erlaubnislisten und die
+          Begruendung, warum zwei Tabellen und nicht eine, stehen in
+          `rueckmeldung.mjs`.
+
+          BEIDE WEGE SIND GEBAUT WIE `/api/umfrage`, und das ist Absicht:
+          Es sind dieselben zwei Dinge, die hier ueberhaupt schuetzen —
+          die Erlaubnisliste und die Drossel. Wo ein dritter anonymer
+          Schreibweg entsteht, soll er nicht anders aussehen als die beiden
+          davor, sonst prueft irgendwann jemand nur noch einen davon.
+
+          NUR 204 GILT. Die Oberflaeche prueft `antwort.status === 204` und
+          nicht `antwort.ok` — erprobt gegen eine Gegenstelle, die mit 200
+          und einer HTML-Seite antwortete. Genau der Fall aus #5, wo ein
+          „Danke" erschien und die Antwort weggeworfen wurde. Hier steht
+          deshalb 204 und sonst nichts.
+
+          KEIN `aufBoden`, wie bei der Umfrage: Es wird nichts
+          nachgeschlagen, also gibt es aus der Antwortdauer nichts zu lesen.
+        */
+
+        /*
+          Die Drossel je Netz ist dieselbe wie bei der Umfrage: Eine Runde
+          dauert Minuten, zehn in einer halben Stunde erreicht niemand
+          versehentlich, und wer sie erreicht, wollte etwas anderes.
+        */
+        'POST /api/hoertest': async ({ koerper, netz, start }) => {
+            drossle([
+                ['netz', 'hoer:' + netz, 10, 30 * 60_000],
+                ['global', 'hoer:*', 60, 60_000],
+            ]);
+
+            const felder = saeubereHoertest(koerper);
+            if (!Object.keys(felder).length) {
+                protokolliere({ art: 'hoertest', ergebnis: 'abgelehnt', grund: 'nichts_erkannt' });
+                return { status: 400, koerper: { fehler: 'nichts_erkannt' } };
+            }
+
+            await legeHoertestAb(speicher, felder);
+
+            /*
+              Ins Protokoll geht die ANZAHL der Felder, nicht ihr Inhalt.
+              Wie oft jemand richtig geraten hat, steht in der Tabelle und
+              hat im Protokoll nichts verloren — dieselbe Regel wie bei der
+              Umfrage.
+            */
+            protokolliere({
+                art: 'hoertest', ergebnis: 'ok',
+                anzahl: Object.keys(felder).length, dauer: Date.now() - start,
+            });
+            return { status: 204 };
+        },
+
+        /*
+          Bei der Messung ist die Drossel WEITER, und #21 nennt den Grund:
+          „jemand misst durchaus zehn Alben hintereinander". Zehn Alben sind
+          gut hundert Stuecke; 120 in einer halben Stunde traegt das, ohne
+          eine Schleife zu tragen, die im Sekundentakt schiebt — dafuer
+          steht die globale Achse daneben.
+        */
+        'POST /api/stimmung': async ({ koerper, netz, start }) => {
+            drossle([
+                ['netz', 'stim:' + netz, 120, 30 * 60_000],
+                ['global', 'stim:*', 300, 60_000],
+            ]);
+
+            const felder = saeubereStimmung(koerper);
+            if (!Object.keys(felder).length) {
+                protokolliere({ art: 'stimmung', ergebnis: 'abgelehnt', grund: 'nichts_erkannt' });
+                return { status: 400, koerper: { fehler: 'nichts_erkannt' } };
+            }
+
+            await legeStimmungAb(speicher, felder);
+
+            protokolliere({
+                art: 'stimmung', ergebnis: 'ok',
+                anzahl: Object.keys(felder).length, dauer: Date.now() - start,
             });
             return { status: 204 };
         },

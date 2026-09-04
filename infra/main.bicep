@@ -561,6 +561,28 @@ resource tabelleUmfrage 'Microsoft.Storage/storageAccounts/tableServices/tables@
 }
 
 /*
+  Die Gegenstelle der beiden Messwerkzeuge auf apps.iyambae.fm — der
+  Blindtest und die Stimmungsmessung (432hz-radio#21). Dieselbe Bauart wie
+  `umfrage` und aus demselben Grund daneben statt darin: Auch hier haengt
+  keine Zeile an einer Person.
+
+  ZWEI Tabellen und nicht eine, obwohl beide dasselbe Muster haben. Ein
+  Hoertest und eine Messung aus derselben Sitzung duerfen nicht
+  zusammenfindbar sein; eine gemeinsame Tabelle mit einem Feld `art` laedt
+  genau dazu ein. Die ausfuehrliche Begruendung steht in
+  `dienst/src/rueckmeldung.mjs`.
+*/
+resource tabelleHoertest 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
+  parent: tabellendienst
+  name: 'hoertest'
+}
+
+resource tabelleStimmung 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
+  parent: tabellendienst
+  name: 'stimmung'
+}
+
+/*
   ZWEITE TABELLE, und sie ist unvermeidlich.
 
   Beim Anmelden kennt der Server die kontoId noch nicht, sondern nur die
