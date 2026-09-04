@@ -243,3 +243,205 @@ export async function legeHoertestAb(speicher, felder, jetzt = Date.now()) {
 export async function legeStimmungAb(speicher, felder, jetzt = Date.now()) {
     await legeAb(speicher, TABELLE_STIMMUNG, felder, jetzt);
 }
+
+// ── AUSWERTEN ───────────────────────────────────────────────────────
+
+/*
+  Der Anlass ist derselbe wie bei der Umfrage, nur diesmal vorher benannt:
+  Es gab dort einen Weg, etwas ABZUGEBEN, und lange keinen, es zu LESEN
+  (432hz-radio#8). Zwei Tabellen, die still vor sich hin sammeln, sind
+  dasselbe wie zwei Werkzeuge, die ihr Ergebnis wegwerfen — nur langsamer.
+
+  WAS HERAUSKOMMT: Anzahlen. Nichts, was auf eine einzelne Zeile
+  zurückführt.
+
+  WARUM TAGESWEISE und nicht in einem Durchgang: Der Partitionsschlüssel IST
+  der Tag. Eine Abfrage je Tag läuft über genau eine Partition; ein Durchgang
+  durch alles würde mit jeder Woche teurer, und zwar für immer. Wörtlich
+  dieselbe Überlegung wie in `umfrage.mjs`.
+*/
+
+/** Wie viele Tage rückwärts eine Auswertung höchstens umfasst. */
+export const AUSWERTUNG_TAGE_HOECHSTENS = 365;
+
+function spanneVon(tage) {
+    return Math.min(Math.max(Math.trunc(tage) || 1, 1), AUSWERTUNG_TAGE_HOECHSTENS);
+}
+
+/*
+  Die Wahrscheinlichkeit, ALLEIN DURCH RATEN mindestens so gut abzuschneiden.
+
+  Sie steht hier, weil ohne sie die andere Zahl gefährlich ist: „54 % richtig"
+  liest sich wie ein Befund, ist aber bei fünfzig Durchgängen nichts. Wer eine
+  Trefferquote veröffentlicht, ohne danebenzuschreiben, wie oft der Zufall
+  dasselbe hergibt, behauptet mehr, als er gemessen hat — und genau davor
+  will dieser Vorgang uns bewahren.
+
+  Einseitig und exakt (Summe der Binomialterme ab `treffer`), nicht
+  angenähert: Die Zahlen sind klein genug, dass eine Näherung nichts spart
+  und an den Rändern falsch liegt. Bei p = 0,5 ist der Term C(n,k) / 2^n;
+  gerechnet wird über Logarithmen, damit C(n,k) bei großen n nicht überläuft.
+
+  KEINE Aussage über „Signifikanz". Hier steht eine Wahrscheinlichkeit, keine
+  Schwelle — wer eine Grenze ziehen will, zieht sie selbst und schreibt dazu,
+  wo.
+*/
+export function zufallsWahrscheinlichkeit(treffer, durchgaenge) {
+    if (!Number.isInteger(treffer) || !Number.isInteger(durchgaenge)) return null;
+    if (durchgaenge <= 0 || treffer < 0 || treffer > durchgaenge) return null;
+
+    const lnFakultaet = (k) => {
+        let summe = 0;
+        for (let i = 2; i <= k; i++) summe += Math.log(i);
+        return summe;
+    };
+    const lnN = lnFakultaet(durchgaenge);
+    let p = 0;
+    for (let k = treffer; k <= durchgaenge; k++) {
+        const lnC = lnN - lnFakultaet(k) - lnFakultaet(durchgaenge - k);
+        p += Math.exp(lnC - durchgaenge * Math.LN2);
+    }
+    return Math.min(1, Math.round(p * 10000) / 10000);
+}
+
+/**
+ * Zählt die Hörtest-Runden der letzten `tage` Tage, je Runde getrennt.
+ *
+ * `432-440` und `432-433` sind zwei verschiedene Fragen und dürfen nie in
+ * einer Zahl zusammenfallen — der weite Abstand ist die leichte Runde, der
+ * enge die eigentliche Probe.
+ */
+export async function werteHoertestAus(speicher, { tage = 30, jetzt = Date.now() } = {}) {
+    const spanne = spanneVon(tage);
+
+    /*
+      Jede Runde und jede Trefferzahl steht von Anfang an mit 0 da — dieselbe
+      Regel wie bei der Umfrage: Eine Stufe, die niemand erreicht hat, ist
+      ein Ergebnis. Sie wegzulassen ließe den Leser raten, ob sie fehlt oder
+      ob sie nie vorkam.
+    */
+    const jeRunde = {};
+    for (const runde of RUNDEN) {
+        const jeTreffer = {};
+        for (let k = 0; k <= DURCHGAENGE; k++) jeTreffer[k] = 0;
+        jeRunde[runde] = {
+            runden: 0, treffer: 0, durchgaenge: 0,
+            wahl_a: 0, wahl_a_von: 0, je_treffer: jeTreffer,
+        };
+    }
+
+    for (let i = 0; i < spanne; i++) {
+        const tag = tagVon(jetzt - i * 86_400_000);
+        for await (const zeile of speicher.liste(TABELLE_HOERTEST, tag)) {
+            const eintrag = jeRunde[zeile.runde];
+            if (!eintrag) continue;
+            const treffer = zeile.treffer;
+            if (!Number.isInteger(treffer) || treffer < 0 || treffer > DURCHGAENGE) continue;
+
+            eintrag.runden++;
+            eintrag.treffer += treffer;
+            eintrag.durchgaenge += DURCHGAENGE;
+            eintrag.je_treffer[treffer]++;
+            if (Number.isInteger(zeile.wahl_a)) {
+                eintrag.wahl_a += zeile.wahl_a;
+                eintrag.wahl_a_von += DURCHGAENGE;
+            }
+        }
+    }
+
+    for (const eintrag of Object.values(jeRunde)) {
+        eintrag.anteil = eintrag.durchgaenge
+            ? Math.round(eintrag.treffer / eintrag.durchgaenge * 1000) / 1000 : null;
+        /*
+          Der Anteil, mit dem der ERSTE Knopf gewählt wurde. Fällt er
+          deutlich von 0,5 ab, liegt es an unserer Reihenfolge oder an der
+          Oberfläche — und dann trägt KEINE Zahl aus diesem Test. Deshalb
+          steht er gleichberechtigt neben der Trefferquote und nicht im
+          Kleingedruckten.
+        */
+        eintrag.wahl_a_anteil = eintrag.wahl_a_von
+            ? Math.round(eintrag.wahl_a / eintrag.wahl_a_von * 1000) / 1000 : null;
+        eintrag.zufall = zufallsWahrscheinlichkeit(eintrag.treffer, eintrag.durchgaenge);
+    }
+
+    return {
+        tage: spanne,
+        seit: tagVon(jetzt - (spanne - 1) * 86_400_000),
+        bis: tagVon(jetzt),
+        je_runde: jeRunde,
+    };
+}
+
+/**
+ * Zählt die Stimmungsmessungen der letzten `tage` Tage.
+ *
+ * `je_hz` zählt auf GANZE Hertz gerundet. Die abgelegte Zahl hat eine
+ * Nachkommastelle; sie hier auszugeben hieße, über tausend Fächer für ein
+ * paar hundert Messungen zu öffnen — und je feiner das Fach, desto eher
+ * sitzt genau einer darin. Ganze Hertz beantworten die Frage („worauf ist
+ * die Sammlung gestimmt") genauso gut.
+ */
+export async function werteStimmungAus(speicher, { tage = 30, jetzt = Date.now() } = {}) {
+    const spanne = spanneVon(tage);
+
+    const zaehle = (werte) => Object.fromEntries([...werte].map((w) => [w, 0]));
+    const ergebnis = {
+        messungen: 0,
+        traegt: 0,
+        traegt_nicht: 0,
+        je_hz: {},
+        je_laenge: zaehle(LAENGEN),
+        je_endung: zaehle(ENDUNGEN),
+        je_kanaele: { 1: 0, 2: 0 },
+        je_sprache: zaehle(SPRACHEN),
+    };
+    let sicherheitSumme = 0;
+
+    for (let i = 0; i < spanne; i++) {
+        const tag = tagVon(jetzt - i * 86_400_000);
+        for await (const zeile of speicher.liste(TABELLE_STIMMUNG, tag)) {
+            const a4 = zeile.a4;
+            if (typeof a4 !== 'number' || !Number.isFinite(a4)) continue;
+
+            ergebnis.messungen++;
+            if (typeof zeile.sicherheit === 'number') sicherheitSumme += zeile.sicherheit;
+
+            /*
+              IN DIE VERTEILUNG GEHT NUR, WAS TRÄGT. Eine Messung unter der
+              Schwelle ist eine Beobachtung — dass jemand es versucht hat —,
+              aber keine Aussage über einen Kammerton. Beides in dasselbe
+              Fach zu werfen hieße, Rauschen als Verteilung auszugeben.
+              Gezählt wird sie trotzdem, unter `traegt_nicht`: Wie oft die
+              Messung nichts hergab, ist selbst eine Zahl, die wir brauchen.
+            */
+            if (zeile.traegt === false) {
+                ergebnis.traegt_nicht++;
+            } else {
+                ergebnis.traegt++;
+                const hz = String(Math.round(a4));
+                ergebnis.je_hz[hz] = (ergebnis.je_hz[hz] ?? 0) + 1;
+            }
+
+            for (const [feld, fach] of [
+                ['laenge', ergebnis.je_laenge],
+                ['endung', ergebnis.je_endung],
+                ['sprache', ergebnis.je_sprache],
+            ]) {
+                const wert = zeile[feld];
+                // `hasOwn` und nicht `in`: Sonst zählte ein Feld namens
+                // 'toString' auf dem Prototyp mit — wie in `umfrage.mjs`.
+                if (typeof wert === 'string' && Object.hasOwn(fach, wert)) fach[wert]++;
+            }
+            if (zeile.kanaele === 1 || zeile.kanaele === 2) ergebnis.je_kanaele[zeile.kanaele]++;
+        }
+    }
+
+    return {
+        tage: spanne,
+        seit: tagVon(jetzt - (spanne - 1) * 86_400_000),
+        bis: tagVon(jetzt),
+        ...ergebnis,
+        sicherheit_mittel: ergebnis.messungen
+            ? Math.round(sicherheitSumme / ergebnis.messungen * 100) / 100 : null,
+    };
+}

@@ -60,6 +60,7 @@ import { erzeugeFremdanmeldung } from './fremd.mjs';
 import { saeubereAbgabe, legeAbgabeAb, werteAus } from './umfrage.mjs';
 import {
     saeubereHoertest, saeubereStimmung, legeHoertestAb, legeStimmungAb,
+    werteHoertestAus, werteStimmungAus,
 } from './rueckmeldung.mjs';
 import {
     erzeugeAbfrager, erzeugeZusammenfassung, liesFenster,
@@ -1232,6 +1233,38 @@ export function baueDienst({
                 };
             }
 
+            /*
+              Die beiden Messwerkzeuge haengen aus DENSELBEN ZWEI GRUENDEN
+              hier mit dran wie die Umfrage darueber, und es sind woertlich
+              dieselben: Ein eigener Weg waere ein zweiter mit demselben
+              Schluessel, derselben Drossel und derselben Absicherung — und
+              Saemi-Ra braucht ohnehin nur einen Schluessel.
+
+              Der Anlass steht in 432hz-radio#21: Zwei Werkzeuge im Feld, die
+              ihr Ergebnis wegwarfen. Das Aufheben allein reicht nicht; ohne
+              einen Weg zum Lesen sammeln die Tabellen still, und niemand
+              sieht die Zahl. Genau diese Luecke ist bei der Umfrage erst
+              hinterher aufgefallen (#8) — hier wird sie mit demselben
+              Commit geschlossen, mit dem sie entstanden waere.
+
+              JEDES STUECK FAELLT FUER SICH AUS. Faellt die eine Tabelle weg,
+              stehen die andere und die Zahlen aus Log Analytics trotzdem da.
+              Eine Antwort, die wegen eines Teils ganz ausbleibt, ist der
+              Grund, warum niemand mehr nachsieht.
+            */
+            async function lies(name, was) {
+                try {
+                    return await was();
+                } catch (fehler) {
+                    return {
+                        fehler: name + '_nicht_lesbar',
+                        grund: String(fehler?.grund ?? fehler?.code ?? 'unbekannt'),
+                    };
+                }
+            }
+            const hoertest = await lies('hoertest', () => werteHoertestAus(speicher, { tage }));
+            const stimmung = await lies('stimmung', () => werteStimmungAus(speicher, { tage }));
+
             return {
                 status: 200,
                 koerper: {
@@ -1240,6 +1273,8 @@ export function baueDienst({
                     alter_sekunden: ergebnis.alterSekunden,
                     ...(ergebnis.stoerung ? { stoerung: ergebnis.stoerung } : {}),
                     umfrage,
+                    hoertest,
+                    stimmung,
                 },
             };
         },

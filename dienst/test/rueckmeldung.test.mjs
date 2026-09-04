@@ -22,6 +22,7 @@ import {
 } from '../src/speicher.mjs';
 import {
     saeubereHoertest, saeubereStimmung, legeHoertestAb, legeStimmungAb,
+    werteHoertestAus, werteStimmungAus, zufallsWahrscheinlichkeit,
     A4_MINDESTENS, A4_HOECHSTENS,
 } from '../src/rueckmeldung.mjs';
 import { starteTestdienst, fangeProtokoll } from './hilfe.mjs';
@@ -287,4 +288,157 @@ test('Ein Angriff: nichts Fremdes kommt in die Tabelle oder ins Protokoll', asyn
         assert.ok(!text.includes(wort), `„${wort}" hat im Protokoll nichts verloren`);
     }
     assert.ok(protokoll.zeilen.some((z) => z.art === 'stimmung' && z.ergebnis === 'ok'));
+});
+
+// ── DER LESENDE WEG ─────────────────────────────────────────────────
+
+test('Hörtest-Auswertung: leere Tabelle zeigt Nullen, keine Lücken', async () => {
+    /*
+      Jede Runde und jede Trefferzahl steht mit 0 da. Eine Stufe, die niemand
+      erreicht hat, ist ein Ergebnis — sie wegzulassen ließe den Leser raten,
+      ob sie fehlt oder ob sie nie vorkam.
+    */
+    const aus = await werteHoertestAus(speicherImArbeitsspeicher(), { tage: 7 });
+    assert.deepEqual(Object.keys(aus.je_runde).sort(), ['432-433', '432-440']);
+    for (const runde of Object.values(aus.je_runde)) {
+        assert.equal(runde.runden, 0);
+        assert.equal(runde.anteil, null, 'ohne Runden gibt es keinen Anteil, auch keine 0');
+        assert.equal(runde.zufall, null);
+        assert.deepEqual(Object.keys(runde.je_treffer), ['0', '1', '2', '3', '4', '5']);
+    }
+});
+
+test('Hörtest-Auswertung: die beiden Runden fallen nie in eine Zahl', async () => {
+    /*
+      `432-440` ist die leichte Runde, `432-433` die eigentliche Probe. Sie
+      zusammenzuzählen ergäbe eine Trefferquote, die keine Frage beantwortet.
+    */
+    const speicher = speicherImArbeitsspeicher();
+    for (let i = 0; i < 4; i++) {
+        await legeHoertestAb(speicher, { runde: '432-440', treffer: 5, wahl_a: 3 });
+    }
+    await legeHoertestAb(speicher, { runde: '432-433', treffer: 1, wahl_a: 2 });
+
+    const aus = await werteHoertestAus(speicher, { tage: 2 });
+    assert.equal(aus.je_runde['432-440'].runden, 4);
+    assert.equal(aus.je_runde['432-440'].treffer, 20);
+    assert.equal(aus.je_runde['432-440'].durchgaenge, 20);
+    assert.equal(aus.je_runde['432-440'].anteil, 1);
+    assert.equal(aus.je_runde['432-433'].runden, 1);
+    assert.equal(aus.je_runde['432-433'].anteil, 0.2);
+    assert.equal(aus.je_runde['432-433'].je_treffer[1], 1);
+});
+
+test('Hörtest-Auswertung: der Anteil auf den ersten Knopf wird mitgezählt', async () => {
+    /*
+      Fällt er deutlich von 0,5 ab, liegt es an unserer Reihenfolge oder an
+      der Oberfläche — und dann trägt KEINE Zahl aus diesem Test.
+    */
+    const speicher = speicherImArbeitsspeicher();
+    for (let i = 0; i < 3; i++) {
+        await legeHoertestAb(speicher, { runde: '432-433', treffer: 2, wahl_a: 5 });
+    }
+    const aus = await werteHoertestAus(speicher, { tage: 2 });
+    assert.equal(aus.je_runde['432-433'].wahl_a_anteil, 1,
+                 'immer der erste Knopf — das muss auffallen');
+});
+
+test('Die Zufallswahrscheinlichkeit macht kleine Zahlen unbrauchbar, wie sie es sind', () => {
+    /*
+      Der eigentliche Zweck: „54 % richtig" liest sich wie ein Befund, ist
+      bei fünfzig Durchgängen aber nichts. Ohne diese Zahl daneben behauptet
+      eine Trefferquote mehr, als gemessen wurde.
+    */
+    // Genau die Hälfte: Der Zufall gibt das in gut der Hälfte der Fälle her.
+    assert.ok(zufallsWahrscheinlichkeit(25, 50) > 0.4);
+    // Knapp darüber: immer noch nichts.
+    assert.ok(zufallsWahrscheinlichkeit(27, 50) > 0.2);
+    // Deutlich darüber: jetzt wird es eng.
+    assert.ok(zufallsWahrscheinlichkeit(35, 50) < 0.01);
+    // Alles richtig bei 10 Durchgängen: 1/1024.
+    assert.ok(Math.abs(zufallsWahrscheinlichkeit(10, 10) - 0.001) < 0.0005);
+    // Alles richtig ist nie unmöglich, und nichts richtig ist nie sicher.
+    assert.equal(zufallsWahrscheinlichkeit(0, 10), 1);
+    assert.equal(zufallsWahrscheinlichkeit(3, 2), null);
+});
+
+test('Messungs-Auswertung: nur was trägt geht in die Verteilung', async () => {
+    /*
+      Eine Messung unter der Schwelle ist eine Beobachtung, aber keine
+      Aussage über einen Kammerton. Beides in dasselbe Fach zu werfen hieße,
+      Rauschen als Verteilung auszugeben.
+    */
+    const speicher = speicherImArbeitsspeicher();
+    await legeStimmungAb(speicher, { a4: 432.1, sicherheit: 0.9, traegt: true, endung: 'flac' });
+    await legeStimmungAb(speicher, { a4: 431.8, sicherheit: 0.8, traegt: true, endung: 'flac' });
+    await legeStimmungAb(speicher, { a4: 440.0, sicherheit: 0.7, traegt: true, endung: 'mp3' });
+    await legeStimmungAb(speicher, { a4: 461.3, sicherheit: 0.1, traegt: false, endung: 'mp3' });
+
+    const aus = await werteStimmungAus(speicher, { tage: 2 });
+    assert.equal(aus.messungen, 4);
+    assert.equal(aus.traegt, 3);
+    assert.equal(aus.traegt_nicht, 1);
+    // 432,1 und 431,8 fallen beide auf 432 — das ist der Sinn ganzer Hertz.
+    assert.equal(aus.je_hz['432'], 2);
+    assert.equal(aus.je_hz['440'], 1);
+    assert.equal(aus.je_hz['461'], undefined, 'die schwache Messung faellt nicht in die Verteilung');
+    assert.equal(aus.je_endung.flac, 2);
+    assert.equal(aus.je_endung.mp3, 2, 'gezaehlt wird sie trotzdem');
+    // (0,9 + 0,8 + 0,7 + 0,1) / 4 = 0,625 -> 0,63. Auch die schwache
+    // Messung geht in den Mittelwert ein: Er sagt, wie sicher die Messungen
+    // WAREN, nicht wie sicher die brauchbaren waren.
+    assert.equal(aus.sicherheit_mittel, 0.63);
+});
+
+test('Beide Auswertungen hängen an /api/zusammenfassung, nicht an eigenen Wegen', async (t) => {
+    /*
+      Ein eigener Weg wäre ein zweiter mit demselben Schlüssel, derselben
+      Drossel und derselben Absicherung. Zwei Stellen, die dasselbe tun,
+      laufen auseinander — und die eine, an der das teuer wird, ist die
+      Schlüsselprüfung.
+    */
+    const dienst = await starteTestdienst({
+        zahlen: { schluessel: 'geheim', hole: async () => ({ zahlen: { hoerer: 0 }, frisch: true, alterSekunden: 0 }) },
+    });
+    t.after(() => dienst.schliesse());
+
+    await dienst.rufe('POST', '/api/hoertest', { runde: '432-433', treffer: 4, wahl_a: 2 });
+    await dienst.rufe('POST', '/api/stimmung', { a4: 432.0, sicherheit: 0.9, traegt: true });
+
+    // Ohne Schlüssel gibt es die Zahlen nicht — auch die neuen nicht.
+    assert.equal((await dienst.rufe('GET', '/api/zusammenfassung')).status, 401);
+
+    const antwort = await dienst.rufe('GET', '/api/zusammenfassung', undefined,
+        { kopf: { Authorization: 'Bearer geheim' } });
+    assert.equal(antwort.status, 200);
+    assert.equal(antwort.daten.hoertest.je_runde['432-433'].runden, 1);
+    assert.equal(antwort.daten.hoertest.je_runde['432-433'].treffer, 4);
+    assert.equal(antwort.daten.stimmung.messungen, 1);
+    assert.equal(antwort.daten.stimmung.je_hz['432'], 1);
+    // Und die Umfrage steht unberührt daneben.
+    assert.ok(antwort.daten.umfrage);
+});
+
+test('Fällt eine Tabelle aus, bleibt der Rest der Antwort stehen', async (t) => {
+    /*
+      Eine Antwort, die wegen eines Teils ganz ausbleibt, ist der Grund,
+      warum niemand mehr nachsieht.
+    */
+    const dienst = await starteTestdienst({
+        zahlen: { schluessel: 'geheim', hole: async () => ({ zahlen: { hoerer: 7 }, frisch: true, alterSekunden: 0 }) },
+    });
+    t.after(() => dienst.schliesse());
+
+    const echt = dienst.speicher.liste.bind(dienst.speicher);
+    dienst.speicher.liste = (tabelle, ...rest) => {
+        if (tabelle === TABELLE_STIMMUNG) throw new Error('Tabelle weg');
+        return echt(tabelle, ...rest);
+    };
+
+    const antwort = await dienst.rufe('GET', '/api/zusammenfassung', undefined,
+        { kopf: { Authorization: 'Bearer geheim' } });
+    assert.equal(antwort.status, 200);
+    assert.equal(antwort.daten.stimmung.fehler, 'stimmung_nicht_lesbar');
+    assert.equal(antwort.daten.hoerer, 7, 'die Zahlen aus der anderen Quelle stehen trotzdem da');
+    assert.ok(antwort.daten.hoertest.je_runde, 'und die andere Tabelle auch');
 });
