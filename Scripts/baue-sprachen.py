@@ -530,9 +530,16 @@ def katalogtext(katalog, texte, kuerzel):
         # ausserdem schlimmer als beides deutsch: Es sieht nach
         # Nachlaessigkeit aus, nicht nach Absicht.
         teile.append('<div class="katalogtext__regal">')
+        # Der Name fuehrt auf die Regalseite — /de/regal/tiefe/.
+        #
+        # HIER UND NICHT AN DEN REGALKNOEPFEN OBEN: Saemi-Ras Entscheidung
+        # vom 04.09.2026. Ein Regalknopf, der eine neue Seite laedt, waere
+        # ein anderes Radio als das gebaute. Der Katalogtext dagegen ist
+        # ohnehin Text zum Lesen; dort ist ein Verweis kein Bruch.
         teile.append(f'<h3 class="katalogtext__name"'
                      f'{sprachmarke(regal["id"], "regalname")}>'
-                     f'{esc(regalname_von(regal))} '
+                     f'<a href="/{kuerzel}/regal/{regal["id"]}/">'
+                     f'{esc(regalname_von(regal))}</a> '
                      f'<span class="katalogtext__zahl">'
                      f'{esc(fuelle(t("regalwand.sender"), anzahl=len(drin)))}</span></h3>')
         teile.append(f'<p class="katalogtext__was"{sprachmarke(regal["id"], "regal")}>'
@@ -673,7 +680,7 @@ def katalog_jsonld(katalog, texte, kuerzel):
     return f'<script type="application/ld+json">{roh}</script>\n'
 
 
-def erzeuge_sitemap(alle_kuerzel, stand):
+def erzeuge_sitemap(alle_kuerzel, stand, regale=()):
     """Die sieben Sprachwurzeln, jede mit allen Alternativen.
 
     Jeder Eintrag fuehrt ALLE sieben Fassungen auf, sich selbst
@@ -697,6 +704,21 @@ def erzeuge_sitemap(alle_kuerzel, stand):
                       f'href="{HAUS}/"/>')
         zeilen.append(f"    <lastmod>{stand}</lastmod>")
         zeilen.append("  </url>")
+    # Die Regalseiten, seit 04.09.2026 — /<sprache>/regal/<id>/, erzeugt von
+    # Scripts/baue-regale.py. Sie stehen hier und nicht in einer zweiten
+    # Sitemap: Es ist dasselbe Haus, und zwei Karten fuer ein Haus sind eine
+    # Gelegenheit, dass eine davon veraltet.
+    for regal in regale:
+        for kuerzel in alle_kuerzel:
+            zeilen.append("  <url>")
+            zeilen.append(f"    <loc>{HAUS}/{kuerzel}/regal/{regal['id']}/</loc>")
+            for k in alle_kuerzel:
+                zeilen.append(f'    <xhtml:link rel="alternate" hreflang="{k}" '
+                              f"href=\"{HAUS}/{k}/regal/{regal['id']}/\"/>")
+            zeilen.append(f'    <xhtml:link rel="alternate" hreflang="x-default" '
+                          f"href=\"{HAUS}/{X_DEFAULT}/regal/{regal['id']}/\"/>")
+            zeilen.append(f"    <lastmod>{stand}</lastmod>")
+            zeilen.append("  </url>")
     zeilen.append("</urlset>")
     return "\n".join(zeilen) + "\n"
 
@@ -736,9 +758,12 @@ def erzeuge_llms(katalog):
         "## Die Regale",
         "",
     ]
+    # Mit Adresse, seit es die Regalseiten gibt: Eine Karte, die ein Regal
+    # nennt, aber nicht sagt, wo es steht, ist eine halbe Karte.
     for r in regale:
         zahl = sum(1 for s in sender if s.get("regal") == r.get("id"))
-        zeilen.append(f"- **{r.get('name')}** ({zahl} Sender): {r.get('beschreibung', '')}")
+        zeilen.append(f"- [{r.get('name')}]({HAUS}/de/regal/{r.get('id')}/) "
+                      f"({zahl} Sender): {r.get('beschreibung', '')}")
     zeilen += [
         "",
         "## Seiten",
@@ -885,8 +910,14 @@ def pruefe_seite(kuerzel, seite, katalog, texte):
     return not fehler
 
 
-def pruefe_sitemap(quelle, alle_kuerzel):
-    """Wohlgeformtes XML, sieben Eintraege, jeder mit allen Alternativen."""
+def pruefe_sitemap(quelle, alle_kuerzel, regale=()):
+    """Wohlgeformtes XML, jeder Eintrag mit allen Alternativen.
+
+    Erwartet werden die sieben Sprachwurzeln UND die Regalseiten, also
+    7 + 11 x 7 = 84 Eintraege. Die Zahl steht nicht fest im Code, sie kommt
+    aus dem Katalog — ein neues Regal soll die Pruefung nicht brechen,
+    sondern mitgezaehlt werden.
+    """
     import xml.etree.ElementTree as ET
     fehler = []
     try:
@@ -898,8 +929,9 @@ def pruefe_sitemap(quelle, alle_kuerzel):
     raum = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
     xhtml = "{http://www.w3.org/1999/xhtml}"
     adressen = wurzel.findall(f"{raum}url")
-    if len(adressen) != len(alle_kuerzel):
-        fehler.append(f"{len(adressen)} Eintraege statt {len(alle_kuerzel)}")
+    erwartete_zahl = len(alle_kuerzel) * (1 + len(regale))
+    if len(adressen) != erwartete_zahl:
+        fehler.append(f"{len(adressen)} Eintraege statt {erwartete_zahl}")
 
     gefunden = set()
     for eintrag in adressen:
@@ -912,9 +944,16 @@ def pruefe_sitemap(quelle, alle_kuerzel):
         if sprachen != erwartet:
             fehler.append(f"{ort}: Alternativen {sorted(sprachen)} "
                           f"statt {sorted(erwartet)}")
-    fehlt = {f"{HAUS}/{k}/" for k in alle_kuerzel} - gefunden
+    soll = {f"{HAUS}/{k}/" for k in alle_kuerzel}
+    for regal in regale:
+        soll |= {f"{HAUS}/{k}/regal/{regal['id']}/" for k in alle_kuerzel}
+    fehlt = soll - gefunden
     if fehlt:
-        fehler.append(f"nicht aufgefuehrt: {', '.join(sorted(fehlt))}")
+        fehler.append(f"nicht aufgefuehrt: {', '.join(sorted(fehlt)[:5])}")
+    zuviel = gefunden - soll
+    if zuviel:
+        fehler.append(f"steht drin, gibt es aber nicht: "
+                      f"{', '.join(sorted(zuviel)[:5])}")
 
     for satz in fehler:
         print(f"  ✘ sitemap.xml: {satz}")
@@ -1056,10 +1095,11 @@ def main():
         gemessen.append((kuerzel, len(seite.encode("utf-8")),
                          len(seite) - zusatz, zusatz))
 
-    sitemap = erzeuge_sitemap(list(SPRACHEN), senderkatalog.get("_geprueft_am", ""))
+    sitemap = erzeuge_sitemap(list(SPRACHEN), senderkatalog.get("_geprueft_am", ""),
+                              senderkatalog.get("regale", []))
     robots = erzeuge_robots()
     llms = erzeuge_llms(senderkatalog)
-    if not pruefe_sitemap(sitemap, list(SPRACHEN)):
+    if not pruefe_sitemap(sitemap, list(SPRACHEN), senderkatalog.get("regale", [])):
         gut = False
     if not pruefe_robots(robots):
         gut = False

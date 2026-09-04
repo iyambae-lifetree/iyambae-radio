@@ -1,0 +1,205 @@
+/*
+  Das Stylesheet der Regalseiten.
+
+  WARUM NICHT styles.css: Das ist das Stylesheet des Radios — Plattenspieler,
+  Regalwand, Spieler, Filterfeld, Menue. Eine Seite, die nichts davon hat,
+  wuerde es trotzdem vollstaendig laden und waere damit nicht mehr schlank.
+  Genau das war der Zweck dieser Seiten. Dieselbe Ueberlegung wie bei
+  apps/assets/werkzeug.css.
+
+  WAS ES MIT styles.css TEILT: die Farben, die Schriften, die Rundung von
+  2 px. Sie stehen hier noch einmal, weil eine geteilte Datei fuer elf
+  Zeilen Variablen eine dritte Anfrage kostete. Aendern sich die Farben,
+  aendern sie sich an zwei Stellen — das ist der Preis, und er ist
+  aufgeschrieben, damit ihn niemand uebersieht.
+*/
+
+:root {
+    --grund:        #05020a;
+    --grund-hoch:   #0d0616;
+    --karte:        #120a1e;
+    --rand:         rgba(255, 255, 255, 0.08);
+    --rand-hell:    rgba(255, 255, 255, 0.16);
+    --text:         #f2edf7;
+    --text-leise:   #a294b8;
+    --gold:         #F2B705;
+    --gold-hell:    #FFD34D;
+    --blau:         #2A7CC7;
+    --gruen:        #35e08a;
+    --schrift:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono:         'JetBrains Mono', ui-monospace, monospace;
+    --anzeige:      'Orbitron', var(--schrift);
+    --rund:         2px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--grund);
+    color: var(--text);
+    font-family: var(--schrift);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--gold); }
+a:hover { color: var(--gold-hell); }
+
+/* ── Kopf ──────────────────────────────────────────────────────── */
+
+.kopf {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+    padding: 1rem 1.4rem;
+    border-bottom: 1px solid var(--rand);
+    background: var(--grund-hoch);
+}
+
+.marke {
+    font-family: var(--anzeige); font-weight: 900; font-size: 1rem;
+    letter-spacing: 0.06em; color: var(--gold); text-decoration: none;
+}
+.marke__fm { color: var(--blau); }
+
+.sprachen { display: flex; flex-wrap: wrap; gap: 0.1rem 0.7rem; }
+.sprachen a {
+    font-family: var(--mono); font-size: 0.72rem;
+    color: var(--text-leise); text-decoration: none;
+}
+.sprachen a:hover { color: var(--gold); }
+/* Die eigene Sprache ist kein Verweis — ein Knopf, der dorthin fuehrt, wo
+   man schon steht, ist ein leeres Versprechen. */
+.sprachen span {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text);
+}
+
+/* ── Das Blatt ─────────────────────────────────────────────────── */
+
+.blatt {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 2.6rem 1.4rem 3rem;
+}
+
+.augenbraue {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-leise);
+    margin: 0 0 0.6rem;
+}
+
+.regal__name {
+    font-family: var(--anzeige); font-weight: 900;
+    font-size: clamp(1.8rem, 6vw, 2.8rem); line-height: 1.1;
+    margin: 0 0 0.9rem;
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+}
+/* Das Regalzeichen ist Schmuck und traegt keine Bedeutung — deshalb
+   aria-hidden im Markup und hier nur die Groesse. */
+.regal__zeichen { font-size: 0.85em; line-height: 1; }
+
+.regal__was {
+    font-size: 1.1rem; color: var(--text);
+    margin: 0 0 0.8rem;
+}
+
+.regal__zahl {
+    font-family: var(--mono); font-size: 0.78rem; color: var(--text-leise);
+    margin: 0 0 1.6rem;
+}
+
+.tat { margin: 0 0 1.6rem; }
+
+.knopf {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--rund);
+    background: var(--gold); color: #1a1206;
+    font-weight: 700; font-size: 0.95rem; text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+.knopf:hover { background: var(--gold-hell); color: #1a1206; }
+
+.regal__hz {
+    font-size: 0.92rem; color: var(--text-leise);
+    border-inline-start: 2px solid var(--rand-hell);
+    padding-inline-start: 0.9rem;
+    margin: 0 0 2.6rem;
+}
+
+/* ── Die Sender ────────────────────────────────────────────────── */
+
+.sender { list-style: none; margin: 0; padding: 0; }
+
+.sender__eintrag {
+    border-top: 1px solid var(--rand);
+    padding: 1.3rem 0;
+}
+.sender__eintrag:last-child { border-bottom: 1px solid var(--rand); }
+
+.sender__kopf {
+    display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap;
+    margin-bottom: 0.3rem;
+}
+
+.sender__name {
+    font-size: 1.05rem; font-weight: 700;
+    margin: 0;
+}
+.sender__name a { text-decoration: none; }
+.sender__name a:hover { text-decoration: underline; }
+
+.sender__guete {
+    font-family: var(--mono); font-size: 0.68rem;
+    color: var(--gruen);
+    border: 1px solid var(--rand-hell); border-radius: var(--rund);
+    padding: 0.1rem 0.4rem;
+}
+
+.sender__ort {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise);
+    margin: 0 0 0.5rem;
+}
+
+.sender__was { margin: 0 0 0.6rem; }
+
+.sender__etiketten { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.sender__etikett {
+    font-family: var(--mono); font-size: 0.68rem; color: var(--text-leise);
+    background: var(--karte); border: 1px solid var(--rand);
+    border-radius: var(--rund); padding: 0.12rem 0.45rem;
+}
+
+/* ── Die anderen Regale ────────────────────────────────────────── */
+
+.andere { margin-top: 3rem; }
+.andere h2 {
+    font-family: var(--anzeige); font-size: 1rem; font-weight: 900;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.9rem;
+}
+.andere ul { list-style: none; margin: 0; padding: 0;
+             display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.andere a {
+    display: inline-block;
+    border: 1px solid var(--rand-hell); border-radius: var(--rund);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.88rem; text-decoration: none; color: var(--text);
+}
+.andere a:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── Fuss ──────────────────────────────────────────────────────── */
+
+.fuss {
+    border-top: 1px solid var(--rand);
+    padding: 1.6rem 1.4rem 2.4rem;
+    background: var(--grund-hoch);
+}
+.fuss ul {
+    max-width: 46rem; margin: 0 auto; padding: 0; list-style: none;
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem;
+    font-size: 0.85rem;
+}
+.fuss a { color: var(--text-leise); text-decoration: none; }
+.fuss a:hover { color: var(--gold); }

@@ -1,0 +1,126 @@
+{
+  "_zweck": "Die feststehenden Saetze der Regalseiten, gelesen von Scripts/baue-regale.py. Alles Uebrige einer Regalseite kommt aus data/sender.json und data/sender-texte.*.json.",
+  "_warum_eine_datei": "Die uebrigen Sprachkataloge liegen je Sprache in einer eigenen Datei — assets/lang/de.json und so fort. Hier sind es zwoelf Saetze. Sieben Dateien mit zwoelf Zeilen waeren schlechter zu uebersetzen als eine, in der die Sprachen nebeneinander stehen: Wer eine Fassung prueft, sieht sofort, was daneben steht.",
+  "_warum_nicht_in_assets_lang": "assets/lang/de.json wird von Scripts/baue-sprachen.py --ernte aus index.html neu erzeugt. Saetze, die dort nicht vorkommen, waeren beim naechsten Ernten still weg.",
+  "_platzhalter": "{name} ist der uebersetzte Regalname, {zahl} die Zahl der Sender, {was} die Regalbeschreibung.",
+
+  "augenbraue": {
+    "de": "Ein Regal im Plattenladen",
+    "en": "A shelf in the record shop",
+    "fr": "Un rayon chez le disquaire",
+    "es": "Un estante de la tienda de discos",
+    "it": "Uno scaffale del negozio di dischi",
+    "ja": "レコード店の一棚",
+    "ar": "رفّ في متجر الأسطوانات"
+  },
+
+  "titel": {
+    "de": "{name} — Internetradio in 432 Hz · IYAMBAE FM",
+    "en": "{name} — internet radio in 432 Hz · IYAMBAE FM",
+    "fr": "{name} — radio en ligne à 432 Hz · IYAMBAE FM",
+    "es": "{name} — radio por internet en 432 Hz · IYAMBAE FM",
+    "it": "{name} — radio via internet a 432 Hz · IYAMBAE FM",
+    "ja": "{name} — 432 Hz のインターネットラジオ · IYAMBAE FM",
+    "ar": "{name} — راديو إنترنت بتردد 432 هرتز · IYAMBAE FM"
+  },
+
+  "beschreibung": {
+    "de": "{was} {zahl} handverlesene Sender bei IYAMBAE FM, jeder auf Wunsch in 432 Hz.",
+    "en": "{was} {zahl} hand-picked stations at IYAMBAE FM, each in 432 Hz if you want it.",
+    "fr": "{was} {zahl} stations choisies à la main chez IYAMBAE FM, chacune en 432 Hz si vous le voulez.",
+    "es": "{was} {zahl} emisoras elegidas a mano en IYAMBAE FM, cada una en 432 Hz si quieres.",
+    "it": "{was} {zahl} stazioni scelte a mano su IYAMBAE FM, ognuna a 432 Hz se lo vuoi.",
+    "ja": "{was} IYAMBAE FM が選んだ {zahl} 局。希望すればどれも 432 Hz で流せます。",
+    "ar": "{was} {zahl} محطة مختارة بعناية على IYAMBAE FM، كلٌّ منها بتردد 432 هرتز إن شئت."
+  },
+
+  "zahl": {
+    "de": "{zahl} Sender",
+    "en": "{zahl} stations",
+    "fr": "{zahl} stations",
+    "es": "{zahl} emisoras",
+    "it": "{zahl} stazioni",
+    "ja": "{zahl} 局",
+    "ar": "{zahl} محطة"
+  },
+
+  "hoeren": {
+    "de": "Dieses Regal im Radio hören",
+    "en": "Hear this shelf on the radio",
+    "fr": "Écouter ce rayon à la radio",
+    "es": "Escuchar este estante en la radio",
+    "it": "Ascolta questo scaffale alla radio",
+    "ja": "この棚をラジオで聴く",
+    "ar": "استمع إلى هذا الرفّ في الراديو"
+  },
+
+  "satz432": {
+    "de": "Jeder Sender hier läuft auf Wunsch in 432 Hz statt in den üblichen 440 — die Seite verschiebt die Tonhöhe um 31,77 Cent nach unten. Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.",
+    "en": "Every station here plays in 432 Hz instead of the usual 440 if you want it to — the page shifts the pitch down by 31.77 cents. We promise you no effect. We give you a dial.",
+    "fr": "Ici, chaque station passe en 432 Hz au lieu des 440 habituels si vous le souhaitez — la page abaisse la hauteur de 31,77 cents. Nous ne vous promettons aucun effet. Nous vous donnons un réglage.",
+    "es": "Aquí cada emisora suena en 432 Hz en lugar de los 440 habituales si tú quieres — la página baja la afinación 31,77 centésimas. No te prometemos ningún efecto. Te damos un control.",
+    "it": "Qui ogni stazione suona a 432 Hz invece dei soliti 440, se lo vuoi — la pagina abbassa l'intonazione di 31,77 centesimi. Non ti promettiamo alcun effetto. Ti diamo una manopola.",
+    "ja": "ここにあるどの局も、希望すれば通常の 440 Hz ではなく 432 Hz で流れます。ページが音の高さを 31.77 セント下げます。効果は約束しません。つまみをお渡しするだけです。",
+    "ar": "كل محطة هنا تعمل بتردد 432 هرتز بدل 440 المعتادة، إن أردت ذلك — تخفض الصفحة طبقة الصوت بمقدار 31.77 سنتًا. لا نعدك بأي تأثير. نعطيك مقبضًا."
+  },
+
+  "andere": {
+    "de": "Die anderen Regale",
+    "en": "The other shelves",
+    "fr": "Les autres rayons",
+    "es": "Los demás estantes",
+    "it": "Gli altri scaffali",
+    "ja": "ほかの棚",
+    "ar": "الرفوف الأخرى"
+  },
+
+  "sprachwahl": {
+    "de": "Sprache wählen",
+    "en": "Choose language",
+    "fr": "Choisir la langue",
+    "es": "Elegir idioma",
+    "it": "Scegli la lingua",
+    "ja": "言語を選ぶ",
+    "ar": "اختر اللغة"
+  },
+
+  "zumRadio": {
+    "de": "Zum Radio",
+    "en": "To the radio",
+    "fr": "Vers la radio",
+    "es": "Ir a la radio",
+    "it": "Vai alla radio",
+    "ja": "ラジオへ",
+    "ar": "إلى الراديو"
+  },
+
+  "zumTuner": {
+    "de": "IYAMBAE Tuner",
+    "en": "IYAMBAE Tuner",
+    "fr": "IYAMBAE Tuner",
+    "es": "IYAMBAE Tuner",
+    "it": "IYAMBAE Tuner",
+    "ja": "IYAMBAE Tuner",
+    "ar": "IYAMBAE Tuner"
+  },
+
+  "impressum": {
+    "de": "Impressum",
+    "en": "Imprint",
+    "fr": "Mentions légales",
+    "es": "Aviso legal",
+    "it": "Note legali",
+    "ja": "運営者情報",
+    "ar": "بيانات الناشر"
+  },
+
+  "datenschutz": {
+    "de": "Datenschutz",
+    "en": "Privacy",
+    "fr": "Confidentialité",
+    "es": "Privacidad",
+    "it": "Privacy",
+    "ja": "プライバシー",
+    "ar": "الخصوصية"
+  }
+}

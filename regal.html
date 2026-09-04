@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+  VORLAGE FUER EINE REGALSEITE. Gefuellt von Scripts/baue-regale.py.
+
+  WARUM MARKEN UND NICHT data-text WIE BEI DEN ANDEREN SEITEN:
+
+  index.html und die Tuner-Seiten sind geschriebene Seiten, in denen der
+  Erzeuger einzelne Saetze austauscht — dort ist data-text richtig, weil das
+  Meiste stehenbleibt.
+
+  Diese Seite ist das Gegenteil: Fast alles darin kommt aus data/sender.json.
+  Ein Zerleger, der Textknoten sucht, um sie durch andere zu ersetzen, waere
+  hier Umweg und Ratespiel. Stattdessen stehen unten sichtbare Marken in
+  doppelten geschweiften Klammern. Was dazwischen liegt, ist Aufbau, und den
+  darf Saemi-Ra frei umstellen, solange die Marken erhalten bleiben.
+
+  Scripts/baue-regale.py prueft beim Bauen, dass jede Marke genau einmal
+  vorkommt und dass keine uebrigbleibt.
+-->
+<html data-sprache="{{SPRACHE}}" lang="{{SPRACHE}}" dir="{{RICHTUNG}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{TITEL}}</title>
+    <meta name="description" content="{{BESCHREIBUNG}}">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <link rel="canonical" href="{{ADRESSE}}">
+{{SPRACHVERWEISE}}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="IYAMBAE FM">
+    <meta property="og:title" content="{{TITEL}}">
+    <meta property="og:description" content="{{BESCHREIBUNG}}">
+    <meta property="og:url" content="{{ADRESSE}}">
+    <meta property="og:image" content="https://iyambae.fm/icon-512.png">
+    <meta name="theme-color" content="#05020a">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/schrift/schriften.css">
+    <link rel="stylesheet" href="/assets/regal.css">
+</head>
+<body>
+
+<header class="kopf">
+    <a class="marke" href="{{HEIM}}">IYAMBAE <span class="marke__fm">FM</span></a>
+    <nav class="sprachen" aria-label="{{SPRACHWAHL_TITEL}}">
+{{SPRACHWAHL}}
+    </nav>
+</header>
+
+<main class="blatt">
+
+    <p class="augenbraue">{{AUGENBRAUE}}</p>
+
+    <h1 class="regal__name"><span class="regal__zeichen" aria-hidden="true">{{ZEICHEN}}</span>{{NAME}}</h1>
+
+    <p class="regal__was">{{WAS}}</p>
+
+    <p class="regal__zahl">{{ZAHL}}</p>
+
+    <!-- Der Knopf fuehrt ins Radio und springt zu genau dieser Regalreihe.
+         Der Tiefverweis #regal= wird in assets/app.js gelesen, neben den
+         schon vorhandenen #platte= und #platten=. -->
+    <p class="tat"><a class="knopf" href="{{HOEREN_ZIEL}}">{{HOEREN}}</a></p>
+
+    <p class="regal__hz">{{SATZ432}}</p>
+
+    <ol class="sender">
+{{SENDER}}
+    </ol>
+
+    <nav class="andere" aria-label="{{ANDERE_TITEL}}">
+        <h2>{{ANDERE_TITEL}}</h2>
+{{ANDERE}}
+    </nav>
+
+</main>
+
+<footer class="fuss">
+{{FUSS}}
+</footer>
+
+{{JSONLD}}
+</body>
+</html>

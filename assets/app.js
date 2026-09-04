@@ -362,6 +362,22 @@ const GETEILTE_PLATTEN = (/[#&]platten=([a-z0-9.\-]+)/i.exec(location.hash) || [
 */
 const GETEILTE_PLATTE = (/[#&]platte=([a-z0-9\-]+)/i.exec(location.hash) || [])[1] || '';
 
+/*
+ Ein Regal, aus dem Netz gekommen — der dritte Tiefverweis.
+
+ Seit dem 04.09.2026 hat jedes Regal eine eigene Adresse:
+ iyambae.fm/de/regal/tiefe/. Dort steht ein Knopf „Dieses Regal im Radio
+ hoeren", und der fuehrt hierher mit #regal=tiefe.
+
+ Ohne ihn landete der Besucher auf der Startseite und muesste das Regal
+ selbst suchen — nach genau dem Klick, mit dem er gesagt hat, was er will.
+
+ AUSGEBLENDET, NICHT GEFILTERT: Der Verweis scrollt zur Regalreihe und
+ laesst die uebrigen stehen. Saemi-Ra: „Wie im Plattenladen — da
+ verschwinden die anderen Tische ja auch nicht."
+*/
+const GETEILTES_REGAL = (/[#&]regal=([a-z0-9\-]+)/i.exec(location.hash) || [])[1] || '';
+
 const ladeGehoert  = () => speicher.lies(SCHLUESSEL.gehoert, {});
 const ladeZuletzt  = () => speicher.lies(SCHLUESSEL.zuletzt, []);
 
@@ -2192,6 +2208,7 @@ class App {
     this.folgeAdressZiel();
     this.pruefeGeteilteAdresse();
     this.zeigeGeteiltePlatte();
+    this.zeigeGeteiltesRegal();
 
     /*
      Aktualisierung ueberwachen. Spielt gerade Musik, wird nicht von selbst
@@ -2659,6 +2676,64 @@ class App {
    beschallt, waere kein guter Laden. Der Sender steht bereit, der Mensch
    drueckt.
   */
+  /*
+   Das Gegenstueck zu #regal= aus einer Regalseite.
+
+   WARUM GEWARTET WIRD: Die Regalwand wird gezeichnet, nicht ausgeliefert.
+   Steht die Reihe beim ersten Versuch noch nicht da, spraenge der Verweis
+   ins Leere und der Besucher bliebe oben — genau das Verhalten, das der
+   Knopf abschaffen sollte. Also bis zu zwei Sekunden nachsehen und dann
+   aufgeben, statt endlos zu suchen.
+  */
+  zeigeGeteiltesRegal() {
+    if (!GETEILTES_REGAL) return;
+    const gibtEs = this.ui.regale?.some?.((r) => r.id === GETEILTES_REGAL)
+                   ?? true;
+    history.replaceState(null, '', location.pathname + location.search);
+    if (!gibtEs) return;
+
+    /*
+     Gewartet wird, bis die Regalreihe gezeichnet ist UND die Seite
+     stillsteht: zwei Messungen der Hoehe im Abstand von 150 ms mit
+     gleichem Ergebnis. Laenger als zwei Sekunden nicht — dann ist etwas
+     anderes im Argen, und stehenzubleiben ist besser als zu springen,
+     waehrend jemand schon selbst liest.
+
+     Das Warten auf die Reihe ist noetig: Die Regalwand wird gezeichnet,
+     nicht ausgeliefert, und ein Verweis auf eine Reihe, die es noch nicht
+     gibt, laesst den Besucher oben stehen.
+
+     Das Warten auf den Stillstand ist Vorsicht, kein Fund. Ich habe es
+     zuerst mit einer Messung begruendet, die falsch war: Beim Pruefen
+     blieb scrollY auf 0, und ich hielt die noch wachsende Seite fuer die
+     Ursache. Nachgemessen war es der verborgene Browserbereich —
+     document.visibilityState stand auf "hidden", und darin fuehrt Chrome
+     einen sanften Bildlauf gar nicht aus:
+
+         sofortiger Sprung (behavior auto)    scrollY 4257
+         sanfter Sprung (behavior smooth)     scrollY 0
+
+     Die Zeilen bleiben trotzdem stehen. Ein sanfter Bildlauf ueber 4.300
+     Pixel, waehrend darueber noch Reihen entstehen, kann verrutschen —
+     das ist plausibel, auch wenn ich es nicht beobachtet habe. Was hier
+     NICHT stehen darf, ist eine erfundene Messung als Begruendung.
+    */
+    let versuche = 0;
+    let letzteHoehe = -1;
+    const hin = () => {
+      const reihe = document.querySelector(
+        `#regale .regal[data-regal="${GETEILTES_REGAL}"]`);
+      const hoehe = document.body.scrollHeight;
+      if (reihe && hoehe === letzteHoehe) {
+        this.ui.springZuRegal(GETEILTES_REGAL);
+        return;
+      }
+      letzteHoehe = hoehe;
+      if (++versuche < 14) setTimeout(hin, 150);
+    };
+    hin();
+  }
+
   zeigeGeteiltePlatte() {
     if (!GETEILTE_PLATTE) return;
     const sender = this.ui.senderMitId(GETEILTE_PLATTE);

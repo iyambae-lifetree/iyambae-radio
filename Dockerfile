@@ -33,6 +33,7 @@ COPY . .
 # aus der ungefilterten Menge und konnte aus der Wuehlkiste kommen. Ein Test,
 # den keine Auslieferung laufen laesst, ist kein Test.
 RUN python3 Scripts/baue-sprachen.py \
+ && python3 Scripts/baue-regale.py \
  && python3 Scripts/baue-recht.py \
  && python3 Scripts/baue-apps-sprachen.py \
  && python3 Scripts/pruefe-shell-dateien.py \
