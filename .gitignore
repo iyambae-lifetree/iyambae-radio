@@ -22,6 +22,12 @@ __pycache__/
 /robots.txt
 /sitemap.xml
 
+# llms.txt, die Seitenkarte fuer Antwortmaschinen, erzeugt derselbe Lauf aus
+# data/sender.json — Senderzahl, Laenderzahl und die Regalbeschreibungen
+# stehen darin. Von Hand gepflegt haette sie beim naechsten neuen Sender
+# gelogen, und eine Karte, die luegt, ist schlechter als keine.
+/llms.txt
+
 # Die Rechtsseiten erzeugt Scripts/baue-recht.py aus docs/recht/*.md.
 # Die Markdown-Quellen sind der Bestand, das HTML ist Ergebnis.
 /recht/

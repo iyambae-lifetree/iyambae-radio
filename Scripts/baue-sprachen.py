@@ -701,6 +701,64 @@ def erzeuge_sitemap(alle_kuerzel, stand):
     return "\n".join(zeilen) + "\n"
 
 
+def erzeuge_llms(katalog):
+    """llms.txt — eine Seitenkarte fuer Antwortmaschinen.
+
+    WAS SIE IST: ein kurzer Text, der einem Sprachmodell in einem Zug sagt,
+    was es hier gibt und wo. Kein Standard mit Zaehnen — Google sagt
+    ausdruecklich, dass es die Datei nicht auswertet, und wer etwas
+    anderes verspricht, verkauft Hoffnung.
+
+    WARUM SIE TROTZDEM HIER LIEGT: Sie kostet nichts, sie kann nicht
+    schaden, und ChatGPT wie Perplexity holen sie nachweislich ab. Der
+    eigentliche Gewinn ist ein anderer: Die Zahlen darin kommen aus
+    data/sender.json, koennen also nicht veralten. Eine von Hand gepflegte
+    Seitenkarte haette schon beim naechsten neuen Sender gelogen.
+
+    Was hier NICHT steht, sind Wirkungsversprechen. Dieselbe Regel wie im
+    Fliesstext: Eine Behauptung wird nicht dadurch harmlos, dass eine
+    Maschine sie liest.
+    """
+    sender = katalog.get("sender", [])
+    regale = katalog.get("regale", [])
+    laender = sorted({s.get("land", "") for s in sender} - {""})
+    zeilen = [
+        "# IYAMBAE FM",
+        "",
+        f"> Ein handverlesener Plattenladen zum Zuhoeren: {len(sender)} Internet-Radiosender "
+        f"aus {len(laender)} Laendern in {len(regale)} Regalen. Jeder Sender laeuft auf Wunsch "
+        "in 432 Hz statt in den ueblichen 440 — die Seite verschiebt die Tonhoehe im Browser "
+        "um -31,77 Cent.",
+        "",
+        "Betreiber: IYAMBAE. Die Seite verspricht keine Wirkung von 432 Hz und ist kein "
+        "Medizinprodukt. Der Katalog ist redaktionelle Auswahl, keine Vollstaendigkeit.",
+        "",
+        "## Die Regale",
+        "",
+    ]
+    for r in regale:
+        zahl = sum(1 for s in sender if s.get("regal") == r.get("id"))
+        zeilen.append(f"- **{r.get('name')}** ({zahl} Sender): {r.get('beschreibung', '')}")
+    zeilen += [
+        "",
+        "## Seiten",
+        "",
+    ]
+    for kuerzel in SPRACHEN:
+        zeilen.append(f"- [{kuerzel}]({HAUS}/{kuerzel}/): das Radio in dieser Sprache")
+    zeilen += [
+        "",
+        "## Verwandtes",
+        "",
+        "- [IYAMBAE Tuner](https://apps.iyambae.fm/): Werkzeuge und Erklaerungen zum "
+        "Kammerton — Blindtest, Stimmungsmesser, Gitarre, Solfeggio, Berichtigungen",
+        f"- [Sitemap]({HAUS}/sitemap.xml)",
+        f"- [Impressum]({HAUS}/recht/impressum/) · [Datenschutz]({HAUS}/recht/datenschutz/)",
+        "",
+    ]
+    return "\n".join(zeilen)
+
+
 def erzeuge_robots():
     """robots.txt — und die Entscheidung, die darin steckt.
 
@@ -1000,6 +1058,7 @@ def main():
 
     sitemap = erzeuge_sitemap(list(SPRACHEN), senderkatalog.get("_geprueft_am", ""))
     robots = erzeuge_robots()
+    llms = erzeuge_llms(senderkatalog)
     if not pruefe_sitemap(sitemap, list(SPRACHEN)):
         gut = False
     if not pruefe_robots(robots):
@@ -1033,6 +1092,7 @@ def main():
     # geschrieben, und im Repository waeren sie eine zweite Wahrheit.
     io.open(ROOT / "sitemap.xml", "w", encoding="utf-8", newline="\n").write(sitemap)
     io.open(ROOT / "robots.txt", "w", encoding="utf-8", newline="\n").write(robots)
+    io.open(ROOT / "llms.txt", "w", encoding="utf-8", newline="\n").write(llms)
 
     for kuerzel, bytes_, ohne, zusatz in gemessen:
         seite = seiten[kuerzel]
@@ -1046,6 +1106,7 @@ def main():
 
     print(f"  ✔ /sitemap.xml  {len(sitemap):>6} Zeichen, {len(SPRACHEN)} Eintraege")
     print(f"  ✔ /robots.txt   {len(robots):>6} Zeichen")
+    print(f"  ✔ /llms.txt    {len(llms):>6} Zeichen")
     print(f"\n  {len(SPRACHEN)} Sprachseiten und {len(SPRACHEN)} Manifeste erzeugt, "
           f"dazu sitemap.xml und robots.txt.")
     return 0

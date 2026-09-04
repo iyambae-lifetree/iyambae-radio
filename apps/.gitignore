@@ -19,3 +19,8 @@
 # schlechter als keine.
 /robots.txt
 /sitemap.xml
+
+# llms.txt, die Seitenkarte fuer Antwortmaschinen. Sie fuehrt die acht
+# Seiten aus SEITEN auf und traegt die Fassungsnummer des Tuners — beides
+# aendert sich, ohne dass jemand an eine Textdatei denkt.
+/llms.txt

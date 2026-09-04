@@ -486,7 +486,72 @@ def fassung_aus(quelle):
     return m.group(1) if m else None
 
 
-def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0"):
+ANTWORTTEIL = re.compile(r"^\d+$")
+# Nicht gierig: `[^"]+` haette `.titel` mitverschluckt und das Muster
+# damit nie getroffen. Erst beim Nachsehen aufgefallen, nicht beim Lesen.
+FRAGENGRIFF = re.compile(r'<summary[^>]*\sdata-text="(frage\.[^"]+?)\.titel"')
+
+
+def _nur_text(roh):
+    """Auszeichnung raus, Leerraum zusammen. Fuer strukturierte Daten.
+
+    In den Antworten stehen <strong>, <em> und Verweise. In einer
+    acceptedAnswer haben sie nichts zu suchen — dort steht Text, den eine
+    Maschine vorliest oder zitiert.
+    """
+    ohne = re.sub(r"<[^>]+>", " ", roh)
+    return re.sub(r"\s+", " ", ohne).strip()
+
+
+def fragenknoten(vorlage_quelle, texte, seite):
+    """Die aufklappbaren Fragen der Seite als FAQPage.
+
+    GEBAUT AUS DER SEITE, NICHT AUS EINER LISTE. Gelesen werden die
+    data-text-Marken der <summary>-Griffe in DIESER Vorlage, in ihrer
+    Reihenfolge. Steht eine Frage nicht auf der Seite, steht sie auch
+    nicht in den strukturierten Daten — das ist keine Vorsicht, es ist
+    Googles Bedingung: Ausgezeichnet werden darf nur, was der Besucher
+    auch sieht.
+
+    Die Antwort setzt sich aus den durchnummerierten Teilen zusammen
+    (frage.X.1, .2, .3 …). Teile mit anderen Namen — `aria`, `w1.zahl` —
+    sind Bedienhilfen und Tabellenzellen, kein Antworttext.
+    """
+    marken = FRAGENGRIFF.findall(vorlage_quelle)
+    fragen = []
+    for stamm in marken:
+        titel = texte.get(f"{stamm}.titel")
+        if not titel:
+            continue
+        teile = []
+        for schluessel, wert in texte.items():
+            if not schluessel.startswith(stamm + "."):
+                continue
+            rest = schluessel[len(stamm) + 1:]
+            if ANTWORTTEIL.match(rest):
+                teile.append((int(rest), wert))
+        if not teile:
+            continue
+        antwort = " ".join(_nur_text(w) for _, w in sorted(teile))
+        if not antwort:
+            continue
+        fragen.append({
+            "@type": "Question",
+            "name": _nur_text(titel),
+            "acceptedAnswer": {"@type": "Answer", "text": antwort},
+        })
+    if not fragen:
+        return None
+    return {
+        "@type": "FAQPage",
+        "@id": f"{seite}#fragen",
+        "isPartOf": {"@id": f"{seite}#seite"},
+        "mainEntity": fragen,
+    }
+
+
+def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0",
+           vorlage_quelle=""):
     """Organization, WebPage und SoftwareApplication.
 
     WAS HIER NICHT STEHT UND NIE STEHEN WIRD: aggregateRating, review,
@@ -565,7 +630,11 @@ def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0"):
         }
     else:
         anwendung = programm_knoten
-    graph = {"@context": "https://schema.org", "@graph": [haus, webseite, anwendung]}
+    knoten = [haus, webseite, anwendung]
+    fragen = fragenknoten(vorlage_quelle, texte, seite)
+    if fragen:
+        knoten.append(fragen)
+    graph = {"@context": "https://schema.org", "@graph": knoten}
     roh = json.dumps(graph, ensure_ascii=False, separators=(",", ":"))
     # Jedes "<" maskieren, nicht nur "</script>". Ein Kleinerzeichen in einem
     # uebersetzten Satz beendete sonst im Zweifel das Skript-Element, und der
@@ -670,7 +739,8 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, pfad="", programm="tuner",
 
     # Die strukturierten Daten ans Ende des Rumpfes, nicht in den Kopf: Der
     # Kopf soll klein bleiben, damit der erste Anblick frueh steht.
-    seite = seite.replace("</body>", jsonld(kuerzel, texte, pfad, programm, fassung)
+    seite = seite.replace("</body>", jsonld(kuerzel, texte, pfad, programm, fassung,
+                                            vorlage_quelle)
                           + "</body>", 1)
     return seite
 
@@ -703,6 +773,88 @@ def erzeuge_sitemap():
             zeilen.append("  </url>")
     zeilen.append("</urlset>")
     return "\n".join(zeilen) + "\n"
+
+
+# Was auf jeder Werkzeugseite steht, in einem Satz — fuer llms.txt.
+# Absichtlich hier und nicht im Sprachkatalog: Die Datei ist einsprachig
+# (Deutsch), weil sie eine Karte ist und keine Seite.
+SEITENNAME = {
+    "": "IYAMBAE Tuner",
+    "spotify/": "Spotify in 432 Hz",
+    "samplerate/": "Abtastrate und Tonhoehe",
+    "berichtigungen/": "Berichtigungen",
+    "gitarre/": "Gitarre auf 432 Hz stimmen",
+    "solfeggio/": "528 Hz und Solfeggio",
+    "hoertest/": "Blindtest 432 gegen 440",
+    "stimmung/": "Stimmungsmesser",
+}
+
+SEITENSATZ = {
+    "": "Der IYAMBAE Tuner: stimmt den Systemton des Rechners auf 432 Hz, "
+        "ohne eine Datei umzuwandeln. Kostenlose Testausgabe fuer macOS. "
+        "Dazu 14 Fragen und Antworten zum Kammerton.",
+    "spotify/": "Warum Spotify sich nicht umstimmen laesst und was stattdessen "
+                "geht — gemessen, nicht behauptet.",
+    "samplerate/": "Abtastrate und Tonhoehe: was beim Umstimmen wirklich "
+                   "passiert und warum 44,1 kHz nichts damit zu tun hat.",
+    "berichtigungen/": "Aussagen, die wir selbst berichtigt haben, mit Datum "
+                       "und Grund. Auch die, die uns nicht gefallen.",
+    "gitarre/": "Gitarre auf 432 Hz stimmen: die sechs Saitenfrequenzen, der "
+                "Unterschied zum halben Ton herunter (100 Cent gegen 31,8) "
+                "und was am Hendrix-Argument dran ist.",
+    "solfeggio/": "528 Hz und die Solfeggio-Frequenzen: woher die Zahlen "
+                  "stammen, was sich nachrechnen laesst und was nicht.",
+    "hoertest/": "Blindtest: Hoerst du den Unterschied zwischen 432 und "
+                 "440 Hz? Fuenf Durchgaenge, ehrliche Auswertung, laeuft im "
+                 "Browser.",
+    "stimmung/": "Stimmungsmesser: misst, auf welchem Kammerton eine "
+                 "laufende Aufnahme steht. Web Audio, ohne Hochladen.",
+}
+
+
+def erzeuge_llms(fassung):
+    """llms.txt fuer apps.iyambae.fm — dieselbe Ueberlegung wie beim Radio.
+
+    Die Liste kommt aus SEITEN, nicht aus einer zweiten Aufzaehlung. Eine
+    neue Seite ohne Satz in SEITENSATZ faellt beim Bau auf, statt still zu
+    fehlen — siehe die Pruefung unten.
+    """
+    fehlend = [p for p in SEITEN if p not in SEITENSATZ or p not in SEITENNAME]
+    if fehlend:
+        raise SystemExit(f"  ✘ SEITENNAME/SEITENSATZ fehlt fuer: {fehlend} — "
+                         f"llms.txt waere unvollstaendig")
+    zeilen = [
+        "# IYAMBAE Tuner",
+        "",
+        "> Werkzeuge und Erklaerungen zum Kammerton. Der Tuner stimmt den "
+        f"Systemton eines Rechners auf 432 Hz um (Testausgabe {fassung}, "
+        "macOS, kostenlos); dazu gehoeren ein Blindtest, ein Stimmungsmesser "
+        "und mehrere Erklaerseiten.",
+        "",
+        "Betreiber: IYAMBAE. Wir versprechen keine Wirkung von 432 Hz und "
+        "verkaufen kein Medizinprodukt. Wo die Forschungslage unklar ist, "
+        "steht das da — siehe die Seite Berichtigungen.",
+        "",
+        "## Seiten",
+        "",
+    ]
+    for pfad in SEITEN:
+        zeilen.append(f"- [{SEITENNAME[pfad]}]({HAUS}/de/{pfad}): {SEITENSATZ[pfad]}")
+    zeilen += [
+        "",
+        "Jede Seite gibt es in sieben Sprachen: de, en, fr, es, it, ja, ar — "
+        "die Adresse traegt das Kuerzel, etwa /en/gitarre/.",
+        "",
+        "## Verwandtes",
+        "",
+        f"- [IYAMBAE FM]({RADIO}/): 165 Internet-Radiosender, jeder auf Wunsch "
+        "in 432 Hz",
+        f"- [Sitemap]({HAUS}/sitemap.xml)",
+        f"- [Impressum]({RADIO}/recht/impressum/) · "
+        f"[Datenschutz]({RADIO}/recht/datenschutz/)",
+        "",
+    ]
+    return "\n".join(zeilen)
 
 
 def erzeuge_robots():
@@ -1094,6 +1246,7 @@ def main():
 
     sitemap = erzeuge_sitemap()
     robots = erzeuge_robots()
+    llms = erzeuge_llms(fassung)
     if not pruefe_sitemap(sitemap):
         gut = False
     if not pruefe_robots(robots):
@@ -1128,6 +1281,8 @@ def main():
             newline="\n").write(sitemap)
     io.open(APPS / "robots.txt", "w", encoding="utf-8",
             newline="\n").write(robots)
+    io.open(APPS / "llms.txt", "w", encoding="utf-8",
+            newline="\n").write(llms)
 
     for pfad in SEITEN:
         for kuerzel in SPRACHEN:
@@ -1138,6 +1293,7 @@ def main():
     print(f"  ✔ apps/sitemap.xml  {len(sitemap):>6} Zeichen, "
           f"{len(SEITEN) * len(SPRACHEN)} Eintraege")
     print(f"  ✔ apps/robots.txt   {len(robots):>6} Zeichen")
+    print(f"  ✔ apps/llms.txt    {len(llms):>6} Zeichen")
     print(f"\n  {len(seiten)} Seiten fuer apps.iyambae.fm erzeugt "
           f"({len(SEITEN)} je {len(SPRACHEN)} Sprachen), dazu sitemap.xml "
           f"und robots.txt.")
