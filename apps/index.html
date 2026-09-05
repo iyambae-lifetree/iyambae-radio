@@ -139,7 +139,11 @@
 
   --text:         #ECECF0;
   --leise:        #A6A7B2;
-  --leiser:       #74757F;
+  /* Gleicher Wert wie in werkzeug.css — die beiden Farbtabellen muessen
+     uebereinstimmen, und pruefe_farbtoken() im Bauskript haelt sie
+     gegeneinander. Aufgehellt am 05.09.2026: #74757F kam auf --grund-hoch
+     nur auf 3,68 : 1. */
+  --leiser:       #83848E;
 
   --anzeige: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
   --grotesk: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

@@ -1046,6 +1046,38 @@ RUECKGRAT = ("fuss.merksatz", "fuss.recht",
              "frage.forschung.3", "frage.forschung.4")
 
 
+def pruefe_farbtoken(quellen):
+    """Stimmen die Farbtabellen von apps/index.html und werkzeug.css ueberein?
+
+    Die Startseite laedt werkzeug.css NICHT — sie traegt eine eigene Kopie
+    der Farbtabelle. Am 05.09.2026 habe ich einen Grauton wegen zu geringen
+    Kontrasts aufgehellt, aber nur in werkzeug.css. Die Startseite blieb auf
+    dem alten Wert, und der Fehler war auf genau der Seite noch da, die die
+    meisten Besucher sehen.
+
+    Zwei Quellen fuer dieselbe Farbe laufen auseinander. Wenn sie schon
+    getrennt sein muessen, soll wenigstens der Bau es merken.
+    """
+    def tokens(text):
+        m = re.search(r":root\s*\{(.*?)\}", text, re.S)
+        if not m:
+            return {}
+        return {name: wert.strip() for name, wert in
+                re.findall(r"--([a-z0-9-]+):\s*([^;]+);", m.group(1))}
+
+    seite = tokens(quellen.get("", ""))
+    geteilt = tokens(io.open(ROOT / "apps" / "assets" / "werkzeug.css",
+                             encoding="utf-8").read())
+    auseinander = [(k, seite[k], geteilt[k]) for k in seite
+                   if k in geteilt and seite[k] != geteilt[k]]
+    for name, a, b in auseinander:
+        print(f"  ✘ --{name}: apps/index.html sagt {a}, werkzeug.css sagt {b}")
+    if not auseinander:
+        gemeinsam = len([k for k in seite if k in geteilt])
+        print(f"  ✔ {gemeinsam} Farbtoken stehen in beiden Tabellen gleich")
+    return not auseinander
+
+
 def pruefe_ladeverweis(quellen):
     """Nennt die Vorlage dieselbe Datei wie data/fassungen.json?
 
@@ -1413,6 +1445,8 @@ def main():
     if not pruefe_ruecken(kataloge):
         gut = False
     if not pruefe_ladeverweis(quellen):
+        gut = False
+    if not pruefe_farbtoken(quellen):
         gut = False
     if not gut:
         print("\n  Nichts geschrieben — der alte Stand bleibt stehen.")
