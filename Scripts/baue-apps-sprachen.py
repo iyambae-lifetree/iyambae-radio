@@ -108,6 +108,14 @@ SEITEN = {
         "programm": "messwerkzeug",
         "rueckgrat": True,
     },
+    "eltern/": {
+        "vorlage": "eltern.html",
+        # WEDER Programm zum Herunterladen NOCH Werkzeug im Browser: ein
+        # Text. Ein SoftwareApplication- oder WebApplication-Knoten waere
+        # hier schlicht falsch — die Seite ist nichts, was man bedient.
+        "programm": "text",
+        "rueckgrat": True,
+    },
     "gitarre/": {
         "vorlage": "gitarre.html",
         "programm": "messwerkzeug",
@@ -605,7 +613,24 @@ def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0",
             "availability": "https://schema.org/InStock",
         },
     }
-    if programm == "messwerkzeug":
+    if programm == "text":
+        # Ein Artikel, kein Programm. `Article` sagt der Maschine, was die
+        # Seite ist: ein Text mit Verfasser und Gegenstand. Bewusst OHNE
+        # datePublished — ein erfundenes Datum waere schlechter als keines,
+        # und ein echtes muesste jemand pflegen.
+        anwendung = {
+            "@type": "Article",
+            "@id": f"{seite}#artikel",
+            "headline": texte.get("elt.titel", texte.get("seite.titel", "")),
+            "description": texte.get("seite.beschreibung", ""),
+            "url": seite,
+            "inLanguage": kuerzel,
+            "isPartOf": {"@id": f"{seite}#seite"},
+            "author": {"@id": f"{RADIO}/#haus"},
+            "publisher": {"@id": f"{RADIO}/#haus"},
+            "about": ["Kammerton", "432 Hz", "528 Hz", "Musikunterricht"],
+        }
+    elif programm == "messwerkzeug":
         # Ein Werkzeug, das IM BROWSER laeuft, ist keine SoftwareApplication
         # zum Herunterladen. WebApplication sagt der Maschine genau das —
         # und `browserRequirements` sagt, was sie braucht.
@@ -783,6 +808,7 @@ SEITENNAME = {
     "spotify/": "Spotify in 432 Hz",
     "samplerate/": "Abtastrate und Tonhoehe",
     "berichtigungen/": "Berichtigungen",
+    "eltern/": "432 Hz erklaert fuer Eltern",
     "gitarre/": "Gitarre auf 432 Hz stimmen",
     "solfeggio/": "528 Hz und Solfeggio",
     "hoertest/": "Blindtest 432 gegen 440",
@@ -799,6 +825,10 @@ SEITENSATZ = {
                    "passiert und warum 44,1 kHz nichts damit zu tun hat.",
     "berichtigungen/": "Aussagen, die wir selbst berichtigt haben, mit Datum "
                        "und Grund. Auch die, die uns nicht gefallen.",
+    "eltern/": "Was Eltern von Musikschuelern ueber 432 Hz und 528 Hz wissen "
+               "sollten: Geschichte, Zahlen, Studienlage — und was ein "
+               "anderer Kammerton fuer Streicher, Blaeser und Klavier "
+               "praktisch bedeutet.",
     "gitarre/": "Gitarre auf 432 Hz stimmen: die sechs Saitenfrequenzen, der "
                 "Unterschied zum halben Ton herunter (100 Cent gegen 31,8) "
                 "und was am Hendrix-Argument dran ist.",
@@ -1115,9 +1145,15 @@ def pruefe_seite(kuerzel, seite, texte, pfad="", rueckgrat=True,
             fehler.append(f"JSON-LD ist kein gueltiges JSON: {fehl}")
         else:
             knoten = {k.get("@type"): k for k in daten.get("@graph", [])}
-            gefordert = ("Organization", "WebPage",
-                         "WebApplication" if programm == "messwerkzeug"
-                         else "SoftwareApplication")
+            # Welcher dritte Knoten gefordert ist, haengt davon ab, WAS die
+            # Seite ist: ein Programm zum Herunterladen, ein Werkzeug im
+            # Browser — oder ein Text. Die dritte Art kam am 04.09.2026 dazu
+            # und stand hier zuerst nicht; die Pruefung hat es sofort
+            # gemeldet, statt eine Seite mit falscher Auszeichnung
+            # durchzulassen.
+            dritter = {"messwerkzeug": "WebApplication",
+                       "text": "Article"}.get(programm, "SoftwareApplication")
+            gefordert = ("Organization", "WebPage", dritter)
             for art in gefordert:
                 if art not in knoten:
                     fehler.append(f"JSON-LD ohne {art}")

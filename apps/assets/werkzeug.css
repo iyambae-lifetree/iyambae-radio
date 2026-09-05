@@ -108,6 +108,15 @@ h3 { font-family: var(--daten); font-size: .82rem; letter-spacing: .04em; margin
 }
 .grossknopf:hover { background: var(--akzent-hell); }
 
+/* Der leise Bruder: fuehrt weiter, drangt sich aber nicht vor. Auf einer
+   Seite mit mehreren Wegen ist hoechstens einer der Hauptweg — die
+   uebrigen sollen lesbar sein, nicht laut. */
+.grossknopf--leise {
+  background: transparent; color: var(--akzent);
+  border: 1px solid var(--kante-hell);
+}
+.grossknopf--leise:hover { background: transparent; border-color: var(--akzent); }
+
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
 .fuss__werkzeuge { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1.1rem; margin: 0 0 1.4rem; }

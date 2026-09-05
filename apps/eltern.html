@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title data-text="elt.seite.titel">432 Hz und 528 Hz — eine Einordnung für Eltern von Musikschülern</title>
+<meta name="description" data-inhalt="elt.seite.beschreibung" content="Ihr Kind lernt ein Instrument, und irgendwo ist Ihnen die Zahl 432 begegnet. Was daran musikalisch stimmt, was nicht, und was es für den Unterricht bedeutet — mit Zahlen, Quellen und ohne Versprechen.">
+<meta name="theme-color" content="#0A0908">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IYAMBAE Tuner">
+<meta property="og:title" data-inhalt="elt.seite.titel" content="432 Hz und 528 Hz — eine Einordnung für Eltern von Musikschülern">
+<meta property="og:description" data-inhalt="elt.seite.beschreibung" content="Ihr Kind lernt ein Instrument, und irgendwo ist Ihnen die Zahl 432 begegnet. Was daran musikalisch stimmt, was nicht, und was es für den Unterricht bedeutet — mit Zahlen, Quellen und ohne Versprechen.">
+<meta property="og:url" content="https://apps.iyambae.fm/de/eltern/">
+<meta property="og:locale" content="de">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://apps.iyambae.fm/de/eltern/">
+<link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/schrift/schriften.css">
+<link rel="stylesheet" href="/assets/werkzeug.css">
+<style>
+/* Nur diese Seite. Das Gerüst steht in /assets/werkzeug.css. */
+
+/* Der Zahlenstrahl der Stimmtöne. Er trägt den ganzen Text: Wer ihn
+   ansieht, hat begriffen, dass 440 kein Naturgesetz ist. */
+.strahl { margin: 1.4rem 0 .6rem; overflow-x: auto; }
+.strahl svg { display: block; width: 100%; min-width: 30rem; height: auto;
+              font-family: var(--daten); }
+
+/* Was oft behauptet wird. Kein <table>: Die Zeilen tragen einen langen
+   Erklärsatz, und der stünde in einer Tabellenzelle auf dem Handy in einer
+   Spalte von vier Zeichen Breite. */
+.behauptung { border-top: 1px solid var(--kante); padding: 1rem 0; }
+.behauptung:last-of-type { border-bottom: 1px solid var(--kante); }
+.behauptung__kopf { display: flex; gap: .8rem; align-items: baseline;
+                    flex-wrap: wrap; margin-bottom: .35rem; }
+.behauptung__was { font-weight: 600; margin: 0; }
+.behauptung__wie { margin: 0; color: var(--leise); font-size: .95rem; }
+.stempel {
+  flex: none; font-family: var(--daten); font-size: .68rem;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: .1rem .45rem; border: 1px solid currentColor; border-radius: 2px;
+}
+.stempel--ja   { color: var(--akzent); }
+.stempel--nein { color: var(--r1); }
+
+/* Was es fürs Instrument bedeutet — der Teil, um den es Eltern geht. */
+.fach { display: grid; grid-template-columns: 7rem 1fr; gap: .3rem 1rem;
+        padding: .8rem 0; border-top: 1px solid var(--kante); }
+.fach:last-of-type { border-bottom: 1px solid var(--kante); }
+.fach__wer { font-family: var(--daten); font-size: .74rem;
+             letter-spacing: .05em; text-transform: uppercase;
+             color: var(--akzent); padding-top: .15rem; }
+.fach p { margin: 0; color: var(--leise); }
+.fach p strong { color: var(--text); }
+@media (max-width: 34rem) { .fach { grid-template-columns: 1fr; } }
+
+/* Belege und Nebenbemerkungen. NICHT .quelle: die ist in
+   berichtigungen.html lokal definiert und mit 0,72 rem Mono fuer eine
+   Zeile gedacht, nicht fuer einen Absatz. */
+.beleg { font-size: .88rem; color: var(--leiser); }
+.beleg a { color: var(--leise); }
+</style>
+</head>
+<body>
+
+<header class="kopfleiste">
+  <div class="rahmen kopfleiste__inhalt">
+    <a class="marke" href="/de/">
+      <img src="assets/iyambae-marke.svg" alt="" width="28" height="28">
+      <span class="marke__wort">IYAMBAE <span>Tuner</span></span>
+    </a>
+    <nav class="kopf__wege">
+      <!--SPRACHWAHL-->
+      <a class="kopfknopf" href="/de/hoertest/" data-text="elt.kopf.hoertest">Hörtest</a>
+      <a class="kopfknopf kopfknopf--haupt" href="/de/" data-text="elt.kopf.tuner">Zum Tuner</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="rahmen teil">
+  <p class="eyebrow" data-text="elt.eyebrow">Für Eltern, Lehrkräfte und alle, die gefragt werden</p>
+  <h1 data-text="elt.titel">Was es mit 432 Hz und 528 Hz auf sich hat</h1>
+  <p data-html="elt.vorwort">Ihr Kind lernt ein Instrument, und irgendwo ist Ihnen die Zahl 432 begegnet — in einem Video, in einer App, in einem Gespräch nach dem Unterricht. Hier steht, <strong>was daran musikalisch stimmt, was nicht, und was es für den Unterricht bedeutet.</strong></p>
+
+  <p class="merk" data-text="elt.kurz.1">Der Stimmton ist eine Verabredung, keine Naturkonstante. Dass es auch anders geht als 440 Hz, ist historisch richtig.</p>
+  <p class="merk" data-text="elt.kurz.2">Zu 432 Hz gibt es eine echte, kleine Geschichte — und sehr viele Behauptungen, die sich nicht halten lassen.</p>
+  <p class="merk" data-text="elt.kurz.3">Für den Unterricht ist die Frage praktisch, nicht weltanschaulich. Zuhören: unbedenklich. Umstimmen: eine Entscheidung mit Folgen.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="elt.strahl.titel">Der Stimmton ist eine Verabredung</h2>
+  <p data-html="elt.strahl.1">Wenn ein Orchester sich einstimmt, einigt es sich auf einen einzigen Ton: das <em>a′</em>, den Kammerton. Alles andere folgt daraus. Seit 1955 ist dafür 440 Hz genormt.</p>
+  <p data-html="elt.strahl.2">Diese Norm ist jünger und lockerer, als die meisten glauben. Vor 1859 gab es gar keine — erhaltene Orgeln und Stimmgabeln zeigen ein a′ zwischen etwa 390 und 505 Hz. Und auch heute halten sich viele Orchester nicht daran: <strong>Deutschland und Österreich liegen üblicherweise bei 442 bis 443 Hz, die Wiener Philharmoniker seit den 1980er Jahren bei etwa 444.</strong></p>
+
+  <div class="strahl">
+    <svg viewBox="0 0 620 150" role="img" data-aria="elt.strahl.aria"
+         aria-label="Zahlenstrahl der Stimmtöne von 432 bis 444 Hertz">
+      <line x1="40" y1="70" x2="580" y2="70" stroke="#2A2B33" stroke-width="1" fill="none"/>
+
+      <line x1="52" y1="56" x2="52" y2="84" stroke="#4CD973" stroke-width="2.5" fill="none"/>
+      <text x="52" y="46" text-anchor="middle" font-size="15" fill="#4CD973">432</text>
+      <text x="52" y="104" text-anchor="middle" font-size="11.5" fill="#A6A7B2" data-text="elt.strahl.mailand">Mailand 1881</text>
+
+      <line x1="153" y1="61" x2="153" y2="79" stroke="#74757F" stroke-width="1.5" fill="none"/>
+      <text x="153" y="46" text-anchor="middle" font-size="13" fill="#A6A7B2">435</text>
+      <text x="153" y="104" text-anchor="middle" font-size="11.5" fill="#A6A7B2" data-text="elt.strahl.frankreich">Frankreich 1859</text>
+
+      <line x1="322" y1="54" x2="322" y2="86" stroke="#ECECF0" stroke-width="2.5" fill="none"/>
+      <text x="322" y="46" text-anchor="middle" font-size="15" fill="#ECECF0">440</text>
+      <text x="322" y="104" text-anchor="middle" font-size="11.5" fill="#A6A7B2" data-text="elt.strahl.norm">Norm seit 1955</text>
+
+      <line x1="423" y1="61" x2="423" y2="79" stroke="#74757F" stroke-width="1.5" fill="none"/>
+      <text x="423" y="46" text-anchor="middle" font-size="13" fill="#A6A7B2">443</text>
+
+      <line x1="457" y1="56" x2="457" y2="84" stroke="#FABF33" stroke-width="2.5" fill="none"/>
+      <text x="457" y="46" text-anchor="middle" font-size="15" fill="#FABF33">444</text>
+      <text x="457" y="104" text-anchor="middle" font-size="11.5" fill="#FABF33" data-text="elt.strahl.wien">Wiener Philharmoniker</text>
+
+      <path d="M 52 124 L 52 132 L 457 132 L 457 124" stroke="#4CD973" stroke-width="1.5" fill="none"/>
+      <rect x="196" y="122" width="118" height="20" fill="#121216"/>
+      <text x="255" y="137" text-anchor="middle" font-size="12.5" fill="#4CD973" data-text="elt.strahl.abstand">47 Cent Abstand</text>
+
+      <text x="580" y="74" text-anchor="end" font-size="11.5" fill="#74757F">Hz</text>
+    </svg>
+  </div>
+  <p class="beleg" data-html="elt.strahl.bu">Ein Halbton sind 100 Cent. Zwischen 432 und dem Wiener 444 liegt also <strong>fast ein halber Halbton</strong> — deutlich mehr als der Abstand, um den es in der Diskussion meist geht (432 gegen 440: 31,8 Cent). Ein Kind in Wien wächst ohnehin nicht mit exakt 440 auf.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="elt.hist.titel">Woher die Zahl 432 kommt</h2>
+  <p data-html="elt.hist.1">Der historische Kern ist echt, aber klein. Ein Mailänder Musikerkongress empfahl 1881 den Wert 432, ein italienischer Militärerlass von 1884 schrieb ihn für Militärkapellen vor. Schon 1885 einigte sich eine internationale Konferenz — ausgerechnet in Wien — auf 435, und damit war die Episode praktisch beendet.</p>
+  <p data-html="elt.hist.2">Verdi wird oft als Kronzeuge genannt. Er trat für einen tieferen Stimmton ein, sein Favorit waren aber die französischen 435; die 432 ließ er gelten mit der Bemerkung, der Unterschied sei „so klein, fast unhörbar fürs Ohr“. <strong>Der Ausdruck „Verdi-Stimmung“ für 432 wurde erst 1988 geprägt</strong>, gut achtzig Jahre nach seinem Tod, im Rahmen einer politischen Kampagne.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="elt.hoert.titel">Was man tatsächlich hört</h2>
+  <p data-html="elt.hoert.1">Der Unterschied zwischen 432 und 440 beträgt <strong>31,8 Cent</strong>, knapp ein Drittel Halbton. Im direkten Vergleich — dasselbe Stück, einmal so, einmal so — ist das gut hörbar; die Unterscheidungsschwelle liegt bei wenigen Cent.</p>
+  <p data-html="elt.hoert.2"><em>Ohne</em> Vergleich erkennt das praktisch niemand. Absolutes Gehör ist selten, und selbst wer es hat, hört eine Tonhöhe, keine Zahl. Tiefer gestimmte Musik kann subjektiv wärmer oder ruhiger wirken — <strong>weil sie tiefer ist</strong>, nicht weil 432 eine besondere Zahl wäre. Bei 431 oder 433 wäre der Eindruck derselbe.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="elt.solf.titel">528 Hz und die „Solfeggio-Frequenzen“</h2>
+  <p data-html="elt.solf.1">Diese Zahlen begegnen einem oft im selben Atemzug mit 432, obwohl sie eine ganz andere Herkunft haben — und sich mit 432 nicht einmal vertragen.</p>
+  <p data-html="elt.solf.2">Die Liste der sechs „Solfeggio-Frequenzen“ (396, 417, 528, 639, 741, 852) erscheint erstmals in einem Buch von 1999. Ihr Urheber gibt an, sie in einer Eingebung aus den <strong>Versnummern des 4. Buchs Mose</strong> gewonnen zu haben. Mit dem mittelalterlichen Solfeggio des Guido von Arezzo teilen sie nur die Silbennamen.</p>
+  <p data-html="elt.solf.3">Und rechnerisch: 528 Hz ist das <em>c″</em> — allerdings nur, wenn das a′ bei rund 444 Hz liegt. Bei einem Kammerton von 432 liegt das c″ bei 513,7 Hz. <strong>Wer „in 432 Hz“ hört, hört also gerade nicht 528.</strong> Die beiden Zahlen schließen einander aus.</p>
+  <p><a class="grossknopf grossknopf--leise" href="/de/solfeggio/" data-text="elt.solf.knopf">Die Solfeggio-Zahlen im Einzelnen</a></p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="elt.pruef.titel">Was oft behauptet wird — und was sich prüfen lässt</h2>
+
+  <div class="behauptung">
+    <div class="behauptung__kopf">
+      <p class="behauptung__was" data-text="elt.pruef.a.was">Früher wurde tiefer gestimmt als heute</p>
+      <span class="stempel stempel--ja" data-text="elt.pruef.a.stempel">stimmt</span>
+    </div>
+    <p class="behauptung__wie" data-text="elt.pruef.a.wie">Aber nicht einheitlich und nicht auf 432. Die belegten Werte streuen zwischen etwa 390 und 505 Hz, je nach Ort, Jahrhundert und Instrument.</p>
+  </div>
+
+  <div class="behauptung">
+    <div class="behauptung__kopf">
+      <p class="behauptung__was" data-text="elt.pruef.b.was">Mozart, Hendrix oder Bob Marley spielten in 432</p>
+      <span class="stempel stempel--nein" data-text="elt.pruef.b.stempel">widerlegt</span>
+    </div>
+    <p class="behauptung__wie" data-html="elt.pruef.b.wie">Mozarts Umfeld liegt bei rund 421 Hz. Hendrix stimmte einen <em>ganzen</em> Halbton tiefer — 100 Cent, nicht 32; das ist eine Transposition und keine Kammertonfrage. Marleys Instrumente waren fest auf 440 gebaut.</p>
+  </div>
+
+  <div class="behauptung">
+    <div class="behauptung__kopf">
+      <p class="behauptung__was" data-text="elt.pruef.c.was">432 passe zur Erdfrequenz (Schumann-Resonanz)</p>
+      <span class="stempel stempel--nein" data-text="elt.pruef.c.stempel">rechnet sich nicht</span>
+    </div>
+    <p class="behauptung__wie" data-text="elt.pruef.c.wie">Die Schumann-Resonanz liegt bei rund 7,83 Hz und schwankt. Oktaviert ergibt sie etwa 501 Hz, nicht 432.</p>
+  </div>
+
+  <div class="behauptung">
+    <div class="behauptung__kopf">
+      <p class="behauptung__was" data-text="elt.pruef.d.was">440 Hz sei aus politischen Motiven durchgesetzt worden</p>
+      <span class="stempel stempel--nein" data-text="elt.pruef.d.stempel">widerlegt</span>
+    </div>
+    <p class="behauptung__wie" data-text="elt.pruef.d.wie">440 Hz wurde bereits 1834 in Stuttgart empfohlen, lange vor der Konferenz von 1939 — die britisch organisiert war, mit französischer Beteiligung.</p>
+  </div>
+
+  <div class="behauptung">
+    <div class="behauptung__kopf">
+      <p class="behauptung__was" data-text="elt.pruef.e.was">528 Hz wirke auf die Zellen oder die DNA</p>
+      <span class="stempel stempel--nein" data-text="elt.pruef.e.stempel">ohne Grundlage</span>
+    </div>
+    <p class="behauptung__wie" data-text="elt.pruef.e.wie">Diese Behauptung stammt aus demselben Buch von 1999. Eine publizierte experimentelle Grundlage dafür gibt es nicht; die oft zitierte Belegkette führt bei Prüfung ins Leere.</p>
+  </div>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="elt.forsch.titel">Was die Forschung hergibt</h2>
+  <p data-html="elt.forsch.1">Gut belegt ist, dass <strong>Musik als solche</strong> Anspannung mindert — etwa vor medizinischen Eingriffen. Dafür gibt es systematische Übersichten mit mehreren Tausend Teilnehmenden.</p>
+  <p data-html="elt.forsch.2">Für einen <strong>besonderen Vorteil von 432 gegenüber 440</strong> gilt das nicht. Dazu existieren nur kleine Pilotstudien mit acht bis vierundfünfzig Teilnehmenden, überwiegend aus einer einzigen Forschungsgruppe, ohne unabhängige Wiederholung. Die bislang größte Studie (2026, 162 Teilnehmende) fand für 432 sogar ein eher ungünstiges Bild. Eine Metaanalyse gibt es nicht.</p>
+  <p data-html="elt.forsch.3">Das ist keine Aussage gegen 432 Hz — es ist die Feststellung, dass die Belege für die großen Versprechen fehlen. Als musikalische Möglichkeit bleibt die tiefere Stimmung gültig, interessant und völlig harmlos.</p>
+  <p><a class="grossknopf grossknopf--leise" href="/de/berichtigungen/" data-text="elt.forsch.knopf">Was wir hier selbst berichtigt haben</a></p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="elt.unt.titel">Was das für den Unterricht bedeutet</h2>
+  <p data-text="elt.unt.vor">Hier wird die Frage konkret — und hier lohnt das Gespräch mit der Lehrkraft, weil die Antwort vom Instrument abhängt.</p>
+
+  <div class="fach">
+    <span class="fach__wer" data-text="elt.unt.a.wer">Zuhören</span>
+    <p data-text="elt.unt.a.was">Musik zuhause in 432 Hz hören: völlig unbedenklich. Es ist dieselbe Musik, etwas tiefer.</p>
+  </div>
+  <div class="fach">
+    <span class="fach__wer" data-text="elt.unt.b.wer">Streicher</span>
+    <p data-text="elt.unt.b.was">Lassen sich auf jeden Kammerton stimmen. Wer aber allein bei 432 übt und dann bei 443 im Ensemble sitzt, gewöhnt sein Ohr an eine Referenz, die im Zusammenspiel nicht gilt.</p>
+  </div>
+  <div class="fach">
+    <span class="fach__wer" data-text="elt.unt.c.wer">Bläser</span>
+    <p data-html="elt.unt.c.was">Sind auf einen Kammerton hin gebaut und nur in engen Grenzen nachstimmbar. Eine Umstellung auf 432 ist hier <strong>keine Geschmacksfrage</strong>, sondern geht auf Kosten der Intonation.</p>
+  </div>
+  <div class="fach">
+    <span class="fach__wer" data-text="elt.unt.d.wer">Klavier</span>
+    <p data-text="elt.unt.d.was">Der Kammerton ist keine Einstellung, sondern eine Arbeit für den Klavierstimmer — und häufiges Hin und Her ist weder sinnvoll noch günstig.</p>
+  </div>
+  <div class="fach">
+    <span class="fach__wer" data-text="elt.unt.e.wer">Zusammenspiel</span>
+    <p data-html="elt.unt.e.was">Der praktische Kern: Vorspiele, Prüfungen, Orchester und Begleitung laufen auf dem gewohnten Stimmton. <strong>Ein Kind, das darauf hinarbeitet, braucht dort eine verlässliche Referenz.</strong></p>
+  </div>
+
+  <p class="merk" data-html="elt.unt.fazit">Als <em>Hörerfahrung</em> spricht nichts gegen 432 Hz. Als <em>Übungsstimmung</em> für ein Kind, das mit anderen zusammen musiziert, spricht das Praktische dagegen.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="elt.probe.titel">Hören Sie selbst nach</h2>
+  <p data-html="elt.probe.1">Der ehrlichste Weg ist der eigene Vergleich, und zwar blind — also ohne zu wissen, welche Fassung gerade läuft. <strong>Genau das ist der Punkt, an dem viele Behauptungen leiser werden.</strong></p>
+  <p data-html="elt.probe.2">Der Hörtest läuft im Browser, ohne Anmeldung und ohne Installation. Er behauptet nichts und wertet ehrlich aus — auch dann, wenn Sie keinen Unterschied hören.</p>
+  <p><a class="grossknopf" href="/de/hoertest/" data-text="elt.probe.knopf">Zum Hörtest</a></p>
+  <p class="beleg" data-html="elt.probe.radio">Und wer den Unterschied nicht in einem Testaufbau, sondern an Musik erleben will, die ihm gefällt: <a href="https://iyambae.fm/de/">IYAMBAE FM</a> ist ein werbefreies Internetradio, das jeden seiner Sender wahlweise auf 432 Hz umstimmt.</p>
+</section>
+
+<section class="rahmen teil teil--linie">
+  <h2 data-text="elt.quell.titel">Woher diese Angaben stammen</h2>
+  <p class="beleg" data-html="elt.quell.1">Historische Stimmtöne: Alexander J. Ellis, „On the History of Musical Pitch“ (1880); Bruce Haynes, <em>A History of Performing Pitch</em> (2002, rund 1.400 vermessene Instrumente). Mailand 1881 und Verdis Haltung: <em>Gazzetta musicale di Milano</em>, 13.11.1881, sowie der Briefwechsel Verdi–Ricordi. Wiener Stimmton: Clemens Hellsberg, „Gedanken zum Stimmton“ (2016). Solfeggio-Frequenzen: L. G. Horowitz und J. S. Puleo, <em>Healing Codes for the Biological Apocalypse</em> (1999). Studienlage: Cochrane-Übersichten zu Musik und Angst (2013/2021) sowie die Einzelstudien zu 432 und 528 Hz bis 2026.</p>
+  <p class="beleg" data-text="elt.quell.2">Alle Frequenz- und Cent-Angaben sind nachgerechnet. Diese Seite macht bewusst keine Aussagen über gesundheitliche Wirkungen — für solche Aussagen fehlt die Grundlage.</p>
+</section>
+
+</main>
+
+<footer class="fuss">
+  <div class="rahmen">
+    <blockquote class="merksatz" data-text="fuss.merksatz">
+      Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.
+    </blockquote>
+    <nav class="fuss__werkzeuge">
+      <span class="fuss__werkzeuge-titel" data-text="werk.titel">Alles hier</span>
+      <a href="/de/" data-text="werk.tuner">Der Tuner</a>
+      <a href="/de/stimmung/" data-text="werk.stimmung">Stimmung messen</a>
+      <a href="/de/hoertest/" data-text="werk.hoertest">Hörtest</a>
+      <a href="/de/spotify/" data-text="werk.spotify">Spotify in 432 Hz</a>
+      <a href="/de/samplerate/" data-text="werk.samplerate">Samplerate und Tonhöhe</a>
+      <a href="/de/gitarre/" data-text="werk.gitarre">Gitarre auf 432</a>
+      <a href="/de/solfeggio/" data-text="werk.solfeggio">Solfeggio-Frequenzen</a>
+      <a href="/de/eltern/" data-text="werk.eltern">Für Eltern</a>
+      <a href="/de/berichtigungen/" data-text="werk.berichtigungen">Berichtigungen</a>
+    </nav>
+    <p class="fuss__recht" data-html="fuss.recht">
+      Der IYAMBAE Tuner ist <strong>kein Medizinprodukt</strong> und kein
+      Heilmittel. Er verändert Tonhöhe, sonst nichts.
+    </p>
+    <div class="fuss__reihe">
+      <span data-text="fuss.zeile">IYAMBAE — kuratiertes Webradio und Werkzeuge fürs Hören.</span>
+      <nav class="fuss__wege">
+        <a href="https://iyambae.fm">iyambae.fm</a>
+        <a href="https://iyambae.fm/recht/impressum/" data-text="fuss.impressum">Impressum</a>
+        <a href="https://iyambae.fm/recht/datenschutz/" data-text="fuss.datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
