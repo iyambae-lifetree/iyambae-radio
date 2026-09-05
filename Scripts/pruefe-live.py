@@ -46,6 +46,12 @@ import xml.etree.ElementTree as ET
 HAEUSER = ("https://iyambae.fm", "https://apps.iyambae.fm")
 RECHT = ("/recht/impressum/", "/recht/datenschutz/",
          "/recht/verarbeitungsverzeichnis/")
+
+# Ungelistete Seiten stehen in keiner Sitemap und werden deshalb von der
+# Schleife oben nicht erfasst. Erreichbar sein muessen sie trotzdem: Jemand
+# hat ihren Verweis bekommen und wuerde sonst vor einer 404 stehen, ohne
+# dass es irgendwo auffaellt.
+UNGELISTET = ("https://apps.iyambae.fm/de/eltern-wien/",)
 RAUM = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
 
 # Eine Seite unter dieser Groesse ist keine Seite. Die kleinste echte
@@ -136,6 +142,16 @@ def main():
         for satz in schlecht[:8]:
             print(f"      ✘ {satz}")
         beanstandet += schlecht
+
+    print("\n══ Ungelistete Seiten ══")
+    for adresse in UNGELISTET:
+        beanstandet += pruefe_seite(adresse)
+        code, seite = hole(adresse)
+        hat_noindex = "noindex" in seite
+        zeichen = "✔" if code == 200 and hat_noindex else "✘"
+        print(f"  {zeichen} {adresse}  {code}, noindex: {hat_noindex}")
+        if code == 200 and not hat_noindex:
+            beanstandet.append(f"{adresse} ist ungelistet, traegt aber kein noindex")
 
     print("\n══ Rechtstexte ══")
     for pfad in RECHT:

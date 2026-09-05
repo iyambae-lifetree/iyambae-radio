@@ -108,6 +108,20 @@ SEITEN = {
         "programm": "messwerkzeug",
         "rueckgrat": True,
     },
+    # Thiemos Fassung. Der staerkste Aufhaenger darin ist der Kammerton der
+    # Wiener Philharmoniker — das traegt in Wien und sonst nirgends. Sie
+    # bleibt deshalb DEUTSCH und UNGELISTET: erreichbar ueber ihren Verweis,
+    # in keiner Sitemap, in keinem Menue, mit noindex.
+    #
+    # Saemi-Ra am 05.09.2026: „Bitte, in Zukunft immer checken, wie relevant
+    # etwas ist, was du veroeffentlichst, sonst wird es laecherlich."
+    "eltern-wien/": {
+        "vorlage": "eltern-wien.html",
+        "programm": "text",
+        "rueckgrat": True,
+        "sprachen": ["de"],
+        "gelistet": False,
+    },
     "eltern/": {
         "vorlage": "eltern.html",
         # WEDER Programm zum Herunterladen NOCH Werkzeug im Browser: ein
@@ -141,6 +155,31 @@ SEITEN = {
         "rueckgrat": True,
     },
 }
+
+def sprachen_fuer(pfad):
+    """Welche Sprachfassungen diese Seite hat. Standard: alle sieben.
+
+    Eingefuehrt am 05.09.2026 nach einer Ruege von Saemi-Ra. Ich hatte eine
+    Seite, deren staerkstes Argument der Kammerton der Wiener
+    Philharmoniker ist, in sieben Sprachen ausgeliefert — auf der
+    japanischen Fassung stand damit ein Wiener Orchester als Hauptgrund.
+    Eine gute Uebersetzung macht einen lokalen Text nicht international.
+
+    Wer eine Seite fuer einen Ort oder einen Menschen baut, gibt ihr die
+    Sprache dieses Ortes. Nur die.
+    """
+    return SEITEN[pfad].get("sprachen") or list(SPRACHEN)
+
+
+def gelistet(pfad):
+    """Gehoert die Seite in Sitemap, llms.txt und Menues?
+
+    Eine ungelistete Seite bleibt ueber ihren Verweis erreichbar, wird aber
+    nirgends beworben und traegt `noindex`. Fuer Texte, die jemandem
+    persoenlich gehoeren.
+    """
+    return SEITEN[pfad].get("gelistet", True)
+
 
 # Schreibrichtung und Zahlenformat je Sprache.
 #
@@ -455,7 +494,7 @@ def fuelle(satz, **werte):
     return satz
 
 
-def sprachumschalter(kuerzel, pfad=""):
+def sprachumschalter(kuerzel, pfad="", vorhanden=None):
     """Echte Verweise, keine Auswahlliste.
 
     Sie sind fuer eine Suchmaschine die Bruecke zwischen den sieben
@@ -468,10 +507,17 @@ def sprachumschalter(kuerzel, pfad=""):
     Seite hat keinen zweiten Zeichendurchlauf, also kann auch nichts
     springen.
     """
+    vorhanden = vorhanden or list(SPRACHEN)
+    # Gibt es die Seite nur in einer Sprache, ist ein Umschalter ein Knopf,
+    # der nirgendwohin fuehrt. Dann steht dort nichts.
+    if len(vorhanden) < 2:
+        return ""
     zeilen = [f'<details class="sprachwahl">',
               f'<summary class="sprachwahl__knopf">{kuerzel.upper()}</summary>',
               f'<ul class="sprachwahl__liste">']
     for k, (name, _, _) in SPRACHEN.items():
+        if k not in vorhanden:
+            continue
         jetzt = ' aria-current="true"' if k == kuerzel else ""
         zeilen.append(f'<li><a href="/{k}/{pfad}" hreflang="{k}" lang="{k}"{jetzt}>'
                       f'{html.escape(name)}</a></li>')
@@ -738,15 +784,23 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, pfad="", programm="tuner",
     # hreflang: sagt der Suchmaschine, dass dies sieben Fassungen EINER Seite
     # sind und nicht sieben duenne Seiten. Ohne das konkurrieren sie
     # gegeneinander. x-default zeigt auf /, wo die Erkennung von nginx sitzt.
-    verweise = "\n".join(
-        f'<link rel="alternate" hreflang="{k}" href="{HAUS}/{k}/{pfad}">'
-        for k in SPRACHEN)
-    # x-default zeigt auf die Adresse OHNE Sprache — dort sitzt die
-    # Spracherkennung von nginx. Fuer eine Unterseite ist das /stimmung/,
-    # nicht die Startseite: Wer das Messwerkzeug sucht, soll dort landen
-    # und nicht beim Tuner.
-    verweise += f'\n<link rel="alternate" hreflang="x-default" href="{HAUS}/{pfad}">'
-    seite = seite.replace("</head>", verweise + "\n</head>", 1)
+    #
+    # Nur die Fassungen, die es fuer DIESE Seite gibt: Ein hreflang auf eine
+    # Adresse, die niemand ausliefert, laesst Google die ganze Gruppe
+    # verwerfen. Bei einer einsprachigen Seite entfaellt der Block ganz —
+    # eine Seite ist keine Uebersetzungsgruppe.
+    vorhanden = sprachen_fuer(pfad)
+    if len(vorhanden) > 1:
+        verweise = "\n".join(
+            f'<link rel="alternate" hreflang="{k}" href="{HAUS}/{k}/{pfad}">'
+            for k in vorhanden)
+        # x-default zeigt auf die Adresse OHNE Sprache — dort sitzt die
+        # Spracherkennung von nginx. Fuer eine Unterseite ist das /stimmung/,
+        # nicht die Startseite: Wer das Messwerkzeug sucht, soll dort landen
+        # und nicht beim Tuner.
+        verweise += (f'\n<link rel="alternate" hreflang="x-default" '
+                     f'href="{HAUS}/{pfad}">')
+        seite = seite.replace("</head>", verweise + "\n</head>", 1)
 
     # GENAU EINMAL, nicht "mindestens einmal".
     #
@@ -760,7 +814,24 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, pfad="", programm="tuner",
     if wie_oft != 1:
         raise ValueError(f"{MARKE_SPRACHWAHL} steht {wie_oft}-mal in "
                          f"der Vorlage, erwartet wird genau einmal")
-    seite = seite.replace(MARKE_SPRACHWAHL, sprachumschalter(kuerzel, pfad), 1)
+    seite = seite.replace(MARKE_SPRACHWAHL,
+                          sprachumschalter(kuerzel, pfad, sprachen_fuer(pfad)), 1)
+
+    # Ungelistete Seiten sagen es auch der Maschine. Nur aus Sitemap und
+    # Menues herauszulassen genuegt nicht: Ein einziger Verweis von aussen,
+    # und die Seite steht im Index.
+    if not gelistet(pfad):
+        alt = '<meta name="robots" content="index, follow'
+        if alt in seite:
+            ende = seite.index(alt) + len(alt)
+            schluss = seite.index('>', ende) + 1
+            seite = (seite[:seite.index(alt)]
+                     + '<meta name="robots" content="noindex, follow">'
+                     + seite[schluss:])
+        else:
+            seite = seite.replace(
+                "</title>",
+                '</title>\n<meta name="robots" content="noindex, follow">', 1)
 
     # Die strukturierten Daten ans Ende des Rumpfes, nicht in den Kopf: Der
     # Kopf soll klein bleiben, damit der erste Anblick frueh steht.
@@ -787,10 +858,16 @@ def erzeuge_sitemap():
               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
               '        xmlns:xhtml="http://www.w3.org/1999/xhtml">']
     for pfad in SEITEN:
-        for kuerzel in SPRACHEN:
+        # Ungelistete Seiten stehen nicht in der Sitemap. Sie dort zu nennen
+        # und gleichzeitig auf noindex zu setzen, waeren zwei widerspruechliche
+        # Ansagen an dieselbe Suchmaschine.
+        if not gelistet(pfad):
+            continue
+        vorhanden = sprachen_fuer(pfad)
+        for kuerzel in vorhanden:
             zeilen.append("  <url>")
             zeilen.append(f"    <loc>{HAUS}/{kuerzel}/{pfad}</loc>")
-            for k in SPRACHEN:
+            for k in vorhanden:
                 zeilen.append(f'    <xhtml:link rel="alternate" hreflang="{k}" '
                               f'href="{HAUS}/{k}/{pfad}"/>')
             zeilen.append('    <xhtml:link rel="alternate" hreflang="x-default" '
@@ -808,6 +885,7 @@ SEITENNAME = {
     "spotify/": "Spotify in 432 Hz",
     "samplerate/": "Abtastrate und Tonhoehe",
     "berichtigungen/": "Berichtigungen",
+    "eltern-wien/": "432 Hz erklaert fuer Eltern (Wiener Fassung)",
     "eltern/": "432 Hz erklaert fuer Eltern",
     "gitarre/": "Gitarre auf 432 Hz stimmen",
     "solfeggio/": "528 Hz und Solfeggio",
@@ -825,6 +903,7 @@ SEITENSATZ = {
                    "passiert und warum 44,1 kHz nichts damit zu tun hat.",
     "berichtigungen/": "Aussagen, die wir selbst berichtigt haben, mit Datum "
                        "und Grund. Auch die, die uns nicht gefallen.",
+    "eltern-wien/": "Ungelistete Fassung fuer eine Wiener Musikschule.",
     "eltern/": "Was Eltern von Musikschuelern ueber 432 Hz und 528 Hz wissen "
                "sollten: Geschichte, Zahlen, Studienlage — und was ein "
                "anderer Kammerton fuer Streicher, Blaeser und Klavier "
@@ -869,6 +948,8 @@ def erzeuge_llms(fassung):
         "",
     ]
     for pfad in SEITEN:
+        if not gelistet(pfad):
+            continue
         zeilen.append(f"- [{SEITENNAME[pfad]}]({HAUS}/de/{pfad}): {SEITENSATZ[pfad]}")
     zeilen += [
         "",
@@ -1051,23 +1132,32 @@ def pruefe_sitemap(quelle):
 
     raum = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
     xhtml = "{http://www.w3.org/1999/xhtml}"
+    # Erwartet wird, was es wirklich gibt: gelistete Seiten in ihren
+    # Sprachen. Vorher stand hier SEITEN mal SPRACHEN — das galt, solange
+    # jede Seite alle sieben Fassungen hatte und keine ungelistet war.
+    soll_adressen = {f"{HAUS}/{k}/{p}"
+                     for p in SEITEN if gelistet(p)
+                     for k in sprachen_fuer(p)}
     adressen = wurzel.findall(f"{raum}url")
-    soll = len(SEITEN) * len(SPRACHEN)
-    if len(adressen) != soll:
-        fehler.append(f"{len(adressen)} Eintraege statt {soll}")
+    if len(adressen) != len(soll_adressen):
+        fehler.append(f"{len(adressen)} Eintraege statt {len(soll_adressen)}")
 
     gefunden = set()
-    erwartet = set(SPRACHEN) | {"x-default"}
     for eintrag in adressen:
         ort = eintrag.findtext(f"{raum}loc")
         gefunden.add(ort)
+        pfad = ort[len(HAUS):].split("/", 2)[2]
+        erwartet = set(sprachen_fuer(pfad)) | {"x-default"}
         sprachen = {a.get("hreflang") for a in eintrag.findall(f"{xhtml}link")}
         if sprachen != erwartet:
             fehler.append(f"{ort}: Alternativen {sorted(sprachen)} "
                           f"statt {sorted(erwartet)}")
-    fehlt = {f"{HAUS}/{k}/{p}" for k in SPRACHEN for p in SEITEN} - gefunden
+    fehlt = soll_adressen - gefunden
     if fehlt:
         fehler.append(f"nicht aufgefuehrt: {', '.join(sorted(fehlt))}")
+    zuviel = gefunden - soll_adressen
+    if zuviel:
+        fehler.append(f"steht drin, soll aber nicht: {', '.join(sorted(zuviel))}")
 
     for satz in fehler:
         print(f"  ✘ sitemap.xml: {satz}")
@@ -1107,10 +1197,18 @@ def pruefe_seite(kuerzel, seite, texte, pfad="", rueckgrat=True,
     if f'dir="{SPRACHEN[kuerzel][1]}"' not in seite:
         fehler.append(f'kein dir="{SPRACHEN[kuerzel][1]}" am <html>')
 
-    for k in SPRACHEN:
+    # Nur die Sprachen, die es fuer DIESE Seite gibt. Ein hreflang auf eine
+    # Adresse, die niemand ausliefert, waere ein Verweis ins Leere — und
+    # Google verwirft dann die ganze Gruppe.
+    vorhanden = sprachen_fuer(pfad)
+    for k in (vorhanden if len(vorhanden) > 1 else ()):
         if f'hreflang="{k}" href="{HAUS}/{k}/{pfad}"' not in seite:
             fehler.append(f"hreflang {k} fehlt")
-    if 'hreflang="x-default"' not in seite:
+    for k in set(SPRACHEN) - set(vorhanden):
+        if f'hreflang="{k}" href="{HAUS}/{k}/{pfad}"' in seite:
+            fehler.append(f"hreflang {k} zeigt auf eine Fassung, die es "
+                          f"fuer diese Seite nicht gibt")
+    if len(vorhanden) > 1 and 'hreflang="x-default"' not in seite:
         fehler.append("hreflang x-default fehlt")
     if f'<link rel="canonical" href="{HAUS}/{kuerzel}/{pfad}">' not in seite:
         fehler.append("canonical zeigt nicht auf die eigene Adresse")
@@ -1118,12 +1216,18 @@ def pruefe_seite(kuerzel, seite, texte, pfad="", rueckgrat=True,
     # Nicht nur "steht irgendwo", sondern "steht in der Kopfleiste". Siehe
     # den Kommentar zur Marke in erzeuge_seite(): Er stand schon einmal im
     # Stilblatt, und dort sieht ihn niemand.
+    #
+    # Eine Seite, die es nur in einer Sprache gibt, hat keinen Umschalter —
+    # ein Knopf, der nirgendwohin fuehrt, ist schlechter als keiner.
     kopf = seite.partition("</header>")[0]
-    if 'class="sprachwahl"' not in kopf:
-        fehler.append("kein Sprachumschalter in der Kopfleiste")
-    for k in SPRACHEN:
-        if f'<a href="/{k}/{pfad}" hreflang="{k}"' not in seite:
-            fehler.append(f"Sprachumschalter ohne Weg nach /{k}/{pfad}")
+    if len(vorhanden) > 1:
+        if 'class="sprachwahl"' not in kopf:
+            fehler.append("kein Sprachumschalter in der Kopfleiste")
+        for k in vorhanden:
+            if f'<a href="/{k}/{pfad}" hreflang="{k}"' not in seite:
+                fehler.append(f"Sprachumschalter ohne Weg nach /{k}/{pfad}")
+    elif 'class="sprachwahl"' in kopf:
+        fehler.append("Sprachumschalter auf einer einsprachigen Seite")
 
     # Der Rueckgratsatz und der Medizinprodukt-Satz stehen wirklich im HTML —
     # nicht nur im Katalog. Ein Schluessel, den die Vorlage nicht mehr
@@ -1270,7 +1374,7 @@ def main():
     seiten = {}
     for pfad, quelle in quellen.items():
         wie = SEITEN[pfad]
-        for kuerzel in SPRACHEN:
+        for kuerzel in sprachen_fuer(pfad):
             texte = {**kataloge["de"], **kataloge[kuerzel]}
             seite = erzeuge_seite(quelle, kuerzel, texte, pfad, wie["programm"],
                                   fassung=fassung)
@@ -1306,6 +1410,8 @@ def main():
         if ordner.exists():
             shutil.rmtree(ordner)
         for pfad in SEITEN:
+            if kuerzel not in sprachen_fuer(pfad):
+                continue
             ziel = ordner / pfad
             ziel.mkdir(parents=True, exist_ok=True)
             io.open(ziel / "index.html", "w", encoding="utf-8",
@@ -1321,18 +1427,20 @@ def main():
             newline="\n").write(llms)
 
     for pfad in SEITEN:
-        for kuerzel in SPRACHEN:
+        for kuerzel in sprachen_fuer(pfad):
             seite = seiten[(pfad, kuerzel)]
             print(f"  ✔ apps/{kuerzel}/{pfad:<10} {len(seite):>6} Zeichen "
                   f"({len(seite.encode('utf-8')):>6} Bytes), "
                   f"dir={SPRACHEN[kuerzel][1]}, Zahlen {SPRACHEN[kuerzel][2]}")
+    eintraege = sum(len(sprachen_fuer(p)) for p in SEITEN if gelistet(p))
     print(f"  ✔ apps/sitemap.xml  {len(sitemap):>6} Zeichen, "
-          f"{len(SEITEN) * len(SPRACHEN)} Eintraege")
+          f"{eintraege} Eintraege")
     print(f"  ✔ apps/robots.txt   {len(robots):>6} Zeichen")
     print(f"  ✔ apps/llms.txt    {len(llms):>6} Zeichen")
+    ungelistet = [p for p in SEITEN if not gelistet(p)]
     print(f"\n  {len(seiten)} Seiten fuer apps.iyambae.fm erzeugt "
-          f"({len(SEITEN)} je {len(SPRACHEN)} Sprachen), dazu sitemap.xml "
-          f"und robots.txt.")
+          f"({len(SEITEN)} Vorlagen), dazu sitemap.xml und robots.txt."
+          + (f" Ungelistet: {', '.join(ungelistet)}." if ungelistet else ""))
     return 0
 
 
