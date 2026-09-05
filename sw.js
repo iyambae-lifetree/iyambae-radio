@@ -8,6 +8,9 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v44: Die drei Schriften des ersten Anblicks werden vorab geholt. Vorher
+// entdeckte der Browser sie erst nach dem Stylesheet. Nur index.html.
+//
 // v43: Das Burgermenue fuehrt jetzt auch auf die neue Elternseite bei
 // apps.iyambae.fm. Nur index.html.
 //
@@ -86,7 +89,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v43';
+const SW_VERSION = 'iyambae-v44';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

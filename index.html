@@ -46,6 +46,22 @@
          Wer hier wieder einen Block einsetzt, bekommt die Selbstpruefung des
          Erzeugers zu sehen: „2 JSON-LD-Bloecke statt genau einem", und es
          wird nichts geschrieben. -->
+        <!-- Die drei Schriften des ersten Anblicks vorab holen.
+         GEMESSEN am 05.09.2026: Ohne diese Zeilen entdeckt der Browser sie
+         erst, nachdem er styles.css gelesen hat — eine Rundreise zu spaet.
+         Mit font-display: swap heisst das nicht "unsichtbarer Text", aber
+         der Wechsel von der Ersatzschrift zur echten kommt spaeter und
+         verschiebt das Bild.
+         NUR die drei: Der lateinisch-erweiterte Schnitt von Inter (85 kB)
+         wird erst weiter unten im Katalogtext gebraucht — ihn vorab zu
+         holen hiesse, den ersten Anblick fuer etwas zu verzoegern, das
+         niemand sofort sieht. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="assets/schrift/inter-Cp50SjIa1ZL7.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="assets/schrift/orbitron-BhQQL_Qq7dy0.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="assets/schrift/jetbrainsmono-7BYRbKPxDcwg.woff2">
     <link rel="stylesheet" href="/assets/schrift/schriften.css">
     <link rel="stylesheet" href="/assets/styles.css">
 </head>
