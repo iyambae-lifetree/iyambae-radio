@@ -3,6 +3,19 @@
 <head>
 <meta charset="utf-8">
 <title>IYAMBAE-Tuner-Anbindung prüfen</title>
+<!--
+  Ein Werkzeug, keine Seite: Es prueft, ob der lokale Endpunkt des Tuners
+  antwortet. Beim Aufraeumen am 05.09.2026 gefunden — oeffentlich
+  erreichbar, indexierbar, auf Deutsch, und niemand verweist darauf. Wer es
+  ueber eine Suchmaschine faende, stuende vor einer Fehlersuche fuer ein
+  Programm, das er nicht hat.
+
+  NUR noindex, KEIN Disallow in robots.txt: Eine gesperrte Seite wird nicht
+  gelesen, also wird auch das noindex nicht gelesen — und ein bereits
+  bekannter Verweis bliebe im Index stehen. Die beiden Anweisungen
+  widersprechen einander; hier zaehlt die, die wirkt.
+-->
+<meta name="robots" content="noindex, nofollow">
 <style>
   body { font-family: -apple-system, system-ui, sans-serif; max-width: 44rem;
          margin: 2rem auto; padding: 0 1.2rem; line-height: 1.6; color: #1a1a1a; }
