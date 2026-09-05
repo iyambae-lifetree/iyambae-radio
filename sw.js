@@ -8,6 +8,10 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v47: Eine Sprungmarke fuer die Tastatur. Die Seite hat 768 mit Tab
+// erreichbare Stellen und hatte keinen Weg daran vorbei.
+// index.html, styles.css.
+//
 // v46: Die schwaechste Bitratenstufe war mit 4,05 : 1 knapp unlesbar.
 // Nur styles.css.
 //
@@ -95,7 +99,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v46';
+const SW_VERSION = 'iyambae-v47';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

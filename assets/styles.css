@@ -674,6 +674,19 @@ body.spielt .glanz {
 .hero__knoepfe { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
 
 /* ── Knöpfe ──────────────────────────────────────────────────────── */
+/* Unsichtbar, bis die Tastatur sie erreicht. NICHT display:none und nicht
+   visibility:hidden — beides nimmt sie auch der Tastatur weg.
+
+   Gemessen am 05.09.2026: Diese Seite hat 768 mit Tab erreichbare Stellen.
+   Ohne Sprungmarke fuehrt der erste Weg durch die ganze Kopfleiste. */
+.sprungmarke {
+    position: absolute; left: -9999px; top: 0; z-index: 100;
+    padding: 0.7rem 1.2rem;
+    background: var(--pink); color: var(--grund);
+    font-weight: 600; text-decoration: none; border-radius: var(--rund);
+}
+.sprungmarke:focus { left: 0.6rem; top: 0.6rem; }
+
 .knopf {
     display: inline-flex; align-items: center; gap: 0.45rem;
     padding: 0.6rem 1.1rem;

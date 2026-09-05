@@ -239,5 +239,6 @@
   "menue.solfeggio": "ソルフェジオ周波数",
   "menue.berichtigungen": "訂正",
   "filter.einschlafen": "眠りにつくために",
-  "stimmung.probe": "その前に、ご自分の耳がついてくるかどうかを知りたければ、<a href=\"https://apps.iyambae.fm/de/hoertest/\">ブラインドテストをどうぞ</a>。五回、正直な集計です。聞こえないものを入れていただきたくはありません。"
+  "stimmung.probe": "その前に、ご自分の耳がついてくるかどうかを知りたければ、<a href=\"https://apps.iyambae.fm/de/hoertest/\">ブラインドテストをどうぞ</a>。五回、正直な集計です。聞こえないものを入れていただきたくはありません。",
+  "sprung.inhalt": "本文へスキップ"
 }

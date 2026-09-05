@@ -239,5 +239,6 @@
   "menue.solfeggio": "ترددات السولفيجيو",
   "menue.berichtigungen": "تصويبات",
   "filter.einschlafen": "للنوم",
-  "stimmung.probe": "وإن أردت أولًا أن تعرف هل تجاريك أذنك: <a href=\"https://apps.iyambae.fm/de/hoertest/\">جرّب الاختبار الأعمى</a>. خمس جولات وحساب أمين. لا نريدك أن تُثبّت شيئًا لا تسمعه."
+  "stimmung.probe": "وإن أردت أولًا أن تعرف هل تجاريك أذنك: <a href=\"https://apps.iyambae.fm/de/hoertest/\">جرّب الاختبار الأعمى</a>. خمس جولات وحساب أمين. لا نريدك أن تُثبّت شيئًا لا تسمعه.",
+  "sprung.inhalt": "تخطَّ إلى المحتوى"
 }
