@@ -525,19 +525,31 @@ def sprachumschalter(kuerzel, pfad="", vorhanden=None):
     return "".join(zeilen)
 
 
-def fassung_aus(quelle):
-    """Die Fassungsnummer aus dem Ladeverweis der Vorlage lesen.
+def lade_fassungen():
+    """data/fassungen.json — die eine Stelle, an der die Nummern stehen.
 
-    WARUM NICHT FEST EINGETIPPT: Bis zum 01.09.2026 stand im JSON-LD
-    `"softwareVersion": "0.1.0"` — waehrend die Seite laengst 0.21.1
-    anbot. Eine Zahl, die nur eine Maschine liest, veraltet unbemerkt:
-    Im Browser sieht man sie nicht, und niemand prueft sie.
+    VORHER stand die Nummer im Ladeverweis der Vorlage, und der wurde von
+    Hand gepflegt. Am 05.09.2026 bot die Seite 0.21.1 an, waehrend 0.27.1
+    veroeffentlicht war. Beim Nachmessen war der Grund ein anderer als
+    vermutet: 0.27.1 lag gar nicht im Speicher. Nicht die Nummer war alt,
+    die Datei fehlte.
 
-    Jetzt kommt sie aus derselben Zeile wie der Knopf. Wer die Fassung
-    wechselt, wechselt beides — oder gar nichts.
+    Eine Zahl an einer Stelle loest das nicht allein — deshalb prueft
+    Scripts/pruefe-live.py zusaetzlich, ob die angebotene Datei wirklich
+    erreichbar ist.
     """
-    m = re.search(r"/herunterladen/IYAMBAE-Tuner-([0-9]+\.[0-9]+\.[0-9]+)\.dmg", quelle)
-    return m.group(1) if m else None
+    roh = json.loads(io.open(ROOT / "data" / "fassungen.json",
+                             encoding="utf-8").read())
+    return {k: v for k, v in roh.items() if not k.startswith("_")}
+
+
+def fassung_aus(quelle):
+    """Die Fassungsnummer der Mac-Ausgabe — fuer JSON-LD und Ladeverweis.
+
+    Das Argument bleibt stehen, damit die Aufrufstellen unveraendert
+    bleiben; gelesen wird es nicht mehr.
+    """
+    return lade_fassungen()["tuner"]["macos"]["fassung"]
 
 
 ANTWORTTEIL = re.compile(r"^\d+$")
@@ -817,6 +829,17 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, pfad="", programm="tuner",
     seite = seite.replace(MARKE_SPRACHWAHL,
                           sprachumschalter(kuerzel, pfad, sprachen_fuer(pfad)), 1)
 
+    # Das Reifewort je Plattformkachel. Es steht NICHT im Sprachkatalog als
+    # feste Zeile, weil es je Plattform verschieden ist und sich mit der
+    # Fassung aendert — die Wahrheit darueber steht in data/fassungen.json.
+    stufen = lade_fassungen()["tuner"]
+    for kachel, name in (("mac", "macos"), ("win", "windows"),
+                         ("linux", "linux")):
+        wort = texte.get(f"auf.reife.{stufen[name]['reife']}", "")
+        seite = seite.replace(
+            f'<span class="plattform__reife" data-reife="{kachel}"></span>',
+            f'<span class="plattform__reife">{html.escape(wort, quote=False)}</span>', 1)
+
     # Ungelistete Seiten sagen es auch der Maschine. Nur aus Sitemap und
     # Menues herauszulassen genuegt nicht: Ein einziger Verweis von aussen,
     # und die Seite steht im Index.
@@ -1021,6 +1044,32 @@ RUECKGRAT = ("fuss.merksatz", "fuss.recht",
              "frage.medizin.titel", "frage.medizin.1", "frage.medizin.2",
              "frage.forschung.titel", "frage.forschung.1", "frage.forschung.2",
              "frage.forschung.3", "frage.forschung.4")
+
+
+def pruefe_ladeverweis(quellen):
+    """Nennt die Vorlage dieselbe Datei wie data/fassungen.json?
+
+    Zwei Stellen, die dasselbe sagen muessen, laufen frueher oder spaeter
+    auseinander. Hier faellt es beim Bauen auf statt beim Besucher.
+    """
+    stand = lade_fassungen()["tuner"]["macos"]
+    datei = stand.get("datei")
+    quelle = quellen.get("", "")
+    im_verweis = re.search(r"/herunterladen/(IYAMBAE-Tuner-[^\"]+\.dmg)", quelle)
+    if datei and not im_verweis:
+        print(f"  ✘ fassungen.json bietet {datei} an, die Vorlage verlinkt nichts")
+        return False
+    if not datei and im_verweis:
+        print(f"  ✘ die Vorlage verlinkt {im_verweis.group(1)}, "
+              f"fassungen.json sagt: nichts zum Laden")
+        return False
+    if datei and im_verweis.group(1) != datei:
+        print(f"  ✘ Vorlage verlinkt {im_verweis.group(1)}, "
+              f"fassungen.json nennt {datei}")
+        return False
+    if datei:
+        print(f"  ✔ Ladeverweis und fassungen.json nennen dieselbe Datei: {datei}")
+    return True
 
 
 def pruefe_treue(vorlage_quelle):
@@ -1362,6 +1411,8 @@ def main():
     if not pruefe_schluessel(kataloge):
         gut = False
     if not pruefe_ruecken(kataloge):
+        gut = False
+    if not pruefe_ladeverweis(quellen):
         gut = False
     if not gut:
         print("\n  Nichts geschrieben — der alte Stand bleibt stehen.")

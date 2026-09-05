@@ -37,6 +37,7 @@ Aufruf:  python3 Scripts/pruefe-live.py
 """
 
 import concurrent.futures
+import io
 import re
 import sys
 import urllib.error
@@ -142,6 +143,26 @@ def main():
         for satz in schlecht[:8]:
             print(f"      ✘ {satz}")
         beanstandet += schlecht
+
+    print("\n══ Was zum Laden angeboten wird ══")
+    #
+    # Am 05.09.2026 bot die Seite 0.21.1 an, waehrend 0.27.1 veroeffentlicht
+    # war. Der Grund war nicht die alte Nummer: 0.27.1 lag gar nicht im
+    # Speicher. Eine Nummer laesst sich pflegen — dass die Datei WIRKLICH
+    # DA IST, sagt nur ein Abruf.
+    import json as _json
+    stand = _json.loads(io.open("data/fassungen.json", encoding="utf-8").read())
+    for name, wie in stand["tuner"].items():
+        datei = wie.get("datei")
+        if not datei:
+            print(f"  · {name:<8} nichts zum Laden ({wie['reife']})")
+            continue
+        adresse = f"https://apps.iyambae.fm/herunterladen/{datei}"
+        code, _ = hole(adresse)
+        zeichen = "✔" if code == 200 else "✘"
+        print(f"  {zeichen} {name:<8} {wie['fassung']:<9} {code}  {datei}")
+        if code != 200:
+            beanstandet.append(f"{adresse} → HTTP {code} — angeboten, aber nicht da")
 
     print("\n══ Ungelistete Seiten ══")
     for adresse in UNGELISTET:

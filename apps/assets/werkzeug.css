@@ -100,6 +100,15 @@ h3 { font-family: var(--daten); font-size: .82rem; letter-spacing: .04em; margin
 .fuss__wege a { color: var(--leiser); text-decoration: none; }
 .fuss__wege a:hover { color: var(--text); }
 
+/* Das Reifewort auf der Plattformkachel. Klein und ruhig: Es ist eine
+   Auskunft, keine Werbung — und wer sie sucht, findet sie. */
+.plattform__reife {
+  font-family: var(--daten); font-size: .6rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--leiser);
+  border: 1px solid var(--kante); border-radius: 2px;
+  padding: .05rem .35rem; align-self: flex-start;
+}
+
 /* ── Ein Knopf, der weiterführt ──────────────────────────────────── */
 .grossknopf {
   display: inline-block; margin-top: .8rem; text-decoration: none; cursor: pointer;

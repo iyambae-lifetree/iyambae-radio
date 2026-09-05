@@ -644,5 +644,8 @@
   "rueck.dazu.test": "Sont envoyés : le tour et le nombre de bonnes réponses. <strong>Rien sur vous, aucun identifiant, aucun témoin.</strong> Un résultat au niveau du hasard compte aussi — celui-là surtout.",
   "rueck.danke": "Bien reçu. Merci — c’est de cela que sera faite un jour la statistique de cette page.",
   "rueck.frage": "Ajouter cette mesure à nos statistiques, de façon anonyme ?",
-  "rueck.dazu.messung": "Sont envoyés : l’accord mesuré, la confiance, le type de fichier et une tranche de durée grossière. <strong>Pas le fichier, pas son nom, rien sur vous.</strong>"
+  "rueck.dazu.messung": "Sont envoyés : l’accord mesuré, la confiance, le type de fichier et une tranche de durée grossière. <strong>Pas le fichier, pas son nom, rien sur vous.</strong>",
+  "auf.reife.frueh": "précoce",
+  "auf.reife.erprobung": "en essai",
+  "auf.reife.fertig": "finale"
 }

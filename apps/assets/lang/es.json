@@ -644,5 +644,8 @@
   "rueck.dazu.test": "Se envían: la ronda y el número de aciertos. <strong>Nada sobre ti, ningún identificador, ninguna galleta.</strong> Un resultado al nivel del azar también cuenta — ese sobre todo.",
   "rueck.danke": "Recibido. Gracias — de esto se hará algún día la cifra que aparezca en esta página.",
   "rueck.frage": "¿Sumar esta medición a nuestras estadísticas, de forma anónima?",
-  "rueck.dazu.messung": "Se envían: la afinación medida, la confianza, el tipo de archivo y un tramo aproximado de duración. <strong>Ni el archivo, ni su nombre, nada sobre ti.</strong>"
+  "rueck.dazu.messung": "Se envían: la afinación medida, la confianza, el tipo de archivo y un tramo aproximado de duración. <strong>Ni el archivo, ni su nombre, nada sobre ti.</strong>",
+  "auf.reife.frueh": "temprana",
+  "auf.reife.erprobung": "en pruebas",
+  "auf.reife.fertig": "final"
 }

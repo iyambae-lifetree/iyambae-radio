@@ -1,0 +1,23 @@
+{
+  "_zweck": "Die eine Stelle, an der steht, welche Fassung die Seite anbietet. Gelesen von Scripts/baue-apps-sprachen.py; geprueft von Scripts/pruefe-live.py.",
+  "_warum": "Bis zum 05.09.2026 stand die Nummer im Ladeverweis der Vorlage und wurde von Hand gepflegt. Die Seite bot 0.21.1 an, waehrend 0.27.1 veroeffentlicht war. Beim Nachmessen zeigte sich: 0.27.1 liegt gar nicht im Speicher — nicht die Nummer war alt, die Datei fehlte. Genau das faellt hier auf, weil `datei` und Wirklichkeit gegeneinander geprueft werden.",
+  "_reife": "Drei Stufen, nach Saemi-Ras Vorgabe vom 05.09.2026: 'frueh' — laeuft, Luecken sind zu erwarten. 'erprobung' — vollstaendig genug fuer den Alltag, noch nicht lange benutzt. 'fertig' — ab 1.0. Die Nummern zaehlen JE PLATTFORM und sagen nichts ueber Gleichstand; dafuer ist die Faehigkeitentabelle da.",
+  "_datei_null": "heisst: Die Fassung existiert und laeuft, ist aber nicht zum Laden da. Nicht dasselbe wie 'gibt es nicht'.",
+  "tuner": {
+    "macos": {
+      "fassung": "0.21.1",
+      "reife": "erprobung",
+      "datei": "IYAMBAE-Tuner-0.21.1.dmg"
+    },
+    "linux": {
+      "fassung": null,
+      "reife": "frueh",
+      "datei": null
+    },
+    "windows": {
+      "fassung": null,
+      "reife": "frueh",
+      "datei": null
+    }
+  }
+}

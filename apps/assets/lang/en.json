@@ -644,5 +644,8 @@
   "rueck.dazu.test": "What is sent: the round and the number of hits. <strong>Nothing about you, no identifier, no cookie.</strong> A result at guessing level counts too — that one especially.",
   "rueck.danke": "Received. Thank you — this is what the number on this page will one day be made of.",
   "rueck.frage": "Add this measurement to our statistics, anonymously?",
-  "rueck.dazu.messung": "What is sent: the measured tuning, the confidence, the kind of file and a rough length band. <strong>Not the file, not its name, nothing about you.</strong>"
+  "rueck.dazu.messung": "What is sent: the measured tuning, the confidence, the kind of file and a rough length band. <strong>Not the file, not its name, nothing about you.</strong>",
+  "auf.reife.frueh": "early",
+  "auf.reife.erprobung": "in testing",
+  "auf.reife.fertig": "final"
 }

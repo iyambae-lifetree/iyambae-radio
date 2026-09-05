@@ -644,5 +644,8 @@
   "rueck.dazu.test": "Gesendet werden die Runde und die Zahl der Treffer. <strong>Nichts über dich, keine Kennung, kein Plätzchen.</strong> Auch ein Ergebnis auf Ratewahrscheinlichkeit zählt — gerade das.",
   "rueck.danke": "Angekommen. Danke — daraus wird die Zahl, die hier eines Tages steht.",
   "rueck.frage": "Diese Messung anonym in unsere Statistik?",
-  "rueck.dazu.messung": "Gesendet werden die gemessene Stimmung, die Sicherheit, die Art der Datei und eine grobe Längenstufe. <strong>Nicht die Datei, nicht ihr Name, nichts über dich.</strong>"
+  "rueck.dazu.messung": "Gesendet werden die gemessene Stimmung, die Sicherheit, die Art der Datei und eine grobe Längenstufe. <strong>Nicht die Datei, nicht ihr Name, nichts über dich.</strong>",
+  "auf.reife.frueh": "früh",
+  "auf.reife.erprobung": "in Erprobung",
+  "auf.reife.fertig": "fertig"
 }

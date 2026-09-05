@@ -644,5 +644,8 @@
   "rueck.dazu.test": "Vengono inviati: il giro e il numero di risposte esatte. <strong>Nulla su di te, nessun identificativo, nessun biscottino.</strong> Conta anche un risultato al livello del caso — quello soprattutto.",
   "rueck.danke": "Arrivato. Grazie — è di questo che un giorno sarà fatta la cifra su questa pagina.",
   "rueck.frage": "Aggiungere questa misurazione alle nostre statistiche, in forma anonima?",
-  "rueck.dazu.messung": "Vengono inviati: l’accordatura misurata, l’attendibilità, il tipo di file e una fascia di durata approssimativa. <strong>Non il file, non il suo nome, nulla su di te.</strong>"
+  "rueck.dazu.messung": "Vengono inviati: l’accordatura misurata, l’attendibilità, il tipo di file e una fascia di durata approssimativa. <strong>Non il file, non il suo nome, nulla su di te.</strong>",
+  "auf.reife.frueh": "iniziale",
+  "auf.reife.erprobung": "in prova",
+  "auf.reife.fertig": "definitiva"
 }
