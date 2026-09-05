@@ -1660,7 +1660,10 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 }
 .karte__guete--gut        { color: var(--gruen); background: rgba(53, 224, 138, 0.10); }
 .karte__guete--ordentlich { color: rgba(255, 255, 255, 0.82); }
-.karte__guete--einfach    { color: rgba(255, 255, 255, 0.42); }
+/* 0,42 ergab 4,05 : 1 — knapp unter der Schwelle. Die Stufe soll leise
+   wirken, aber lesbar bleiben; 0,50 sind 5,16 : 1 und stehen der Abstufung
+   zu --ordentlich (0,82) nicht im Weg. */
+.karte__guete--einfach    { color: rgba(255, 255, 255, 0.50); }
 
 /* Die Stichwoerter sitzen unten, nicht direkt unter dem Ort — dadurch
    liegen sie ueber alle Karten einer Reihe auf einer Linie. */
