@@ -846,6 +846,22 @@ def pruefe_seite(kuerzel, seite, katalog, texte):
     fehler = []
     anzahl = len(katalog["sender"])
 
+    # 0 · Kein Schluesselname als sichtbarer Text.
+    #
+    # GEFUNDEN AM 04.09.2026, und der Bau hatte es durchgelassen: Ein neuer
+    # Menueeintrag stand im Markup, sein Schluessel fehlte aber in
+    # assets/lang/*.json. t() gibt dann den Schluessel selbst zurueck — auf
+    # der japanischen Seite stand woertlich "menue.eltern" im Menue.
+    #
+    # Kein deutscher Rueckfall, kein leeres Feld: der Schluesselname, gut
+    # sichtbar. Die vorhandene Pruefung verglich nur die Sprachkataloge
+    # untereinander und sah deshalb nichts.
+    for schluessel, inhalt in re.findall(
+            r'data-(?:text|html)="([^"]+)"[^>]*>([^<]*)<', seite):
+        if inhalt.strip() == schluessel:
+            fehler.append(f'{schluessel} steht als eigener Name auf der Seite '
+                          f'— der Schluessel fehlt in assets/lang/{kuerzel}.json')
+
     # 1 · Genau eine <h1>, und nicht mehr die alte Begruessung.
     ueberschriften = re.findall(r"<h1\b[^>]*>(.*?)</h1>", seite, re.S)
     if len(ueberschriften) != 1:

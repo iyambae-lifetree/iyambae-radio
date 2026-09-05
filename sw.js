@@ -8,6 +8,9 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v43: Das Burgermenue fuehrt jetzt auch auf die neue Elternseite bei
+// apps.iyambae.fm. Nur index.html.
+//
 // v42: Regalseiten — jedes Regal hat jetzt eine eigene Adresse, und app.js
 // liest den neuen Tiefverweis #regal=. Dazu verlinkt der Katalogtext in
 // index.html die Regalnamen dorthin. app.js, index.html.
@@ -83,7 +86,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v42';
+const SW_VERSION = 'iyambae-v43';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
