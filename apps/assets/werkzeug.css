@@ -34,7 +34,11 @@
   --warm:         #FABF33;
   --text:         #ECECF0;
   --leise:        #A6A7B2;
-  --leiser:       #74757F;
+  /* Aufgehellt am 05.09.2026 von #74757F. Gemessen: 4,09 : 1 auf --grund
+     und 3,68 : 1 auf --grund-hoch — beides unter den geforderten 4,5.
+     Der Ton traegt fast alle kleinen Beschriftungen der Seite, also war es
+     ein Fehler an vielen Stellen zugleich. Jetzt 5,03 und 4,53. */
+  --leiser:       #83848E;
   --anzeige: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
   --grotesk: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --daten: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
