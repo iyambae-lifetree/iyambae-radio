@@ -141,3 +141,12 @@ h3 { font-family: var(--daten); font-size: .82rem; letter-spacing: .04em; margin
 .tabelle th { font-family: var(--daten); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--leiser); font-weight: 400; }
 .tabelle td:first-child { font-family: var(--daten); font-size: .84rem; color: var(--text); white-space: nowrap; }
 .tabelle td { color: var(--leise); }
+
+/* Das Einwilligungskaestchen. Es steht bewusst klein und ohne Farbe: eine
+   Bitte, kein Knopf, den man aus Versehen trifft. */
+.rueck { border-top: 1px solid var(--kante); padding: 1rem clamp(1rem, 3vw, 1.6rem); }
+.rueck__zeile { display: flex; gap: .7rem; align-items: flex-start; cursor: pointer; }
+.rueck__zeile input { margin-top: .25rem; flex: none; accent-color: var(--akzent); }
+.rueck__frage { display: block; font-size: .92rem; color: var(--text); }
+.rueck__dazu { display: block; font-size: .82rem; color: var(--leiser); margin-top: .25rem; }
+.rueck__danke { margin: .7rem 0 0; font-family: var(--daten); font-size: .78rem; color: var(--akzent); }

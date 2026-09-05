@@ -129,6 +129,19 @@
       <p class="ergebnis__satz" id="ergebnisSatz"></p>
       <p class="ergebnis__zufall" id="ergebnisZufall"></p>
       <p class="ergebnis__placebo" data-html="hoer.placebo"><strong>Vielleicht ist es Placebo.</strong> Das ist kein Einwand gegen das Hören — es ist der Grund, warum hier ein Blindtest steht und keine Behauptung.</p>
+
+      <!-- Erscheint nur, wenn es eine Gegenstelle gibt. Ohne sie bleibt es
+           verborgen, und es wird nichts erhoben — siehe rueckmeldung.mjs. -->
+      <div class="rueck" id="rueckKasten" hidden>
+        <label class="rueck__zeile">
+          <input type="checkbox" id="rueckHaken">
+          <span>
+            <span class="rueck__frage" data-text="rueck.frage.test">Dieses Ergebnis anonym in unsere Statistik?</span>
+            <span class="rueck__dazu" data-html="rueck.dazu.test">Gesendet werden die Runde und die Zahl der Treffer. <strong>Nichts über dich, keine Kennung, kein Plätzchen.</strong> Auch ein Ergebnis auf Ratewahrscheinlichkeit zählt — gerade das.</span>
+          </span>
+        </label>
+        <p class="rueck__danke" id="rueckDanke" hidden data-text="rueck.danke">Angekommen. Danke — daraus wird die Zahl, die hier eines Tages steht.</p>
+      </div>
       <button class="weiter" id="weiter" type="button"></button>
     </div>
   </div>
@@ -228,6 +241,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 import { messeStimmung } from '/assets/lib/stimmung.mjs';
+import * as rueck from '/assets/lib/rueckmeldung.mjs';
 
 const AUSSCHNITT = { ab: 2.0, dauer: 9.0 };   // Sekunden aus der Aufnahme
 const DURCHGAENGE = 5;
@@ -248,6 +262,11 @@ let hof = null;
 const puffer = {};          // { '432': AudioBuffer, '440': …, '433': … }
 let laeuftGerade = null;
 let runde = 0, durchgang = 0, treffer = 0, tieferIst = null, gehoert = false;
+/* Wie oft der ERSTE Knopf gewaehlt wurde. Nicht fuer die Auswertung des
+   Hoerenden, sondern fuer uns: Faellt das ueber viele Sitzungen deutlich
+   von 50 Prozent ab, liegt es an unserer Reihenfolge oder an der
+   Oberflaeche — und dann traegt keine Zahl, die wir veroeffentlichen. */
+let wahlA = 0;
 
 /* Beide Ausschnitte einmal rechnen. Der Faktor ist immer bezogen auf die
    Aufnahme, wie sie ist — deshalb 432/440 und 433/440 und 1,0. */
@@ -375,6 +394,7 @@ function waehle(welche) {
   if (!gehoert) return;
   if (laeuftGerade) { laeuftGerade.stop(); laeuftGerade = null; }
   if (welche === tieferIst.tiefer) treffer++;
+  if (welche === 'A') wahlA++;
   durchgang++;
   if (durchgang < DURCHGAENGE) { neuerDurchgang(); return; }
   zeigeErgebnis();
@@ -419,6 +439,11 @@ function zeigeErgebnis() {
 }
 
 function starteRunde() {
+  wahlA = 0;
+  const haken = el('rueckHaken');
+  haken.checked = false;
+  haken.disabled = false;
+  el('rueckDanke').hidden = true;
   el('ergebnis').hidden = true;
   document.querySelector('.paare').hidden = false;
   document.querySelector('.wahl').hidden = false;
@@ -447,6 +472,18 @@ el('probeB').addEventListener('click', () => ersterKlick('B'));
 el('wahlA').addEventListener('click', () => waehle('A'));
 el('wahlB').addEventListener('click', () => waehle('B'));
 zeichnePunkte();
+
+/* Erst beim Anhaken geht etwas hinaus. Die Einwilligung gilt fuer genau
+   diese eine Runde — die naechste fragt neu. */
+rueck.kaestchen(
+  el('rueckKasten'), el('rueckHaken'), el('rueckDanke'),
+  '/hoertest',
+  () => ({
+    runde:   '432-' + RUNDEN[runde].gegen,
+    treffer,
+    wahl_a:  wahlA,
+    sprache: rueck.sprache(),
+  }));
 </script>
 
 <!-- Die Wörter des Prüfstands. Im Dokument, damit der Erzeuger sie ernten

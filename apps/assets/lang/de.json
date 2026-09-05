@@ -639,5 +639,10 @@
   "mess.wort.wertAbstand432": "Abstand zu 432",
   "mess.wort.wertDauer": "Gemessene Länge",
   "mess.wort.wertSicherheit": "Sicherheit",
-  "mess.wort.warnUnsicher": "Die Sicherheit liegt unter 35 Prozent. Bei Perkussion, Sprache oder sehr dichtem Satz trägt diese Zahl nicht — nimm eine andere Aufnahme."
+  "mess.wort.warnUnsicher": "Die Sicherheit liegt unter 35 Prozent. Bei Perkussion, Sprache oder sehr dichtem Satz trägt diese Zahl nicht — nimm eine andere Aufnahme.",
+  "rueck.frage.test": "Dieses Ergebnis anonym in unsere Statistik?",
+  "rueck.dazu.test": "Gesendet werden die Runde und die Zahl der Treffer. <strong>Nichts über dich, keine Kennung, kein Plätzchen.</strong> Auch ein Ergebnis auf Ratewahrscheinlichkeit zählt — gerade das.",
+  "rueck.danke": "Angekommen. Danke — daraus wird die Zahl, die hier eines Tages steht.",
+  "rueck.frage": "Diese Messung anonym in unsere Statistik?",
+  "rueck.dazu.messung": "Gesendet werden die gemessene Stimmung, die Sicherheit, die Art der Datei und eine grobe Längenstufe. <strong>Nicht die Datei, nicht ihr Name, nichts über dich.</strong>"
 }

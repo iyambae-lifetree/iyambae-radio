@@ -139,6 +139,19 @@
     </div>
     <div class="werte" id="ergebnisWerte"></div>
     <p class="unsicher" id="ergebnisUnsicher" hidden></p>
+
+    <!-- Erscheint nur, wenn es eine Gegenstelle gibt. Ohne sie bleibt es
+         verborgen, und es wird nichts erhoben — siehe rueckmeldung.mjs. -->
+    <div class="rueck" id="rueckKasten" hidden>
+      <label class="rueck__zeile">
+        <input type="checkbox" id="rueckHaken">
+        <span>
+          <span class="rueck__frage" data-text="rueck.frage">Diese Messung anonym in unsere Statistik?</span>
+          <span class="rueck__dazu" data-html="rueck.dazu.messung">Gesendet werden die gemessene Stimmung, die Sicherheit, die Art der Datei und eine grobe Längenstufe. <strong>Nicht die Datei, nicht ihr Name, nichts über dich.</strong></span>
+        </span>
+      </label>
+      <p class="rueck__danke" id="rueckDanke" hidden data-text="rueck.danke">Angekommen. Danke — daraus wird die Zahl, die hier eines Tages steht.</p>
+    </div>
   </div>
 </section>
 
@@ -249,6 +262,7 @@
    nebenher.
    ═══════════════════════════════════════════════════════════════════ */
 import { messeStimmung, KAMMERTOENE } from '/assets/lib/stimmung.mjs';
+import * as rueck from '/assets/lib/rueckmeldung.mjs';
 
 const zone = document.getElementById('zone');
 const datei = document.getElementById('datei');
@@ -324,7 +338,18 @@ async function nimm(f) {
   zeige(f, puffer, mess);
 }
 
+/* Bei jeder neuen Datei alles zuruecksetzen: sonst haengt am Haken noch
+   das Paket der vorigen Messung. */
+function rueckZuruecksetzen() {
+  letztes = null;
+  const haken = document.getElementById('rueckHaken');
+  haken.checked = false;
+  haken.disabled = false;
+  document.getElementById('rueckDanke').hidden = true;
+}
+
 function zeigeFehler(satz) {
+  rueckZuruecksetzen();
   arbeit.hidden = true;
   ergebnis.hidden = false;
   document.getElementById('ergebnisDatei').textContent = '';
@@ -335,6 +360,7 @@ function zeigeFehler(satz) {
 }
 
 function zeige(f, puffer, m) {
+  rueckZuruecksetzen();
   ergebnis.hidden = false;
   document.getElementById('ergebnisDatei').textContent = f.name;
 
@@ -402,7 +428,35 @@ function zeige(f, puffer, m) {
   unsicher.hidden = traegt;
   unsicher.textContent = wort('warnUnsicher',
     'Die Sicherheit liegt unter 35 Prozent. Bei Perkussion, Sprache oder sehr dichtem Satz trägt diese Zahl nicht — nimm eine andere Aufnahme.');
+
+  /* Was wir schicken WUERDEN, wenn jemand anhakt. Gesendet wird erst dann.
+     Nichts davon zeigt auf die Datei oder auf den Menschen davor: keine
+     Namen, keine Kennung, keine genaue Länge. */
+  letztes = {
+    a4:         Number(m.a4.toFixed(1)),
+    sicherheit: Number(m.sicherheit.toFixed(2)),
+    traegt,
+    laenge:     rueck.laengenstufe(m.proben.length * 4),
+    /* Die Abtastrate der Datei stand hier einmal und ist wieder raus:
+       decodeAudioData rechnet alles auf die Rate des AudioContext um. Ein
+       44,1er WAV kam als 48000 heraus. Das waere keine Eigenschaft der
+       Aufnahme gewesen, sondern der Soundkarte des Besuchers — nutzlos fuer
+       die Frage und ein Merkmal mehr, das auf das Geraet zeigt. */
+    kanaele:    Math.min(2, puffer.numberOfChannels),
+    endung:     rueck.endung(f.name),
+    sprache:    rueck.sprache(),
+  };
 }
+
+/* Erst beim Anhaken geht etwas hinaus — die Einwilligung kommt vor der
+   Übertragung, nicht danach. */
+let letztes = null;
+rueck.kaestchen(
+  document.getElementById('rueckKasten'),
+  document.getElementById('rueckHaken'),
+  document.getElementById('rueckDanke'),
+  '/stimmung',
+  () => letztes);
 </script>
 
 <!-- Die Wörter fürs Ergebnis. Sie stehen im Dokument und nicht im Skript,

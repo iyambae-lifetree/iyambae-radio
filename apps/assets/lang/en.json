@@ -639,5 +639,10 @@
   "mess.wort.wertAbstand432": "Distance to 432",
   "mess.wort.wertDauer": "Length measured",
   "mess.wort.wertSicherheit": "Confidence",
-  "mess.wort.warnUnsicher": "The confidence is below 35 per cent. With percussion, speech or a very dense arrangement this number does not hold — try another recording."
+  "mess.wort.warnUnsicher": "The confidence is below 35 per cent. With percussion, speech or a very dense arrangement this number does not hold — try another recording.",
+  "rueck.frage.test": "Add this result to our statistics, anonymously?",
+  "rueck.dazu.test": "What is sent: the round and the number of hits. <strong>Nothing about you, no identifier, no cookie.</strong> A result at guessing level counts too — that one especially.",
+  "rueck.danke": "Received. Thank you — this is what the number on this page will one day be made of.",
+  "rueck.frage": "Add this measurement to our statistics, anonymously?",
+  "rueck.dazu.messung": "What is sent: the measured tuning, the confidence, the kind of file and a rough length band. <strong>Not the file, not its name, nothing about you.</strong>"
 }

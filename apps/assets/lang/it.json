@@ -639,5 +639,10 @@
   "mess.wort.wertAbstand432": "Distanza da 432",
   "mess.wort.wertDauer": "Durata misurata",
   "mess.wort.wertSicherheit": "Sicurezza",
-  "mess.wort.warnUnsicher": "La sicurezza è sotto il 35 per cento. Con percussioni, parlato o una scrittura molto densa questo numero non regge — prendi un’altra registrazione."
+  "mess.wort.warnUnsicher": "La sicurezza è sotto il 35 per cento. Con percussioni, parlato o una scrittura molto densa questo numero non regge — prendi un’altra registrazione.",
+  "rueck.frage.test": "Aggiungere questo risultato alle nostre statistiche, in forma anonima?",
+  "rueck.dazu.test": "Vengono inviati: il giro e il numero di risposte esatte. <strong>Nulla su di te, nessun identificativo, nessun biscottino.</strong> Conta anche un risultato al livello del caso — quello soprattutto.",
+  "rueck.danke": "Arrivato. Grazie — è di questo che un giorno sarà fatta la cifra su questa pagina.",
+  "rueck.frage": "Aggiungere questa misurazione alle nostre statistiche, in forma anonima?",
+  "rueck.dazu.messung": "Vengono inviati: l’accordatura misurata, l’attendibilità, il tipo di file e una fascia di durata approssimativa. <strong>Non il file, non il suo nome, nulla su di te.</strong>"
 }
