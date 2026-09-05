@@ -200,6 +200,23 @@ jobs:
 
           exit $FEHLER
 
+      - name: Jede Adresse aus beiden Sitemaps nachmessen
+        # Der Schritt darueber prueft zwei Dateien byte-genau und ob die
+        # sieben Werkzeugseiten antworten. Am 04.09.2026 waren daraus 84
+        # Radio-Adressen (davon 77 Regalseiten) und 63 Werkzeugadressen
+        # geworden — keine einzige davon wurde geprueft.
+        #
+        # Scripts/pruefe-live.py holt die Liste aus den Sitemaps selbst. Ein
+        # neues Regal, eine neue Seite: beide sind mitgeprueft, ohne dass
+        # hier jemand etwas nachtraegt.
+        #
+        # Es prueft ausserdem, dass keine Seite einen Schluesselnamen als
+        # sichtbaren Text traegt. Genau das lag am 04.09. auf sechs
+        # Sprachseiten: woertlich „menue.eltern" im Menue.
+        #
+        # 147 Adressen in rund acht Sekunden, achtfach nebenlaeufig.
+        run: python3 Scripts/pruefe-live.py
+
       # ── Der Anmeldedienst ────────────────────────────────────────────
       #
       # Eigenes Abbild, eigener Container, eigener Lebenslauf. Er wird NICHT
