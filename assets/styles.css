@@ -684,14 +684,17 @@ body.spielt .glanz {
     transition: all 0.2s ease;
 }
 .knopf:hover { border-color: var(--rand-hell); transform: translateY(-1px); }
-.knopf--gross { background: var(--pink); border-color: var(--pink); font-weight: 600; padding: 0.7rem 1.5rem; }
+/* color GEHOERT hierher: .knopf erbt --text (fast weiss), und auf Gold
+   ergibt das 1,58 : 1. Gemessen am 05.09.2026 am wichtigsten Knopf der
+   Seite. Dunkel auf Gold sind 11,33 : 1. */
+.knopf--gross { background: var(--pink); color: var(--grund); border-color: var(--pink); font-weight: 600; padding: 0.7rem 1.5rem; }
 .knopf--gross:hover { background: var(--pink-hell); box-shadow: var(--glut); }
 .knopf--leise { background: none; color: var(--text-leise); font-size: 0.8rem; }
 
 .knopf-rund {
     display: grid; place-items: center;
     width: 2.6rem; height: 2.6rem;
-    background: var(--pink); color: #fff;
+    background: var(--pink); color: var(--grund);  /* nicht #fff: weiss auf Gold ist unlesbar */
     border: 0; border-radius: 50%;
     font-size: 1rem; cursor: pointer;
     transition: all 0.2s ease;
@@ -1690,7 +1693,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 }
 .ausfall button {
     padding: 0.32rem 0.75rem;
-    background: var(--pink); color: #fff; border: 0; border-radius: 0.4rem;
+    background: var(--pink); color: var(--grund);  /* nicht #fff: weiss auf Gold ist unlesbar */ border: 0; border-radius: 0.4rem;
     font-family: inherit; font-size: 0.8rem; cursor: pointer;
 }
 

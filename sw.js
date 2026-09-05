@@ -8,6 +8,9 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v45: Der Abspielknopf war unlesbar — fast weisser Text auf Gold,
+// 1,58 : 1. Jetzt dunkel auf Gold, 11,33 : 1. Nur styles.css.
+//
 // v44: Die drei Schriften des ersten Anblicks werden vorab geholt. Vorher
 // entdeckte der Browser sie erst nach dem Stylesheet. Nur index.html.
 //
@@ -89,7 +92,7 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v44';
+const SW_VERSION = 'iyambae-v45';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
