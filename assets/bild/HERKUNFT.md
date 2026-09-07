@@ -109,13 +109,23 @@ sich nicht dreht.
 
 ## Das Kardanlager schwenkt jetzt mit — `lager.webp`, 07.09.2026
 
-Was oben als „geht nicht" stand, ist erledigt: **Olaf**, Berufsfotograf und
-Freund Sāmi-Ras, hat den Kran von Hand freigestellt.
+Was oben als „geht nicht" stand, ist erledigt — **von ChatGPT in der
+kostenlosen Fassung**, auf Sāmi-Ras Anleitung hin.
 
-Zwei maschinelle Versuche waren daran gescheitert, und die Begruendung
-bleibt richtig — blankes Metall gegen schwarze Grundplatte trennt keine
-Helligkeitsschwelle. Was fehlte, war kein besserer Schwellwert, sondern ein
-Auge und eine Hand.
+**Berichtigt am 07.09.2026, wenige Minuten nach dem ersten Eintrag.** Hier
+stand zuerst, ein befreundeter Berufsfotograf habe es von Hand geschnitten.
+Das war der Plan — die Anleitung lag fertig bei ihm. Sāmi-Ra hat sie
+stattdessen einer Maschine gegeben, und die hat geliefert.
+
+Zwei eigene Versuche ueber die Helligkeit waren gescheitert. Die Diagnose
+stimmt weiterhin: Blankes Metall gegen schwarze Grundplatte trennt keine
+Schwelle. **Der Schluss daraus war falsch.** Hier stand „es braucht ein Auge
+und eine Hand" — richtig waere gewesen: es braucht ein Verfahren, das die
+Form erkennt statt der Helligkeit. Dass ich keines hatte, heisst nicht, dass
+es keines gibt.
+
+Rechtlich aendert sich nichts: Die Vorlage ist CC0, und was daraus entsteht,
+ist frei.
 
 | | |
 |---|---|
