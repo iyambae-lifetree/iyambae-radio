@@ -99,7 +99,11 @@
 // v27: retuner.wasm und retuner-worklet.js haben denselben Namen, aber
 // anderen Inhalt — die gute Engine ist dazugekommen. Ohne neue Fassung
 // behielte jeder bestehende Besucher fuer immer die alte Datei.
-const SW_VERSION = 'iyambae-v47';
+// v48: Der Tonarm schwenkte um einen falschen Punkt — 10,6 % zu kurz —
+// und im Deckbild lag der Geist des Arms: seine Spiegelung auf dem Vinyl
+// und sein Schatten auf der Zarge, beim Freistellen stehen geblieben.
+// styles.css und plattenspieler.webp.
+const SW_VERSION = 'iyambae-v48';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

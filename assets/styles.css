@@ -462,7 +462,23 @@ body.stimmt-432 .stimmung__mehr {
 /* Der Tonarm — dieselbe Aufnahme, nur herausgeschnitten.
 
    Er liegt als eigene Ebene deckungsgleich ueber dem Deck und schwenkt um
-   sein Lager. Der Drehpunkt ist am Foto abgemessen: 85,33 % / 25,35 %.
+   sein Lager.
+
+   DER DREHPUNKT WAR FALSCH, berichtigt am 07.09.2026. Hier stand
+   85,33 % / 25,35 % — am Foto abgeschaetzt, nicht nachgerechnet. Die
+   Sonarium-Sitzung hat nachgemessen, und die Rechnung geht auf:
+
+     Nadel im Alphakanal          (793, 855)
+     Plattenhalbmesser            519 Punkte = 151 mm, macht 3,44 Pkt/mm
+     SL-1200, effektive Laenge    230 mm = 791 Punkte
+     alter Punkt -> Nadel         707 Punkte  = 10,6 % zu kurz
+     neuer Punkt -> Nadel         779 Punkte  =  1,5 % daneben
+
+   Der neue Punkt liegt auf dem sichtbaren Lagerbolzen: 88,4 % / 20,0 %.
+
+   Sichtbar wird der Fehler nicht an der Nadel — die wandert nur um zwanzig
+   Punkte — sondern hinten: Das Gegengewicht schwang um einen Halbmesser von
+   266 statt 197 Punkten, also ein Drittel zu weit.
 
    Was darunter lag, ist im Deckbild ersetzt: die Platte durch eine um 60°
    gedrehte Kopie ihrer selbst (sie ist kreisrund, das passt fugenlos), die
@@ -470,7 +486,7 @@ body.stimmt-432 .stimmung__mehr {
 .tonarm {
     position: absolute; inset: 0;
     width: 100%; height: auto;
-    transform-origin: 85.33% 25.35%;
+    transform-origin: 88.4% 20%;
     /* Ruhe: der Arm liegt in seiner Ablage — dem kleinen Keil zwischen
        Teller und Pitchregler. Der Winkel ist nicht geschaetzt: Die Ablage
        liegt bei 83,7 % / 55,2 %, also 334 px vom Lager in Richtung 93,8°.

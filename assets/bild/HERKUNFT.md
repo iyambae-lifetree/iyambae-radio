@@ -47,3 +47,61 @@ Was der Arm im Original verdeckte, ist ersetzt:
 
 Die Spur des Arms wurde nicht geschaetzt, sondern gemessen: zeilenweise
 nach dem hellen Grat mit dunklen Raendern gesucht.
+
+
+## Berichtigt am 07.09.2026 — zwei Fehler, beide von der Sonarium-Sitzung gefunden
+
+**1 · Der Geist des Arms lag noch im Deckbild.** Beim Freistellen wurde der
+Arm entfernt, seine **Spiegelung auf dem Vinyl** und sein **Schatten auf der
+Zarge** aber nicht. Sie lagen weiter dort, wo der Arm beim Fotografieren
+lag — und passten deshalb zu genau einer Armstellung. Sichtbar wurde es in
+der Ruhe (`rotate(-16deg)`), wo der Arm die Spuren nicht verdeckt.
+
+Die Maske dafuer ist der Arm selbst: der Alphakanal von `tonarm.webp`, um
+46 Punkte verbreitert. Genauer geht es nicht — dort und nur dort war er.
+Gefuellt wurde in zwei Richtungen, jede nach der Form des Gegenstands:
+
+| Auf der Platte | entlang von Kreisen um die Tellermitte — eine Schallplatte ist rotationssymmetrisch schattiert |
+| Auf der Zarge | senkrecht, denn dort laeuft die Schattierung in Streifen |
+
+78.017 Punkte ersetzt. Die Lagerplatte — der schwarze Kreis, in dem der
+Kran sitzt — bleibt unberuehrt. Das Werkzeug liegt in
+`iyambae-lifetree/apps`, Zweig `sonarium-a1-geruest`, als
+`sonarium/Bauen/geist-herausrechnen.swift`; es lief hier unveraendert und
+kam auf dieselbe Zahl.
+
+**2 · Der Drehpunkt des Arms war falsch.** Hier stand 85,33 % / 25,35 %,
+abgeschaetzt statt nachgerechnet. Richtig ist der sichtbare Lagerbolzen bei
+**88,4 % / 20,0 %**:
+
+```
+Nadel im Alphakanal        (793, 855)
+Plattenhalbmesser          519 Punkte = 151 mm  ->  3,44 Punkte je mm
+SL-1200, effektive Laenge  230 mm = 791 Punkte
+alter Punkt -> Nadel       707 Punkte  = 10,6 % zu kurz
+neuer Punkt -> Nadel       779 Punkte  =  1,5 % daneben
+```
+
+An der Nadel faellt der Fehler kaum auf — sie wandert um zwanzig Punkte.
+Hinten schon: Das Gegengewicht schwang um einen Halbmesser von 266 statt
+197 Punkten, ein Drittel zu weit.
+
+## Was NICHT geht: das Kardanlager freistellen
+
+Sāmi-Ra wollte, dass der Kran mit dem Arm schwenkt — er gehoert dazu.
+Versucht am 07.09.2026, am Original in 3000 x 2308, und **gescheitert**.
+
+Der Grund ist nicht Faulheit, sondern der Gegenstand: Blankes Metall gegen
+schwarze Grundplatte laesst sich nicht ueber die Helligkeit trennen. Bei
+jeder Schwelle, die den aeusseren Ring und die eingravierten Skalen
+draussen laesst, fallen die beschatteten Teile des Jochs mit heraus; bei
+jeder, die sie mitnimmt, kommen die Anti-Skating-Beschriftung und der
+Zargenrand mit. Es entstehen Fetzen, keine Form.
+
+Dazu kaeme das schwerere Problem: Hinter dem geschwenkten Joch muesste die
+Grundplatte stehen — mit Skalenring und Schrauben. Die gibt es dort nicht
+zu sehen, sie muesste erfunden werden.
+
+**Es braucht eine von Hand geschnittene Maske.** Bis es sie gibt, steht der
+Kran still. Ein misslungener Ausschnitt waere schlechter als ein Lager, das
+sich nicht dreht.
