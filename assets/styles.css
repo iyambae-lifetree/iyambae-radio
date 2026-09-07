@@ -459,6 +459,28 @@ body.stimmt-432 .stimmung__mehr {
     z-index: 1;
 }
 
+/* Das Kardanlager. Es haengt am selben Punkt und macht dieselbe
+   Bewegung wie der Arm — deshalb dieselben Werte, Zeile fuer Zeile. Wer
+   hier etwas aendert, aendert es unten auch, sonst laufen die beiden
+   auseinander und der Arm haengt neben seinem Lager.
+
+   z-index 4: ueber dem Deck, unter dem Arm. So liegt das Rohr im Lager
+   und nicht darunter. */
+.lager {
+    position: absolute; inset: 0;
+    width: 100%; height: auto;
+    transform-origin: 88.4% 20%;
+    transform: rotate(-16deg);
+    transition: transform 1.1s cubic-bezier(0.33, 0.9, 0.4, 1);
+    pointer-events: none;
+    z-index: 4;
+}
+body.spielt .lager { transform: rotate(2deg); }
+
+@media (prefers-reduced-motion: reduce) {
+    .lager { transition: none; }
+}
+
 /* Der Tonarm — dieselbe Aufnahme, nur herausgeschnitten.
 
    Er liegt als eigene Ebene deckungsgleich ueber dem Deck und schwenkt um

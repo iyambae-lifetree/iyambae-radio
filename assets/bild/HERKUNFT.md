@@ -105,3 +105,31 @@ zu sehen, sie muesste erfunden werden.
 **Es braucht eine von Hand geschnittene Maske.** Bis es sie gibt, steht der
 Kran still. Ein misslungener Ausschnitt waere schlechter als ein Lager, das
 sich nicht dreht.
+
+
+## Das Kardanlager schwenkt jetzt mit — `lager.webp`, 07.09.2026
+
+Was oben als „geht nicht" stand, ist erledigt: **Olaf**, Berufsfotograf und
+Freund Sāmi-Ras, hat den Kran von Hand freigestellt.
+
+Zwei maschinelle Versuche waren daran gescheitert, und die Begruendung
+bleibt richtig — blankes Metall gegen schwarze Grundplatte trennt keine
+Helligkeitsschwelle. Was fehlte, war kein besserer Schwellwert, sondern ein
+Auge und eine Hand.
+
+| | |
+|---|---|
+| `lager.webp` | der Kran allein, 1400 x 1077 mit Alphakanal, 9,4 kB |
+| Alpha-Kasten | (1096, 169) bis (1265, 331) — der Drehpunkt liegt darin |
+| `plattenspieler.webp` | neu: ohne Kran, mit der Grundplatte dahinter |
+
+**Warum eine eigene Ebene und nicht Teil von `tonarm.webp`:** Das Rohr
+bewegt sich im Lager auch senkrecht — Auflegen und Abheben. Beides in einer
+Datei liesse sich nur noch gemeinsam bewegen.
+
+**Die drei Ebenen tragen dieselben zwei Zahlen:** Drehpunkt 88,4 % / 20,0 %,
+Ruhe -16°, Spiel +2°. Wer eine davon aendert, aendert sie in `.lager` und
+`.tonarm` gemeinsam — sonst haengt der Arm neben seinem Lager.
+
+Geprueft vor dem Einbau, in allen drei Stellungen uebereinandergelegt
+(0°, -16°, +2°): kein Loch, keine doppelte Kante.

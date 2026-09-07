@@ -103,7 +103,9 @@
 // und im Deckbild lag der Geist des Arms: seine Spiegelung auf dem Vinyl
 // und sein Schatten auf der Zarge, beim Freistellen stehen geblieben.
 // styles.css und plattenspieler.webp.
-const SW_VERSION = 'iyambae-v48';
+// v49: Das Kardanlager schwenkt mit — eigene Ebene lager.webp, von Olaf
+// von Hand freigestellt. index.html, styles.css, plattenspieler.webp.
+const SW_VERSION = 'iyambae-v49';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
