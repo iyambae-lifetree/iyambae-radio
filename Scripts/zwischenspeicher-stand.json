@@ -1,7 +1,7 @@
 {
-  "fassung": "iyambae-v49",
+  "fassung": "iyambae-v50",
   "dateien": {
-    "/ar/": "3d13a220b7801090",
+    "/ar/": "9eb03a4e1bf83c4a",
     "/ar/manifest.webmanifest": "e88c5b64446f6a52",
     "/assets/app.js": "b89bc1496d04fa8c",
     "/assets/lang/ar.json": "6a49936d4c315a7e",
@@ -34,20 +34,20 @@
     "/assets/styles.css": "deaaf9938711d7bb",
     "/assets/wasm/retuner.wasm": "c6cc9a4f9c88b066",
     "/data/sender.json": "5415284acf80ed29",
-    "/de/": "230955731e23e059",
+    "/de/": "ab33eadc496ac02a",
     "/de/manifest.webmanifest": "0ba3e2a39ffe4aa1",
-    "/en/": "ff57047f79c64787",
+    "/en/": "dffc8d2919888160",
     "/en/manifest.webmanifest": "68c2f97f4adc28a1",
-    "/es/": "c6bff0aa98d6d258",
+    "/es/": "64b00793e6c3db75",
     "/es/manifest.webmanifest": "64f25c71f5a2f19b",
-    "/fr/": "399678d4655e6696",
+    "/fr/": "d8bde424b01c5a76",
     "/fr/manifest.webmanifest": "368890425d4689d5",
     "/icon-192.png": "16e5dc4d3b47891a",
     "/icon-512.png": "954e2ad6a2c70f36",
     "/icon.svg": "32f736919c3d245e",
-    "/it/": "40ce7d82077f0ab9",
+    "/it/": "b658f17ffab515c8",
     "/it/manifest.webmanifest": "3b7887f3fc238830",
-    "/ja/": "f9b59078741f719e",
+    "/ja/": "1d8c283e45f1bfb0",
     "/ja/manifest.webmanifest": "59aaf95bd09efb31"
   }
 }

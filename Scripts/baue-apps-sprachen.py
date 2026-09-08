@@ -1104,6 +1104,33 @@ def pruefe_ladeverweis(quellen):
     return True
 
 
+def pruefe_fassung_im_text(kataloge):
+    """Nennt der sichtbare Text dieselbe Fassung wie fassungen.json?
+
+    Die Nummer steht nicht nur im Ladeverweis, sondern auch als Wort in
+    `holen.eyebrow` — in sieben Sprachen. Am 08.09.2026 stand dort noch
+    0.21.1, waehrend die Seite laengst 0.27.2 anbot: Der Verweis war
+    berichtigt, der Satz daneben nicht.
+
+    Das ist derselbe Fehler, gegen den fassungen.json gebaut wurde, nur
+    eine Ebene hoeher. Deshalb faellt er jetzt hier auf.
+    """
+    fassung = lade_fassungen()["tuner"]["macos"].get("fassung")
+    if not fassung:
+        return True
+    gut = True
+    for kuerzel, katalog in kataloge.items():
+        text = katalog.get("holen.eyebrow", "")
+        if "macOS" not in text and "0." not in text:
+            continue
+        if fassung not in text:
+            print(f"  ✘ {kuerzel}.json holen.eyebrow nennt nicht {fassung}: {text[:70]}")
+            gut = False
+    if gut:
+        print(f"  ✔ holen.eyebrow nennt in allen Sprachen {fassung}")
+    return gut
+
+
 def pruefe_treue(vorlage_quelle):
     """Reproduziert der Zerleger die Vorlage unveraendert?"""
     z = Zerleger()
@@ -1445,6 +1472,8 @@ def main():
     if not pruefe_ruecken(kataloge):
         gut = False
     if not pruefe_ladeverweis(quellen):
+        gut = False
+    if not pruefe_fassung_im_text(kataloge):
         gut = False
     if not pruefe_farbtoken(quellen):
         gut = False

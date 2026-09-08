@@ -105,7 +105,10 @@
 // styles.css und plattenspieler.webp.
 // v49: Das Kardanlager schwenkt mit — eigene Ebene lager.webp, von Olaf
 // von Hand freigestellt. index.html, styles.css, plattenspieler.webp.
-const SW_VERSION = 'iyambae-v49';
+// v50: Die Werkzeugseite bietet 0.27.2 statt 0.21.1 an — sechs Fassungen
+// aufgeholt, nachdem die Datei endlich im Speicher liegt. apps/index.html
+// und die sieben Sprachkataloge der Werkzeugseite.
+const SW_VERSION = 'iyambae-v50';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
