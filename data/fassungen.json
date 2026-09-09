@@ -5,9 +5,9 @@
   "_datei_null": "heisst: Die Fassung existiert und laeuft, ist aber nicht zum Laden da. Nicht dasselbe wie 'gibt es nicht'.",
   "tuner": {
     "macos": {
-      "fassung": "0.27.2",
+      "fassung": "0.28.0",
       "reife": "erprobung",
-      "datei": "IYAMBAE-Tuner-0.27.2.dmg"
+      "datei": "IYAMBAE-Tuner-0.28.0.dmg"
     },
     "linux": {
       "fassung": null,

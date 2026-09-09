@@ -108,7 +108,9 @@
 // v50: Die Werkzeugseite bietet 0.27.2 statt 0.21.1 an — sechs Fassungen
 // aufgeholt, nachdem die Datei endlich im Speicher liegt. apps/index.html
 // und die sieben Sprachkataloge der Werkzeugseite.
-const SW_VERSION = 'iyambae-v50';
+// v51: Die Ladeseite bietet 0.28.0 an — die erste Fassung, die von Apple
+// beglaubigt ist. apps/index.html und die sieben Sprachkataloge.
+const SW_VERSION = 'iyambae-v51';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
