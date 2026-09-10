@@ -52,6 +52,16 @@ FROM nginxinc/nginx-unprivileged:1.29-alpine
 # Die eigene Konfiguration ersetzt die mitgelieferte vollständig.
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 
+# Die Konfiguration wird beim BAUEN geprueft, nicht erst beim Start.
+#
+# Ohne diese Zeile faellt ein Tippfehler in nginx.conf erst auf, wenn der
+# Container hochkommen soll — also nach dem Hochladen, im Ziel. Genau
+# deshalb ist 432hz-radio#25 als Vorschlag statt als Aenderung gekommen:
+# Die andere Sitzung konnte ihn nicht ausprobieren und wollte ihn nicht
+# auf eine laufende Seite schieben. Ein Bau, der sich selbst korrigiert,
+# macht solche Vorgaenge ueberfluessig.
+RUN nginx -t
+
 # Das Radio, samt der eben erzeugten Sprachordner.
 COPY --from=erzeuger --chown=101:101 /bau /srv/radio
 
