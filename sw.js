@@ -115,7 +115,9 @@
 // v53: /de/mitmachen/ — die Seite, auf die der QR-Code des gedruckten
 // Flyers zeigt. Dazu die Ladegroesse berichtigt: 1,7 MB stammte von
 // 0.21.1, die Datei hat 2,0.
-const SW_VERSION = 'iyambae-v53';
+// v54: Eine vierte Frage auf /mitmachen/ — was mit einer Rueckmeldung
+// geschieht. Vorschlag der Sonarium-Sitzung.
+const SW_VERSION = 'iyambae-v54';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
