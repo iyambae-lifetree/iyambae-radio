@@ -110,7 +110,9 @@
 // und die sieben Sprachkataloge der Werkzeugseite.
 // v51: Die Ladeseite bietet 0.28.0 an — die erste Fassung, die von Apple
 // beglaubigt ist. apps/index.html und die sieben Sprachkataloge.
-const SW_VERSION = 'iyambae-v51';
+// v52: Der Telegram-Kanal @iyambae_fm steht im Menue und im Fuss.
+// index.html, styles.css und die sieben Sprachkataloge.
+const SW_VERSION = 'iyambae-v52';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

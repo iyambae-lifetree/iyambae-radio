@@ -1854,6 +1854,14 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .fuss__powered { margin-top: 0.9rem; font-family: var(--mono); font-size: 0.75rem; color: var(--text-leise); }
 /* Rechtsverweise und der Widerruf. Leise gesetzt, aber auffindbar —
    ein Impressum, das man suchen muss, erfuellt seinen Zweck nicht. */
+/* Der Telegram-Kanal im Fuss. Zurueckhaltend wie „powered by", aber
+   anklickbar — er ist ein Angebot, keine Rechtsauskunft, und steht
+   deshalb NICHT in der Rechtsleiste darunter. */
+.fuss__kanal { margin-top: 0.35rem; font-family: var(--mono); font-size: 0.75rem; }
+.fuss__kanal a { color: var(--text-leise); text-decoration: none; }
+.fuss__kanal a:hover,
+.fuss__kanal a:focus-visible { color: var(--gold); text-decoration: underline; }
+
 .fuss__recht {
     display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
     margin-top: 1rem;
