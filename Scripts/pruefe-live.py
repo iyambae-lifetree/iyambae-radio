@@ -53,6 +53,13 @@ RECHT = ("/recht/impressum/", "/recht/datenschutz/",
 # hat ihren Verweis bekommen und wuerde sonst vor einer 404 stehen, ohne
 # dass es irgendwo auffaellt.
 UNGELISTET = ("https://apps.iyambae.fm/de/eltern-wien/",)
+
+# Kurze Adressen, die auf GEDRUCKTEM Papier stehen. Sie muessen tragen,
+# und zwar laenger als jede Datei hier: Ein Flyer laesst sich nicht
+# berichtigen. Geprueft wird, dass sie umleiten — wohin, steht daneben.
+GEDRUCKT = {
+    "https://iyambae.fm/mitmachen": "https://apps.iyambae.fm/de/mitmachen/",
+}
 RAUM = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
 
 # Eine Seite unter dieser Groesse ist keine Seite. Die kleinste echte
@@ -173,6 +180,17 @@ def main():
         print(f"  {zeichen} {adresse}  {code}, noindex: {hat_noindex}")
         if code == 200 and not hat_noindex:
             beanstandet.append(f"{adresse} ist ungelistet, traegt aber kein noindex")
+
+    print("\n══ Kurze Adressen von gedrucktem Papier ══")
+    for kurz, ziel in GEDRUCKT.items():
+        # hole() folgt Umleitungen. Geprueft wird deshalb das Ende der
+        # Kette: Kommt dort eine echte Seite an, traegt die kurze Adresse.
+        code, seite = hole(kurz)
+        gut = code == 200 and len(seite) > MINDESTLAENGE
+        print(f"  {'✔' if gut else '✘'} {kurz}  {code} → {ziel}")
+        if not gut:
+            beanstandet.append(f"{kurz} steht auf gedrucktem Papier und "
+                               f"endet bei HTTP {code}")
 
     print("\n══ Rechtstexte ══")
     for pfad in RECHT:
