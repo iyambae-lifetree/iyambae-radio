@@ -122,6 +122,25 @@ SEITEN = {
         "sprachen": ["de"],
         "gelistet": False,
     },
+    # Ziel des QR-Codes auf dem gedruckten Flyer fuers Vegu Spirit Festival
+    # in Darmstadt, 13.09.2026. Sie beantwortet drei Fragen: was bekommst du,
+    # was kostet es, wie meldest du zurueck.
+    #
+    # DEUTSCH, aber GELISTET — anders als eltern-wien. Der Anlass ist eine
+    # deutsche Veranstaltung, der Inhalt aber nicht ortsgebunden: Wer testen
+    # will, ist ueberall willkommen. Die anderen sechs Sprachen koennen
+    # nachkommen, sobald jemand sie braucht.
+    #
+    # Der Vorschlag kam von der Sonarium-Sitzung: „Ein QR-Code, der auf eine
+    # Seite mit genau diesen drei Antworten fuehrt, waere vermutlich mehr wert
+    # als eine schoene Vorderseite." Vorher zeigte der Code auf die
+    # Radio-Startseite, wo ein Tester zwischen 165 Sendern gestanden haette.
+    "mitmachen/": {
+        "vorlage": "mitmachen.html",
+        "programm": "text",
+        "rueckgrat": True,
+        "sprachen": ["de"],
+    },
     "eltern/": {
         "vorlage": "eltern.html",
         # WEDER Programm zum Herunterladen NOCH Werkzeug im Browser: ein
@@ -914,6 +933,7 @@ SEITENNAME = {
     "solfeggio/": "528 Hz und Solfeggio",
     "hoertest/": "Blindtest 432 gegen 440",
     "stimmung/": "Stimmungsmesser",
+    "mitmachen/": "Mitmachen — Tester gesucht",
 }
 
 SEITENSATZ = {
@@ -941,6 +961,8 @@ SEITENSATZ = {
                  "Browser.",
     "stimmung/": "Stimmungsmesser: misst, auf welchem Kammerton eine "
                  "laufende Aufnahme steht. Web Audio, ohne Hochladen.",
+    "mitmachen/": "Was Testerinnen und Tester bekommen, was es kostet "
+                  "(nichts) und wie sie zurueckmelden. Nur auf Deutsch.",
 }
 
 

@@ -112,7 +112,10 @@
 // beglaubigt ist. apps/index.html und die sieben Sprachkataloge.
 // v52: Der Telegram-Kanal @iyambae_fm steht im Menue und im Fuss.
 // index.html, styles.css und die sieben Sprachkataloge.
-const SW_VERSION = 'iyambae-v52';
+// v53: /de/mitmachen/ — die Seite, auf die der QR-Code des gedruckten
+// Flyers zeigt. Dazu die Ladegroesse berichtigt: 1,7 MB stammte von
+// 0.21.1, die Datei hat 2,0.
+const SW_VERSION = 'iyambae-v53';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

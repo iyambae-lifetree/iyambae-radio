@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title data-text="mit.seite.titel">Mitmachen — Testerinnen und Tester gesucht</title>
+<meta name="description" data-inhalt="mit.seite.beschreibung" content="Was du bekommst, was es kostet und wie du zurückmeldest. Drei Fragen, drei Antworten — für alle, die den IYAMBAE Tuner und den Converter ausprobieren wollen.">
+<meta name="theme-color" content="#0A0908">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IYAMBAE Tuner">
+<meta property="og:title" data-inhalt="mit.seite.titel" content="Mitmachen — Testerinnen und Tester gesucht">
+<meta property="og:description" data-inhalt="mit.seite.beschreibung" content="Was du bekommst, was es kostet und wie du zurückmeldest. Drei Fragen, drei Antworten — für alle, die den IYAMBAE Tuner und den Converter ausprobieren wollen.">
+<meta property="og:url" content="https://apps.iyambae.fm/de/mitmachen/">
+<meta property="og:locale" content="de">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://apps.iyambae.fm/de/mitmachen/">
+<link rel="icon" href="assets/iyambae-marke.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/schrift/schriften.css">
+<link rel="stylesheet" href="/assets/werkzeug.css">
+<style>
+/* Nur diese Seite. Das Gerüst steht in /assets/werkzeug.css.
+
+   Sie ist das Ziel eines QR-Codes auf einem gedruckten Flyer. Wer hier
+   landet, steht auf einer Veranstaltung, hält ein Telefon in der Hand und
+   hat dreißig Sekunden. Deshalb: drei Fragen, drei Antworten, nichts
+   dazwischen. */
+
+.frage { border-top: 1px solid var(--kante); padding: 1.6rem 0; }
+.frage:last-of-type { border-bottom: 1px solid var(--kante); }
+.frage__nr {
+  font-family: var(--daten); font-size: .72rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--akzent); margin: 0 0 .3rem;
+}
+.frage h2 { margin: 0 0 .8rem; font-size: 1.35rem; }
+
+/* Was es fuer welches System gibt. Zwei Spalten, auf dem Telefon eine. */
+.system { display: grid; grid-template-columns: 8.5rem 1fr; gap: .35rem 1rem;
+          padding: .7rem 0; border-top: 1px solid var(--kante); }
+.system:first-of-type { border-top: 0; }
+.system__wer { font-family: var(--daten); font-size: .74rem;
+               letter-spacing: .05em; text-transform: uppercase;
+               color: var(--akzent); padding-top: .15rem; }
+.system p { margin: 0; color: var(--leise); }
+.system p strong { color: var(--text); }
+@media (max-width: 34rem) { .system { grid-template-columns: 1fr; } }
+
+/* Die Wege zurueck. Gross genug zum Antippen — hier wird tatsaechlich
+   getippt, nicht gelesen. */
+.weg { display: flex; align-items: baseline; gap: .9rem;
+       padding: .7rem 0; border-top: 1px solid var(--kante); }
+.weg:first-of-type { border-top: 0; }
+.weg__was { font-family: var(--daten); font-size: .74rem;
+            letter-spacing: .05em; text-transform: uppercase;
+            color: var(--leiser); flex: 0 0 5.5rem; }
+.weg a { font-size: 1.05rem; }
+
+.kostet { font-size: 1.6rem; font-weight: 600; color: var(--akzent);
+          margin: 0 0 .8rem; }
+</style>
+</head>
+<body>
+
+<header class="kopfleiste">
+  <div class="rahmen kopfleiste__inhalt">
+    <a class="marke" href="/de/">
+      <img src="assets/iyambae-marke.svg" alt="" width="28" height="28">
+      <span class="marke__wort">IYAMBAE <span>Tuner</span></span>
+    </a>
+    <nav class="kopf__wege">
+      <!--SPRACHWAHL-->
+      <a class="kopfknopf kopfknopf--haupt" href="/de/" data-text="mit.kopf.tuner">Zum Tuner</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="rahmen bogen">
+    <p class="eyebrow" data-text="mit.eyebrow">Mitmachen</p>
+    <h1 data-text="mit.titel">Ich suche Testerinnen und Tester.</h1>
+    <p class="fuehrung" data-text="mit.fuehrung">Drei Fragen sollte jeder beantwortet bekommen, bevor er etwas installiert: Was bekomme ich, was kostet es, und wie sage ich, wenn etwas klemmt. Hier stehen die Antworten.</p>
+
+    <div class="frage">
+      <p class="frage__nr" data-text="mit.f1.nr">Frage eins</p>
+      <h2 data-text="mit.f1.titel">Was bekommst du?</h2>
+
+      <div class="system">
+        <span class="system__wer" data-text="mit.sys.mac">macOS</span>
+        <p data-html="mit.sys.mac.text"><strong>Beide Programme, fertig.</strong> Der Tuner stimmt den Ton deines Rechners um, während du hörst. Der Converter stimmt Musikdateien dauerhaft um. Ab macOS 14.4, signiert und von Apple beglaubigt — Doppelklick genügt.</p>
+      </div>
+      <div class="system">
+        <span class="system__wer" data-text="mit.sys.win">Windows</span>
+        <p data-html="mit.sys.win.text"><strong>In Arbeit.</strong> Gebaut ist es, aber noch nicht so weit, dass ich es jemandem in die Hand drücke. Wer sich meldet, bekommt es als Erster.</p>
+      </div>
+      <div class="system">
+        <span class="system__wer" data-text="mit.sys.linux">Linux</span>
+        <p data-html="mit.sys.linux.text"><strong>In Arbeit.</strong> Stimmt den Systemton über PipeWire um, mit einem Symbol in der Leiste. Dasselbe gilt: Wer fragt, ist vorne dabei.</p>
+      </div>
+    </div>
+
+    <div class="frage">
+      <p class="frage__nr" data-text="mit.f2.nr">Frage zwei</p>
+      <h2 data-text="mit.f2.titel">Was kostet es?</h2>
+      <p class="kostet" data-text="mit.f2.nichts">Nichts.</p>
+      <p data-html="mit.f2.text">Kein Konto, keine Anmeldung, kein Newsletter. Ich frage dich nicht nach deiner Adresse, und du bekommst keine Post, die du nicht bestellt hast.</p>
+      <p data-html="mit.f2.daten">Die Programme messen und rechnen <strong>auf deinem Rechner</strong>. Was du hörst, erfährt niemand — es geht nichts an einen Server, solange du nicht selbst einen Fehlerbericht abschickst.</p>
+      <p class="notiz" data-html="mit.f2.frist">Die Testfassungen laufen bis zum <strong>31. Oktober 2026</strong>. Danach gibt es eine neue — das ist kein Ablaufdatum für dich, sondern eines für den Stand der Software.</p>
+    </div>
+
+    <div class="frage">
+      <p class="frage__nr" data-text="mit.f3.nr">Frage drei</p>
+      <h2 data-text="mit.f3.titel">Wie meldest du zurück?</h2>
+      <p data-text="mit.f3.text">So, wie es dir passt. Alle drei Wege landen bei mir persönlich, nicht in einem Postfach, das niemand liest.</p>
+
+      <div class="weg">
+        <span class="weg__was" data-text="mit.weg.post">Post</span>
+        <a href="mailto:info@iyambae.fm">info@iyambae.fm</a>
+      </div>
+      <div class="weg">
+        <span class="weg__was" data-text="mit.weg.telegram">Telegram</span>
+        <a href="https://t.me/lebensbaum" rel="noopener">@lebensbaum</a>
+      </div>
+      <div class="weg">
+        <span class="weg__was" data-text="mit.weg.kanal">Kanal</span>
+        <a href="https://t.me/iyambae_fm" rel="noopener">@iyambae_fm</a>
+      </div>
+
+      <p class="notiz" data-html="mit.f3.hilft">Was mir am meisten hilft: <strong>welches System</strong> du hast, <strong>was du gemacht</strong> hast und <strong>was stattdessen passiert</strong> ist. Drei Sätze reichen. „Geht nicht" ist auch eine Rückmeldung — dann frage ich nach.</p>
+    </div>
+
+    <h2 data-text="mit.spaeter.titel">Was sonst noch entsteht</h2>
+    <p data-html="mit.spaeter.text">Ein eigener Abspieler für die Musik, die dir gehört, mit dem Radio darin. Und ein Blindtest, der ehrlich auswertet, ob man den Unterschied zwischen 432 und 440 Hz überhaupt hört — <a href="/de/hoertest/">den kannst du jetzt schon machen</a>.</p>
+
+    <p data-html="mit.zurueck">Wenn du erst einmal nur zuhören willst: <a href="https://iyambae.fm">iyambae.fm</a> — 165 Sender, im Browser, ohne alles.</p>
+  </section>
+</main>
+
+<footer class="fuss">
+  <div class="rahmen">
+    <blockquote class="merksatz" data-text="fuss.merksatz">
+      Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.
+    </blockquote>
+    <nav class="fuss__werkzeuge">
+      <span class="fuss__werkzeuge-titel" data-text="werk.titel">Alles hier</span>
+      <a href="/de/" data-text="werk.tuner">Der Tuner</a>
+      <a href="/de/stimmung/" data-text="werk.stimmung">Stimmung messen</a>
+      <a href="/de/hoertest/" data-text="werk.hoertest">Hörtest</a>
+      <a href="/de/spotify/" data-text="werk.spotify">Spotify in 432 Hz</a>
+      <a href="/de/samplerate/" data-text="werk.samplerate">Samplerate und Tonhöhe</a>
+      <a href="/de/gitarre/" data-text="werk.gitarre">Gitarre auf 432</a>
+      <a href="/de/solfeggio/" data-text="werk.solfeggio">Solfeggio-Frequenzen</a>
+      <a href="/de/eltern/" data-text="werk.eltern">Für Eltern</a>
+      <a href="/de/berichtigungen/" data-text="werk.berichtigungen">Berichtigungen</a>
+    </nav>
+    <p class="fuss__recht" data-html="fuss.recht">
+      Der IYAMBAE Tuner ist <strong>kein Medizinprodukt</strong> und kein
+      Heilmittel. Er verändert Tonhöhe, sonst nichts.
+    </p>
+    <div class="fuss__reihe">
+      <span data-text="fuss.zeile">IYAMBAE — kuratiertes Webradio und Werkzeuge fürs Hören.</span>
+      <nav class="fuss__wege">
+        <a href="https://iyambae.fm">iyambae.fm</a>
+        <a href="https://iyambae.fm/recht/impressum/" data-text="fuss.impressum">Impressum</a>
+        <a href="https://iyambae.fm/recht/datenschutz/" data-text="fuss.datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
