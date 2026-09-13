@@ -1123,6 +1123,23 @@ def pruefe_ladeverweis(quellen):
         return False
     if datei:
         print(f"  ✔ Ladeverweis und fassungen.json nennen dieselbe Datei: {datei}")
+
+    # Der Converter, seit dem 13.09.2026 angeboten. Dieselbe Pruefung, weil
+    # derselbe Fehler: Die Nummer im Verweis und die in fassungen.json laufen
+    # sonst beim naechsten Stand auseinander.
+    conv = lade_fassungen().get("converter", {}).get("macos", {})
+    cdatei = conv.get("datei")
+    cverweise = set(re.findall(r"/herunterladen/(IYAMBAE-Converter-[^\"]+\.dmg)", quelle))
+    if cdatei and cverweise != {cdatei}:
+        print(f"  ✘ Converter: Vorlage verlinkt {sorted(cverweise) or 'nichts'}, "
+              f"fassungen.json nennt {cdatei}")
+        return False
+    if not cdatei and cverweise:
+        print(f"  ✘ Converter: Vorlage verlinkt {sorted(cverweise)}, "
+              f"fassungen.json sagt: nichts zum Laden")
+        return False
+    if cdatei:
+        print(f"  ✔ Converter-Verweis und fassungen.json nennen dieselbe Datei: {cdatei}")
     return True
 
 

@@ -19,5 +19,12 @@
       "reife": "frueh",
       "datei": null
     }
+  },
+  "converter": {
+    "macos": {
+      "fassung": "0.33.1",
+      "reife": "erprobung",
+      "datei": "IYAMBAE-Converter-0.33.1.dmg"
+    }
   }
 }

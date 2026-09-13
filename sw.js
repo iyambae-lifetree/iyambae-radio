@@ -117,7 +117,10 @@
 // 0.21.1, die Datei hat 2,0.
 // v54: Eine vierte Frage auf /mitmachen/ — was mit einer Rueckmeldung
 // geschieht. Vorschlag der Sonarium-Sitzung.
-const SW_VERSION = 'iyambae-v54';
+// v55: Der Converter steht auf der Ladeseite, und die Mac-Schritte sagen
+// nicht mehr „nicht signiert, Dennoch oeffnen" — seit 0.28.0 beglaubigt.
+// apps/index.html, mitmachen.html, die sieben Sprachkataloge.
+const SW_VERSION = 'iyambae-v55';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

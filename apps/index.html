@@ -1650,8 +1650,24 @@ code {
           <a class="plattform" data-fuer="mac" href="/herunterladen/IYAMBAE-Tuner-0.28.0.dmg">
             <img class="plattform__zeichen" src="assets/plattform-mac.svg" alt="" width="24" height="24">
             <span class="plattform__reife" data-reife="mac"></span>
-            <span class="plattform__tat" data-text="auf.mac.tat">Für macOS laden</span>
+            <span class="plattform__tat" data-text="auf.mac.tat">Tuner für macOS laden</span>
             <span class="plattform__zusatz" data-text="auf.mac.zusatz">DMG · 2,0 MB · ab macOS 14.4 · kein Konto · Testfassung bis 31.10.2026</span>
+          </a>
+          <!-- Der Converter, seit dem 13.09.2026 auf der Ladeseite.
+
+               Bis dahin lag er beglaubigt im Speicher, aber wer hierher kam,
+               sah nur den Tuner. Aufgefallen ist es, als eine andere Sitzung
+               nach den Produktadressen fragte und die Antwort lautete: Es
+               gibt nur einen direkten Dateiverweis.
+
+               Eigene Kachel statt eines zweiten Knopfes in der ersten: Es
+               sind zwei Programme mit zwei Zwecken, und die Unterzeile
+               sagt, welcher. Ohne Reifewort-Anker — das Reifewort kommt aus
+               fassungen.json und gilt dort je Plattform des Tuners. -->
+          <a class="plattform" data-fuer="mac" href="/herunterladen/IYAMBAE-Converter-0.33.1.dmg">
+            <img class="plattform__zeichen" src="assets/plattform-mac.svg" alt="" width="24" height="24">
+            <span class="plattform__tat" data-text="auf.conv.tat">Converter für macOS laden</span>
+            <span class="plattform__zusatz" data-text="auf.conv.zusatz">DMG · 2,4 MB · ab macOS 13 · stimmt Musikdateien dauerhaft um</span>
           </a>
           <!-- Windows und Linux stehen weiter da, sind aber kein Knopf mehr.
 
@@ -1877,7 +1893,10 @@ code {
       <div class="karte__fuellen"></div>
       <div class="karte__tat">
         <a class="laden" href="/herunterladen/IYAMBAE-Tuner-0.28.0.dmg">
-          <span data-text="karte.mac.laden">DMG laden</span><span class="laden__groesse">1,7 MB</span>
+          <span data-text="karte.mac.laden">Tuner laden</span><span class="laden__groesse">2,0 MB</span>
+        </a>
+        <a class="laden" href="/herunterladen/IYAMBAE-Converter-0.33.1.dmg">
+          <span data-text="karte.conv.laden">Converter laden</span><span class="laden__groesse">2,4 MB</span>
         </a>
         <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
           <span data-text="holen.pruefsumme">SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
@@ -1944,16 +1963,20 @@ code {
            landet sie in der 1,9rem schmalen Spalte der Ziffer. -->
       <ol>
         <li><p data-text="schritte.1">DMG öffnen, die App in „Programme“ ziehen, doppelklicken.</p></li>
+        <!-- Hier stand bis zum 13.09.2026 der Umweg ueber „Dennoch oeffnen",
+             mit dem Satz, die Testausgabe sei nicht signiert. Seit Tuner
+             0.28.0 und Converter 0.30.2 ist beides von Apple beglaubigt, der
+             Zettel haengt am Abbild. Die alte Anleitung war damit nicht nur
+             veraltet, sondern schaedlich: Sie schickte Menschen in die
+             Systemeinstellungen, wo es nichts zu tun gab. -->
         <li><p data-html="schritte.2">
-          <strong>macOS weist sie ab. Das ist erwartet:</strong> Diese
-          Testausgabe ist <strong>nicht signiert und nicht notarisiert</strong>,
-          und der früher übliche Rechtsklick-Weg hilft seit August 2024 nicht
-          mehr.
+          <strong>Kein Umweg nötig.</strong> Beide Programme sind signiert und
+          von Apple beglaubigt — es gibt keine Warnung und kein „Dennoch
+          öffnen“, auch ohne Netz.
         </p></li>
         <li><p data-html="schritte.3">
-          <strong>Systemeinstellungen → Datenschutz &amp; Sicherheit → „Dennoch
-          öffnen“.</strong> Ab da startet sie wie jede andere App. Beim ersten
-          Einschalten fragt macOS nach „Systemaudio aufnehmen“.
+          Beim ersten Einschalten fragt macOS nach „Systemaudio aufnehmen“. Ab
+          da startet der Tuner wie jede andere App.
         </p></li>
       </ol>
       <!-- Hier standen die Wege fuer Windows (SmartScreen) und Linux

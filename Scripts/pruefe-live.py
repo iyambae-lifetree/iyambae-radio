@@ -159,17 +159,22 @@ def main():
     # DA IST, sagt nur ein Abruf.
     import json as _json
     stand = _json.loads(io.open("data/fassungen.json", encoding="utf-8").read())
-    for name, wie in stand["tuner"].items():
-        datei = wie.get("datei")
-        if not datei:
-            print(f"  · {name:<8} nichts zum Laden ({wie['reife']})")
+    # Jedes Programm, nicht nur der Tuner — seit dem 13.09.2026 steht auch
+    # der Converter darin.
+    for programm, plattformen in stand.items():
+        if programm.startswith("_"):
             continue
-        adresse = f"https://apps.iyambae.fm/herunterladen/{datei}"
-        code, _ = hole(adresse)
-        zeichen = "✔" if code == 200 else "✘"
-        print(f"  {zeichen} {name:<8} {wie['fassung']:<9} {code}  {datei}")
-        if code != 200:
-            beanstandet.append(f"{adresse} → HTTP {code} — angeboten, aber nicht da")
+        for name, wie in plattformen.items():
+            datei = wie.get("datei")
+            if not datei:
+                print(f"  · {programm:<9} {name:<8} nichts zum Laden ({wie['reife']})")
+                continue
+            adresse = f"https://apps.iyambae.fm/herunterladen/{datei}"
+            code, _ = hole(adresse)
+            zeichen = "✔" if code == 200 else "✘"
+            print(f"  {zeichen} {programm:<9} {name:<8} {wie['fassung']:<9} {code}  {datei}")
+            if code != 200:
+                beanstandet.append(f"{adresse} → HTTP {code} — angeboten, aber nicht da")
 
     print("\n══ Ungelistete Seiten ══")
     for adresse in UNGELISTET:
