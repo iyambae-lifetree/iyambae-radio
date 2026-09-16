@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title data-text="seite.titel">IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln</title>
-<meta name="description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Windows und Linux sind gebaut und kommen. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<meta name="description" data-inhalt="seite.beschreibung" content="Tuner für macOS, Windows und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
 <meta name="theme-color" content="#0A0908">
 
 <!-- Vorschau in Foren und Boten. Der Anlass ist unmittelbar: Wer diese
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="IYAMBAE Tuner">
 <meta property="og:title" data-inhalt="seite.titel" content="IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln">
-<meta property="og:description" data-inhalt="seite.beschreibung" content="Menüleisten-App für macOS. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Windows und Linux sind gebaut und kommen. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<meta property="og:description" data-inhalt="seite.beschreibung" content="Tuner für macOS, Windows und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
 <meta property="og:url" content="https://apps.iyambae.fm/de/">
 <meta property="og:locale" content="de">
 <meta name="twitter:card" content="summary">
@@ -433,15 +433,15 @@ html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
 .sicht__ersatz p { margin: 0; }
 
 /* Die Ueberschrift ueber den Karten richtet sich nach dem System.
-   "Hol es dir" ist eine Aufforderung — auf Windows, auf Linux und am
-   Telefon gibt es nichts zu holen, und eine Aufforderung ins Leere ist
+   "Hol es dir" ist eine Aufforderung — am Telefon gibt es nichts zu
+   holen, und eine Aufforderung ins Leere ist
    die unhoeflichste Art, jemanden wegzuschicken. Ohne Skript gilt die
    erste, weil sie die einzige ist, hinter der eine Datei liegt.
 
    BIS ZUM 30.08.2026 hiess diese Klasse `kopf--win`, denn Windows war
-   das einzige System ohne Datei. Seit Sāmi-Ras Entscheidung, Windows und
-   Linux nicht an Tester zu geben, sind es zwei — und ein Name, der eines
-   davon nennt, waere ab jetzt falsch.
+   das einzige System ohne Datei. Vom 30.08. bis 16.09.2026 waren es
+   Windows und Linux (Klasse `kopf--wartet`). Seit beide wieder eine
+   Datei haben, bleibt nur das Telefon.
 
    EIGENE KLASSENNAMEN, und das ist kein Geschmack. Der erste Versuch nahm
    `.fuer--win`, also denselben Namen, den die Knoepfe oben schon benutzen.
@@ -449,12 +449,8 @@ html:not([data-os])   .fuer--alle { display: var(--fuer-anzeige, block); }
    und Beschriftung und Erklaerung liefen in einer Zeile ineinander —
    sichtbar erst bei schmaler Breite. Zwei Dinge, die verschieden sind,
    duerfen nicht denselben Namen tragen. */
-.kopf--wartet, .kopf--mobil { display: none; }
-html[data-os="win"]   .kopf--holen,
-html[data-os="linux"] .kopf--holen,
+.kopf--mobil { display: none; }
 html[data-os="mobil"] .kopf--holen { display: none; }
-html[data-os="win"]   .kopf--wartet { display: block; }
-html[data-os="linux"] .kopf--wartet { display: block; }
 html[data-os="mobil"] .kopf--mobil  { display: block; }
 .sicht__ersatz strong { color: var(--text); font-weight: 600; }
 
@@ -834,21 +830,9 @@ html[data-os="linux"] .plattform--wartet[data-fuer="linux"] .plattform__zeichen 
    sie auch für Sprachausgabe und Tastatur die, die im Quelltext steht. */
 html[data-os="linux"] .karte--linux { order: -1; }
 html[data-os="win"]   .karte--win   { order: -1; }
-/* Auf Windows gibt es nichts zu holen — aber die Karte, die den Besucher
-   angeht, soll trotzdem die hellere sein. Sonst wirkt sein System wie
-   eine Fussnote. */
-html[data-os="win"]   .karte--win   { background: var(--grund-hoch); }
-html[data-os="win"]   .karte--win .karte__name { color: var(--kalt); }
-/* BERICHTIGT AM 23.08.2026, WIEDER BERICHTIGT AM 30.08.2026.
-
-   Zwischendurch lag auf der Windows-Karte ein Installer, und der kühle
-   Ton hiess „kann weniger" statt „gibt es nicht". Seit Sāmi-Ras
-   Entscheidung liegt dort wieder nichts zum Laden — die urspruengliche
-   Begruendung stimmt also erneut, und sie gilt jetzt auch fuer Linux. */
-html[data-os="win"]   .karte--win .karte__deins { background: var(--kalt); }
-html[data-os="linux"] .karte--linux { background: var(--grund-hoch); }
-html[data-os="linux"] .karte--linux .karte__name  { color: var(--kalt); }
-html[data-os="linux"] .karte--linux .karte__deins { background: var(--kalt); }
+/* Bis zum 16.09.2026 standen hier kuehle Farben fuer die Windows- und die
+   Linux-Karte: „gibt es nicht". Seitdem liegt auf beiden eine Datei, und
+   sie tragen dasselbe `karte--bereit` wie die Mac-Karte. */
 
 /* ── Was gleich passiert: die drei Schritte ──────────────────────── */
 
@@ -1520,7 +1504,7 @@ code {
 <section class="rahmen aufmacher">
   <div class="aufmacher__satz">
     <div>
-      <p class="eyebrow" data-text="auf.eyebrow">Menüleisten-App · macOS · Windows und Linux in Arbeit</p>
+      <p class="eyebrow" data-text="auf.eyebrow">Menüleisten-App · macOS · Windows · Linux</p>
       <h1 data-html="auf.titel">Spotify in <em>432 Hz</em>. Ohne eine einzige Datei umzuwandeln.</h1>
       <p class="aufmacher__vorwort" data-text="auf.vorwort">
         Netflix, YouTube, dein Player genauso. Der Tuner sitzt im Systemton —
@@ -1669,28 +1653,30 @@ code {
             <span class="plattform__tat" data-text="auf.conv.tat">Converter für macOS laden</span>
             <span class="plattform__zusatz" data-text="auf.conv.zusatz">DMG · 2,4 MB · ab macOS 13 · stimmt Musikdateien dauerhaft um</span>
           </a>
-          <!-- Windows und Linux stehen weiter da, sind aber kein Knopf mehr.
+          <!-- Windows und Linux, seit dem 16.09.2026 wieder mit Datei.
 
-               Sāmi-Ra am 30.08.2026: „Beide Versionen gefallen mir nicht
-               wirklich, dass ich sie auf Tester loslassen würde. Sie sind ja
-               nicht annähernd so weit wie die Mac Version."
+               Vom 30.08. bis hierher standen sie als gedaempfte Kachel ohne
+               Verweis da — Sāmi-Ra: „Beide Versionen gefallen mir nicht
+               wirklich, dass ich sie auf Tester loslassen würde." Seitdem
+               hat Windows den Systemton und die Stimmungserkennung bekommen,
+               Linux das Leistensymbol; beide Dateien liegen seit dem 09. und
+               10.09. im Speicher. Sāmi-Ra am 16.09.: „ja, biete sie an."
 
-               Die Kachel bleibt, weil sie eine Frage beantwortet, die jeder
-               Besucher zuerst stellt: Gibt es das für mein System? Ja — nur
-               noch nicht zum Mitnehmen. Ein <div> statt eines <a>, damit
-               nichts anklickbar ist, was nicht herausgehen soll. -->
-          <div class="plattform plattform--wartet" data-fuer="win">
+               Das Reifewort bleibt „frueh" (data/fassungen.json), und die
+               Unterzeile sagt ehrlich, was der Besucher gleich erlebt:
+               SmartScreen auf Windows, apt auf einem nackten Debian. -->
+          <a class="plattform" data-fuer="win" href="/herunterladen/IYAMBAE-Tuner-0.3.0-Setup.exe">
             <img class="plattform__zeichen" src="assets/plattform-win.svg" alt="" width="24" height="24">
             <span class="plattform__reife" data-reife="win"></span>
-            <span class="plattform__tat" data-text="auf.win.tat">Windows — noch nicht zum Ausprobieren</span>
-            <span class="plattform__zusatz" data-text="auf.win.zusatz">Es gibt sie, sie läuft, und sie ist noch nicht so weit wie die auf dem Mac. Sie geht hinaus, wenn sie es ist.</span>
-          </div>
-          <div class="plattform plattform--wartet" data-fuer="linux">
+            <span class="plattform__tat" data-text="auf.win.tat">Tuner für Windows laden</span>
+            <span class="plattform__zusatz" data-text="auf.win.zusatz">EXE · 69,8 MB · Windows 11 · frühe Fassung, noch nicht signiert</span>
+          </a>
+          <a class="plattform" data-fuer="linux" href="/herunterladen/iyambae-tuner_0.3.0-1_amd64.deb">
             <img class="plattform__zeichen" src="assets/plattform-linux.svg" alt="" width="24" height="24">
             <span class="plattform__reife" data-reife="linux"></span>
-            <span class="plattform__tat" data-text="auf.linux.tat">Linux — noch nicht zum Ausprobieren</span>
-            <span class="plattform__zusatz" data-text="auf.linux.zusatz">Läuft, aber ohne Oberfläche — Bedienung über die Kommandozeile. Erst mit Fenster geht sie hinaus.</span>
-          </div>
+            <span class="plattform__tat" data-text="auf.linux.tat">Tuner für Linux laden</span>
+            <span class="plattform__zusatz" data-text="auf.linux.zusatz">DEB · 1,7 MB · Debian 13 mit PipeWire · frühe Fassung</span>
+          </a>
         </div>
 
         <p class="nebenweg fuer fuer--mobil" data-text="auf.mobil.zusatz">Am Telefon gibt keine App den Ton von Spotify oder Netflix heraus.</p>
@@ -1762,7 +1748,7 @@ code {
   <div class="dreizeiler">
     <div>
       <h3 data-text="tut.1.titel">Systemweit</h3>
-      <p data-text="tut.1.text">Der Ton geht durch den Tuner, bevor er die Lautsprecher erreicht. Auf macOS und Linux.</p>
+      <p data-text="tut.1.text">Der Ton geht durch den Tuner, bevor er die Lautsprecher erreicht. Auf macOS, Windows und Linux.</p>
     </div>
     <div>
       <h3 data-text="tut.2.titel">Jede App</h3>
@@ -1869,9 +1855,8 @@ code {
 <details class="rahmen teil teil--linie klappe" id="holen">
   <summary class="klappe__griff">
     <div class="eng">
-      <p class="eyebrow" data-text="holen.eyebrow">Testausgabe · kostenlos · kein Konto · macOS 0.28.0 — Windows und Linux sind gebaut, aber noch nicht so weit</p>
+      <p class="eyebrow" data-text="holen.eyebrow">Testausgabe · kostenlos · kein Konto · macOS 0.28.0 · Windows 0.3.0 · Linux 0.3.0</p>
       <h2 class="kopf--holen" data-html="holen.titel">Hol es dir. <em>Dann drei Schritte.</em></h2>
-      <h2 class="kopf--wartet" data-html="holen.titel.wartet">Für dein System <em>noch nicht</em>. Hier steht, wie weit es ist.</h2>
       <h2 class="kopf--mobil" data-html="holen.titel.mobil">Am Telefon geht es <em>nicht</em>. Hier steht, warum.</h2>
     </div>
   </summary>
@@ -1904,52 +1889,57 @@ code {
       </div>
     </div>
 
-    <div class="karte karte--linux">
+    <div class="karte karte--bereit karte--linux">
       <span class="karte__deins fuer fuer--linux" data-text="karte.deins">dein System</span>
       <div class="karte__kopf">
         <span class="karte__name">Linux</span>
-        <span class="karte__wofuer" data-text="karte.linux.wofuer">PipeWire ab 0.3.60</span>
+        <span class="karte__wofuer" data-text="karte.linux.wofuer">Debian 13 · PipeWire ab 0.3.60</span>
       </div>
       <p class="karte__was" data-html="karte.linux.was1">
-        <strong>Noch ohne Oberfläche</strong> — bedient über die Kommandozeile.
-        Im Paket liegt ein LADSPA-Plugin in PipeWires Filterkette und zwei
-        Dienste, die es einschalten. Gebaut für Debian 13. Das Leistensymbol
-        ist geschrieben, aber noch nicht im Paket.
+        Symbol in der Leiste: Stimmungen unter Namen, Ein und Aus, Ausgabegerät,
+        Start beim Anmelden. Darunter arbeitet ein Plugin in PipeWires
+        Filterkette. <strong>Frühe Fassung.</strong>
       </p>
       <p class="karte__was" data-html="karte.linux.was2">
-        Gemessen über D-Bus: Klick auf „Verdi-Stimmung“ → <strong>432,331 Hz</strong>
-        am Ausgabegerät.
+        Auf manchen Systemen genügt ein Doppelklick, auf einem nackten Debian
+        braucht es <code>sudo apt install ./iyambae-tuner_0.3.0-1_amd64.deb</code>.
+        Unter GNOME will das Symbol die AppIndicator-Erweiterung.
       </p>
       <div class="karte__fuellen"></div>
-      <p class="karte__stand" data-html="karte.linux.stand">
-        <b>Noch nicht zum Herunterladen</b>
-        Sie geht hinaus, wenn sie ein Fenster hat. Ein Paket, das man nur
-        über die Kommandozeile bedient, ist keine Fassung, die man jemandem
-        zum Ausprobieren gibt.
-      </p>
+      <div class="karte__tat">
+        <a class="laden" href="/herunterladen/iyambae-tuner_0.3.0-1_amd64.deb">
+          <span data-text="karte.mac.laden">Tuner laden</span><span class="laden__groesse">1,7 MB</span>
+        </a>
+        <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
+          <span data-text="holen.pruefsumme">SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
+        </a>
+      </div>
     </div>
 
-    <div class="karte karte--win">
+    <div class="karte karte--bereit karte--win">
       <span class="karte__deins fuer fuer--win" data-text="karte.deins">dein System</span>
       <div class="karte__kopf">
         <span class="karte__name">Windows</span>
-        <span class="karte__wofuer" data-text="karte.win.wofuer">10 und 11 · x64</span>
+        <span class="karte__wofuer" data-text="karte.win.wofuer">11 · x64</span>
       </div>
       <p class="karte__was" data-html="karte.win.was1">
         Eigenes Fenster, Leistensymbol, Installer. <strong>Installiert ohne
         Administratorrechte</strong> — kein UAC-Fenster, kein Passwort.
+        <strong>Frühe Fassung.</strong>
       </p>
-      <p class="karte__was" data-text="karte.win.was2">
-        Dateien umstimmen läuft. Systemton läuft über ein virtuelles
-        Audiogerät, wenn eines da ist — Windows lässt Mithören zu, aber nicht
-        Ersetzen. Die App sagt dir, was sie auf deinem Rechner kann.
+      <p class="karte__was" data-html="karte.win.was2">
+        Noch nicht signiert: Beim ersten Start warnt SmartScreen. Auf
+        „Weitere Informationen“ klicken, dann „Trotzdem ausführen“.
       </p>
       <div class="karte__fuellen"></div>
-      <p class="karte__stand" data-html="karte.win.stand">
-        <b>Noch nicht zum Herunterladen</b>
-        Der Abstand zur Mac-Fassung ist zu gross, um sie jemandem in die Hand
-        zu drücken. Sie geht hinaus, wenn er es nicht mehr ist.
-      </p>
+      <div class="karte__tat">
+        <a class="laden" href="/herunterladen/IYAMBAE-Tuner-0.3.0-Setup.exe">
+          <span data-text="karte.mac.laden">Tuner laden</span><span class="laden__groesse">69,8 MB</span>
+        </a>
+        <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
+          <span data-text="holen.pruefsumme">SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
+        </a>
+      </div>
     </div>
 
   </div>
@@ -1979,12 +1969,9 @@ code {
           da startet der Tuner wie jede andere App.
         </p></li>
       </ol>
-      <!-- Hier standen die Wege fuer Windows (SmartScreen) und Linux
-           (apt install). Beide sind am 30.08.2026 herausgenommen worden,
-           weil es dort nichts mehr zu installieren gibt. Eine Anleitung
-           fuer eine Datei, die niemand bekommt, ist kein Dienst am Leser,
-           sondern ein Versprechen. Sie kommen zurueck, wenn die Fassungen
-           zurueckkommen. -->
+      <!-- Die Wege fuer Windows (SmartScreen) und Linux (apt install) stehen
+           seit dem 16.09.2026 auf den Karten selbst, je ein Satz — dort,
+           wo der Besucher seine Datei holt. -->
     </div>
 
     <div class="pruefung">
@@ -2412,12 +2399,12 @@ code {
         <div class="antwort">
           <p data-html="frage.systeme.1">
             <strong>macOS ab 14.4</strong> — die vollständige App in der
-            Menüleiste. <strong>Linux mit PipeWire ab 0.3.60</strong> — seit
-            Kurzem ebenfalls mit Symbol in der Leiste: Stimmungen unter Namen,
-            Ein und Aus, Wahl der Engine, Start beim Anmelden. Darunter arbeitet
-            ein LADSPA-Plugin in der Filterkette. Nachgewiesen über D-Bus, der
-            Klick gemessen: „Verdi-Stimmung“ → 432,331 Hz am Ausgabegerät.
-            Gebaut für Debian 13; für Ubuntu und Zorin muss neu gebaut werden.
+            Menüleiste. <strong>Windows 11</strong> — eigenes Fenster und
+            Leistensymbol, der Systemton wird über WASAPI abgegriffen.
+            <strong>Linux mit PipeWire ab 0.3.60</strong> — Symbol in der
+            Leiste: Stimmungen unter Namen, Ein und Aus, Wahl der Engine,
+            Ausgabegerät, Start beim Anmelden. Darunter arbeitet ein
+            LADSPA-Plugin in der Filterkette. Gebaut für Debian 13.
           </p>
           <p data-text="frage.systeme.2">
             Unter GNOME braucht das Leistensymbol einmalig die
@@ -2426,18 +2413,11 @@ code {
             hinterlassen, es sei nichts installiert worden.
           </p>
           <p data-html="frage.systeme.3">
-            <strong>Windows: Dateien ja, Systemton noch nicht.</strong> Es gibt
-            ein eigenes Fenster, ein Leistensymbol und einen Installer ohne
-            Administratorrechte. Umstimmen kann er dort Dateien. Den laufenden
-            Systemton nicht — dafür fehlt das virtuelle Ausgabegerät.
-          </p>
-          <p data-html="frage.systeme.4">
-            Der Grund für diese Reihenfolge ist technisch:
-            <strong>Windows lässt Systemton mithören, aber nicht ersetzen.</strong>
-            Wer ihn wirklich ersetzen will, muss selbst zum Ausgabegerät werden.
-            Auf macOS erledigt das die Aufnahmeschnittstelle, auf Linux die
-            Filterkette von PipeWire. Auf Windows braucht es ein virtuelles
-            Gerät — ein eigener Treiber ist der nächste Schritt.
+            <strong>Windows und Linux sind frühe Fassungen.</strong> Sie stimmen
+            den Systemton um und erkennen die Stimmung der Quelle wie die
+            Mac-App, sind aber kürzer im Gebrauch. Auf Linux steht die Frequenz
+            nicht im Symbol, sondern im Menü. Die Windows-Fassung ist noch
+            nicht signiert — SmartScreen warnt beim ersten Start.
           </p>
         </div>
       </details>

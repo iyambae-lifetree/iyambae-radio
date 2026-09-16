@@ -672,12 +672,10 @@ def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0",
         "name": "IYAMBAE Tuner",
         "url": seite,
         "applicationCategory": "MultimediaApplication",
-        # Windows steht hier bewusst NICHT: operatingSystem beschreibt, wo
-        # das Beschriebene laeuft, und beschrieben ist das Umstimmen des
-        # Systemtons. Das kann die Windows-Fassung nicht. Wer sie hier
-        # auffuehrt, gibt Suchmaschinen eine Zusage, die das Programm
-        # nicht einloest.
-        "operatingSystem": "macOS 14.4+, Linux (PipeWire 0.3.60+)",
+        # Windows stand hier bis zum 16.09.2026 bewusst nicht, weil die
+        # Windows-Fassung den Systemton nicht umstimmen konnte. Seit dem
+        # 03.09. kann sie es (WASAPI), seit dem 16.09. wird sie angeboten.
+        "operatingSystem": "macOS 14.4+, Windows 11, Linux (PipeWire 0.3.60+)",
         "softwareVersion": fassung,
         "description": texte.get("seite.beschreibung", ""),
         "inLanguage": kuerzel,
@@ -1140,7 +1138,24 @@ def pruefe_ladeverweis(quellen):
         return False
     if cdatei:
         print(f"  ✔ Converter-Verweis und fassungen.json nennen dieselbe Datei: {cdatei}")
-    return True
+
+    # Windows und Linux, seit dem 16.09.2026 angeboten.
+    gut = True
+    for name, muster in (("windows", r"IYAMBAE-Tuner-[^\"]+\.exe"),
+                         ("linux", r"iyambae-tuner_[^\"]+\.deb")):
+        wdatei = lade_fassungen()["tuner"][name].get("datei")
+        verweise = set(re.findall(rf"/herunterladen/({muster})", quelle))
+        if wdatei and verweise != {wdatei}:
+            print(f"  ✘ {name}: Vorlage verlinkt {sorted(verweise) or 'nichts'}, "
+                  f"fassungen.json nennt {wdatei}")
+            gut = False
+        elif not wdatei and verweise:
+            print(f"  ✘ {name}: Vorlage verlinkt {sorted(verweise)}, "
+                  f"fassungen.json sagt: nichts zum Laden")
+            gut = False
+        elif wdatei:
+            print(f"  ✔ {name}: Verweis und fassungen.json nennen dieselbe Datei: {wdatei}")
+    return gut
 
 
 def pruefe_fassung_im_text(kataloge):
