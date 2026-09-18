@@ -22,9 +22,9 @@
   },
   "converter": {
     "macos": {
-      "fassung": "0.34.6",
+      "fassung": "0.34.7",
       "reife": "erprobung",
-      "datei": "IYAMBAE-Converter-0.34.6.dmg"
+      "datei": "IYAMBAE-Converter-0.34.7.dmg"
     }
   }
 }
