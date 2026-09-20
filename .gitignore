@@ -45,3 +45,4 @@ dienst/node_modules/
 # Arbeitsordner der Uebersetzungslaeufe. Die Ergebnisse liegen in
 # data/sender-texte.*.json, geprueft von Scripts/pruefe-uebersetzungen.py.
 .uebersetzung/
+.DS_Store
