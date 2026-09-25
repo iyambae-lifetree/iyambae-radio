@@ -237,7 +237,7 @@
   "frage.radio.2": "Le domande sono due: la pagina chiede una volta, e il Tuner chiede a te. <strong>Senza il tuo consenso nessun sito viene a sapere che lo usi</strong> — e nemmeno che è installato. Un elenco di siti ammessi nel codice sarebbe stato più comodo. Avrebbe solo risposto alla domanda sbagliata.",
   "frage.preis.titel": "Quanto costa?",
   "frage.preis.1": "Questa versione di prova non costa nulla. Non chiede account, né indirizzo di posta, né dati di pagamento: scarichi un file, e basta.",
-  "frage.preis.2": "Per le versioni finite un prezzo è fissato: qui il Converter costa 38 € una volta sola, senza abbonamento. Per il Tuner non è ancora deciso nulla. Se cambia, lo si scriverà qui.",
+  "frage.preis.2": "I prezzi delle versioni finite sono fissati, ciascuno una volta sola e senza abbonamento: il Tuner 29 €, il Converter 38 €, tutti e due insieme 55 €. Presto si potrà acquistare qui — fino ad allora la versione di prova resta gratuita.",
   "frage.daten.titel": "Che cosa succede ai miei dati?",
   "frage.daten.1": "<strong>Questa pagina</strong> non mette cookie, non misura nulla e non carica nulla da server altrui. I caratteri stanno sullo stesso server della pagina: un rimando a una raccolta di caratteri negli Stati Uniti manderebbe là il tuo indirizzo IP prima ancora che tu abbia cliccato qualcosa.",
   "frage.daten.2": "<strong>Il Tuner</strong> non ha bisogno di account e non manda via nulla. Elabora il suono sul computer stesso e non lo registra da nessuna parte. L'unica interfaccia verso l'esterno è il servizio per la radio su <code>127.0.0.1</code>: non lascia il tuo computer e risponde solo se glielo consenti.",
