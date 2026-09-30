@@ -25,8 +25,12 @@ test('app.js liest #regal= und bildet es auf ein Regal ab', async () => {
   const muster = /GETEILTES_REGAL\s*=\s*\(([^\n]*)\)/.exec(app);
   assert.ok(muster, 'GETEILTES_REGAL wird nicht aus der Adresse gelesen');
 
-  // Der Ausdruck selbst, gegen echte Adressen gehalten.
-  const ausdruck = /[#&]regal=([a-z0-9\-]+)/i;
+  // Der Ausdruck selbst, gegen echte Adressen gehalten — und zwar der aus
+  // app.js, nicht eine Abschrift hier im Test. Eine Abschrift prueft sich
+  // nur selbst: Aendert jemand das Muster im Programm, bliebe sie gruen.
+  const literal = /\/((?:\\.|[^\/\\])+)\/([a-z]*)\.exec\(location\.hash\)/.exec(muster[1]);
+  assert.ok(literal, 'GETEILTES_REGAL liest location.hash nicht mit einem Muster');
+  const ausdruck = new RegExp(literal[1], literal[2]);
   assert.equal(ausdruck.exec('#regal=tiefe')?.[1], 'tiefe');
   assert.equal(ausdruck.exec('#regal=rueckspiegel')?.[1], 'rueckspiegel');
   assert.equal(ausdruck.exec('#platte=nts-1')?.[1], undefined,
