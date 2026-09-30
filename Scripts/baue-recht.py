@@ -67,7 +67,10 @@ def inline(text):
     t = CODE.sub(lambda m: f"<code>{m.group(1)}</code>", t)
     t = FETT.sub(lambda m: f"<strong>{m.group(1)}</strong>", t)
     t = KURSIV.sub(lambda m: f"<em>{m.group(1)}</em>", t)
-    t = VERWEIS.sub(lambda m: f'<a href="{html.escape(m.group(2), quote=True)}">{m.group(1)}</a>', t)
+    # Der Text ist oben schon maskiert — ein zweites html.escape auf das
+    # Ziel machte aus jedem & in der Adresse ein &amp;amp;. Nur das
+    # Anfuehrungszeichen, das der Wert in "..." nicht vertraegt, kommt dazu.
+    t = VERWEIS.sub(lambda m: f'<a href="{m.group(2).replace(chr(34), "&quot;")}">{m.group(1)}</a>', t)
     return t
 
 
@@ -181,7 +184,13 @@ def nach_html(text):
 
         # Alles Uebrige ist ein Absatz — bis zur naechsten Leerzeile oder bis
         # etwas beginnt, das kein Absatz mehr ist.
-        absatz = []
+        #
+        # Die erste Zeile gehoert immer dazu, auch wenn sie mit "|" beginnt:
+        # Das ist dann eine Tabellenzeile ohne Trennzeile darunter, also
+        # Text mit Strichen. Vorher blieb die Schleife hier stehen — die
+        # Zeile war weder Tabelle noch Absatz, und i rueckte nie vor.
+        absatz = [strich]
+        i += 1
         while i < len(zeilen) and zeilen[i].strip() \
                 and not zeilen[i].strip().startswith(("#", "|", ">")) \
                 and not re.match(r"^\s*(?:[-*+]\s|\d+[.)]\s)", zeilen[i]) \
