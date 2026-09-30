@@ -112,6 +112,36 @@ def lade_uebersetzung(kuerzel):
     return json.loads(io.open(p, encoding="utf-8").read())
 
 
+def lade_sprachkatalog(kuerzel):
+    """assets/lang/<kuerzel>.json — dort stehen die Etiketten (etikett.*).
+
+    Die Etiketten sind, anders als die Kaertchen, in jeder Sprache
+    uebersetzt; das Radio nimmt sie von dort. Die Regalseiten schrieben sie
+    bis zum 01.10.2026 roh hin: "nur-instrumental", "ohne-werbung", auf
+    der japanischen Seite wie auf der deutschen.
+    """
+    p = ROOT / "assets" / "lang" / f"{kuerzel}.json"
+    return json.loads(io.open(p, encoding="utf-8").read())
+
+
+def alle_etiketten(katalog):
+    return sorted({e for s in katalog["sender"] for e in s.get("etiketten") or []})
+
+
+def pruefe_etiketten(katalog):
+    """Jedes Etikett des Katalogs in jeder Sprache — sonst stuende auf
+    der Seite der rohe Schluessel, und der Bau meldete nichts."""
+    fehler = []
+    for kuerzel in SPRACHEN:
+        sprachkatalog = lade_sprachkatalog(kuerzel)
+        fehlend = [e for e in alle_etiketten(katalog)
+                   if not sprachkatalog.get(f"etikett.{e}")]
+        if fehlend:
+            fehler.append(f"assets/lang/{kuerzel}.json: etikett.* fehlt fuer "
+                          f"{', '.join(fehlend)}")
+    return fehler
+
+
 def sprachmarke(uebersetzt, gruppe, schluessel, richtung):
     """lang="de" fuer Text, den es fuer diese Sprache nicht uebersetzt gibt.
 
@@ -166,7 +196,7 @@ def sprachwahl(kuerzel, regal_id):
     return "\n".join(zeilen)
 
 
-def senderliste(drin, uebersetzt, richtung):
+def senderliste(drin, uebersetzt, richtung, sprachkatalog):
     zeilen = []
     for s in drin:
         kaertchen = uebersetzt.get("sender", {}).get(s["id"]) or s.get("kaertchen", "")
@@ -189,7 +219,7 @@ def senderliste(drin, uebersetzt, richtung):
             zeilen.append('            <p class="sender__etiketten">')
             for e in etiketten:
                 zeilen.append(f'                <span class="sender__etikett">'
-                              f'{esc(e)}</span>')
+                              f'{esc(sprachkatalog.get(f"etikett.{e}", e))}</span>')
             zeilen.append('            </p>')
         zeilen.append('        </li>')
     return "\n".join(zeilen)
@@ -292,6 +322,7 @@ def jsonld(katalog, regal, drin, kuerzel, uebersetzt, name, was):
 def erzeuge_seite(vorlage, katalog, regal, kuerzel, texte):
     _, richtung = SPRACHEN[kuerzel]
     uebersetzt = lade_uebersetzung(kuerzel)
+    sprachkatalog = lade_sprachkatalog(kuerzel)
     drin = [s for s in katalog["sender"] if s["regal"] == regal["id"]]
 
     def t(schluessel):
@@ -323,7 +354,7 @@ def erzeuge_seite(vorlage, katalog, regal, kuerzel, texte):
         "HOEREN_ZIEL": f'/{kuerzel}/#regal={regal["id"]}',
         "HOEREN": esc(t("hoeren")),
         "SATZ432": esc(t("satz432")),
-        "SENDER": senderliste(drin, uebersetzt, richtung),
+        "SENDER": senderliste(drin, uebersetzt, richtung, sprachkatalog),
         "ANDERE_TITEL": esc(t("andere")),
         "ANDERE": andere_regale(katalog, kuerzel, regal["id"], uebersetzt),
         "FUSS": fusszeile({k: v[kuerzel] for k, v in texte.items()}, kuerzel),
@@ -391,6 +422,11 @@ def main():
         if fehlend:
             print(f"  ✘ regal-texte.json: {schluessel} fehlt fuer {fehlend}")
             gut = False
+
+    # Jedes Etikett in jeder Sprache — sonst stuende der Schluessel roh da.
+    for satz in pruefe_etiketten(katalog):
+        print(f"  ✘ {satz}")
+        gut = False
 
     # Jeder Sender muss in genau einem Regal liegen — sonst zeigen die
     # Seiten zusammen nicht den ganzen Katalog.
