@@ -56,7 +56,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 # Schreibrichtung je Sprache. Steht hier UND in assets/lib/sprache.mjs — der
 # Erzeuger schreibt sie ins <html>, das Modul braucht sie zur Laufzeit fuer
-# den Umschalter. Scripts/pruefe-sprachen.py haelt beide gegeneinander.
+# den Umschalter. Eine Pruefung, die beide gegeneinander haelt, gibt es
+# nicht — wer hier eine Sprache eintraegt, traegt sie dort mit ein.
 SPRACHEN = {
     "de": ("Deutsch",  "ltr"),
     "en": ("English",  "ltr"),
@@ -488,10 +489,18 @@ def katalogtext(katalog, texte, kuerzel):
         uebersetzt = json.loads(io.open(quelle, encoding="utf-8").read())
 
     def sprachmarke(schluessel, art):
-        """lang="de" nur, wo wirklich Deutsch steht."""
+        """lang="de" nur, wo wirklich Deutsch steht.
+
+        In der arabischen Fassung erbt ein deutscher Satz sonst die
+        Leserichtung der Seite, und sein Punkt stuende am Zeilenanfang —
+        dieselbe Regel wie in baue-regale.py.
+        """
         if kuerzel == "de" or uebersetzt.get(art, {}).get(schluessel):
             return ""
-        return ' lang="de"'
+        marke = ' lang="de"'
+        if SPRACHEN[kuerzel][1] == "rtl":
+            marke += ' dir="ltr"'
+        return marke
 
     def kaertchen_von(s):
         return uebersetzt.get("sender", {}).get(s["id"]) or s["kaertchen"]
@@ -501,10 +510,6 @@ def katalogtext(katalog, texte, kuerzel):
 
     def regalname_von(r):
         return uebersetzt.get("regalname", {}).get(r["id"]) or r["name"]
-
-    deutsch = "" if kuerzel == "de" else ' lang="de"'
-    if SPRACHEN[kuerzel][1] == "rtl":
-        deutsch += ' dir="ltr"'
 
     sender = katalog["sender"]
     teile = ['<section class="katalogtext" id="katalogtext">',
@@ -861,6 +866,15 @@ def pruefe_seite(kuerzel, seite, katalog, texte):
         if inhalt.strip() == schluessel:
             fehler.append(f'{schluessel} steht als eigener Name auf der Seite '
                           f'— der Schluessel fehlt in assets/lang/{kuerzel}.json')
+    # Dasselbe fuer die Attribute: aria-label, title, placeholder, content.
+    # Ein Schluesselname im aria-label ist unsichtbar, bis ein Vorleser ihn
+    # vorliest — dann steht er dort woertlich.
+    for anfang in re.findall(r"<[^>]*\bdata-(?:aria|titel|platzhalter|inhalt)=[^>]*>", seite):
+        attribute = dict(re.findall(r'([\w:-]+)="([^"]*)"', anfang))
+        for quelle_, ziel_ in ATTRIBUT_VON_DATEN.items():
+            if quelle_ in attribute and attribute.get(ziel_, "").strip() == attribute[quelle_]:
+                fehler.append(f'{attribute[quelle_]} steht als eigener Name im {ziel_} '
+                              f'— der Schluessel fehlt in assets/lang/{kuerzel}.json')
 
     # 1 · Genau eine <h1>, und nicht mehr die alte Begruessung.
     ueberschriften = re.findall(r"<h1\b[^>]*>(.*?)</h1>", seite, re.S)
@@ -1035,17 +1049,26 @@ def main():
         kataloge[kuerzel] = json.loads(io.open(p, encoding="utf-8").read())
 
     # Fehlt einer Uebersetzung ein Schluessel, steht dort der deutsche Satz —
-    # dieselbe Regel wie zur Laufzeit. Gemeldet wird es trotzdem.
+    # dieselbe Regel wie zur Laufzeit. Frueher wurde das nur gemeldet und der
+    # Bau lief weiter; das "!" ging in der Ausgabe unter, und die japanische
+    # Seite trug deutsche Saetze. Jetzt bricht der Bau ab, wie bei den
+    # Werkzeugseiten (baue-apps-sprachen.py, pruefe_schluessel).
     grund = kataloge["de"]
+    katalogfehler = False
     for kuerzel, katalog in kataloge.items():
         fehlend = [k for k in grund if k not in katalog]
         wenn_zuviel = [k for k in katalog if k not in grund]
         if fehlend:
-            print(f"  ! {kuerzel}: {len(fehlend)} Schluessel fehlen, deutsch als Rueckfall: "
+            print(f"  ✘ {kuerzel}: {len(fehlend)} Schluessel fehlen: "
                   f"{', '.join(fehlend[:5])}")
+            katalogfehler = True
         if wenn_zuviel:
-            print(f"  ! {kuerzel}: {len(wenn_zuviel)} unbekannte Schluessel: "
+            print(f"  ✘ {kuerzel}: {len(wenn_zuviel)} unbekannte Schluessel: "
                   f"{', '.join(wenn_zuviel[:5])}")
+            katalogfehler = True
+    if katalogfehler:
+        print("\n  Die Sprachkataloge stimmen nicht ueberein — nichts geschrieben.")
+        return 1
 
     senderkatalog = json.loads(
         io.open(ROOT / "data" / "sender.json", encoding="utf-8").read())
@@ -1160,7 +1183,7 @@ def main():
               f"{rest} Auszeichnungen fuer den zweiten Durchlauf, "
               f"dir={SPRACHEN[kuerzel][1]}")
 
-    print(f"  ✔ /sitemap.xml  {len(sitemap):>6} Zeichen, {len(SPRACHEN)} Eintraege")
+    print(f"  ✔ /sitemap.xml  {len(sitemap):>6} Zeichen, {sitemap.count('<url>')} Eintraege")
     print(f"  ✔ /robots.txt   {len(robots):>6} Zeichen")
     print(f"  ✔ /llms.txt    {len(llms):>6} Zeichen")
     print(f"\n  {len(SPRACHEN)} Sprachseiten und {len(SPRACHEN)} Manifeste erzeugt, "

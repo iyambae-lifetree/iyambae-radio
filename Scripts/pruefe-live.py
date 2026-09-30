@@ -70,6 +70,12 @@ MINDESTLAENGE = 3000
 # als alleiniger Inhalt eines Elements. Dateinamen und Hausadressen sehen
 # genauso aus und sind keine — deshalb die Ausnahmen.
 SCHLUESSELMUSTER = re.compile(r">\s*([a-z]{2,12}(?:\.[a-z0-9]+){1,3})\s*<")
+# Dasselbe in den Attributen, die der Erzeuger fuellt: aria-label, title,
+# placeholder, content. Dort ist ein Schluesselname unsichtbar — bis ein
+# Vorleser ihn vorliest. Gefunden am 01.10.2026: deck.startstop stand
+# woertlich im aria-label, und keine Pruefung sah es.
+ATTRIBUTMUSTER = re.compile(
+    r'(?:aria-label|title|placeholder|content)="\s*([a-z]{2,12}(?:\.[a-z0-9]+){1,3})\s*"')
 KEINE_SCHLUESSEL = (".fm", ".com", ".org", ".net", ".at", ".de",
                     ".xsl", ".json", ".js", ".css", ".svg", ".webp",
                     ".mjs", ".py", ".txt", ".xml", ".webmanifest")
@@ -106,7 +112,7 @@ def pruefe_seite(adresse):
     if len(seite) < MINDESTLAENGE:
         schlecht.append(f"{adresse}: nur {len(seite)} Zeichen")
 
-    gefunden = [k for k in SCHLUESSELMUSTER.findall(seite)
+    gefunden = [k for k in SCHLUESSELMUSTER.findall(seite) + ATTRIBUTMUSTER.findall(seite)
                 if not k.endswith(KEINE_SCHLUESSEL)]
     if gefunden:
         schlecht.append(f"{adresse}: Schluesselname sichtbar — "
