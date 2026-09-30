@@ -80,8 +80,13 @@ pruefe('jede gemessene Art steht in der Erlaubnisliste', () => {
 pruefe('keine Art in der Liste ist tot', () => {
   // 'sprache' und 'installiert' hängen an Stellen außerhalb von app.js;
   // gesucht wird deshalb im ganzen Ordner assets/.
+  //
+  // Gesucht wird der AUFRUF miss('art'), nicht die blosse Zeichenkette:
+  // 'sprache' kam vorher schon als Adressparameter in sprache.mjs vor und
+  // haette jede Art mit einem Namensvetter am Leben gehalten.
   const alles = quelleApp + readFileSync(join(wurzel, 'assets', 'lib', 'sprache.mjs'), 'utf8');
-  const tot = arten.filter((a) => !alles.includes(`'${a}'`));
+  const gerufen = new Set([...alles.matchAll(/\bmiss\(\s*'([^']+)'/g)].map((m) => m[1]));
+  const tot = arten.filter((a) => !gerufen.has(a));
   assert.deepEqual(tot, [], `nie benutzt: ${tot.join(', ')}`);
 });
 
