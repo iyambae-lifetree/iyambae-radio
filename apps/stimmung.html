@@ -45,6 +45,7 @@
   transition: border-color .18s, background .18s;
 }
 .zone.ist-bereit { border-color: var(--akzent); background: var(--kante); }
+.zone:focus-within { outline: 2px solid var(--akzent); outline-offset: 3px; }
 .zone__gross { font-family: var(--anzeige); font-size: clamp(1.2rem, 3.4vw, 1.6rem); display: block; margin-bottom: .5rem; }
 .zone__klein { font-size: .86rem; color: var(--leiser); display: block; }
 .zone__knopf {
@@ -279,8 +280,12 @@ function wort(name, rueckfall) {
   return el ? el.textContent : rueckfall;
 }
 
+// Zahlenformat je Sprache, vom Erzeuger ans <html>-Element geschrieben —
+// Arabisch bekommt so westliche Ziffern, passend zu den festen Zahlen.
+const sprache = document.documentElement.dataset.zahlformat
+  || document.documentElement.lang || 'de';
 const zahl = (n, stellen) =>
-  n.toLocaleString(document.documentElement.lang || 'de',
+  n.toLocaleString(sprache,
                    { minimumFractionDigits: stellen, maximumFractionDigits: stellen });
 
 ['dragenter', 'dragover'].forEach(art =>
@@ -292,9 +297,19 @@ zone.addEventListener('drop', e => {
   const f = e.dataTransfer?.files?.[0];
   if (f) nimm(f);
 });
-datei.addEventListener('change', () => { if (datei.files[0]) nimm(datei.files[0]); });
+datei.addEventListener('change', () => {
+  const f = datei.files[0];
+  // Zuruecksetzen, sonst loest dieselbe Datei beim zweiten Mal kein change aus.
+  datei.value = '';
+  if (f) nimm(f);
+});
+
+/* Laufnummer: Wer waehrend des Dekodierens eine zweite Datei hineinzieht,
+   soll deren Ergebnis sehen — nicht das der ersten, die spaeter fertig wird. */
+let lauf = 0;
 
 async function nimm(f) {
+  const meiner = ++lauf;
   ergebnis.hidden = true;
   arbeit.hidden = false;
   arbeitText.textContent = wort('lese', 'Datei wird gelesen …');
@@ -309,6 +324,7 @@ async function nimm(f) {
     puffer = await hof.decodeAudioData(roh);
     hof.close();
   } catch {
+    if (meiner !== lauf) return;
     zeigeFehler(wort('fehlerLesen', 'Diese Datei kann der Browser nicht lesen. Versuch es mit MP3, M4A, WAV oder FLAC.'));
     return;
   }
@@ -318,6 +334,7 @@ async function nimm(f) {
   // Einen Atemzug warten, damit der Browser den Text wirklich zeichnet,
   // bevor die Rechnung den Faden belegt.
   await new Promise(r => setTimeout(r, 30));
+  if (meiner !== lauf) return;
 
   /* Auf ein Kanalgemisch herunter: Die Stimmung ist dieselbe, und die
      halbe Rechnung reicht. Bei mehr als zwei Kanälen zählen die ersten
@@ -333,6 +350,7 @@ async function nimm(f) {
 
   const mess = messeStimmung(mono, puffer.sampleRate,
                              a => { balken.style.width = (45 + a * 50) + '%'; });
+  if (meiner !== lauf) return;
   balken.style.width = '100%';
   arbeit.hidden = true;
   zeige(f, puffer, mess);
@@ -342,6 +360,8 @@ async function nimm(f) {
    das Paket der vorigen Messung. */
 function rueckZuruecksetzen() {
   letztes = null;
+  // Ohne Messung gibt es nichts zu senden — dann steht auch kein Kaestchen da.
+  document.getElementById('rueckKasten').hidden = true;
   const haken = document.getElementById('rueckHaken');
   haken.checked = false;
   haken.disabled = false;
@@ -406,7 +426,7 @@ function zeige(f, puffer, m) {
       : wort('satzFern', 'Am nächsten liegt {kammerton} Hz ({name}), aber {cent} Cent daneben.');
   document.getElementById('ergebnisSatz').innerHTML = satz
     .replace('{kammerton}', `<strong>${zahl(k.hz, k.hz % 1 ? 1 : 0)}</strong>`)
-    .replace('{name}', k.name)
+    .replace('{name}', wort('kammerton.' + k.kurz, k.name))
     .replace('{cent}', zahl(k.abstandCent, 1));
 
   const zu432 = 1200 * Math.log2(m.a4 / 432);
@@ -446,6 +466,7 @@ function zeige(f, puffer, m) {
     endung:     rueck.endung(f.name),
     sprache:    rueck.sprache(),
   };
+  document.getElementById('rueckKasten').hidden = !rueck.moeglich();
 }
 
 /* Erst beim Anhaken geht etwas hinaus — die Einwilligung kommt vor der
@@ -478,6 +499,14 @@ rueck.kaestchen(
   <span data-wort="wertDauer" data-text="mess.wort.wertDauer">Gemessene Länge</span>
   <span data-wort="wertSicherheit" data-text="mess.wort.wertSicherheit">Sicherheit</span>
   <span data-wort="warnUnsicher" data-text="mess.wort.warnUnsicher">Die Sicherheit liegt unter 35 Prozent. Bei Perkussion, Sprache oder sehr dichtem Satz trägt diese Zahl nicht — nimm eine andere Aufnahme.</span>
+  <!-- Die Namen der Kammertöne aus stimmung.mjs, je Sprache. -->
+  <span data-wort="kammerton.415" data-text="mess.kammerton.415">Barock</span>
+  <span data-wort="kammerton.432" data-text="mess.kammerton.432">Mailand 1881</span>
+  <span data-wort="kammerton.435" data-text="mess.kammerton.435">Paris 1859</span>
+  <span data-wort="kammerton.440" data-text="mess.kammerton.440">ISO 16</span>
+  <span data-wort="kammerton.442" data-text="mess.kammerton.442">viele Orchester</span>
+  <span data-wort="kammerton.443" data-text="mess.kammerton.443">Deutschland heute</span>
+  <span data-wort="kammerton.445" data-text="mess.kammerton.445">Karajan</span>
 </div>
 
 </body>

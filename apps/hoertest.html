@@ -101,9 +101,9 @@
   <p class="vorwort" data-html="hoer.vorwort">Zweimal derselbe Ausschnitt, verschieden gestimmt, die Reihenfolge gewürfelt. Du sagst, welcher tiefer klingt. <strong>Fünf Durchgänge je Runde</strong> — und am Ende steht da, was das Ergebnis wert ist.</p>
 
   <div class="stand" id="stand">
-    <p class="stand__runde" id="rundeName">Runde 1 von 2</p>
-    <p class="stand__frage" id="frage">Welcher Ausschnitt klingt tiefer?</p>
-    <p class="stand__lage" id="lage">Durchgang 1 von 5</p>
+    <p class="stand__runde" id="rundeName" data-text="hoer.stand.runde">Runde 1 von 2</p>
+    <p class="stand__frage" id="frage" data-text="hoer.stand.frage">Welcher Ausschnitt klingt tiefer?</p>
+    <p class="stand__lage" id="lage" data-text="hoer.stand.lage">Durchgang 1 von 5</p>
 
     <div class="paare">
       <button class="probe" id="probeA" type="button">
@@ -124,7 +124,7 @@
     <div class="punkte" id="punkte" aria-hidden="true"></div>
     <p class="hinweis" id="hinweis" data-text="hoer.hinweis.start">Hör dir beide an — so oft du magst. Kopfhörer helfen; Laptoplautsprecher geben tiefe Töne kaum wieder.</p>
 
-    <div class="ergebnis" id="ergebnis" hidden>
+    <div class="ergebnis" id="ergebnis" tabindex="-1" hidden>
       <p class="ergebnis__zahl" id="ergebnisZahl"></p>
       <p class="ergebnis__satz" id="ergebnisSatz"></p>
       <p class="ergebnis__zufall" id="ergebnisZufall"></p>
@@ -255,6 +255,15 @@ function wort(name, rueckfall) {
   const w = document.querySelector(`[data-wort="${name}"]`);
   return w ? w.textContent : rueckfall;
 }
+/* Fuer Saetze mit <strong> darin: textContent wuerde die Auszeichnung
+   verschlucken, die im Ergebnis absichtlich steht. */
+function satz(name, rueckfall) {
+  const w = document.querySelector(`[data-wort="${name}"]`);
+  return w ? w.innerHTML : rueckfall;
+}
+// Zahlenformat je Sprache, vom Erzeuger ans <html>-Element geschrieben.
+const sprache = document.documentElement.dataset.zahlformat
+  || document.documentElement.lang || 'de';
 const fuelle = (satz, werte) =>
   Object.entries(werte).reduce((s, [k, v]) => s.split('{' + k + '}').join(v), satz);
 
@@ -415,24 +424,27 @@ function zeigeErgebnis() {
   document.querySelector('.paare').hidden = true;
   document.querySelector('.wahl').hidden = true;
   el('hinweis').hidden = true;
+  // Der Fokus lag auf dem eben ausgeblendeten Wahlknopf.
+  el('ergebnis').focus({ preventScroll: true });
 
   const p = Math.round(zufall(treffer, DURCHGAENGE) * 1000) / 10;
   el('ergebnisZahl').textContent = fuelle(
     wort('vonN', '{t} von {n} richtig'), { t: treffer, n: DURCHGAENGE });
   el('ergebnisZufall').textContent = fuelle(
-    wort('zufallSatz', 'So gut oder besser rät man in {p} % der Fälle blind.'), { p: String(p).replace('.', ',') });
+    wort('zufallSatz', 'So gut oder besser rät man in {p} % der Fälle blind.'),
+    { p: p.toLocaleString(sprache, { maximumFractionDigits: 1 }) });
 
   const gut = treffer >= 4;
   if (runde === 0) {
     el('ergebnisSatz').innerHTML = gut
-      ? wort('r1gut', 'Du hörst 31,8 Cent — knapp ein Drittel Halbton. <strong>Das bildest du dir nicht ein.</strong> Fast jeder besteht diese Runde.')
-      : wort('r1mau', 'Diese Runde besteht fast jeder. Wenn sie hier hakt, liegt es meist an den Lautsprechern — <strong>versuch es mit Kopfhörern.</strong>');
+      ? satz('r1gut', 'Du hörst 31,8 Cent — knapp ein Drittel Halbton. <strong>Das bildest du dir nicht ein.</strong> Fast jeder besteht diese Runde.')
+      : satz('r1mau', 'Diese Runde besteht fast jeder. Wenn sie hier hakt, liegt es meist an den Lautsprechern — <strong>versuch es mit Kopfhörern.</strong>');
     el('weiter').textContent = wort('weiterR2', 'Weiter zu Runde 2 — 432 gegen 433');
     el('weiter').onclick = () => { runde = 1; durchgang = 0; treffer = 0; starteRunde(); };
   } else {
     el('ergebnisSatz').innerHTML = gut
-      ? wort('r2gut', '<strong>Vier Cent.</strong> Das ist bemerkenswert — und selten. Bei fünf Durchgängen kann es auch Glück gewesen sein; die Zahl darunter sagt, wie oft.')
-      : wort('r2mau', '<strong>Der Unterschied ist hörbar. Die genaue Zahl ist es nicht.</strong> Vier Cent liegen für fast alle Menschen unter der Schwelle — und das ist der ehrliche Befund: Man hört, dass etwas tiefer ist. Dass es ausgerechnet 432,0 ist, hört niemand.');
+      ? satz('r2gut', '<strong>Vier Cent.</strong> Das ist bemerkenswert — und selten. Bei fünf Durchgängen kann es auch Glück gewesen sein; die Zahl darunter sagt, wie oft.')
+      : satz('r2mau', '<strong>Der Unterschied ist hörbar. Die genaue Zahl ist es nicht.</strong> Vier Cent liegen für fast alle Menschen unter der Schwelle — und das ist der ehrliche Befund: Man hört, dass etwas tiefer ist. Dass es ausgerechnet 432,0 ist, hört niemand.');
     el('weiter').textContent = wort('nochmal', 'Noch einmal von vorn');
     el('weiter').onclick = () => { runde = 0; durchgang = 0; treffer = 0; starteRunde(); };
   }
@@ -451,18 +463,19 @@ function starteRunde() {
   neuerDurchgang();
 }
 
-let vorbereitet = false;
+/* Ein Versprechen statt eines Schalters: Ein zweiter Klick waehrend der
+   Vorbereitung wartet auf dieselbe Vorbereitung, statt mit leerem Puffer
+   in spiele() zu laufen. */
+let vorbereitung = null;
 async function ersterKlick(welche) {
-  if (!vorbereitet) {
-    vorbereitet = true;
-    try { await bereite(); }
-    catch {
+  if (!vorbereitung) {
+    vorbereitung = bereite().then(() => { starteRunde(); return true; }, () => {
       el('hinweis').textContent = wort('fehler',
         'Der Ton lässt sich in diesem Browser nicht vorbereiten. Versuch es in einem anderen.');
-      return;
-    }
-    starteRunde();
+      return false;
+    });
   }
+  if (!(await vorbereitung)) return;
   if (hof.state === 'suspended') await hof.resume();
   spiele(welche);
 }

@@ -576,6 +576,7 @@ input[type="range"]::-moz-range-thumb {
 }
 .hoerknopf[aria-pressed="true"] { background: transparent; color: var(--akzent-hell); }
 .hoerknopf:hover { background: var(--akzent); border-color: var(--akzent); color: var(--nacht); }
+.probe__fehler { color: #E08B6A; font-size: .85rem; margin: .6rem 0 0; }
 
 /* ── Die drei Plattformknoepfe ──────────────────────────────────
    Eine Reihe auf breiten Schirmen, gestapelt auf schmalen. Kein
@@ -1541,7 +1542,7 @@ code {
            spräche die Anzeige auf allen sieben Seiten deutsch. Hz bleibt Hz
            — das ist ein SI-Zeichen und keine Vokabel; Cent dagegen ist ein
            Fachwort und wird übersetzt. -->
-      <div class="ablesung" aria-live="polite">
+      <div class="ablesung">
         <div class="ablesung__feld">
           <span class="ablesung__marke" data-text="probe.marke.hz">Kammerton</span>
           <span class="ablesung__wert" id="anzeigeHz" data-html="probe.wert.hz"
@@ -1589,6 +1590,7 @@ code {
                 data-text="probe.ton.an"
                 data-an="probe.ton.an|Musik einschalten"
                 data-aus="probe.ton.aus|Musik ausschalten">Musik einschalten</button>
+        <p class="probe__fehler" id="probeFehler" hidden data-text="probe.fehler">Der Rechenkern lässt sich in diesem Browser nicht laden — die Probe bleibt stumm.</p>
       </div>
 
       <div class="stimmungen" role="group" data-aria="probe.stimmungen.aria" aria-label="Historische Kammertöne">
@@ -2021,7 +2023,7 @@ code {
 
       <!-- 1 -->
       <div class="umfrage__schritt ist-dran" data-schritt="1">
-        <p class="umfrage__frage" data-text="umfrage.frage.heute">Wie hörst du heute in 432 Hz?</p>
+        <p class="umfrage__frage" tabindex="-1" data-text="umfrage.frage.heute">Wie hörst du heute in 432 Hz?</p>
         <p class="umfrage__zusatz" data-text="umfrage.zusatz.heute">Falls überhaupt — „gar nicht“ ist eine gültige Antwort.</p>
         <div class="umfrage__wahl" data-feld="heute">
           <button class="umfrage__knopf" type="button" data-wert="gar-nicht" data-text="umfrage.heute.gar-nicht">Gar nicht, ich bin gerade erst darauf gestoßen</button>
@@ -2035,7 +2037,7 @@ code {
 
       <!-- 2 -->
       <div class="umfrage__schritt" data-schritt="2">
-        <p class="umfrage__frage" data-text="umfrage.frage.fehlt">Was fehlt dir am meisten?</p>
+        <p class="umfrage__frage" tabindex="-1" data-text="umfrage.frage.fehlt">Was fehlt dir am meisten?</p>
         <p class="umfrage__zusatz" data-text="umfrage.zusatz.fehlt">Das, woran du am häufigsten hängenbleibst.</p>
         <div class="umfrage__wahl" data-feld="fehlt">
           <button class="umfrage__knopf" type="button" data-wert="handy-systemton" data-html="umfrage.fehlt.handy-systemton">Auf dem Handy geht es gar nicht<small>Spotify und YouTube lassen sich dort nicht umstimmen</small></button>
@@ -2049,7 +2051,7 @@ code {
 
       <!-- 3 -->
       <div class="umfrage__schritt" data-schritt="3">
-        <p class="umfrage__frage" data-text="umfrage.frage.bezahlt">Hast du für 432-Hz-Software schon einmal Geld ausgegeben?</p>
+        <p class="umfrage__frage" tabindex="-1" data-text="umfrage.frage.bezahlt">Hast du für 432-Hz-Software schon einmal Geld ausgegeben?</p>
         <p class="umfrage__zusatz" data-text="umfrage.zusatz.bezahlt">Gefragt ist, was war — nicht, was wäre. Erinnerungen sind belastbarer als Absichten.</p>
         <div class="umfrage__wahl" data-feld="bezahlt">
           <button class="umfrage__knopf" type="button" data-wert="nie" data-html="umfrage.bezahlt.nie">Noch nie<small>Nur Kostenloses, oder ich fange gerade erst an</small></button>
@@ -2063,7 +2065,7 @@ code {
 
       <!-- 4 -->
       <div class="umfrage__schritt" data-schritt="4">
-        <p class="umfrage__frage" data-text="umfrage.frage.bauen">Was würdest du bauen, wenn du könntest?</p>
+        <p class="umfrage__frage" tabindex="-1" data-text="umfrage.frage.bauen">Was würdest du bauen, wenn du könntest?</p>
         <p class="umfrage__zusatz" data-text="umfrage.zusatz.bauen">Freiwillig. Der Satz, der uns am meisten hilft, steht meistens hier.</p>
         <label class="nur-vorlesen" for="umfrageText" data-text="umfrage.vorschlag.label">Dein Vorschlag</label>
         <textarea class="umfrage__feld" id="umfrageText" maxlength="600"
@@ -2072,7 +2074,7 @@ code {
 
       <!-- Danke -->
       <div class="umfrage__schritt umfrage__danke" data-schritt="5">
-        <p class="umfrage__frage" data-text="umfrage.frage.danke">Danke.</p>
+        <p class="umfrage__frage" id="umfrageDankeTitel" tabindex="-1" data-text="umfrage.frage.danke">Danke.</p>
         <p class="umfrage__zusatz" id="umfrageSchluss" data-text="umfrage.zusatz.danke">Das fließt in die Entscheidung ein, was als Nächstes gebaut wird.</p>
       </div>
 
@@ -2765,7 +2767,11 @@ code {
     return teil.length > 1 ? teil.slice(1).join('|') : ersatz;
   };
 
-  const zahl = (n, k) => n.toLocaleString(document.documentElement.lang || 'de',
+  // Der Erzeuger schreibt je Sprache das Zahlenformat ans <html>-Element
+  // (data-zahlformat) — Arabisch bekommt so westliche Ziffern.
+  const sprache = document.documentElement.dataset.zahlformat
+    || document.documentElement.lang || 'de';
+  const zahl = (n, k) => n.toLocaleString(sprache,
     { minimumFractionDigits: k, maximumFractionDigits: k });
 
   function schreibeFelder() {
@@ -2807,6 +2813,7 @@ code {
         hof.audioWorklet.addModule('/assets/lib/retuner-worklet.js'),
         fetch('/assets/wasm/retuner.wasm'),
       ]);
+      if (!antwort.ok) throw new Error(String(antwort.status));
       const bytes = await antwort.arrayBuffer();
       kern = new AudioWorkletNode(hof, 'retuner',
         { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
@@ -2819,7 +2826,15 @@ code {
 
          Die gute Engine kostet 240 ms Verzoegerung. Die faellt hier nicht
          auf: Man hoert Musik, man sieht kein Bild dazu. */
-      kern.port.postMessage({ art: 'wasm', bytes, engine: 'gut' }, [bytes]);
+      /* Erst wenn der Kern „bereit" meldet, gilt er als da. Vorher stand
+         kernBereit gleich nach dem Absenden auf true — schlug das Laden
+         still fehl, lief die Musik unverstimmt, waehrend 432 Hz dranstand. */
+      await new Promise((fertig, fehl) => {
+        kern.port.onmessage = (e) =>
+          e.data?.art === 'bereit' ? fertig() : fehl(new Error('Kern'));
+        kern.port.postMessage({ art: 'wasm', bytes, engine: 'gut' }, [bytes]);
+        setTimeout(() => fehl(new Error('Zeit')), 6000);
+      });
       kernBereit = true;
       quelle.connect(kern).connect(messer).connect(lautstaerke).connect(hof.destination);
       setzeFaktor();
@@ -2827,6 +2842,7 @@ code {
       kernBereit = false;
       quelle.connect(messer).connect(lautstaerke).connect(hof.destination);
       knopf.disabled = true;
+      document.getElementById('probeFehler').hidden = false;
     }
   }
 
@@ -2918,10 +2934,17 @@ code {
   const leiste   = document.getElementById('umfrageLeiste');
   const antworten = {};
   let dran = 0;
+  // Waehrend die Wahl kurz stehenbleibt, zaehlt kein zweiter Klick: Sonst
+  // ruecken zwei Klicks binnen 220 ms zwei Schritte vor und eine Frage
+  // faellt aus — nach der dritten sogar bis „Danke", ohne abzuschicken.
+  let wartet = false;
 
-  const zeige = (i) => {
+  const zeige = (i, fokus = true) => {
     dran = Math.max(0, Math.min(schritte.length - 1, i));
     schritte.forEach((s, k) => s.classList.toggle('ist-dran', k === dran));
+    // Der Fokus lag auf dem eben ausgeblendeten Knopf — auf die neue Frage
+    // setzen, damit Tastatur und Vorleser mitkommen.
+    if (fokus) schritte[dran].querySelector('.umfrage__frage')?.focus({ preventScroll: true });
     balken.forEach((b, k) => b.classList.toggle('ist-durch', k <= dran));
     const letzter = dran === schritte.length - 1;
     leiste.hidden = letzter;
@@ -2933,13 +2956,15 @@ code {
 
   karte.addEventListener('click', (e) => {
     const knopf = e.target.closest('.umfrage__knopf');
-    if (!knopf) return;
+    if (!knopf || wartet) return;
     const feld = knopf.closest('.umfrage__wahl').dataset.feld;
     antworten[feld] = knopf.dataset.wert;
     knopf.closest('.umfrage__wahl').querySelectorAll('.umfrage__knopf')
       .forEach((k) => k.classList.toggle('ist-gewaehlt', k === knopf));
     // Kurz stehenlassen, damit man die eigene Wahl noch sieht
-    setTimeout(() => zeige(dran + 1), 220);
+    const ziel = dran + 1;
+    wartet = true;
+    setTimeout(() => { wartet = false; zeige(ziel); }, 220);
   });
 
   weiter.addEventListener('click', () => {
@@ -2988,11 +3013,13 @@ code {
       */
       if (antwort.status !== 204) throw new Error(String(antwort.status));
     } catch {
+      // Ein „Danke" ueber der Fehlermeldung waere eine Luege.
+      document.getElementById('umfrageDankeTitel').hidden = true;
       schluss.innerHTML = document.getElementById('umfrageFehler').innerHTML;
     }
   }
 
-  zeige(0);
+  zeige(0, false);
 })();
 </script>
 
