@@ -25,6 +25,8 @@ gemischter Inhalt blockiert. Das ist kein Wunsch, sondern ein Ausschluss.
 **CORS entscheidet über die Umstimmung.** Nur Ströme mit Freigabe kommen in
 den Web-Audio-Graphen — nur bei ihnen kann MyRetuners Signalkern arbeiten.
 Ohne Freigabe bleibt es beim Raten über `playbackRate`.
+
+Rückgabewert 0 nur, wenn jede geprüfte Adresse trägt; sonst 1.
 """
 import concurrent.futures
 import json
@@ -206,7 +208,10 @@ def main():
     print()
     print(f"  {len(gut)} erreichbar, {len(schlecht)} nicht. "
           f"Davon mit CORS: {sum(1 for e in gut if e['cors'])}")
-    return 0 if gut else 1
+    # Rueckgabewert 1, sobald EINE Adresse nicht traegt. Vorher reichte eine
+    # einzige erreichbare, und 164 tote Stroeme haetten als Erfolg gegolten —
+    # wer das Skript aus einem anderen aufruft, sah dann nichts.
+    return 1 if schlecht else 0
 
 
 if __name__ == "__main__":

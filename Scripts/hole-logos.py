@@ -82,10 +82,28 @@ def finde_bildadresse(html, basis):
             for _, quelle, adresse in kandidaten]
 
 
+# Plattformen, keine Senderseiten. Steht als homepage nur die Wurzel eines
+# Anbieters (https://zeno.fm), gehoert das og:image dort dem Anbieter —
+# einmal war es dessen Werbebanner. Kein Bild ist besser als das falsche.
+PLATTFORMEN = ("zeno.fm", "radio.net", "tunein.com", "streema.com",
+               "radio.garden", "laut.fm", "mytuner-radio.com",
+               "onlineradiobox.com", "radioline.co", "shoutcast.com")
+
+
+def ist_plattform(seite):
+    """Nur die nackte Wurzel eines Anbieters — ein Pfad darunter kann eine
+    echte Senderseite sein (laut.fm/<sender>)."""
+    teile = urllib.parse.urlsplit(seite)
+    wirt = teile.netloc.lower().removeprefix("www.")
+    return wirt in PLATTFORMEN and teile.path.strip("/") == ""
+
+
 def verarbeite(sender):
     name, kennung, seite = sender["name"], sender["id"], sender.get("homepage")
     if not seite:
         return (kennung, name, None, "keine Senderseite hinterlegt")
+    if ist_plattform(seite):
+        return (kennung, name, None, "Plattform statt Senderseite — dort gaebe es das Bild des Anbieters")
 
     try:
         roh, endgueltig = hole(seite, 300_000)
