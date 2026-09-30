@@ -85,6 +85,13 @@ RADIO = "https://iyambae.fm"
 # `pfad` ist der Ordner unter der Sprachwurzel, mit Schraegstrich am Ende
 # oder leer fuer die Wurzel selbst. Er landet in jedem hreflang, jedem
 # canonical, jeder @id im JSON-LD und in der Sitemap.
+#
+# `programm` sagt, WAS die Seite ist — und damit, welchen Knoten das JSON-LD
+# bekommt: "tuner" ein Programm zum Herunterladen (SoftwareApplication),
+# "messwerkzeug" ein Werkzeug, das im Browser laeuft (WebApplication), "text"
+# ein Artikel. Bis zum 01.10.2026 hiessen auch Spotify, Samplerate, Gitarre,
+# Solfeggio und die Berichtigungen "messwerkzeug" — fuenf Texte, die sich
+# der Maschine als Anwendung vorstellten, alle mit derselben @id.
 SEITEN = {
     "": {
         "vorlage": "index.html",
@@ -95,17 +102,17 @@ SEITEN = {
     },
     "spotify/": {
         "vorlage": "spotify.html",
-        "programm": "messwerkzeug",
+        "programm": "text",
         "rueckgrat": True,
     },
     "samplerate/": {
         "vorlage": "samplerate.html",
-        "programm": "messwerkzeug",
+        "programm": "text",
         "rueckgrat": True,
     },
     "berichtigungen/": {
         "vorlage": "berichtigungen.html",
-        "programm": "messwerkzeug",
+        "programm": "text",
         "rueckgrat": True,
     },
     # Thiemos Fassung. Der staerkste Aufhaenger darin ist der Kammerton der
@@ -151,12 +158,12 @@ SEITEN = {
     },
     "gitarre/": {
         "vorlage": "gitarre.html",
-        "programm": "messwerkzeug",
+        "programm": "text",
         "rueckgrat": True,
     },
     "solfeggio/": {
         "vorlage": "solfeggio.html",
-        "programm": "messwerkzeug",
+        "programm": "text",
         "rueckgrat": True,
     },
     "hoertest/": {
@@ -635,9 +642,27 @@ def fragenknoten(vorlage_quelle, texte, seite):
     }
 
 
+# Titel, Beschreibung und Ueberschrift jeder Vorlage: die Schluessel stehen
+# im Dokument, und von dort werden sie gelesen — nicht aus einer zweiten
+# Liste, die beim naechsten Umbau vergessen wuerde. Bis zum 01.10.2026 trug
+# jede Unterseite im JSON-LD den Titel der STARTSEITE.
+TITELGRIFF = re.compile(r'<title[^>]*\sdata-text="([^"]+)"')
+BESCHREIBUNGSGRIFF = re.compile(r'<meta\s+name="description"\s+data-inhalt="([^"]+)"')
+H1GRIFF = re.compile(r'<h1[^>]*\sdata-(?:text|html)="([^"]+)"')
+
+
+def seitentexte(vorlage_quelle, texte):
+    """Titel, Beschreibung und Ueberschrift DIESER Seite, in dieser Sprache."""
+    def hole(muster):
+        m = muster.search(vorlage_quelle)
+        return _nur_text(texte.get(m.group(1), "")) if m else ""
+    return hole(TITELGRIFF), hole(BESCHREIBUNGSGRIFF), hole(H1GRIFF)
+
+
 def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0",
            vorlage_quelle=""):
-    """Organization, WebPage und SoftwareApplication.
+    """Organization, WebPage und je nach Seite SoftwareApplication,
+    WebApplication oder Article.
 
     WAS HIER NICHT STEHT UND NIE STEHEN WIRD: aggregateRating, review,
     healthClaim. Es gibt keinen einzigen Nutzer — eine erfundene Bewertung
@@ -649,6 +674,7 @@ def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0",
     dazuerfindet.
     """
     seite = f"{HAUS}/{kuerzel}/{pfad}"
+    titel, beschreibung, ueberschrift = seitentexte(vorlage_quelle, texte)
     haus = {
         "@type": "Organization",
         "@id": f"{RADIO}/#haus",
@@ -660,8 +686,8 @@ def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0",
         "@type": "WebPage",
         "@id": f"{seite}#seite",
         "url": seite,
-        "name": texte.get("seite.titel", ""),
-        "description": texte.get("seite.beschreibung", ""),
+        "name": titel,
+        "description": beschreibung,
         "inLanguage": kuerzel,
         "isPartOf": {"@id": f"{RADIO}/#haus"},
         "publisher": {"@id": f"{RADIO}/#haus"},
@@ -677,7 +703,7 @@ def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0",
         # 03.09. kann sie es (WASAPI), seit dem 16.09. wird sie angeboten.
         "operatingSystem": "macOS 14.4+, Windows 11, Linux (PipeWire 0.3.60+)",
         "softwareVersion": fassung,
-        "description": texte.get("seite.beschreibung", ""),
+        "description": beschreibung,
         "inLanguage": kuerzel,
         "isAccessibleForFree": True,
         "author": {"@id": f"{RADIO}/#haus"},
@@ -693,31 +719,37 @@ def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0",
         # Seite ist: ein Text mit Verfasser und Gegenstand. Bewusst OHNE
         # datePublished — ein erfundenes Datum waere schlechter als keines,
         # und ein echtes muesste jemand pflegen.
+        #
+        # Kein `about`: Die vier Stichwoerter, die hier standen, galten fuer
+        # die Elternseite und wurden von jedem anderen Text mitgeschleppt.
         anwendung = {
             "@type": "Article",
             "@id": f"{seite}#artikel",
-            "headline": texte.get("elt.titel", texte.get("seite.titel", "")),
-            "description": texte.get("seite.beschreibung", ""),
+            "headline": ueberschrift or titel,
+            "description": beschreibung,
             "url": seite,
             "inLanguage": kuerzel,
             "isPartOf": {"@id": f"{seite}#seite"},
             "author": {"@id": f"{RADIO}/#haus"},
             "publisher": {"@id": f"{RADIO}/#haus"},
-            "about": ["Kammerton", "432 Hz", "528 Hz", "Musikunterricht"],
         }
     elif programm == "messwerkzeug":
         # Ein Werkzeug, das IM BROWSER laeuft, ist keine SoftwareApplication
         # zum Herunterladen. WebApplication sagt der Maschine genau das —
         # und `browserRequirements` sagt, was sie braucht.
+        #
+        # Die @id gehoert zur Seite, nicht zum Haus: Blindtest und
+        # Stimmungsmesser sind zwei Werkzeuge, und jede Sprachfassung hat
+        # ihre eigene Adresse. Vorher hiessen alle "#stimmungsmesser".
         anwendung = {
             "@type": "WebApplication",
-            "@id": f"{HAUS}/#stimmungsmesser",
-            "name": texte.get("mess.titel.klar", "Stimmung messen"),
+            "@id": f"{seite}#werkzeug",
+            "name": ueberschrift or titel,
             "url": seite,
             "applicationCategory": "MultimediaApplication",
-            "operatingSystem": "Alle",
+            "operatingSystem": "Any",
             "browserRequirements": "Web Audio API",
-            "description": texte.get("seite.beschreibung", ""),
+            "description": beschreibung,
             "inLanguage": kuerzel,
             "isAccessibleForFree": True,
             "author": {"@id": f"{RADIO}/#haus"},
@@ -823,12 +855,12 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, pfad="", programm="tuner",
         verweise = "\n".join(
             f'<link rel="alternate" hreflang="{k}" href="{HAUS}/{k}/{pfad}">'
             for k in vorhanden)
-        # x-default zeigt auf die Adresse OHNE Sprache — dort sitzt die
-        # Spracherkennung von nginx. Fuer eine Unterseite ist das /stimmung/,
-        # nicht die Startseite: Wer das Messwerkzeug sucht, soll dort landen
-        # und nicht beim Tuner.
+        # x-default zeigt auf die englische Fassung — wie bei den
+        # Regalseiten des Radios. Vorher stand hier die Adresse ohne
+        # Sprache: Die Weiterleitung (302) verliert dabei den Pfad, und
+        # /stimmung/ landete auf der Startseite.
         verweise += (f'\n<link rel="alternate" hreflang="x-default" '
-                     f'href="{HAUS}/{pfad}">')
+                     f'href="{HAUS}/{X_DEFAULT}/{pfad}">')
         seite = seite.replace("</head>", verweise + "\n</head>", 1)
 
     # GENAU EINMAL, nicht "mindestens einmal".
@@ -886,8 +918,8 @@ def erzeuge_sitemap():
 
     Jeder Eintrag fuehrt ALLE sieben Fassungen auf, sich selbst
     eingeschlossen — so verlangt es die Spezifikation von hreflang, und ohne
-    den Selbstverweis wird die Gruppe verworfen. x-default zeigt auf /, wo
-    die Spracherkennung von nginx sitzt.
+    den Selbstverweis wird die Gruppe verworfen. x-default zeigt auf die
+    englische Fassung, mit Pfad — siehe erzeuge_seite().
 
     Kein lastmod: Anders als beim Radio gibt es hier keinen gepflegten
     Pruefstand, aus dem sich ein ehrliches Datum ableiten liesse. Die Uhr
@@ -911,7 +943,7 @@ def erzeuge_sitemap():
                 zeilen.append(f'    <xhtml:link rel="alternate" hreflang="{k}" '
                               f'href="{HAUS}/{k}/{pfad}"/>')
             zeilen.append('    <xhtml:link rel="alternate" hreflang="x-default" '
-                          f'href="{HAUS}/{pfad}"/>')
+                          f'href="{HAUS}/{X_DEFAULT}/{pfad}"/>')
             zeilen.append("  </url>")
     zeilen.append("</urlset>")
     return "\n".join(zeilen) + "\n"
@@ -994,15 +1026,26 @@ def erzeuge_llms(fassung):
         if not gelistet(pfad):
             continue
         zeilen.append(f"- [{SEITENNAME[pfad]}]({HAUS}/de/{pfad}): {SEITENSATZ[pfad]}")
+    # Nicht jede Seite hat sieben Fassungen — die Ausnahmen beim Namen nennen,
+    # statt etwas zu behaupten, das die Sitemap widerlegt.
+    nur_deutsch = [SEITENNAME[p] for p in SEITEN
+                   if gelistet(p) and sprachen_fuer(p) == ["de"]]
+    sprachsatz = ("Die Seiten gibt es in sieben Sprachen: de, en, fr, es, it, "
+                  "ja, ar — die Adresse traegt das Kuerzel, etwa /en/gitarre/.")
+    if nur_deutsch:
+        sprachsatz += (" Nur auf Deutsch: " + ", ".join(nur_deutsch) + ".")
+    # Die Senderzahl aus dem Katalog, nicht aus dem Kopf: 165 stand hier
+    # fest eingetragen und waere beim naechsten Sender still veraltet.
+    sender = json.loads(io.open(ROOT / "data" / "sender.json",
+                                encoding="utf-8").read())["sender"]
     zeilen += [
         "",
-        "Jede Seite gibt es in sieben Sprachen: de, en, fr, es, it, ja, ar — "
-        "die Adresse traegt das Kuerzel, etwa /en/gitarre/.",
+        sprachsatz,
         "",
         "## Verwandtes",
         "",
-        f"- [IYAMBAE FM]({RADIO}/): 165 Internet-Radiosender, jeder auf Wunsch "
-        "in 432 Hz",
+        f"- [IYAMBAE FM]({RADIO}/): {len(sender)} Internet-Radiosender, jeder "
+        "auf Wunsch in 432 Hz",
         f"- [Sitemap]({HAUS}/sitemap.xml)",
         f"- [Impressum]({RADIO}/recht/impressum/) · "
         f"[Datenschutz]({RADIO}/recht/datenschutz/)",
