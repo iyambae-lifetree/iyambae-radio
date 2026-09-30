@@ -25,7 +25,8 @@ WAS GEPRÜFT WIRD, UND WARUM JEWEILS
 ===================================
 
 1. **Vollständigkeit** — jeder Sender und jedes Regal aus `sender.json` hat
-   einen Eintrag. Fehlt einer, steht dort Deutsch, ohne dass es auffällt.
+   einen Eintrag — das Regal zweimal, als `regalname` und als `regal`
+   (Beschreibung). Fehlt einer, steht dort Deutsch, ohne dass es auffällt.
 2. **Kein Überschuss** — ein Schlüssel, den `sender.json` nicht kennt, ist ein
    Sender, den es nicht mehr gibt, oder ein Tippfehler.
 3. **Nicht leer** — ein leerer Text ist schlechter als der deutsche.
@@ -69,6 +70,7 @@ def lies(pfad):
 def main():
     katalog = lies(ROOT / "data" / "sender.json")
     quelle = {
+        "regalname": {r["id"]: r["name"] for r in katalog["regale"]},
         "regal": {r["id"]: r["beschreibung"]
                   for r in katalog["regale"] if r.get("beschreibung")},
         "sender": {s["id"]: s["kaertchen"]
@@ -91,7 +93,7 @@ def main():
         if roh[:3] == b"\xef\xbb\xbf":
             meldungen.append("hat eine BOM — der Erzeuger stolpert darüber")
 
-        for art in ("regal", "sender"):
+        for art in ("regalname", "regal", "sender"):
             q = quelle[art]
             d = ziel.get(art, {})
 
@@ -138,7 +140,7 @@ def main():
                 meldungen.append(f"{art}: {len(lang)} mehr als doppelt so lang "
                                  f"({', '.join(lang[:3])})")
 
-        anzahl = len(ziel.get("regal", {})) + len(ziel.get("sender", {}))
+        anzahl = sum(len(ziel.get(art, {})) for art in quelle)
         if meldungen:
             beanstandet += 1
             print(f"  ✘ {kuerzel}: {anzahl} Eintraege")
