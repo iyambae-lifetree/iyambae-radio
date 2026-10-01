@@ -2,7 +2,7 @@
     "id": "/",
     "name": "IYAMBAE Radio",
     "short_name": "IYAMBAE",
-    "description": "Ein handverlesener Plattenladen zum Zuhören: 117 Sender aus 29 Ländern, von Grenzgängern bis Fundstücken.",
+    "description": "IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. 165 Sender aus 37 Ländern: Grenzgänger, Freakshow, Tiefe, Japan, Maschinenraum, Barrio, Rückspiegel, Fundstücke, Klassik, Jazz & Verwandtes, Die Wühlkiste.",
     "start_url": "./index.html",
     "scope": "./",
     "display": "standalone",
@@ -52,7 +52,7 @@
         {
             "name": "Nadel fallen lassen",
             "short_name": "Zufall",
-            "description": "Ein zufälliger Sender aus allen acht Regalen",
+            "description": "Zufall aus zehn Regalen",
             "url": "./index.html?los=nadel",
             "icons": [
                 {
@@ -65,7 +65,7 @@
         {
             "name": "Meine Platten",
             "short_name": "Meine",
-            "description": "Die gemerkten Sender",
+            "description": "Noch nichts im Fach — spiel einen Sender oder setz ein Herz",
             "url": "./index.html?los=meine",
             "icons": [
                 {

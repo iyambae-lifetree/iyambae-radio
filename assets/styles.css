@@ -176,9 +176,13 @@ a { color: var(--pink-hell); }
 }
 /* Zugeklappt ist das Feld nicht nur unsichtbar, sondern auch nicht
    erreichbar — sonst springt die Tabulatortaste in ein Feld, das niemand
-   sieht. */
+   sieht. opacity allein laesst es im Tab-Weg; erst visibility nimmt es
+   heraus. Beim Aufklappen springt visibility sofort um, beim Zuklappen
+   erst nach der Blende. */
+.kopf__suche input { transition: opacity 0.24s ease, visibility 0s; }
 .kopf__suche:not(.ist-offen) input {
     width: 0; padding: 0; opacity: 0; pointer-events: none;
+    visibility: hidden; transition: opacity 0.24s ease, visibility 0s 0.24s;
 }
 .kopf__suche input::placeholder { color: var(--text-leise); }
 

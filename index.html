@@ -828,22 +828,22 @@
 
         <div class="einstellungen__punkt">
             <div class="einstellungen__text">
-                <p class="einstellungen__name" data-text="einstellungen.messung.titel">Reichweitenmessung</p>
+                <p class="einstellungen__name" id="nameMessung" data-text="einstellungen.messung.titel">Reichweitenmessung</p>
                 <p class="einstellungen__was" data-text="einstellungen.messung.was">Welcher Sender gestartet wird und welche Filter greifen — ohne Kennung, ohne Plätzchen, ohne jede Adresse. Auf dem eigenen Server, nicht bei einem Dritten.</p>
             </div>
             <label class="schieber">
-                <input type="checkbox" id="schalterMessung" checked>
+                <input type="checkbox" id="schalterMessung" aria-labelledby="nameMessung" checked>
                 <span class="schieber__bahn"><span class="schieber__knopf"></span></span>
             </label>
         </div>
 
         <div class="einstellungen__punkt">
             <div class="einstellungen__text">
-                <p class="einstellungen__name" data-text="einstellungen.fehler.titel">Fehlerberichte</p>
+                <p class="einstellungen__name" id="nameFehler" data-text="einstellungen.fehler.titel">Fehlerberichte</p>
                 <p class="einstellungen__was" data-text="einstellungen.fehler.was">Wenn etwas kaputtgeht, wird gefragt, ob der Bericht gesendet werden darf. Hier kannst du eine erteilte Zustimmung zurücknehmen.</p>
             </div>
             <label class="schieber">
-                <input type="checkbox" id="schalterFehler">
+                <input type="checkbox" id="schalterFehler" aria-labelledby="nameFehler">
                 <span class="schieber__bahn"><span class="schieber__knopf"></span></span>
             </label>
         </div>
