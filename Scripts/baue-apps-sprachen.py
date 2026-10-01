@@ -1214,19 +1214,32 @@ def pruefe_fassung_im_text(kataloge):
     Das ist derselbe Fehler, gegen den fassungen.json gebaut wurde, nur
     eine Ebene hoeher. Deshalb faellt er jetzt hier auf.
     """
-    fassung = lade_fassungen()["tuner"]["macos"].get("fassung")
-    if not fassung:
+    # Alle drei Plattformen, seit dem 01.10.2026 — vorher nur macOS, und
+    # Windows und Linux haetten im Satz veralten koennen, ohne dass es
+    # jemand gemerkt haette. Geprueft wird das Paar „Name Nummer", nicht die
+    # Nummer allein: Windows und Linux stehen oft auf derselben, und eine
+    # Nummer, die irgendwo im Satz vorkommt, sagt nichts ueber die Plattform.
+    tuner = lade_fassungen()["tuner"]
+    erwartet = [(name, tuner.get(schluessel, {}).get("fassung"))
+                for schluessel, name in (("macos", "macOS"),
+                                         ("windows", "Windows"),
+                                         ("linux", "Linux"))]
+    erwartet = [(name, fassung) for name, fassung in erwartet if fassung]
+    if not erwartet:
         return True
     gut = True
     for kuerzel, katalog in kataloge.items():
         text = katalog.get("holen.eyebrow", "")
         if "macOS" not in text and "0." not in text:
             continue
-        if fassung not in text:
-            print(f"  ✘ {kuerzel}.json holen.eyebrow nennt nicht {fassung}: {text[:70]}")
-            gut = False
+        for name, fassung in erwartet:
+            if f"{name} {fassung}" not in text:
+                print(f"  ✘ {kuerzel}.json holen.eyebrow nennt nicht "
+                      f"{name} {fassung}: {text[:70]}")
+                gut = False
     if gut:
-        print(f"  ✔ holen.eyebrow nennt in allen Sprachen {fassung}")
+        print("  ✔ holen.eyebrow nennt in allen Sprachen "
+              + ", ".join(f"{name} {fassung}" for name, fassung in erwartet))
     return gut
 
 

@@ -695,6 +695,17 @@ def erzeuge_sitemap(alle_kuerzel, stand, regale=()):
 
     lastmod kommt aus data/sender.json (_geprueft_am), nicht aus der Uhr:
     Was hier steht, soll dem Stand entsprechen, den die Seite ausliefert.
+    Das passt fuer die Sprachwurzeln, die den Katalog als Text und JSON-LD
+    tragen.
+
+    Die Regalseiten bekommen KEIN lastmod, seit dem 01.10.2026. Vorher stand
+    an allen 77 dasselbe Datum wie an den Wurzeln — und das war nicht wahr:
+    Ein Regal aendert sich, wenn sein Text oder seine Sender sich aendern,
+    nicht wenn der Katalog geprueft wurde. Ein ehrliches Datum je Regal
+    gaebe es nur aus der Git-Historie, und die liegt beim Bau nicht vor
+    (.dockerignore nimmt .git heraus). Ein Datum aus der Uhr waere mit
+    jedem Bau ein anderes. Lieber keines: Suchmaschinen behandeln ein
+    fehlendes lastmod als unbekannt, ein falsches als Luege.
     """
     zeilen = ['<?xml version="1.0" encoding="UTF-8"?>',
               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
@@ -722,7 +733,6 @@ def erzeuge_sitemap(alle_kuerzel, stand, regale=()):
                               f"href=\"{HAUS}/{k}/regal/{regal['id']}/\"/>")
             zeilen.append(f'    <xhtml:link rel="alternate" hreflang="x-default" '
                           f"href=\"{HAUS}/{X_DEFAULT}/regal/{regal['id']}/\"/>")
-            zeilen.append(f"    <lastmod>{stand}</lastmod>")
             zeilen.append("  </url>")
     zeilen.append("</urlset>")
     return "\n".join(zeilen) + "\n"
