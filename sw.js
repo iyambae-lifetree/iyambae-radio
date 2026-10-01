@@ -131,7 +131,10 @@
 // v58: „Kostenlos testen“ statt „Kostenlos“ beim Tuner — er kostet fertig
 // 29 €. index.html, die sieben Sprachkataloge.
 // v59: Französisch durchgehend tu — fr.json und die Regaltexte.
-const SW_VERSION = 'iyambae-v59';
+// v60: Knöpfe nennen den Sender, Sender der Woche für alle gleich, tote
+// Gestaltungsregeln entfernt; 14 neue Senderlogos; Texte berichtigt.
+// app.js, styles.css, sender.json, die sieben Sprachkataloge.
+const SW_VERSION = 'iyambae-v60';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
