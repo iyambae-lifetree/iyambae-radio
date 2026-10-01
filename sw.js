@@ -141,7 +141,10 @@
 // v62: Die drei toten Sender sind raus (Sāmi-Ra), sechs neue dazu,
 // Keygen FM nach Moskau berichtigt. sender.json, die Sendertexte in
 // sechs Sprachen, die sieben Sprachseiten samt Manifest.
-const SW_VERSION = 'iyambae-v62';
+// v63: Elf Sender zeigen direkt auf die Adresse, die den Zugriff erlaubt —
+// die Umleitung davor tat es nicht, und der Browser fiel auf die ungenaue
+// Umstimmung zurück. Gensokyo verlangt eine Anmeldung: tot. sender.json, de.json.
+const SW_VERSION = 'iyambae-v63';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

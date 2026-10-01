@@ -50,7 +50,7 @@
   "filter.stand.eins": "1 Sender passt",
   "filter.stand.mehrere": "{anzahl} von {gesamt} Sendern passen",
   "filter.knopf.alle": "Alle zeigen",
-  "karte.favorit.hinzu": "{name} zu Meine Platten",
+  "karte.favorit.hinzu": "{name} in Meine Platten legen",
   "karte.favorit.entfernen": "{name} aus Meine Platten entfernen",
   "karte.guete.verlustfrei": "Verlustfrei — nichts geht verloren",
   "karte.guete.opus": "{codec} bei {bitrate} kbit/s — klingt besser als MP3 bei gleicher Datenrate",

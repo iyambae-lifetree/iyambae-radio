@@ -83,7 +83,7 @@
         "community",
         "mensch-am-mikro"
       ],
-      "stream": "https://stream-relay-geo.ntslive.net/stream",
+      "stream": "https://streams.radiomast.io/nts1",
       "homepage": "https://www.nts.live",
       "kaertchen": "Seit 2011 sendet NTS aus einem Ladenlokal in Dalston, London, rund um die Uhr Sendungen von über 600 Gastgebern. Kein anderer Sender wechselt so selbstverständlich zwischen kongolesischem Soukous, Free Jazz und Grime — oft innerhalb einer Stunde.",
       "codec": "mp3",
@@ -108,7 +108,7 @@
         "live-dj",
         "community"
       ],
-      "stream": "https://stream-relay-geo.ntslive.net/stream2",
+      "stream": "https://streams.radiomast.io/nts2",
       "homepage": "https://www.nts.live",
       "kaertchen": "Der zweite Kanal von NTS läuft ruhiger als der erste und gibt langen Sendungen Platz, die anderswo nicht ins Raster passen. Wer NTS 1 zu sprunghaft findet, bleibt hier eher hängen.",
       "codec": "mp3",
@@ -134,7 +134,7 @@
         "nachts",
         "ohne-werbung"
       ],
-      "stream": "https://stream-mixtape-geo.ntslive.net/mixtape",
+      "stream": "https://streams.radiomast.io/dfc76352-cda6-4a95-85dd-6f6609f83ba2",
       "homepage": "https://www.nts.live/infinite-mixtapes",
       "kaertchen": "Einer von NTS gepflegten Endlos-Mixen, zusammengestellt aus dem eigenen Archiv: Ambient, Modern Classical und Field Recordings ohne Moderation. Gedacht zum Arbeiten, ohne dass es zur Fahrstuhlmusik verkommt.",
       "codec": "mp3",
@@ -801,7 +801,7 @@
       "etiketten": [
         "live-dj"
       ],
-      "stream": "https://www.ukbassradio.com/stream",
+      "stream": "https://s2.ssl-stream.com/listen/uk_bass_radio/stream",
       "homepage": "https://www.ukbassradio.com",
       "kaertchen": "Ein kleiner britischer Sender für Bassmusik in allen Spielarten — Dubstep, Garage, Bassline, Jungle. Klein genug, dass die Auswahl noch nach Menschen klingt und nicht nach Playlist-Software.",
       "codec": "mp3",
@@ -1455,7 +1455,7 @@
       "codec": "mp3",
       "bitrate": 256,
       "samplerate": 44100,
-      "status": "ok",
+      "status": "tot",
       "geprueft_am": "2026-10-01",
       "cors": true,
       "kanal": "Gensokyo Radio"
@@ -2153,7 +2153,7 @@
         "ohne-werbung",
         "nachts"
       ],
-      "stream": "https://stream-mixtape-geo.ntslive.net/mixtape23",
+      "stream": "https://streams.radiomast.io/86a296fc-a231-4328-bba0-754fa3eb28e7",
       "homepage": "https://www.nts.live/infinite-mixtapes",
       "kaertchen": "Kein Musikkanal, sondern durchgehend Feldaufnahmen: Regenwälder, U-Bahnhöfe, Marktplätze, Gewitter. Die eigenartigste Sendung im ganzen Katalog und erstaunlich gut geeignet, um einen Raum zu verändern.",
       "codec": "mp3",
@@ -2965,7 +2965,7 @@
         "mensch-am-mikro",
         "regional"
       ],
-      "stream": "https://www.wwoz.org/listen/hi",
+      "stream": "https://wwoz-sc.streamguys1.com/wwoz-hi.mp3",
       "homepage": "https://www.wwoz.org",
       "kaertchen": "Das Gemeinderadio von New Orleans, getragen von Hoerern und ehrenamtlichen Moderatoren. Kein Jazzsender im Museumssinn, sondern der Sender einer Stadt, in der Jazz Gebrauchsmusik ist — mit Brass Bands, Funk und allem, was dazugehoert.",
       "codec": "mp3",
@@ -2991,7 +2991,7 @@
         "community",
         "mensch-am-mikro"
       ],
-      "stream": "https://www.wnur.org/api/stream",
+      "stream": "https://stream.rcs.revma.com/w4pmmfkdx4zuv",
       "homepage": "https://www.wnur.org",
       "kaertchen": "Studentenradio bei Chicago, seit Jahrzehnten beruehmt fuer zwei Dinge: sein Jazzprogramm und „Streetbeat\". Wer wissen will, wie ein Sender klingt, dem niemand ins Programm redet, hoert hier hinein.",
       "codec": "mp3",
@@ -3064,7 +3064,7 @@
       "etiketten": [
         "ohne-werbung"
       ],
-      "stream": "https://east-mp3-128.streamthejazzgroove.com/stream",
+      "stream": "https://streams.radiomast.io/8a384ff3-6fd1-4e5d-b47d-0cbefeffe8d7",
       "homepage": "https://jazzgroove.org",
       "kaertchen": "Ein gemeinnütziger Jazzsender aus San Francisco, getragen von Spenden statt Werbung. Jede Stunde wird von Hand aus einer Sammlung von über zehntausend Aufnahmen zusammengestellt — Jazz zum Zurücklehnen, der trotzdem nicht ins Belanglose abrutscht.",
       "codec": "mp3",
@@ -3111,7 +3111,7 @@
       "etiketten": [
         "ohne-werbung"
       ],
-      "stream": "https://stream-mixtape-geo.ntslive.net/mixtape4",
+      "stream": "https://streams.radiomast.io/052d2e3c-389c-44cf-a91a-8f5e1854f4c6",
       "homepage": "https://www.nts.live/infinite-mixtapes",
       "kaertchen": "Der sonnigste der NTS-Endlosmixe: Balearic, Boogie, brasilianische Sachen aus den Siebzigern, italienischer Synth-Pop. Klingt nach spätem Nachmittag am Wasser, ohne dabei in Chillout-Kitsch zu kippen.",
       "codec": "mp3",
@@ -3287,7 +3287,7 @@
         "nur-instrumental",
         "nachts"
       ],
-      "stream": "https://stream-mixtape-geo.ntslive.net/mixtape31",
+      "stream": "https://streams.radiomast.io/51a1ebc2-ca46-43e4-9567-943551b956ce",
       "homepage": "https://www.nts.live/infinite-mixtapes",
       "kaertchen": "Der sperrigste NTS-Mix: Musique concrète, Noise, elektroakustische Experimente und Dinge, bei denen man nicht sicher ist, ob sie Musik sind. Ausdrücklich als Zumutung gedacht, und als solche gelungen.",
       "codec": "mp3",
@@ -3335,7 +3335,7 @@
       "etiketten": [
         "ohne-werbung"
       ],
-      "stream": "https://stream-mixtape-geo.ntslive.net/mixtape36",
+      "stream": "https://streams.radiomast.io/7481798f-063c-42a2-8048-15ff98fe309e",
       "homepage": "https://www.nts.live/infinite-mixtapes",
       "kaertchen": "NTS mit britischem Blick auf japanische Musik — City Pop, Videospielklänge, japanischer Ambient und Noise in einem Endlosmix. Anders sortiert als japanische Sender, weil hier ausgewählt statt gepflegt wird.",
       "codec": "mp3",
