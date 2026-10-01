@@ -824,6 +824,10 @@ class AudioEngine {
       // Die Zeit muss gelaufen sein — sonst puffert er nur, und das ist
       // keine Stille, sondern eine langsame Leitung.
       if (this.audio.currentTime - begonnen < 0.5) return this._wacheUeberStille();
+      // Stumm oder auf null gedreht ist auch Stille — aber eine gewollte.
+      // Daraus „ohne Zugriff" zu schliessen, stufte jeden herab, der gleich
+      // nach dem Start M drueckte, fuer die ganze Sitzung. Dann warten.
+      if (this.istStumm || this.audio.muted || this.audio.volume === 0) return this._wacheUeberStille();
       this._analyse.getByteFrequencyData(daten);
       if (daten.some((w) => w > 0)) return;          // es kommt Ton, alles gut
 

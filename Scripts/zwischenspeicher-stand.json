@@ -1,9 +1,9 @@
 {
-  "fassung": "iyambae-v64",
+  "fassung": "iyambae-v65",
   "dateien": {
     "/ar/": "1facbc3a15ea067e",
     "/ar/manifest.webmanifest": "12caf8b689371cf1",
-    "/assets/app.js": "cdb759de3cf8635c",
+    "/assets/app.js": "b643767382d51a8b",
     "/assets/lang/ar.json": "96c0bfd7c4090822",
     "/assets/lang/de.json": "f4eb36ee5a6d0032",
     "/assets/lang/en.json": "0d72f609d6c202a2",

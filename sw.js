@@ -146,7 +146,9 @@
 // Umstimmung zurück. Gensokyo verlangt eine Anmeldung: tot. sender.json, de.json.
 // v64: Gensokyo Radio raus — der Strom verlangt seit 01.10. eine Anmeldung
 // (401). sender.json.
-const SW_VERSION = 'iyambae-v64';
+// v65: Die Stillewache stuft stummgeschaltete Hoerer nicht mehr herab.
+// app.js.
+const SW_VERSION = 'iyambae-v65';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
