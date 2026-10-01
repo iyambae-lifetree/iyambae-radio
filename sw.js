@@ -125,7 +125,10 @@
 // im Tab-Weg. Dazu der Bildspeicher enger gefasst — /assets/logo/ und
 // schriften.css liegen nicht mehr fuer immer darin. app.js, titel.mjs,
 // messung.mjs, styles.css, index.html, die sieben Sprachkataloge.
-const SW_VERSION = 'iyambae-v56';
+// v57: Buchstabenkuerzel wirken auch nach einem Mausklick auf einen Knopf;
+// activate raeumt Altlasten aus dem Bildspeicher; der Abgleich laesst eine
+// empfangene Liste stehen. app.js, sw.js, die sieben Sprachkataloge.
+const SW_VERSION = 'iyambae-v57';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -145,6 +148,10 @@ const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
  ueberlebt.
 */
 const BILD_CACHE = 'iyambae-bilder';
+// Was in den Bildspeicher darf. Bis v55 war das Muster weiter und nahm
+// Marke, schriften.css und LIZENZEN.txt mit; activate raeumt solche
+// Altlasten anhand desselben Musters wieder aus.
+const IST_BILD = /\/assets\/logos\/|\/assets\/schrift\/[^/]+\.woff2$/;
 
 // Die sieben Sprachen. Muss zu Scripts/baue-sprachen.py und zu
 // assets/lib/sprache.mjs passen — Scripts/pruefe-sprachen.py haelt die drei
@@ -270,6 +277,16 @@ self.addEventListener('activate', (event) => {
                     .filter((k) => k !== SHELL_CACHE && k !== RUNTIME_CACHE && k !== BILD_CACHE)
                     .map((k) => caches.delete(k))
             )
+        ).then(() =>
+            caches.open(BILD_CACHE).then((speicher) =>
+                speicher.keys().then((anfragen) =>
+                    Promise.all(
+                        anfragen
+                            .filter((r) => !IST_BILD.test(new URL(r.url).pathname))
+                            .map((r) => speicher.delete(r))
+                    )
+                )
+            )
         )
     );
     self.clients.claim();
@@ -327,7 +344,7 @@ self.addEventListener('fetch', (event) => {
         // die — nicht /assets/logo/ (Marke, Symbole), nicht schriften.css,
         // nicht LIZENZEN.txt: Die landeten sonst fuer immer im Bildspeicher,
         // der keine Fassungsnummer traegt.
-        const istBild = /\/assets\/logos\/|\/assets\/schrift\/[^/]+\.woff2$/.test(url.pathname);
+        const istBild = IST_BILD.test(url.pathname);
 
         if (istBild) {
             /*

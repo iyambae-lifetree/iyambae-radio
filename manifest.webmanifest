@@ -65,7 +65,7 @@
         {
             "name": "Meine Platten",
             "short_name": "Meine",
-            "description": "Noch nichts im Fach — spiel einen Sender oder setz ein Herz",
+            "description": "Die Sender, die du dir gemerkt hast",
             "url": "./index.html?los=meine",
             "icons": [
                 {

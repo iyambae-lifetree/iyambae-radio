@@ -2445,7 +2445,10 @@ class App {
        steht — waehrend Musik laeuft.
       */
       this.ui.aktualisiereFavoritenAnzeige();
-      this.ui.zeichneFilter();
+      // Eine empfangene Liste oder „Meine Platten" bleibt stehen —
+      // zeichneFilter() fuehrte ueber wendeFilterAn() zurueck ins Regal und
+      // naehme die Leiste „Übernehmen" mit.
+      if (!this.ui.sonderansicht) this.ui.zeichneFilter();
       this.aktualisiereGriff();
       if (!still) this.ui.meldung(t('konto.abgeglichen', { anzahl: drin.length }));
       return antwort;
@@ -3298,7 +3301,12 @@ class App {
     document.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT') { if (e.key === 'Escape') e.target.blur(); return; }
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.target.closest?.('button,a,summary,input,select,textarea,[contenteditable],dialog')) return;
+      // Die Leertaste gehoert dem Bedienelement, das den Fokus hat. Die
+      // Buchstabenkuerzel nicht: Chrome fokussiert jeden angeklickten Knopf,
+      // und danach sollen m, z, h und / weiter wirken. Nur wo man schreibt
+      // oder in einem Dialog steht, bleibt die Seite ganz still.
+      if (e.target.closest?.('select,textarea,[contenteditable],dialog')) return;
+      if (e.key === ' ' && e.target.closest?.('button,a,summary')) return;
       const tasten = {
         ' ': () => this.wechselSpiel(),
         'z': () => this.nadelFallenLassen(),

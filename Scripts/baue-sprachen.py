@@ -345,7 +345,7 @@ def erzeuge_manifest(vorlage, kuerzel, texte):
                         "description": t("griff.nadel.unter"),
                         "url": f"/{kuerzel}/?los=nadel"})
         kurz[1].update({"name": t("griff.meine.titel"), "short_name": t("nav.meine"),
-                        "description": t("meldung.meineLeer").rstrip("."),
+                        "description": t("griff.meine.unter"),
                         "url": f"/{kuerzel}/?los=meine"})
 
     for symbol in m.get("icons", []):
