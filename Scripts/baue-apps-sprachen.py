@@ -1098,15 +1098,16 @@ def erzeuge_robots():
 #                   Regler." — das Rueckgrat der ganzen Seite.
 #   fuss.recht      "kein Medizinprodukt", im vollen Wortlaut.
 #   frage.medizin.* die Antwort, die dasselbe ausfuehrt.
-#   frage.forschung.* der Studienabschnitt: unentschieden, nicht mehr.
+#   frage.wirkung.*   die Wirkungsfrage: kein Konsens, deshalb kein
+#                    Versprechen. Die Studien selbst stehen seit dem
+#                    01.10.2026 auf der Elternseite, nicht mehr im Laden.
 #
 # Betreiberin ist eine gewerbliche US-Gesellschaft. Eine Wirkungsaussage in
 # einer der sieben Fassungen waere Heilmittelwerbung und ein Verstoss gegen
 # das Lauterkeitsrecht — in JEDER dieser Sprachen, nicht nur auf Deutsch.
 RUECKGRAT = ("fuss.merksatz", "fuss.recht",
              "frage.medizin.titel", "frage.medizin.1", "frage.medizin.2",
-             "frage.forschung.titel", "frage.forschung.1", "frage.forschung.2",
-             "frage.forschung.3", "frage.forschung.4")
+             "frage.wirkung.titel", "frage.wirkung.1", "frage.wirkung.2")
 
 
 def pruefe_farbtoken(quellen):

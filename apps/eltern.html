@@ -57,6 +57,16 @@
 /* Belege und Nebenbemerkungen. NICHT .quelle: die ist in
    berichtigungen.html lokal definiert und mit 0,72 rem Mono fuer eine
    Zeile gedacht, nicht fuer einen Absatz. */
+/* Die Studienliste — dieselbe Form wie „Fremde Quellen" auf der Ladeseite. */
+.fremd { margin: 1.6rem 0 0; padding: 0; list-style: none; }
+.fremd li { border-top: 1px solid var(--kante); padding: 1rem 0; }
+.fremd .quelle {
+  font-family: var(--daten); font-size: .62rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--leiser); display: block; margin-bottom: .3rem;
+}
+.fremd a { font-size: 1rem; text-decoration: none; border-bottom: 1px solid var(--kante-hell); }
+.fremd a:hover { border-bottom-color: var(--akzent); }
+.fremd p { margin: .35rem 0 0; font-size: .86rem; color: var(--leiser); }
 .beleg { font-size: .88rem; color: var(--leiser); }
 .beleg a { color: var(--leise); }
 </style>
@@ -193,11 +203,45 @@
   </div>
 </section>
 
-<section class="rahmen teil teil--linie">
+<section class="rahmen teil teil--linie" id="forschung">
   <h2 data-text="elt.forsch.titel">Was die Forschung hergibt</h2>
   <p data-html="elt.forsch.1">Gut belegt ist, dass <strong>Musik als solche</strong> Anspannung mindert — etwa vor medizinischen Eingriffen. Dafür gibt es systematische Übersichten mit mehreren Tausend Teilnehmenden.</p>
   <p data-html="elt.forsch.2">Für einen <strong>besonderen Vorteil von 432 gegenüber 440</strong> gilt das nicht. Dazu existieren nur kleine Pilotstudien mit acht bis vierundfünfzig Teilnehmenden, überwiegend aus einer einzigen Forschungsgruppe, ohne unabhängige Wiederholung. Die bislang größte Studie (2026, 162 Teilnehmende) fand für 432 sogar ein eher ungünstiges Bild. Eine Metaanalyse gibt es nicht.</p>
   <p data-html="elt.forsch.3">Das ist keine Aussage gegen 432 Hz — es ist die Feststellung, dass die Belege für die großen Versprechen fehlen. Als musikalische Möglichkeit bleibt die tiefere Stimmung gültig, interessant und völlig harmlos.</p>
+
+  <!-- Die einzelnen Studien. Bis zum 01.10.2026 standen sie auf der Seite,
+       auf der der Tuner zu haben ist — neben dem Ladeknopf. Dort sind
+       Studien ein Verkaufsargument, auch wenn sie „unentschieden" sagen.
+       Hier sind sie das, was sie sein sollen: Lesestoff mit Vorbehalt. -->
+  <h3 data-text="elt.studien.titel">Die einzelnen Studien, mit ihren Einschränkungen</h3>
+  <p data-html="elt.studien.1"><strong>Hohneck u. a. (2025)</strong> verglichen 432 mit 443 Hz — der Stimmung, auf der heutige Orchester wirklich spielen. 43 Personen, jede hörte beides. Die Autoren berichten bei 432 einen etwas stärkeren Rückgang von Puls und Pulswellengeschwindigkeit; die Werte zum Befinden unterschieden sich zwischen den beiden Stimmungen nicht. Sie schreiben selbst, sie könnten nicht sagen, ob das an der Zahl 432 liegt oder schlicht daran, dass es tiefer ist.</p>
+  <p data-html="elt.studien.2"><strong>Aravena u. a. (2020)</strong> verglichen vor einer Zahnextraktion 432 Hz, 440 Hz und Stille; 42 Personen. Zwischen 432 und 440 Hz fanden sie keinen Unterschied. Der oft zitierte Cortisol-Befund hält der Nachprüfung am Volltext nicht stand: Die 432-Gruppe startete bereits halb so hoch wie die anderen, und die Veränderung war in keiner der drei Gruppen statistisch belastbar.</p>
+  <p data-html="elt.studien.3"><strong>Jebabli u. a. (2025)</strong> fanden in zwei doppelblinden Studien beim sportlichen Aufwärmen 440 Hz im Vorteil.</p>
+  <p data-html="elt.studien.4">Alles zusammen: <strong>kleine Studien, keine Metaanalyse, keine unabhängige Wiederholung.</strong> Es ist etwas gemessen worden, und es ist wenig. Die Volltexte stehen hier, frei zugänglich — zum Selbstnachlesen, statt uns zu glauben.</p>
+
+  <ul class="fremd">
+    <li>
+      <span class="quelle" data-text="fremd.volltext">pmc.ncbi.nlm.nih.gov · Volltext frei</span>
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11755923/" target="_blank" rel="noopener nofollow external" data-text="fremd.6.titel">Sound interventions tuned to 432 Hz or 443 Hz, Sci Rep 15 (2025)</a>
+      <p data-text="fremd.6.was">Randomisierte Cross-over-Studie, 43 Personen, Herz-Kreislauf-Werte.</p>
+    </li>
+    <li>
+      <span class="quelle" data-text="fremd.volltext">pmc.ncbi.nlm.nih.gov · Volltext frei</span>
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7213780/" target="_blank" rel="noopener nofollow external" data-text="fremd.3.titel">Aravena u. a., J Appl Oral Sci 28 (2020), e20190601</a>
+      <p data-text="fremd.3.was">Randomisierte klinische Studie, 42 Personen, Zahnextraktion.</p>
+    </li>
+    <li>
+      <span class="quelle" data-text="fremd.volltext">pmc.ncbi.nlm.nih.gov · Volltext frei</span>
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11890291/" target="_blank" rel="noopener nofollow external" data-text="fremd.4.titel">Jebabli u. a., PeerJ 13 (2025), e19084</a>
+      <p data-text="fremd.4.was">Doppelblinde Crossover-Studie, Kickboxen, Aufwärmen.</p>
+    </li>
+    <li>
+      <span class="quelle" data-text="fremd.volltext">pmc.ncbi.nlm.nih.gov · Volltext frei</span>
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12528442/" target="_blank" rel="noopener nofollow external" data-text="fremd.5.titel">Jebabli u. a., Sci Rep 15 (2025), 36120</a>
+      <p data-text="fremd.5.was">Doppelblinde Crossover-Studie, Athleten, Aufwärmen.</p>
+    </li>
+  </ul>
+
   <p><a class="grossknopf grossknopf--leise" href="/de/berichtigungen/" data-text="elt.forsch.knopf">Was wir hier selbst berichtigt haben</a></p>
 </section>
 
