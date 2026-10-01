@@ -305,7 +305,7 @@
   "spo.f4.titel": "How do I know whether I hear the difference?",
   "spo.f4.text": "Listen for yourself, blind: in the <a href=\"/de/hoertest/\">listening test</a> you get the same passage twice, tuned differently, and you guess. <strong>Five trials, honest scoring</strong> — even when the result goes against us.",
   "spo.danach.titel": "The shortest way",
-  "spo.danach.text": "The Tuner is a test release for macOS — <strong>free, no account.</strong> Install it, switch it on, start Spotify. And if you want to know first what your music sits on: <a href=\"/de/stimmung/\">measure it</a>.",
+  "spo.danach.text": "The Tuner is a test release for macOS — <strong>free to try, no account.</strong> Install it, switch it on, start Spotify. And if you want to know first what your music sits on: <a href=\"/de/stimmung/\">measure it</a>.",
   "spo.danach.knopf": "Look at the Tuner",
   "sam.seite.titel": "44.1 kHz is not a pitch — sample rate and 432 Hz are two different things",
   "sam.seite.beschreibung": "“How do I set my sound card to 432 Hz?” — you don’t. Sample rate and concert pitch are two different things, and the mix-up explains dozens of forum questions. Here is what each number means.",

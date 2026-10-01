@@ -305,7 +305,7 @@
   "spo.f4.titel": "違いが聞こえているかどうか、どうすればわかりますか",
   "spo.f4.text": "目を閉じて、ご自分で。<a href=\"/de/hoertest/\">聴き比べ</a>では同じ箇所を調律違いで二度お聞かせし、当てていただきます。<strong>五回、正直な集計</strong> — 結果が私たちに不利でも。",
   "spo.danach.titel": "いちばん短い道",
-  "spo.danach.text": "Tuner は macOS 用の試用版です — <strong>無料、登録なし。</strong>入れて、点けて、Spotify を開く。その前にご自分の音楽がどこにあるか知りたければ、<a href=\"/de/stimmung/\">測ってください</a>。",
+  "spo.danach.text": "Tuner は macOS 用の試用版です — <strong>試用は無料、登録なし。</strong>入れて、点けて、Spotify を開く。その前にご自分の音楽がどこにあるか知りたければ、<a href=\"/de/stimmung/\">測ってください</a>。",
   "spo.danach.knopf": "Tuner を見る",
   "sam.seite.titel": "44,1 kHz は音の高さではない — 標本化周波数と 432 Hz は別のもの",
   "sam.seite.beschreibung": "「サウンドカードを 432 Hz にするには？」— できません。標本化周波数と基準音の高さは別のもので、この取り違えが数え切れないほどの掲示板の問いを生んでいます。どの数字が何を指すのかをここに。",

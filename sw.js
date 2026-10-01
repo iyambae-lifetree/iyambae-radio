@@ -128,7 +128,9 @@
 // v57: Buchstabenkuerzel wirken auch nach einem Mausklick auf einen Knopf;
 // activate raeumt Altlasten aus dem Bildspeicher; der Abgleich laesst eine
 // empfangene Liste stehen. app.js, sw.js, die sieben Sprachkataloge.
-const SW_VERSION = 'iyambae-v57';
+// v58: „Kostenlos testen“ statt „Kostenlos“ beim Tuner — er kostet fertig
+// 29 €. index.html, die sieben Sprachkataloge.
+const SW_VERSION = 'iyambae-v58';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

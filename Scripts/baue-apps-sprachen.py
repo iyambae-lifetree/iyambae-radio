@@ -968,7 +968,8 @@ SEITENNAME = {
 
 SEITENSATZ = {
     "": "Der IYAMBAE Tuner: stimmt den Systemton des Rechners auf 432 Hz, "
-        "ohne eine Datei umzuwandeln. Kostenlose Testausgabe fuer macOS. "
+        "ohne eine Datei umzuwandeln. Testausgabe zum Ausprobieren kostenlos, "
+        "die fertige Fassung einmalig 29 Euro. "
         "Dazu 14 Fragen und Antworten zum Kammerton.",
     "spotify/": "Warum Spotify sich nicht umstimmen laesst und was stattdessen "
                 "geht — gemessen, nicht behauptet.",
@@ -1012,7 +1013,7 @@ def erzeuge_llms(fassung):
         "",
         "> Werkzeuge und Erklaerungen zum Kammerton. Der Tuner stimmt den "
         f"Systemton eines Rechners auf 432 Hz um (Testausgabe {fassung}, "
-        "macOS, kostenlos); dazu gehoeren ein Blindtest, ein Stimmungsmesser "
+        "macOS, zum Testen kostenlos, fertig einmalig 29 Euro); dazu gehoeren ein Blindtest, ein Stimmungsmesser "
         "und mehrere Erklaerseiten.",
         "",
         "Betreiber: IYAMBAE. Wir versprechen keine Wirkung von 432 Hz und "

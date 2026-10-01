@@ -305,7 +305,7 @@
   "spo.f4.titel": "¿Cómo sé si oigo la diferencia?",
   "spo.f4.text": "Escúchalo tú mismo, a ciegas: en la <a href=\"/de/hoertest/\">prueba de escucha</a> recibes el mismo pasaje dos veces, afinado distinto, y adivinas. <strong>Cinco intentos, recuento honesto</strong> — también cuando el resultado va en nuestra contra.",
   "spo.danach.titel": "El camino más corto",
-  "spo.danach.text": "El Tuner es una versión de prueba para macOS — <strong>gratis, sin cuenta.</strong> Instalar, encender, abrir Spotify. Y si antes quieres saber en qué está tu música: <a href=\"/de/stimmung/\">mídela</a>.",
+  "spo.danach.text": "El Tuner es una versión de prueba para macOS — <strong>gratis para probar, sin cuenta.</strong> Instalar, encender, abrir Spotify. Y si antes quieres saber en qué está tu música: <a href=\"/de/stimmung/\">mídela</a>.",
   "spo.danach.knopf": "Ver el Tuner",
   "sam.seite.titel": "44,1 kHz no es una altura — frecuencia de muestreo y 432 Hz son dos cosas",
   "sam.seite.beschreibung": "«¿Cómo pongo mi tarjeta de sonido en 432 Hz?» — no se puede. La frecuencia de muestreo y el diapasón son dos cosas distintas, y la confusión explica decenas de preguntas en los foros. Aquí está lo que significa cada número.",

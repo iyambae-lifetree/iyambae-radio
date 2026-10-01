@@ -305,7 +305,7 @@
   "spo.f4.titel": "Comment savoir si j’entends la différence ?",
   "spo.f4.text": "Écoutez vous-même, à l’aveugle : dans le <a href=\"/de/hoertest/\">test d’écoute</a>, vous recevez deux fois le même passage, accordé différemment, et vous devinez. <strong>Cinq passages, décompte honnête</strong> — même si le résultat nous donne tort.",
   "spo.danach.titel": "Le chemin le plus court",
-  "spo.danach.text": "Le Tuner est une version d’essai pour macOS — <strong>gratuite, sans compte.</strong> Installer, allumer, lancer Spotify. Et si vous voulez d’abord savoir sur quoi repose votre musique : <a href=\"/de/stimmung/\">mesurez-la</a>.",
+  "spo.danach.text": "Le Tuner est une version d’essai pour macOS — <strong>gratuite à l’essai, sans compte.</strong> Installer, allumer, lancer Spotify. Et si vous voulez d’abord savoir sur quoi repose votre musique : <a href=\"/de/stimmung/\">mesurez-la</a>.",
   "spo.danach.knopf": "Voir le Tuner",
   "sam.seite.titel": "44,1 kHz n’est pas une hauteur — fréquence d’échantillonnage et 432 Hz sont deux choses",
   "sam.seite.beschreibung": "« Comment régler ma carte son sur 432 Hz ? » — on ne le fait pas. La fréquence d’échantillonnage et le diapason sont deux choses différentes, et la confusion explique des dizaines de questions de forum. Voici ce que signifie chaque nombre.",

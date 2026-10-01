@@ -154,7 +154,7 @@
   "einstellungen.messungAus": "La mesure d'audience est désactivée.",
   "stimmung.erklaerung": "La particularité d'ici : chaque station peut jouer en 432 Hz au lieu des 440 habituels.",
   "stimmung.abstand": "Cette page <em>devine</em>. Elle suppose que chaque station est à 440 et descend tout de la même valeur. Si un enregistrement est à 443 — courant aujourd’hui —, ce que vous entendez en ce moment fait <strong>435 Hz, pas 432.</strong>",
-  "stimmung.loesung": "Le <strong>IYAMBAE Tuner</strong> ne devine pas, il <em>mesure</em> — et pas seulement ici, mais dans tout : Spotify, YouTube, votre propre collection. <strong>Gratuit, sans compte.</strong>",
+  "stimmung.loesung": "Le <strong>IYAMBAE Tuner</strong> ne devine pas, il <em>mesure</em> — et pas seulement ici, mais dans tout : Spotify, YouTube, votre propre collection. <strong>Essai gratuit, sans compte.</strong>",
   "stimmung.abstandLangsam": "Cette station ne laisse pas le navigateur accéder à son flux. La page ne peut la réaccorder qu’en la ralentissant — la musique tourne en ce moment <strong>1,8 % plus lentement</strong> qu’à l’antenne.",
   "teilen.satz": "{anzahl} disques dans votre bac.",
   "teilen.knopf": "Lien à transmettre",
