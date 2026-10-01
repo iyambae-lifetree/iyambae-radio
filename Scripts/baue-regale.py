@@ -411,6 +411,11 @@ def main():
     vorlage = io.open(ROOT / "regal.html", encoding="utf-8").read()
     katalog = json.loads(io.open(ROOT / "data" / "sender.json",
                                  encoding="utf-8").read())
+    # Sender mit status "tot" zeigt die Seite nicht (app.js, SENDER) — also
+    # auch nicht die erzeugte Fassung, die Zaehlung und das JSON-LD. Sonst
+    # stuende ein Sender in der Liste fuer Suchmaschinen, den niemand hoeren
+    # kann. Erst seit 01.10.2026 tatsaechlich benutzt.
+    katalog["sender"] = [s for s in katalog["sender"] if s.get("status") != "tot"]
     texte = lade_texte()
 
     gut = pruefe_vorlage(vorlage)

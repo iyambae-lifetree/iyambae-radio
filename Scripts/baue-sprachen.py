@@ -1082,6 +1082,12 @@ def main():
 
     senderkatalog = json.loads(
         io.open(ROOT / "data" / "sender.json", encoding="utf-8").read())
+    # Sender mit status "tot" zeigt die Seite nicht (app.js, SENDER) — also
+    # auch nicht die erzeugte Fassung, die Zaehlung und das JSON-LD. Sonst
+    # stuende ein Sender in der Liste fuer Suchmaschinen, den niemand hoeren
+    # kann. Erst seit 01.10.2026 tatsaechlich benutzt.
+    senderkatalog["sender"] = [s for s in senderkatalog["sender"]
+                               if s.get("status") != "tot"]
 
     # Erst alles bauen und pruefen, dann schreiben. Ein halber Stand auf der
     # Platte waere schlimmer als gar keiner: Die Sprachordner werden vorher

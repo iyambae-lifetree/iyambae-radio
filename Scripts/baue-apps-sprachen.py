@@ -1039,6 +1039,8 @@ def erzeuge_llms(fassung):
     # fest eingetragen und waere beim naechsten Sender still veraltet.
     sender = json.loads(io.open(ROOT / "data" / "sender.json",
                                 encoding="utf-8").read())["sender"]
+    # Wie auf der Radioseite: Sender mit status "tot" zaehlen nicht mit.
+    sender = [s for s in sender if s.get("status") != "tot"]
     zeilen += [
         "",
         sprachsatz,
