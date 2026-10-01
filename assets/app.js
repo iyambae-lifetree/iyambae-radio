@@ -126,9 +126,27 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ── Katalog laden ──────────────────────────────────────────────────
-const antwort = await fetch('/data/sender.json');
-if (!antwort.ok) throw new Error('Katalog nicht ladbar: ' + antwort.status);
-const KATALOG = await antwort.json();
+/*
+ Schlaegt das fehl, darf der Ladeschirm nicht fuer immer stehen bleiben —
+ er sagte „wird aufgeschlossen", und nichts wurde aufgeschlossen. Also
+ Schirm weg, ein Satz dazu, und der Fehler geht weiter in die Konsole.
+*/
+let KATALOG;
+try {
+  const antwort = await fetch('/data/sender.json');
+  if (!antwort.ok) throw new Error('Katalog nicht ladbar: ' + antwort.status);
+  KATALOG = await antwort.json();
+} catch (e) {
+  document.getElementById('ladeschirm')?.classList.add('weg');
+  const behaelter = document.getElementById('meldungen');
+  if (behaelter) {
+    const el = document.createElement('div');
+    el.className = 'meldung meldung--fehler';
+    el.textContent = t('laden.fehler');
+    behaelter.appendChild(el);
+  }
+  throw e;
+}
 const REGALE = KATALOG.regale;
 // Fuer die Zuordnung von Fehlerberichten. Der Katalog traegt ohnehin eine
 // Fassung, und sie steigt mit jeder Auslieferung.
@@ -513,6 +531,7 @@ class AudioEngine {
         this.spiele(sender);
         return;
       }
+      this.laeuft = false;
       this._rufe('fehler');
     });
     el.addEventListener('loadstart', () => { if (el === this.audio) this._rufe('laden'); });
@@ -691,7 +710,7 @@ class AudioEngine {
       this._stockZahl = 0;
       this._wacheUeberStille();
     } catch (e) {
-      if (e.name !== 'AbortError') this._rufe('fehler');
+      if (e.name !== 'AbortError') { this.laeuft = false; this._rufe('fehler'); }
     }
   }
 
@@ -853,10 +872,10 @@ class AudioEngine {
     return !!(this.retunerBereit && this.audio === this.audioAnalyse && this.ist432An);
   }
 
-  setze432(an) {
+  setze432(an, merken = true) {
     this.ist432An = !!an;
     this.wendePitchAn();
-    speicher.schreib(SCHLUESSEL.pitch432, this.ist432An);
+    if (merken) speicher.schreib(SCHLUESSEL.pitch432, this.ist432An);
   }
 
   /*
@@ -890,9 +909,11 @@ class AudioEngine {
     if (merken) speicher.schreib(SCHLUESSEL.lautstaerke, this.lautstaerke);
   }
 
+  // Stummschalten wird NICHT gemerkt — sonst startet die Seite nach dem
+  // Neuladen ohne Ton, und niemand weiss, warum.
   wechsleStumm() {
     if (this.istStumm) { this.setzeLautstaerke(this.vorherigeLautstaerke || 0.7); this.istStumm = false; }
-    else { this.vorherigeLautstaerke = this.lautstaerke; this.setzeLautstaerke(0); this.istStumm = true; }
+    else { this.vorherigeLautstaerke = this.lautstaerke; this.setzeLautstaerke(0, false); this.istStumm = true; }
     return this.istStumm;
   }
 
@@ -1097,6 +1118,9 @@ class UI {
     const breite = bandbreite(sender);
     const guetetitel = sender.codec === 'flac'
         ? t('karte.guete.verlustfrei') + (breite ? ' — ' + t('karte.bandbreite', { wert: breite }) : '')
+        // Ohne gemessene Datenrate nur der Codec — „undefined kbit/s" ist
+        // keine Auskunft.
+        : !sender.bitrate ? (sender.codec || 'MP3').toUpperCase()
         : ['opus', 'vorbis'].includes(sender.codec)
           ? t('karte.guete.opus', { codec: sender.codec.toUpperCase(), bitrate: sender.bitrate })
           : t('karte.guete.mp3', { bitrate: sender.bitrate });
@@ -1718,7 +1742,8 @@ class UI {
     // Wie viele Sender bleiben, wenn man DIESEN Chip zusaetzlich waehlt.
     // Bei einem bereits aktiven Chip ist die Zahl der Ist-Zustand.
     const rest = aktiv ? null
-      : vorschau(this.sender, this.filter, (id) => this.istFavorit(id), achse, wert);
+      : vorschau(this.sender, this.filter, (id) => this.istFavorit(id), achse, wert,
+                 (id) => this.regale?.find(r => r.id === id)?.name);
     const stumpf = rest === 0 ? ' ist-stumpf' : '';
     return `<button class="chip chip--${art}${aktiv ? ' ist-aktiv' : ''}${stumpf}"
               data-achse="${achse}" data-wert="${wert}"
@@ -1779,7 +1804,8 @@ class UI {
      nichts.
     */
     chips.unshift(this._chip('einschlafen', 'einschlafen', 'ja', t('filter.einschlafen'),
-      vorschau(this.sender, this.filter, (id) => this.istFavorit(id), 'einschlafen', 'ja')));
+      vorschau(this.sender, this.filter, (id) => this.istFavorit(id), 'einschlafen', 'ja',
+               (id) => this.regale?.find(r => r.id === id)?.name)));
     if (this.favoriten.size) {
       chips.unshift(this._chip('meine', 'gemerkte', 'ja', t('filter.meine.knopf'), this.favoriten.size));
     }
@@ -1787,9 +1813,6 @@ class UI {
   }
 
   schalteFilter(achse, wert) {
-    // Mit der Trefferzahl: Ein Filter, der immer ins Leere fuehrt, ist ein
-    // Gestaltungsfehler — und einer, den man ohne Messung nie bemerkt.
-    miss('filter', { achse, wert, treffer: this._letzteTreffer ?? 0 });
     const f = this.filter;
     if (achse === 'etikett') f.etiketten.has(wert) ? f.etiketten.delete(wert) : f.etiketten.add(wert);
     else if (achse === 'region') f.regionen.has(wert) ? f.regionen.delete(wert) : f.regionen.add(wert);
@@ -1798,6 +1821,10 @@ class UI {
     else if (achse === 'regal') f.regal = f.regal === wert ? null : wert;
     else if (achse === 'einschlafen') schalteEinschlafen(f);
     this.wendeFilterAn();
+    // Mit der Trefferzahl NACH dem Anwenden: Ein Filter, der immer ins
+    // Leere fuehrt, ist ein Gestaltungsfehler — und einer, den man ohne
+    // Messung nie bemerkt. Vorher stand hier die Zahl des vorigen Filters.
+    miss('filter', { achse, wert, treffer: this._letzteTreffer ?? 0 });
   }
 
   setzeRegalFilter(regal) {
@@ -1817,9 +1844,23 @@ class UI {
     this.wendeFilterAn();
   }
 
-  istGefiltert() { return istGefiltert(this.filter); }
+  /*
+   Gefiltert ist auch die Sonderansicht — „Meine Platten" und eine
+   empfangene Liste zeichnen die Regale mit eigener Auswahl. Ohne diesen
+   Zusatz gab es von dort keinen Weg zurueck: Der Filterstand blieb
+   versteckt, der Regalsprung tat nichts, die Teilleiste blieb stehen.
+  */
+  istGefiltert() { return istGefiltert(this.filter) || !!this.sonderansicht; }
+
+  zeigeSonderansicht(auswahl) {
+    this.sonderansicht = true;
+    this.zeichneRegale(auswahl);
+    this.zeigeFilterstand(auswahl.length);
+  }
 
   wendeFilterAn() {
+    this.sonderansicht = false;
+    document.querySelector('.teilen')?.remove();
     const treffer = wendeAn(this.sender, this.filter, (id) => this.istFavorit(id),
                             (id) => this.regale?.find(r => r.id === id)?.name);
 
@@ -1883,7 +1924,11 @@ class UI {
     document.querySelectorAll('.karte').forEach(karte => {
       const favorit = this.istFavorit(karte.dataset.senderId);
       const knopf = karte.querySelector('.karte__favorit');
-      if (knopf) { knopf.innerHTML = symbol(favorit ? 'gemerkt' : 'merken', 18); knopf.classList.toggle('ist-favorit', favorit); }
+      if (knopf) {
+        knopf.innerHTML = symbol(favorit ? 'gemerkt' : 'merken', 20);
+        knopf.classList.toggle('ist-favorit', favorit);
+        knopf.setAttribute('aria-label', favorit ? t('karte.favorit.entfernen') : t('karte.favorit.hinzu'));
+      }
     });
     /*
      Nur das Wort tauschen, nicht den ganzen Knopfinhalt.
@@ -1985,6 +2030,9 @@ class UI {
     }
     document.body.classList.toggle('spielt', laeuft);
     this.setzeTonarm(laeuft);
+    if ('mediaSession' in navigator) {
+      try { navigator.mediaSession.playbackState = laeuft ? 'playing' : 'paused'; } catch {}
+    }
   }
 
   /*
@@ -2186,6 +2234,8 @@ class App {
     this.engine.bei('fehler', () => {
       const sender = this.engine.aktuellerSender;
       if (!sender) return;
+      haltTitelAn();
+      this.visualizer.stopp();
       this.ui.zeigeSpielzustand(false);
       this.ui.zeigeStatus('fehler', t('karte.stumm'));
       this.ui.markiereStumm(sender.id);
@@ -2461,7 +2511,22 @@ class App {
     if (!this.engine.aktuellerSender) {
       return this.nadelFallenLassen();   // nichts gewählt: Zufall statt Fehlermeldung
     }
+    /*
+     Ein Sender ohne Quelle — die geteilte Platte zeigt ihn nur an — oder
+     einer, dessen Element im Fehler steht: Ein play() darauf wirft
+     NotSupportedError und zaehlt als Fehlschlag. Also frisch starten.
+    */
+    if (!this.engine.laeuft
+        && (!this.engine.audio.currentSrc || this.engine.audio.error)) {
+      return this.spieleSender(this.engine.aktuellerSender);
+    }
+    // Beim Anhalten ruht auch die Titelabfrage; beim Weiterspielen laeuft
+    // sie wieder an. spiele() setzt `laeuft` erst nach dem Start, also
+    // vorher merken, in welche Richtung es geht.
+    const hieltAn = this.engine.laeuft;
     this.engine.wechsle();
+    if (hieltAn) haltTitelAn();
+    else beobachteTitel(this.engine.aktuellerSender, (titel) => this.ui.zeigeTitel(titel));
     this.ui.zeigeSpielzustand(this.engine.laeuft);
     this.ui.zeigeStatus(this.engine.laeuft ? 'live' : 'pause',
                         this.engine.laeuft ? this.engine.statusText() : t('status.pausiert'));
@@ -2584,7 +2649,7 @@ class App {
       this.ui.meldung(t('meldung.meineLeer'), 'info');
       return;
     }
-    this.ui.zeichneRegale(meine);
+    this.ui.zeigeSonderansicht(meine);
     this._zeigeTeilleiste(favoriten);
     document.getElementById('regale').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -2740,7 +2805,9 @@ class App {
     history.replaceState(null, '', location.pathname + location.search);
     if (!sender) return;
     this.ui.zeigeSender(sender);
+    this.ui.aktuelleId = sender.id;
     this.engine.aktuellerSender = sender;
+    this.ui.markiereAktiv();
     this.ui.meldung(t('teilen.empfangenSender', { name: sender.name }), 'info');
     document.getElementById('hero')?.scrollIntoView({ block: 'start' });
   }
@@ -2765,7 +2832,7 @@ class App {
     history.replaceState(null, '', location.pathname + location.search);
     if (!sender.length) return;
 
-    this.ui.zeichneRegale(sender);
+    this.ui.zeigeSonderansicht(sender);
     const behaelter = document.getElementById('regale');
     const leiste = document.createElement('div');
     leiste.className = 'teilen teilen--empfangen';
@@ -2844,8 +2911,15 @@ class App {
     if (quelle === 'nutzer') speicher.schreib(SCHLUESSEL.myretuner, this.myRetunerAktiv);
 
     // Läuft der IYAMBAE Tuner systemweit und die Seite verstimmt zusätzlich,
-    // landet man bei rund 424 Hz — doppelt heruntergezogen.
-    if (this.myRetunerAktiv) this.engine.setze432(false);
+    // landet man bei rund 424 Hz — doppelt heruntergezogen. Ausgeschaltet
+    // wird OHNE zu speichern: Die Wahl des Besuchers bleibt liegen und
+    // kommt zurueck, sobald der Tuner nicht mehr uebernimmt.
+    if (this.myRetunerAktiv) {
+      this.engine.setze432(false, false);
+    } else {
+      const gewuenscht = speicher.lies(SCHLUESSEL.pitch432, true);
+      if (this.engine.ist432An !== gewuenscht) this.engine.setze432(gewuenscht, false);
+    }
 
     const knopf432 = document.getElementById('knopf432');
     if (knopf432) {
@@ -3140,6 +3214,28 @@ class App {
       });
     }
 
+    /*
+     Das Filterpanel ist ein natives <dialog>.
+
+     showModal() bringt mit, was man sonst von Hand nachbaut und dabei falsch
+     macht: Der Fokus bleibt gefangen, Escape schliesst, der Rest der Seite
+     wird fuer Vorlesestimmen unsichtbar, und der Verdunkler kommt aus dem
+     Browser statt aus einem eigenen Element mit geratenem z-index.
+    */
+    const panel = document.getElementById('filterPanel');
+    const filterKnopf = document.getElementById('filterKnopf');
+    if (panel && filterKnopf) {
+      const auf = () => { panel.showModal(); filterKnopf.setAttribute('aria-expanded', 'true'); };
+      const zu = () => panel.close();
+      filterKnopf.addEventListener('click', auf);
+      anKlick('filterPanelZu', zu);
+      anKlick('filterPanelFertig', zu);
+      panel.addEventListener('close', () => filterKnopf.setAttribute('aria-expanded', 'false'));
+      // Klick auf den Verdunkler schliesst. Der Verdunkler IST der Dialog —
+      // ein Treffer ausserhalb des Inhalts landet auf ihm selbst.
+      panel.addEventListener('click', (e) => { if (e.target === panel) zu(); });
+    }
+
     this._verdrahteKonto(anKlick);
 
     anKlick('heroFavorit',       () => { if (this.ui.aktuelleId) this.ui.toggleFavorit(this.ui.aktuelleId); });
@@ -3168,6 +3264,7 @@ class App {
       else { suchfeld.blur(); this.schliesseSuche(); }
     });
     document.getElementById('lupe')?.addEventListener('click', () => this.oeffneSuche());
+    suchfeld?.addEventListener('focus', () => this.oeffneSuche());
 
     const regler = document.getElementById('lautstaerke');
     if (regler) {
@@ -3189,8 +3286,19 @@ class App {
       });
     });
 
+    /*
+     Die Tastenkuerzel gelten fuer die Seite, nicht fuer ihre Bedienelemente.
+
+     Wer mit der Leertaste einen Knopf drueckt oder ein Menue aufklappt, will
+     nicht nebenbei die Musik anhalten; wer Cmd+Z drueckt, meint das
+     Betriebssystem. Und die Pfeiltasten gehoeren dem Blaettern — die
+     Lautstaerke regeln sie nur, wenn der Regler selbst den Fokus hat, und
+     das tut er dann von allein.
+    */
     document.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT') { if (e.key === 'Escape') e.target.blur(); return; }
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.target.closest?.('button,a,summary,input,select,textarea,[contenteditable],dialog')) return;
       const tasten = {
         ' ': () => this.wechselSpiel(),
         'z': () => this.nadelFallenLassen(),
@@ -3199,9 +3307,7 @@ class App {
         'H': () => this.wechsle432(),
         'm': () => this.engine.wechsleStumm(),
         'M': () => this.engine.wechsleStumm(),
-        '/': () => suchfeld?.focus(),
-        'ArrowUp':   () => this.engine.setzeLautstaerke(this.engine.lautstaerke + 0.05),
-        'ArrowDown': () => this.engine.setzeLautstaerke(this.engine.lautstaerke - 0.05),
+        '/': () => this.oeffneSuche(),
       };
       if (tasten[e.key]) { e.preventDefault(); tasten[e.key](); }
     });
@@ -3352,8 +3458,10 @@ class App {
         artist: sender.betreiber ?? 'IYAMBAE Radio',
         album: 'IYAMBAE Radio',
       });
-      navigator.mediaSession.setActionHandler('play',  () => this.wechselSpiel());
-      navigator.mediaSession.setActionHandler('pause', () => this.wechselSpiel());
+      // Play spielt, Pause haelt an — nichts davon schaltet um. Sonst
+      // spielt ein doppelt gemeldetes „pause" die Musik wieder an.
+      navigator.mediaSession.setActionHandler('play',  () => { if (!this.engine.laeuft) this.wechselSpiel(); });
+      navigator.mediaSession.setActionHandler('pause', () => { if (this.engine.laeuft) this.wechselSpiel(); });
       navigator.mediaSession.setActionHandler('nexttrack', () => this.nadelFallenLassen());
       navigator.mediaSession.playbackState = 'playing';
     } catch {}

@@ -192,6 +192,23 @@ export function miss(was, felder = {}) {
       rumpf.code = felder.code;
     }
   }
+  /*
+   Das Stocken: Sender, Dauer in Sekunden, wievieltes Mal. Bis hierher gab
+   es fuer 'stockt' keinen Zweig — die Art stand in ARTEN, die Zeile ging
+   ohne Felder hinaus, und die Auswertung wusste nie, WO es stockte.
+
+   Die Dauer wird auf ganze Sekunden und nach oben auf eine Stunde
+   begrenzt; die Zahl auf 1 bis 5, mehr meldet app.js ohnehin nicht.
+  */
+  if (was === 'stockt') {
+    if (felder.sender) rumpf.sender = String(felder.sender);
+    if (Number.isFinite(felder.dauer)) {
+      rumpf.dauer = Math.min(3600, Math.max(0, Math.round(felder.dauer)));
+    }
+    if (Number.isInteger(felder.zahl) && felder.zahl >= 1 && felder.zahl <= 5) {
+      rumpf.zahl = felder.zahl;
+    }
+  }
 
   try {
     /*

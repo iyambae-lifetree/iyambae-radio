@@ -40,6 +40,10 @@
 const TAKT_MS = 20000;
 let laufend = null;
 let leitung = null;
+// Zaehlt jeden Start hoch. Ein Versuch, der noch aus der vorigen Runde
+// laeuft, wenn der Sender laengst gewechselt hat, darf weder melden noch
+// anhalten — sonst steht der alte Titel unter dem neuen Sender.
+let runde = 0;
 
 /*
  Manche Haeuser tragen dort einen Platzhalter ein statt eines Titels,
@@ -277,6 +281,8 @@ function wegeFuer(u) {
 export function beobachteTitel(sender, melde) {
   haltAn();
   if (!sender?.stream) return;
+  const meineRunde = ++runde;
+  const nochDran = () => meineRunde === runde;
 
   let u;
   try { u = new URL(sender.stream); } catch { return; }
@@ -326,12 +332,14 @@ export function beobachteTitel(sender, melde) {
         // kurz nichts sagt, darf deswegen nicht dauerhaft aufgegeben
         // werden. Vorher wurde nie zurueckgesetzt — fuenf Luecken ueber
         // einen ganzen Abend genuegten, und der Titel kam nie wieder.
+        if (!nochDran()) return;
         if (titel) { leerFremd = 0; return melde(titel); }
       }
       leerFremd++;
     }
 
     const vomBrett = await vomDienst(sender);
+    if (!nochDran()) return;
     if (vomBrett) return melde(vomBrett);
 
     /*
@@ -361,6 +369,7 @@ export function beobachteTitel(sender, melde) {
 }
 
 export function haltAn() {
+  runde++;
   if (laufend) clearInterval(laufend);
   laufend = null;
   if (leitung) leitung.close();
