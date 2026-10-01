@@ -120,7 +120,12 @@
 // v55: Der Converter steht auf der Ladeseite, und die Mac-Schritte sagen
 // nicht mehr „nicht signiert, Dennoch oeffnen" — seit 0.28.0 beglaubigt.
 // apps/index.html, mitmachen.html, die sieben Sprachkataloge.
-const SW_VERSION = 'iyambae-v55';
+// v56: Filterknopf verdrahtet, Tastenkuerzel ohne Nebenwirkungen, geteilte
+// Platte spielbar, Titelabfrage ruht beim Anhalten, Suche zugeklappt nicht
+// im Tab-Weg. Dazu der Bildspeicher enger gefasst — /assets/logo/ und
+// schriften.css liegen nicht mehr fuer immer darin. app.js, titel.mjs,
+// messung.mjs, styles.css, index.html, die sieben Sprachkataloge.
+const SW_VERSION = 'iyambae-v56';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -232,13 +237,26 @@ function sprachseite(url) {
 }
 
 // Install: pre-cache app shell so the page loads offline.
+//
+// Jede Datei einzeln, nicht addAll: Scheitert dort EINE, scheitert alles —
+// und der Fehler wurde bisher verschluckt. Danach loeschte activate den
+// alten, funktionierenden Speicher, und offline blieb nichts. Jetzt wird
+// gespeichert, was ankommt, und was fehlt, steht in der Konsole.
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(SHELL_CACHE).then((cache) =>
-            cache.addAll(SHELL_FILES.map((u) => new Request(u, { cache: 'reload' })))
-        ).catch(() => {
-            // In File:// or some test contexts caching may fail — non-fatal.
-        })
+            Promise.allSettled(SHELL_FILES.map((u) =>
+                fetch(new Request(u, { cache: 'reload' })).then((res) => {
+                    if (!res.ok) throw new Error(`${u}: ${res.status}`);
+                    return cache.put(u, res);
+                })
+            )).then((ergebnisse) => {
+                const fehlend = ergebnisse
+                    .map((e, i) => (e.status === 'rejected' ? `${SHELL_FILES[i]} (${e.reason?.message || e.reason})` : null))
+                    .filter(Boolean);
+                if (fehlend.length) console.warn('[sw] nicht im Zwischenspeicher:', fehlend);
+            })
+        )
     );
     self.skipWaiting();
 });
@@ -305,8 +323,11 @@ self.addEventListener('fetch', (event) => {
     // Ausnahme sind Logos: die ändern sich so gut wie nie, und 84 Bilder bei
     // jedem Aufruf neu zu holen wäre Verschwendung.
     if (url.origin === self.location.origin) {
-        // Logos und Schriften aendern sich praktisch nie.
-        const istBild = /\/assets\/(logos?|schrift)\//.test(url.pathname);
+        // Senderlogos und Schriftdateien aendern sich praktisch nie. Nur
+        // die — nicht /assets/logo/ (Marke, Symbole), nicht schriften.css,
+        // nicht LIZENZEN.txt: Die landeten sonst fuer immer im Bildspeicher,
+        // der keine Fassungsnummer traegt.
+        const istBild = /\/assets\/logos\/|\/assets\/schrift\/[^/]+\.woff2$/.test(url.pathname);
 
         if (istBild) {
             /*
@@ -331,9 +352,11 @@ self.addEventListener('fetch', (event) => {
                             new Promise((weiter) => setTimeout(weiter, 400))
                                 .then(hole)
                                 // Auch der zweite Versuch kann scheitern. Dann
-                                // eine echte Antwort statt eines unerklaerten
-                                // Netzwerkfehlers.
-                                .catch(() => new Response('', { status: 504, statusText: 'bild nicht erreichbar' }))
+                                // noch der uebrige Zwischenspeicher, und erst
+                                // danach eine echte Antwort statt eines
+                                // unerklaerten Netzwerkfehlers.
+                                .catch(() => caches.match(req).then((g) =>
+                                    g || new Response('', { status: 504, statusText: 'bild nicht erreichbar' })))
                         );
                     })
                 )
