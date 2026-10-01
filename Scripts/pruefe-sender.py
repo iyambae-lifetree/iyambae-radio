@@ -34,6 +34,7 @@ import pathlib
 import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -61,7 +62,12 @@ def hole_kopf(url):
         # Die ersten Bytes werden gebraucht: Bei Ogg steht der Codec darin,
         # und der Kopf allein verraet ihn nicht.
         rumpf = antwort.read(2048)
-        return antwort.status, dict(antwort.headers), antwort.url, rumpf
+        # Kopfnamen klein: Server schreiben „access-control-allow-origin" mal
+        # so, mal so. Bis 01.10.2026 stand hier dict(antwort.headers), und
+        # das Nachschlagen unter „Access-Control-Allow-Origin" verfehlte die
+        # klein geschriebenen — ein Dutzend Sender mit CORS galten als Sender ohne.
+        return (antwort.status, {k.lower(): v for k, v in antwort.headers.items()},
+                antwort.url, rumpf)
 
 
 def loese_abspielliste(url):
@@ -93,7 +99,7 @@ def format_aus(kopf, rumpf=b""):
     Der Codec steht im ersten Ogg-Paket, gleich hinter der Kennung `OggS`:
     „vorbis", „OpusHead" oder „FLAC". Danach wird hier gesucht, statt zu raten.
     """
-    typ = (kopf.get("Content-Type") or kopf.get("content-type") or "").lower()
+    typ = (kopf.get("content-type") or "").lower()
     typ = typ.split(";")[0].strip()
 
     einfach = {
@@ -136,6 +142,37 @@ def abtastrate_aus_mp3(rumpf):
     return None
 
 
+def pruefe_hls(ergebnis, url):
+    """Trägt, wenn die Liste lädt und — bei einer Hauptliste — die erste
+    Unterliste Teilstücke nennt. Codec und Datenrate stehen nur als
+    Bandbreiten-Angabe darin; die wird nicht als Datenrate ausgegeben."""
+    def lade(adresse):
+        anfrage = urllib.request.Request(adresse, headers={
+            "User-Agent": KENNUNG, "Origin": "https://iyambae.fm"})
+        with urllib.request.urlopen(anfrage, timeout=ZEITLIMIT) as antwort:
+            kopf = {k.lower(): v for k, v in antwort.headers.items()}
+            return antwort.read(200_000).decode("utf-8", "replace"), antwort.url, kopf
+
+    text, endgueltig, kopf = lade(url)
+    if "#EXTM3U" not in text:
+        ergebnis["grund"] = "HLS-Adresse ohne HLS-Liste"
+        return ergebnis
+    zeilen = [z.strip() for z in text.splitlines() if z.strip() and not z.startswith("#")]
+    if "#EXT-X-STREAM-INF" in text and zeilen:
+        unter, _, _ = lade(urllib.parse.urljoin(endgueltig, zeilen[0]))
+        zeilen = [z for z in unter.splitlines() if z.strip() and not z.startswith("#")]
+    if not zeilen:
+        ergebnis["grund"] = "HLS-Liste ohne Teilstücke"
+        return ergebnis
+    ergebnis.update({
+        "ok": True, "status": 200, "codec": "hls", "bitrate": None,
+        "samplerate": None, "sendername": None,
+        "cors": (kopf.get("access-control-allow-origin") or "") in ("*", "https://iyambae.fm"),
+        "endgueltig": endgueltig if endgueltig != url else None,
+    })
+    return ergebnis
+
+
 def pruefe(name, url):
     ergebnis = {"name": name, "url": url, "ok": False}
 
@@ -144,7 +181,13 @@ def pruefe(name, url):
         return ergebnis
 
     try:
-        if re.search(r"\.(pls|m3u8?)(\?|$)", url, re.I):
+        # HLS ist keine Abspielliste im Sinne von .pls/.m3u: Die Seite spielt
+        # es über hls.js, und die Zeilen darin sind relative Teilstücke statt
+        # einer Adresse. Bis 01.10.2026 landete .m3u8 im Zweig darunter, und
+        # sieben laufende Sender galten als tot.
+        if re.search(r"\.m3u8(\?|$)", url, re.I):
+            return pruefe_hls(ergebnis, url)
+        if re.search(r"\.(pls|m3u)(\?|$)", url, re.I):
             echt = loese_abspielliste(url)
             if not echt:
                 ergebnis["grund"] = "Abspielliste ohne brauchbare Adresse"
@@ -166,10 +209,14 @@ def pruefe(name, url):
         "codec": format_aus(kopf, rumpf),
         "bitrate": int(kopf.get("icy-br") or 0) or None,
         # icy-sr fehlt bei vielen Servern; dann aus dem MP3-Rahmen lesen.
-        "samplerate": int(kopf.get("icy-sr") or 0) or abtastrate_aus_mp3(rumpf),
+        # Den Rahmenkopf nur bei MP3 lesen: Ein AAC-Rahmen (ADTS) beginnt mit
+        # denselben Sync-Bits und ergab hier 22050 oder 8000 Hz, wo 44100
+        # gesendet wird.
+        "samplerate": int(kopf.get("icy-sr") or 0) or (
+            abtastrate_aus_mp3(rumpf) if format_aus(kopf, rumpf) == "mp3" else None),
         "sendername": kopf.get("icy-name"),
         # Nur wer hier antwortet, kann umgestimmt werden.
-        "cors": (kopf.get("Access-Control-Allow-Origin") or "") in ("*", "https://iyambae.fm"),
+        "cors": (kopf.get("access-control-allow-origin") or "") in ("*", "https://iyambae.fm"),
         "endgueltig": endgueltig if endgueltig != url else None,
     })
     return ergebnis
