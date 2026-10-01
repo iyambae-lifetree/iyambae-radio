@@ -841,13 +841,13 @@ body.spielt .glanz {
 
    Gemessen nach der Aenderung: Spalten 136,8 px, rechte Kante bei 304,
    nichts abgeschnitten. */
-.auslage__raster, .regal__raster {
+.regal__raster {
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem;
 }
-@media (min-width: 720px)  { .auslage__raster, .regal__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; } }
-@media (min-width: 1100px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (min-width: 1500px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-@media (min-width: 1900px) { .auslage__raster, .regal__raster { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (min-width: 720px)  { .regal__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; } }
+@media (min-width: 1100px) { .regal__raster { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1500px) { .regal__raster { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 1900px) { .regal__raster { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 
 /* ── Regalwand ───────────────────────────────────────────────────
    Die Regale als Knoepfe, nicht als Bildkacheln.
@@ -1402,7 +1402,6 @@ body.spielt .glanz {
    sonst reservieren sie die falsche Hoehe und verursachen genau den
    Layoutsprung, den sie verhindern sollen. Gemessen war die Auslage
    77 px zu kurz, die Regalwand 21 px. */
-.skelett--zeile { height: 0.85rem; width: 78%; }
 .skelett--kurz  { height: 0.62rem; width: 46%; }
 .skelett--titel { display: block; height: 1.1rem; width: 8.5rem; }
 /* Vertritt den Sendernamen: zwei Zeilen bei 0,92 rem und Zeilenhoehe 1,3. */
@@ -1731,7 +1730,6 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     background: rgba(255, 255, 255, 0.06);
     font-family: var(--mono); font-size: 0.6rem; color: var(--text-leise);
 }
-.marke--gut { background: rgba(53, 224, 138, 0.14); color: var(--gruen); }
 .marke--etikett { background: rgba(255, 255, 255, 0.04); }
 
 .karte__stumm {
@@ -2138,7 +2136,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     /* Auf dem Handy hat die Kopfzeile jetzt nur noch Marke, Suche und
        Sprache — die Stimmung sitzt unten beim Spieler. */
     .stimmung__schalter { font-size: 0.72rem; }
-    .stimmung__mehr, .stimmung__frage, .stimmung__hinweis { font-size: 0.68rem; }
+    .stimmung__mehr, .stimmung__frage { font-size: 0.68rem; }
 
     .hero { padding-top: 1rem; }
     .griffe { grid-template-columns: 1fr 1fr; }

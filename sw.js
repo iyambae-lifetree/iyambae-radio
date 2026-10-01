@@ -218,6 +218,8 @@ const SHELL_FILES = [
     '/assets/lib/titel.mjs',
     '/assets/lib/wochentipp.mjs',
     '/assets/lib/senderbild.mjs',
+    // lib/hls.light.min.mjs steht BEWUSST NICHT hier: app.js laedt es erst
+    // beim ersten HLS-Sender nach, und ohne Netz gibt es keinen Stream.
     '/assets/lib/symbole.mjs',
     '/assets/lib/achsen.mjs',
     '/assets/lib/messung.mjs',
