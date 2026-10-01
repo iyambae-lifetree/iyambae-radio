@@ -344,7 +344,9 @@
       "geprueft_am": "2026-08-21",
       "cors": false,
       "kanal": "Rinse France",
-      "sprache": "fr"
+      "sprache": "fr",
+      "logo": "assets/logos/rinse-france.webp",
+      "logoQuelle": "apple-touch-icon"
     },
     {
       "id": "kool-fm",
@@ -736,7 +738,9 @@
       "geprueft_am": "2026-08-21",
       "cors": true,
       "kanal": "Frisky Radio",
-      "sprache": "en"
+      "sprache": "en",
+      "logo": "assets/logos/frisky.webp",
+      "logoQuelle": "icon"
     },
     {
       "id": "uzic-techno",
@@ -1312,7 +1316,9 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "KJazz Bebop Channel"
+      "kanal": "KJazz Bebop Channel",
+      "logo": "assets/logos/kjazz-bebop.webp",
+      "logoQuelle": "direkt"
     },
     {
       "id": "ella-bebop",
@@ -1567,7 +1573,9 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "Jazz Sakura"
+      "kanal": "Jazz Sakura",
+      "logo": "assets/logos/jazz-sakura.webp",
+      "logoQuelle": "direkt"
     },
     {
       "id": "stereo-anime",
@@ -1883,9 +1891,10 @@
       "kaertchen": "Der öffentliche Sender Kolumbiens für alles, was sonst nicht im Radio läuft — kolumbianischer Rock, Cumbia in unerwarteten Fassungen, Hip-Hop aus Medellín. Die Datenrate ist bescheiden, die Auswahl nicht.",
       "status": "ok",
       "geprueft_am": "2026-08-22",
-      "logoQuelle": null,
+      "logoQuelle": "direkt",
       "kanal": "Radiónica",
-      "sprache": "es"
+      "sprache": "es",
+      "logo": "assets/logos/radionica.webp"
     },
     {
       "id": "bytefm",
@@ -1982,7 +1991,9 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": false,
-      "kanal": "Ancient FM"
+      "kanal": "Ancient FM",
+      "logo": "assets/logos/ancient-fm.webp",
+      "logoQuelle": "direkt"
     },
     {
       "id": "nhyira-fm",
@@ -3034,9 +3045,10 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "logoQuelle": null,
+      "logoQuelle": "direkt",
       "kanal": "WNUR",
-      "sprache": "en"
+      "sprache": "en",
+      "logo": "assets/logos/wnur.webp"
     },
     {
       "id": "radio-unisinos",
@@ -3154,9 +3166,10 @@
       "kaertchen": "Sendet aus einem umgebauten Schiffscontainer auf einem ehemaligen Parkplatz in Brooklyn. Durchgehend Gäste an den Plattentellern, kein Programm im üblichen Sinn — man hört, wer gerade da ist.",
       "status": "ok",
       "geprueft_am": "2026-08-22",
-      "logoQuelle": null,
+      "logoQuelle": "direkt",
       "kanal": "The Lot Radio",
-      "sprache": "en"
+      "sprache": "en",
+      "logo": "assets/logos/the-lot-radio.webp"
     },
     {
       "id": "pbs-fm",
@@ -3375,7 +3388,9 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "80s"
+      "kanal": "80s",
+      "logo": "assets/logos/rautemusik-80s.webp",
+      "logoQuelle": "direkt"
     },
     {
       "id": "rautemusik-90s",
@@ -3397,7 +3412,9 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "90s"
+      "kanal": "90s",
+      "logo": "assets/logos/rautemusik-90s.webp",
+      "logoQuelle": "direkt"
     },
     {
       "id": "rautemusik-trance",
@@ -3420,7 +3437,9 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "Trance"
+      "kanal": "Trance",
+      "logo": "assets/logos/rautemusik-trance.webp",
+      "logoQuelle": "direkt"
     },
     {
       "id": "181fm-oldschool",
@@ -3489,7 +3508,9 @@
       "status": "ok",
       "geprueft_am": "2026-08-21",
       "cors": true,
-      "kanal": "1.FM 90s Best"
+      "kanal": "1.FM 90s Best",
+      "logo": "assets/logos/1fm-90s-best.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "90s90s-eurodance",
@@ -3818,7 +3839,9 @@
       "cors": true,
       "geprueft_am": "2026-08-21",
       "kanal": "NDR Kultur",
-      "sprache": "de"
+      "sprache": "de",
+      "logo": "assets/logos/ndr-kultur.webp",
+      "logoQuelle": "direkt"
     },
     {
       "id": "oe1",
@@ -3887,7 +3910,9 @@
       "bitrate": 128,
       "cors": true,
       "geprueft_am": "2026-08-21",
-      "kanal": "WQXR"
+      "kanal": "WQXR",
+      "logo": "assets/logos/wqxr.webp",
+      "logoQuelle": "og:image"
     },
     {
       "id": "venice-classic",
