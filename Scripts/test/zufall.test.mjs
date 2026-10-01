@@ -25,10 +25,17 @@ const zurueckgenommen = new Set(katalog.regale.filter(r => r.zurueckgenommen).ma
 const app = await readFile(new URL('../../assets/app.js', import.meta.url), 'utf8');
 const rumpf = /_ziehbareSender\(\)\s*\{([\s\S]*?)\n  \}/.exec(app);
 assert.ok(rumpf, '_ziehbareSender() nicht in app.js gefunden');
+const rumpfKatalog = /_katalogOhneWuehlkiste\(\)\s*\{([\s\S]*?)\n  \}/.exec(app);
+assert.ok(rumpfKatalog, '_katalogOhneWuehlkiste() nicht in app.js gefunden');
+// Der Katalogrumpf bekommt ABSICHTLICH kein istWackelig: Griffe er danach,
+// fiele er mit ReferenceError — genau das soll auffallen.
+const katalogOhneWuehlkiste = new Function(rumpfKatalog[1]);
+const nachgebautesThis = () => ({
+  ui: { regale: katalog.regale, sender: katalog.sender },
+  _katalogOhneWuehlkiste() { return katalogOhneWuehlkiste.call(this); },
+});
 const ziehbareSender = new Function('istWackelig', rumpf[1]);
-const ziehbar = ziehbareSender.call(
-  { ui: { regale: katalog.regale, sender: katalog.sender } },
-  () => false);
+const ziehbar = ziehbareSender.call(nachgebautesThis(), () => false);
 
 test('es gibt ueberhaupt ein zurueckgenommenes Regal', () => {
   assert.ok(zurueckgenommen.size > 0, 'sonst prueft dieser Test nichts');
@@ -44,9 +51,7 @@ test('die Wuehlkiste ist aus der Ziehmenge heraus', () => {
 
 test('wackelige Sender bleiben ebenfalls draussen', () => {
   const erster = katalog.sender[0];
-  const ohne = ziehbareSender.call(
-    { ui: { regale: katalog.regale, sender: katalog.sender } },
-    (id) => id === erster.id);
+  const ohne = ziehbareSender.call(nachgebautesThis(), (id) => id === erster.id);
   assert.ok(!ohne.some(s => s.id === erster.id), `${erster.name} wurde trotzdem gezogen`);
 });
 
@@ -65,17 +70,37 @@ test('auch die Auslage bleibt frei davon', () => {
   }
 });
 
+// Der Sender der Woche zieht aus dem Katalog ohne Wuehlkiste, nicht aus der
+// Ziehmenge: Die haengt an den oertlichen Fehlerzaehlern, und dann waere er
+// nicht fuer alle Besucher derselbe.
+const wochenmenge = katalogOhneWuehlkiste.call(nachgebautesThis());
+
 test('der Sender der Woche kommt ein Jahr lang nie aus der Wuehlkiste', () => {
   for (let w = 0; w < 60; w++) {
     const d = new Date(Date.UTC(2026, 0, 5 + w * 7));
-    const tipp = tippDerWoche(ziehbar, d);
+    const tipp = tippDerWoche(wochenmenge, d);
     assert.ok(!zurueckgenommen.has(tipp.sender.regal));
+  }
+});
+
+test('der Sender der Woche kennt keine oertlichen Fehlerzaehler', () => {
+  // Auf einem Geraet, auf dem jeder Sender als wackelig gilt, ist die
+  // Ziehmenge leer — der Sender der Woche bleibt trotzdem derselbe.
+  const allesWackelig = ziehbareSender.call(nachgebautesThis(), () => true);
+  assert.equal(allesWackelig.length, 0);
+  const erwartet = katalog.sender.filter(s => !zurueckgenommen.has(s.regal));
+  assert.deepEqual(wochenmenge.map(s => s.id), erwartet.map(s => s.id));
+  assert.doesNotMatch(rumpfKatalog[1], /istWackelig/,
+    'die Wochenmenge darf nicht an den Fehlerzaehlern haengen');
+  for (let w = 0; w < 60; w++) {
+    const d = new Date(Date.UTC(2026, 0, 5 + w * 7));
+    assert.equal(tippDerWoche(wochenmenge, d).sender.id, tippDerWoche(erwartet, d).sender.id);
   }
 });
 
 test('der Programmcode filtert wirklich nach dem Merkmal', async () => {
   const app = await readFile(new URL('../../assets/app.js', import.meta.url), 'utf8');
   assert.match(app, /r\.zurueckgenommen/, 'die Ziehmenge muss das Merkmal auswerten');
-  assert.match(app, /tippDerWoche\(this\._ziehbareSender\(\)\)/,
-    'auch die Wochenempfehlung zieht aus der gefilterten Menge');
+  assert.match(app, /tippDerWoche\(this\._katalogOhneWuehlkiste\(\)\)/,
+    'die Wochenempfehlung zieht aus dem Katalog ohne Wuehlkiste — nicht aus der geraetabhaengigen Ziehmenge');
 });
