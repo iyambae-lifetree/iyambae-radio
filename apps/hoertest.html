@@ -152,7 +152,7 @@
 
   <div class="frage">
     <p class="frage__titel" data-text="hoer.wie.r1.titel">Runde 1: 432 gegen 440 Hz</p>
-    <p data-html="hoer.wie.r1.text"><strong>31,8 Cent Unterschied</strong> — knapp ein Drittel Halbton. Die Schwelle, ab der Menschen zwei Tonhöhen im direkten Vergleich unterscheiden, liegt bei etwa 3 bis 12 Cent. <strong>Fast jeder besteht diese Runde</strong>, und das ist keine Einbildung, sondern Physik.</p>
+    <p data-html="hoer.wie.r1.text"><strong>31,8 Cent Unterschied</strong> — knapp ein Drittel Halbton. Die Schwelle, ab der Menschen zwei Tonhöhen im direkten Vergleich unterscheiden, liegt bei etwa 3 bis 12 Cent, je nach Übung. <strong>Fast jeder besteht diese Runde</strong>, und das ist keine Einbildung, sondern Physik.</p>
   </div>
 
   <div class="frage">
@@ -169,7 +169,7 @@
 
   <div class="frage">
     <p class="frage__titel" data-text="hoer.wie.ehrlich.titel">Was ein Ergebnis nicht beweist</p>
-    <p data-html="hoer.wie.ehrlich.text">Fünf Durchgänge sind fünf Durchgänge. Wer in Runde 2 alles trifft, hat vielleicht ein sehr feines Gehör — oder Glück gehabt. Und wer daneben liegt, hört deshalb nicht schlecht: <strong>4 Cent sind für fast alle Menschen zu wenig.</strong> Der Test sagt etwas über diesen Nachmittag, nicht über dich.</p>
+    <p data-html="hoer.wie.ehrlich.text">Fünf Durchgänge sind fünf Durchgänge. Wer in Runde 2 alles trifft, hat vielleicht ein sehr feines Gehör — oder Glück gehabt. Und wer daneben liegt, hört deshalb nicht schlecht: <strong>4 Cent sind für die meisten Menschen zu wenig.</strong> Der Test sagt etwas über diesen Nachmittag, nicht über dich.</p>
     <p data-html="hoer.wie.ehrlich.geschmack">Und er sagt nichts darüber, was dir <em>besser gefällt</em>. Das ist eine andere Frage, sie ist eine Geschmacksfrage, und sie beantwortest nur du.</p>
   </div>
 </section>
@@ -444,7 +444,7 @@ function zeigeErgebnis() {
   } else {
     el('ergebnisSatz').innerHTML = gut
       ? satz('r2gut', '<strong>Vier Cent.</strong> Das ist bemerkenswert — und selten. Bei fünf Durchgängen kann es auch Glück gewesen sein; die Zahl darunter sagt, wie oft.')
-      : satz('r2mau', '<strong>Der Unterschied ist hörbar. Die genaue Zahl ist es nicht.</strong> Vier Cent liegen für fast alle Menschen unter der Schwelle — und das ist der ehrliche Befund: Man hört, dass etwas tiefer ist. Dass es ausgerechnet 432,0 ist, hört niemand.');
+      : satz('r2mau', '<strong>Der Unterschied ist hörbar. Die genaue Zahl ist es nicht.</strong> Vier Cent liegen für die meisten Menschen unter der Schwelle — und das ist der ehrliche Befund: Man hört, dass etwas tiefer ist. Dass es ausgerechnet 432,0 ist, hört niemand.');
     el('weiter').textContent = wort('nochmal', 'Noch einmal von vorn');
     el('weiter').onclick = () => { runde = 0; durchgang = 0; treffer = 0; starteRunde(); };
   }
@@ -512,7 +512,7 @@ rueck.kaestchen(
   <span data-wort="r1gut" data-html="hoer.wort.r1gut">Du hörst 31,8 Cent — knapp ein Drittel Halbton. <strong>Das bildest du dir nicht ein.</strong> Fast jeder besteht diese Runde.</span>
   <span data-wort="r1mau" data-html="hoer.wort.r1mau">Diese Runde besteht fast jeder. Wenn sie hier hakt, liegt es meist an den Lautsprechern — <strong>versuch es mit Kopfhörern.</strong></span>
   <span data-wort="r2gut" data-html="hoer.wort.r2gut"><strong>Vier Cent.</strong> Das ist bemerkenswert — und selten. Bei fünf Durchgängen kann es auch Glück gewesen sein; die Zahl darunter sagt, wie oft.</span>
-  <span data-wort="r2mau" data-html="hoer.wort.r2mau"><strong>Der Unterschied ist hörbar. Die genaue Zahl ist es nicht.</strong> Vier Cent liegen für fast alle Menschen unter der Schwelle — und das ist der ehrliche Befund: Man hört, dass etwas tiefer ist. Dass es ausgerechnet 432,0 ist, hört niemand.</span>
+  <span data-wort="r2mau" data-html="hoer.wort.r2mau"><strong>Der Unterschied ist hörbar. Die genaue Zahl ist es nicht.</strong> Vier Cent liegen für die meisten Menschen unter der Schwelle — und das ist der ehrliche Befund: Man hört, dass etwas tiefer ist. Dass es ausgerechnet 432,0 ist, hört niemand.</span>
   <span data-wort="weiterR2" data-text="hoer.wort.weiterR2">Weiter zu Runde 2 — 432 gegen 433</span>
   <span data-wort="nochmal" data-text="hoer.wort.nochmal">Noch einmal von vorn</span>
 </div>

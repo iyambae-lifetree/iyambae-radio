@@ -55,11 +55,16 @@ export const STANDARD_A4 = 440.0;
    „Mailand 1880"       war falsch. Der Congresso dei Musicisti Italiani
                         tagte im Juni 1881; belegt in der Gazzetta musicale
                         di Milano vom 13.11.1881.
-   „Verdi · …"          ist als Name irrefuehrend. Verdi trat fuer die
-                        franzoesischen 435 ein und nahm 432 nur an — „la
-                        differenza e cosi piccola, quasi impercettibile
-                        all'orecchio". Der Kampfbegriff „Verdi-Stimmung"
-                        fuer 432 stammt von 1988, nicht von Verdi.
+   „Verdi · …"          ist als Name irrefuehrend. Verdi hatte keine feste
+                        Zahl: in den 1870ern fuer die franzoesischen 435,
+                        1884 nahm er 432 an — „la differenza e cosi piccola,
+                        quasi impercettibile all'orecchio" —, 1885 nannte er
+                        432 die richtigere Zahl, gab sie aber fuer einen
+                        einheitlichen Stimmton auf (Brief an Boito,
+                        08.11.1885; Nineteenth-Century Music Review 22, 2025).
+                        Der Kampfbegriff „Verdi-Stimmung" fuer 432 stammt
+                        aus den spaeten 1980ern, nicht von Verdi.
+                        (Ergaenzt 01.10.2026.)
 */
 export const KAMMERTOENE = [
   { hz: 415.30, name: 'Barock',            kurz: '415' },
