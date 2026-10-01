@@ -138,7 +138,10 @@
 // Sender als tot markiert, Datenraten, CORS und Homepages nachgetragen.
 // Tote Sender fallen auch aus den erzeugten Seiten und Manifesten heraus.
 // sender.json und damit die sieben Sprachseiten samt Manifest.
-const SW_VERSION = 'iyambae-v61';
+// v62: Die drei toten Sender sind raus (Sāmi-Ra), sechs neue dazu,
+// Keygen FM nach Moskau berichtigt. sender.json, die Sendertexte in
+// sechs Sprachen, die sieben Sprachseiten samt Manifest.
+const SW_VERSION = 'iyambae-v62';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

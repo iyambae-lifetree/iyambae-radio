@@ -1438,28 +1438,6 @@
       "kanal": "K-Pop"
     },
     {
-      "id": "radio-nanahira",
-      "name": "Chifuru",
-      "betreiber": "Chifuru",
-      "ort": "Tokio",
-      "land": "JP",
-      "regal": "japan",
-      "etiketten": [
-        "community",
-        "ohne-werbung"
-      ],
-      "stream": "https://157.254.194.202/stream/nanahira@256",
-      "homepage": "https://chifuru.moe",
-      "kaertchen": "Ein winziger Sender aus der japanischen Doujin-Szene, jener Halbwelt aus selbstverlegter Musik, die es in keinen Handel schafft. Opus mit 256 kbit/s, und eine Musikauswahl, die es nirgendwo sonst gibt.",
-      "codec": "opus",
-      "bitrate": null,
-      "samplerate": 48000,
-      "status": "tot",
-      "geprueft_am": "2026-10-01",
-      "cors": false,
-      "kanal": "Chifuru"
-    },
-    {
       "id": "gensokyo",
       "name": "Gensokyo Radio",
       "betreiber": "Gensokyo Radio",
@@ -2290,8 +2268,8 @@
       "id": "keygen-fm",
       "name": "Keygen FM",
       "betreiber": "Keygen FM",
-      "ort": "Helsinki",
-      "land": "FI",
+      "ort": "Moskau",
+      "land": "RU",
       "regal": "freakshow",
       "etiketten": [
         "ohne-werbung",
@@ -2882,29 +2860,6 @@
       "kanal": "Radio Swiss Jazz"
     },
     {
-      "id": "jazzradio-hu",
-      "name": "Jazzradio.hu",
-      "betreiber": "Jazzradio.hu",
-      "ort": "Budapest",
-      "land": "HU",
-      "regal": "jazz",
-      "etiketten": [
-        "ohne-werbung"
-      ],
-      "stream": "https://www.jazzradio.hu:8000/jazzradio_192.ogg",
-      "homepage": "https://www.jazzradio.hu",
-      "kaertchen": "Aus Budapest, und einer der ganz wenigen Sender, die in Ogg Vorbis senden statt in MP3 — bei gleicher Datenrate hoerbar sauberer in den Hoehen. Ungarischer Jazz kommt hier haeufiger vor als anderswo.",
-      "codec": "vorbis",
-      "bitrate": 256,
-      "samplerate": 44100,
-      "status": "tot",
-      "geprueft_am": "2026-10-01",
-      "cors": true,
-      "logo": "assets/logos/jazzradio-hu.webp",
-      "logoQuelle": "og:image",
-      "kanal": "Jazzradio.hu"
-    },
-    {
       "id": "xjazz-movin-grooves",
       "name": "XJAZZ! Movin’ Grooves",
       "betreiber": "XJAZZ",
@@ -3100,6 +3055,29 @@
       "sprache": "en"
     },
     {
+      "id": "the-jazz-groove",
+      "name": "The Jazz Groove",
+      "betreiber": "Foundation to Advance Jazz",
+      "ort": "San Francisco",
+      "land": "US",
+      "regal": "jazz",
+      "etiketten": [
+        "ohne-werbung"
+      ],
+      "stream": "https://east-mp3-128.streamthejazzgroove.com/stream",
+      "homepage": "https://jazzgroove.org",
+      "kaertchen": "Ein gemeinnütziger Jazzsender aus San Francisco, getragen von Spenden statt Werbung. Jede Stunde wird von Hand aus einer Sammlung von über zehntausend Aufnahmen zusammengestellt — Jazz zum Zurücklehnen, der trotzdem nicht ins Belanglose abrutscht.",
+      "codec": "mp3",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "status": "ok",
+      "geprueft_am": "2026-10-01",
+      "cors": true,
+      "logo": "assets/logos/the-jazz-groove.webp",
+      "logoQuelle": "direkt",
+      "kanal": "The Jazz Groove"
+    },
+    {
       "id": "soma-brfm",
       "name": "SomaFM Black Rock FM",
       "betreiber": "SomaFM",
@@ -3224,6 +3202,80 @@
       "sprache": "en"
     },
     {
+      "id": "radio-meuh",
+      "name": "Radio Meuh",
+      "betreiber": "Association Radio Meuh",
+      "ort": "La Clusaz",
+      "land": "FR",
+      "regal": "grenzgaenger",
+      "etiketten": [
+        "ohne-werbung"
+      ],
+      "stream": "https://radiomeuh2.ice.infomaniak.ch/radiomeuh2-128.mp3",
+      "homepage": "https://www.radiomeuh.com",
+      "kaertchen": "Seit 2007 aus einem Skiort in den Savoyer Alpen, gegründet von zwei Freunden als Verein. Soul, Funk, Elektronik, Hip-Hop und Musik aus aller Welt, ohne Werbeunterbrechung und ohne jedem Trend hinterherzulaufen.",
+      "codec": "mp3",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "status": "ok",
+      "geprueft_am": "2026-10-01",
+      "cors": true,
+      "logo": "assets/logos/radio-meuh.webp",
+      "logoQuelle": "og:image",
+      "kanal": "Radio Meuh"
+    },
+    {
+      "id": "noods-radio",
+      "name": "Noods Radio",
+      "betreiber": "Noods Radio",
+      "ort": "Bristol",
+      "land": "GB",
+      "regal": "grenzgaenger",
+      "etiketten": [
+        "live-dj",
+        "community",
+        "ohne-werbung"
+      ],
+      "stream": "https://noods-radio.radiocult.fm/stream",
+      "homepage": "https://noodsradio.com",
+      "kaertchen": "2015 im Wohnzimmer einer Bristoler WG entstanden und anfangs vom Laptop eines der Gründer gesendet, heute aus einem Pub im Viertel St Pauls. Täglich Sendungen von Sammlern, Tänzern und Sonderlingen der Stadt — ohne Playlisten und ohne Werbung.",
+      "codec": "mp3",
+      "bitrate": 192,
+      "samplerate": 44100,
+      "status": "ok",
+      "geprueft_am": "2026-10-01",
+      "cors": true,
+      "logo": "assets/logos/noods-radio.webp",
+      "logoQuelle": "icon",
+      "kanal": "Noods Radio",
+      "sprache": "en"
+    },
+    {
+      "id": "radio-raheem",
+      "name": "Radio Raheem",
+      "betreiber": "Radio Raheem",
+      "ort": "Mailand",
+      "land": "IT",
+      "regal": "grenzgaenger",
+      "etiketten": [
+        "live-dj",
+        "community"
+      ],
+      "stream": "https://radioraheem.out.airtime.pro/radioraheem_b",
+      "homepage": "https://www.radioraheem.it",
+      "kaertchen": "2017 in Mailand von Leuten aus Musik, Kunst und Kultur gegründet, weil es in Italien kein Radio gab, das nach heute klang. Gesendet wird aus einem Gewächshaus im Kulturhaus Combo — Underground, Klangforschung und Club, von Menschen kuratiert.",
+      "codec": "mp3",
+      "bitrate": 192,
+      "samplerate": 44100,
+      "status": "ok",
+      "geprueft_am": "2026-10-01",
+      "cors": true,
+      "logo": "assets/logos/radio-raheem.webp",
+      "logoQuelle": "og:image",
+      "kanal": "Radio Raheem",
+      "sprache": "it"
+    },
+    {
       "id": "nts-labyrinth",
       "name": "NTS Labyrinth",
       "betreiber": "NTS Radio",
@@ -3295,6 +3347,30 @@
       "logo": "assets/logos/nts-otaku.webp",
       "logoQuelle": "apple-touch-icon",
       "kanal": "Otaku"
+    },
+    {
+      "id": "shonan-beach-fm",
+      "name": "Shonan Beach FM 78.9",
+      "betreiber": "Zushi-Hayama Community Broadcasting",
+      "ort": "Zushi",
+      "land": "JP",
+      "regal": "japan",
+      "etiketten": [
+        "regional",
+        "community"
+      ],
+      "stream": "https://shonanbeachfm.out.airtime.pro:8000/shonanbeachfm_a",
+      "homepage": "https://www.beachfm.co.jp",
+      "kaertchen": "Das Gemeinderadio der Küstenorte Zushi und Hayama an der Sagami-Bucht. Über den Tag läuft vor allem Jazz — am Nachmittag, nach Einbruch der Dunkelheit und nach Mitternacht —, dazwischen Oldies. Klingt nach Strandpromenade, nicht nach Großstadt.",
+      "codec": "mp3",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "status": "ok",
+      "geprueft_am": "2026-10-01",
+      "cors": true,
+      "logo": "assets/logos/shonan-beach-fm.webp",
+      "logoQuelle": "og:image",
+      "kanal": "Shonan Beach FM 78.9"
     },
     {
       "id": "somafm-u80s",
@@ -3985,30 +4061,6 @@
       "kanal": "WALM 2 HD"
     },
     {
-      "id": "flowstate-classical",
-      "name": "Flowstate Classical",
-      "betreiber": "Flowstate Radio",
-      "ort": "Zürich",
-      "land": "CH",
-      "regal": "klassik",
-      "etiketten": [
-        "nur-instrumental",
-        "ohne-werbung"
-      ],
-      "stream": "https://radio.flowstateradio.net/listen/classical/radio.mp3",
-      "homepage": "https://flowstateradio.net",
-      "kaertchen": "Klassik mit 320 kbit/s und 48 kHz, ausgewählt für langes konzentriertes Hören statt für den schnellen Höhepunkt. Der klanglich beste Eintrag dieses Regals nach WALM. Lange Sätze bleiben ganz, statt für die Aufmerksamkeitsspanne zurechtgeschnitten zu werden.",
-      "logo": "assets/logos/flowstate-classical.webp",
-      "logoQuelle": "apple-touch-icon",
-      "status": "tot",
-      "codec": "mp3",
-      "samplerate": 48000,
-      "bitrate": 320,
-      "cors": true,
-      "geprueft_am": "2026-10-01",
-      "kanal": "Flowstate Classical"
-    },
-    {
       "id": "fine-music-radio",
       "name": "Fine Music Radio",
       "betreiber": "Fine Music Radio",
@@ -4032,6 +4084,31 @@
       "logo": "assets/logos/fine-music-radio.webp",
       "logoQuelle": "og:image",
       "kanal": "Fine Music Radio",
+      "sprache": "en"
+    },
+    {
+      "id": "wcpe",
+      "name": "WCPE The Classical Station",
+      "betreiber": "Educational Information Corporation",
+      "ort": "Wake Forest",
+      "land": "US",
+      "regal": "klassik",
+      "etiketten": [
+        "ohne-werbung",
+        "mensch-am-mikro"
+      ],
+      "stream": "https://audio-mp3.ibiblio.org/wcpe.mp3",
+      "homepage": "https://theclassicalstation.org",
+      "kaertchen": "1978 von fünf Studenten aus North Carolina auf Sendung gebracht, mit selbstgebauter Technik und Geräten aus Armeebeständen. Heute rund um die Uhr Klassik, von Hörern getragen — und einer der ersten Sender überhaupt, die ins Internet gestreamt haben.",
+      "codec": "mp3",
+      "bitrate": 128,
+      "samplerate": 44100,
+      "status": "ok",
+      "geprueft_am": "2026-10-01",
+      "cors": true,
+      "logo": "assets/logos/wcpe.webp",
+      "logoQuelle": "icon",
+      "kanal": "WCPE The Classical Station",
       "sprache": "en"
     }
   ]

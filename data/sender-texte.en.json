@@ -82,7 +82,6 @@
     "japan-citypop": "City pop, wall to wall — that Japanese sound of the late seventies and eighties that combined funk, AOR, and jazz fusion, and has been rediscovered worldwide for a few years now. The direct neighborhood of Atarashii Gakko and their forebears.",
     "listen-moe-jpop": "A volunteer-run station for Japanese pop, broadcasting in the Opus format at 256 kbit/s — the best sound quality this genre gets anywhere. The track list is maintained by the listener community, not an editorial desk.",
     "listen-moe-kpop": "The Korean sister channel, technically identical and also community-curated. It's here because the line between J-pop and K-pop has long since become musically porous.",
-    "radio-nanahira": "A tiny station out of the Japanese doujin scene, that half-world of self-published music that never makes it into stores. Opus at 256 kbit/s, and a selection you'll find nowhere else.",
     "gensokyo": "Plays exclusively fan arrangements of music from the Touhou game series — a whole musical universe with thousands of albums that almost nobody outside Japan knows. The range runs from metal to jazz, all built on the same melodies.",
     "r-a-d-io": "A station that grew out of an imageboard community, where volunteers DJ live and listeners request tracks through a queue. Chaotic, often silly, and precisely for that reason closer to what radio used to be.",
     "fm-setagaya": "The district station of Setagaya, a residential area in western Tokyo, with neighborhood news and weather in Japanese. Not a music station, but a window into perfectly ordinary Japanese daily life.",
@@ -143,7 +142,6 @@
     "tsf-jazz": "The Paris jazz station, a fixture in France. Hosted throughout, with a preference for what's just come out — not an archive station, but one that keeps up with what's happening in the clubs.",
     "concertzender-jazz": "The Dutch Concertzender is made by volunteers and funds itself without advertising. The jazz channel is correspondingly headstrong: shows that follow an idea instead of a playlist, often an hour long on a single musician.",
     "radio-swiss-jazz": "The jazz channel of Swiss public broadcasting, ad-free and unhosted — music plays, nothing else. The most unruffled way to have jazz running in the background without anyone talking over it.",
-    "jazzradio-hu": "Out of Budapest, and one of the very few stations broadcasting in Ogg Vorbis instead of MP3 — audibly cleaner in the highs at the same bitrate. Hungarian jazz turns up here more often than elsewhere.",
     "xjazz-movin-grooves": "The groove channel of Berlin's XJAZZ Festival, at 320 kbit/s one of the best-sounding jazz streams around. Jazz with a pulse: jazz-funk, broken beat, tracks where the bass sets the direction.",
     "xjazz-electronic": "The channel where jazz and electronic music don't alternate but interpenetrate — improvised music with machines inside it. If you're at home in the Engine Room but still miss horns, start here.",
     "le-grigri": "A small French station throwing African music, free jazz, and hip-hop into the same pot and stirring. Exactly the kind of neighborhood where genre mixes come about that nobody else would play.",
@@ -189,7 +187,12 @@
     "venice-classic": "A small Venetian station focused on baroque and Italian repertoire — Vivaldi, Albinoni, Marcello, in their own city. Ad-free and unhosted. If you want to hear baroque as repertoire rather than background, this is where the depth is.",
     "early-music": "Exclusively early music: medieval, Renaissance, early baroque, on period instruments. The counterpart to Ancient FM over in Curiosities — same field, different hand. Music from centuries when concert pitch wasn't yet fixed at 440 Hz.",
     "walm2-opus": "Classical off original shellac records, broadcast in Opus at 192 kbit/s. The same people who run Adroit Jazz over on the jazz shelf — you hear the record, not the remastered reissue.",
-    "flowstate-classical": "Classical at 320 kbit/s and 48 kHz, selected for long, focused listening rather than the quick climax. The best-sounding entry on this shelf after WALM. Long movements stay whole instead of being trimmed for attention spans.",
-    "fine-music-radio": "Classical and jazz from Cape Town, made by volunteers. The only station on this shelf that plays both on equal footing — and the only one from the African continent."
+    "fine-music-radio": "Classical and jazz from Cape Town, made by volunteers. The only station on this shelf that plays both on equal footing — and the only one from the African continent.",
+    "the-jazz-groove": "A non-profit jazz station from San Francisco, funded by donations instead of ads. Every hour is put together by hand from a collection of more than ten thousand recordings — laid-back jazz that still never slips into the bland.",
+    "wcpe": "Put on the air in 1978 by five students from North Carolina, with home-built gear and army-surplus equipment. Today it plays classical music around the clock, carried by its listeners — and was one of the very first stations to stream on the internet.",
+    "shonan-beach-fm": "The community radio of the coastal towns of Zushi and Hayama on Sagami Bay. Through the day it is mostly jazz — in the afternoon, after dark and after midnight — with oldies in between. It sounds like a beach promenade, not a big city.",
+    "radio-meuh": "Broadcasting since 2007 from a ski village in the Savoy Alps, founded by two friends as a non-profit association. Soul, funk, electronica, hip-hop and music from all over the world, with no ad breaks and no chasing after every trend.",
+    "noods-radio": "Started in 2015 in the living room of a shared house in Bristol, first streamed from one founder's laptop, now broadcasting from a pub in St Pauls. Daily shows from the city's collectors, dancers and misfits — no playlists and no ads.",
+    "radio-raheem": "Founded in Milan in 2017 by people from music, art and culture, because Italy had no radio that sounded like today. It broadcasts from a greenhouse in the Combo cultural venue — underground, sound research and club music, curated by people."
   }
 }
