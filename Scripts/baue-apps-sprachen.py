@@ -180,6 +180,26 @@ SEITEN = {
         # gehoeren der Marke, nicht der einen Seite.
         "rueckgrat": True,
     },
+    # Die Datenschutzerklaerung des Converters. Apple verlangt fuer den App
+    # Store EINE feste Adresse; die englische Fassung steht in App Store
+    # Connect, die deutsche ist fuer deutsche Nutzer.
+    #
+    # Der Wortlaut ist von Micha geprueft (432hz-radio#36) und von Saemi-Ra
+    # freigegeben — die Vorlage und en.json tragen ihn Wort fuer Wort. Er
+    # wird hier nicht uebersetzt, deshalb NUR Deutsch und Englisch; die
+    # fuenf anderen Kataloge tragen den deutschen Text, wie bei mitmachen.
+    #
+    # UNGELISTET aus demselben Grund wie /recht/ beim Radio: Ein Rechtstext
+    # soll auffindbar sein, wenn man ihn sucht, aber er ist kein Inhalt, mit
+    # dem die Seite gefunden werden will — noindex, nicht in der Sitemap,
+    # nicht in llms.txt. Erreichbar ueber den Verweis auf der Ladeseite.
+    "converter/datenschutz/": {
+        "vorlage": "converter-datenschutz.html",
+        "programm": "text",
+        "rueckgrat": True,
+        "sprachen": ["de", "en"],
+        "gelistet": False,
+    },
 }
 
 def sprachen_fuer(pfad):
@@ -964,6 +984,7 @@ SEITENNAME = {
     "hoertest/": "Blindtest 432 gegen 440",
     "stimmung/": "Stimmungsmesser",
     "mitmachen/": "Mitmachen — Tester gesucht",
+    "converter/datenschutz/": "Datenschutz beim IYAMBAE Converter",
 }
 
 SEITENSATZ = {
@@ -994,6 +1015,9 @@ SEITENSATZ = {
                  "laufende Aufnahme steht. Web Audio, ohne Hochladen.",
     "mitmachen/": "Was Testerinnen und Tester bekommen, was es kostet "
                   "(nichts) und wie sie zurueckmelden. Nur auf Deutsch.",
+    "converter/datenschutz/": "Was der IYAMBAE Converter speichert — nichts, "
+                              "das deinen Mac verlaesst. Deutsch und Englisch, "
+                              "ungelistet.",
 }
 
 
