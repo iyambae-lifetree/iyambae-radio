@@ -1438,29 +1438,6 @@
       "kanal": "K-Pop"
     },
     {
-      "id": "gensokyo",
-      "name": "Gensokyo Radio",
-      "betreiber": "Gensokyo Radio",
-      "ort": "Tokio",
-      "land": "JP",
-      "regal": "japan",
-      "etiketten": [
-        "community",
-        "nur-instrumental",
-        "ohne-werbung"
-      ],
-      "stream": "https://stream.gensokyoradio.net/3",
-      "homepage": "https://gensokyoradio.net",
-      "kaertchen": "Spielt ausschließlich Fan-Bearbeitungen der Musik aus der Touhou-Spielreihe — ein eigenes Musikuniversum mit tausenden Alben, das außerhalb Japans kaum jemand kennt. Die Bandbreite reicht von Metal bis Jazz, alles auf denselben Melodien.",
-      "codec": "mp3",
-      "bitrate": 256,
-      "samplerate": 44100,
-      "status": "tot",
-      "geprueft_am": "2026-10-01",
-      "cors": true,
-      "kanal": "Gensokyo Radio"
-    },
-    {
       "id": "r-a-d-io",
       "name": "R/a/dio",
       "betreiber": "R/a/dio",

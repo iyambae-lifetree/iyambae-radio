@@ -144,7 +144,9 @@
 // v63: Elf Sender zeigen direkt auf die Adresse, die den Zugriff erlaubt —
 // die Umleitung davor tat es nicht, und der Browser fiel auf die ungenaue
 // Umstimmung zurück. Gensokyo verlangt eine Anmeldung: tot. sender.json, de.json.
-const SW_VERSION = 'iyambae-v63';
+// v64: Gensokyo Radio raus — der Strom verlangt seit 01.10. eine Anmeldung
+// (401). sender.json.
+const SW_VERSION = 'iyambae-v64';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
