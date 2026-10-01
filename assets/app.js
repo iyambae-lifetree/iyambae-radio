@@ -1179,10 +1179,10 @@ class UI {
           <div class="karte__schleier"></div>
           <p class="karte__kaertchen"><span>${sender.kaertchen}</span></p>
           <button class="karte__favorit${favorit ? ' ist-favorit' : ''}"
-                  aria-label="${favorit ? t('karte.favorit.entfernen') : t('karte.favorit.hinzu')}">${symbol(favorit ? 'gemerkt' : 'merken', 20)}</button>
-          <button class="karte__teilen" aria-label="${t('karte.teilen')}"
-                  title="${t('karte.teilen')}">${symbol('teilen', 18)}</button>
-          <button class="karte__spielen" aria-label="${t('karte.spielen')}">
+                  aria-label="${t(favorit ? 'karte.favorit.entfernen' : 'karte.favorit.hinzu', { name: sender.name })}">${symbol(favorit ? 'gemerkt' : 'merken', 20)}</button>
+          <button class="karte__teilen" aria-label="${t('karte.teilen.sender', { name: sender.name })}"
+                  title="${t('karte.teilen.sender', { name: sender.name })}">${symbol('teilen', 18)}</button>
+          <button class="karte__spielen" aria-label="${t('karte.spielen', { name: sender.name })}">
             <span class="karte__ikon--an">${symbol('abspielen', 20)}</span><span class="karte__ikon--aus">${symbol('pause', 20)}</span>
           </button>
           <div class="karte__laeuft"><span></span><span></span><span></span></div>
@@ -1390,13 +1390,15 @@ class UI {
        Die Zusagen abfangen, sonst schreibt der Browser in die Konsole.
 
        Wer zwei Filterchips schnell hintereinander anklickt, bricht den
-       laufenden Uebergang ab. Der Browser lehnt dann `finished` mit
-       "Transition was skipped" ab — das ist kein Fehler, sondern genau das
-       gewuenschte Verhalten. Unbehandelt landet es aber als Fehler in der
+       laufenden Uebergang ab. Der Browser lehnt dann `ready` und `finished`
+       mit "Transition was aborted" oder "Transition was skipped" ab — das
+       ist kein Fehler, sondern genau das gewuenschte Verhalten. Alle drei
+       Zusagen gehoeren abgefangen; `ready` fehlte bis zum 01.10.2026. Unbehandelt landet es aber als Fehler in der
        Konsole und, schlimmer, im Fehlerbericht: Ein Bericht ueber etwas,
        das richtig laeuft, verstellt den Blick auf die echten.
       */
       const uebergang = document.startViewTransition(zeichne);
+      uebergang.ready.catch(() => {});
       uebergang.finished.catch(() => {});
       uebergang.updateCallbackDone.catch(() => {});
     } else {
@@ -1927,7 +1929,8 @@ class UI {
       if (knopf) {
         knopf.innerHTML = symbol(favorit ? 'gemerkt' : 'merken', 20);
         knopf.classList.toggle('ist-favorit', favorit);
-        knopf.setAttribute('aria-label', favorit ? t('karte.favorit.entfernen') : t('karte.favorit.hinzu'));
+        knopf.setAttribute('aria-label', t(favorit ? 'karte.favorit.entfernen' : 'karte.favorit.hinzu',
+          { name: this.senderMitId(karte.dataset.senderId)?.name ?? '' }));
       }
     });
     /*
@@ -2027,6 +2030,15 @@ class UI {
     for (const id of ['heroPlayIcon', 'barPlayIcon']) {
       const el = document.getElementById(id);
       if (el) el.innerHTML = symbol(laeuft ? 'pause' : 'abspielen', 20);
+    }
+    // Das Wort neben dem Zeichen wandert mit: Wer hoert, sieht „Pausieren".
+    // data-text wird mitgesetzt, damit ein Sprachwechsel denselben Zustand
+    // neu zeichnet statt wieder „Abspielen" hinzuschreiben.
+    const wort = document.querySelector('#heroPlay [data-text]');
+    if (wort) {
+      const schluessel = laeuft ? 'hero.knopf.pausieren' : 'hero.knopf.abspielen';
+      wort.dataset.text = schluessel;
+      wort.textContent = t(schluessel);
     }
     document.body.classList.toggle('spielt', laeuft);
     this.setzeTonarm(laeuft);
@@ -2542,27 +2554,40 @@ class App {
   // selbst auf. Der Zufall ist fuer die Besonderheiten da, sonst verfehlt
   // er seinen Zweck. Das gilt fuer Nadel, Auslage und Sender der Woche.
   _ziehbareSender() {
+    return this._katalogOhneWuehlkiste().filter((s) => !istWackelig(s.id));
+  }
+
+  // Der Katalog ohne die zurueckgenommenen Regale — und OHNE den Blick auf
+  // die oertlichen Fehlerzaehler. Daraus zieht der Sender der Woche: Der
+  // soll fuer alle Besucher derselben Woche derselbe sein, und istWackelig()
+  // kennt nur dieses eine Geraet. Bis zum 01.10.2026 zog er aus
+  // _ziehbareSender() — wer dreimal an einem Stream gescheitert war, sah
+  // einen anderen Sender der Woche als alle anderen.
+  _katalogOhneWuehlkiste() {
     const zurueckgenommen = new Set(
       this.ui.regale.filter((r) => r.zurueckgenommen).map((r) => r.id));
-    return this.ui.sender.filter(
-      (s) => !istWackelig(s.id) && !zurueckgenommen.has(s.regal));
+    return this.ui.sender.filter((s) => !zurueckgenommen.has(s.regal));
   }
 
   // Der Sender der Woche. Erfindet nichts: er kommt aus dem eigenen,
   // geprueften Katalog und steht fuer alle Besucher derselben Woche fest.
   //
-  // AUS DER GEFILTERTEN MENGE, seit dem 02.09.2026. Hier stand
-  // `this.ui.sender` — die ungefilterte Liste. Damit konnte der Sender der
-  // Woche aus der Wuehlkiste kommen, obwohl der Kommentar ueber
-  // _ziehbareSender() ausdruecklich sagt: „Das gilt fuer Nadel, Auslage und
-  // Sender der Woche."
+  // OHNE WUEHLKISTE, seit dem 02.09.2026. Hier stand `this.ui.sender` — die
+  // ungefilterte Liste. Damit konnte der Sender der Woche aus der Wuehlkiste
+  // kommen, obwohl der Kommentar ueber _ziehbareSender() ausdruecklich sagt:
+  // „Das gilt fuer Nadel, Auslage und Sender der Woche."
   //
   // Nachgerechnet: In 5 von 104 kommenden Wochen haette es zugeschlagen,
   // also etwa alle fuenf Monate. Gefunden hat es tools/test/zufall.test.mjs
   // — ein Test, den es seit Wochen gab und der in einem Repository lag, in
   // dem niemand ihn mehr laufen liess.
+  //
+  // ABER NICHT AUS _ziehbareSender(), seit dem 01.10.2026: Die nimmt auch
+  // die oertlich wackeligen Sender heraus, und die sind auf jedem Geraet
+  // andere. „Fuer alle Besucher derselben Woche" war damit nicht wahr.
+  // Ist der gezogene Sender hier gerade wackelig, wird er trotzdem gezeigt.
   zeichneWochentipp() {
-    const tipp = tippDerWoche(this._ziehbareSender());
+    const tipp = tippDerWoche(this._katalogOhneWuehlkiste());
     const abschnitt = document.getElementById('tipp');
     if (!tipp || !abschnitt) return;
     const s = tipp.sender;
