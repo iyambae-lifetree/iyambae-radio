@@ -27,7 +27,7 @@
   "beschreibung": {
     "de": "{was} {zahl} handverlesene Sender bei IYAMBAE FM, jeder auf Wunsch in 432 Hz.",
     "en": "{was} {zahl} hand-picked stations at IYAMBAE FM, each in 432 Hz if you want it.",
-    "fr": "{was} {zahl} stations choisies à la main chez IYAMBAE FM, chacune en 432 Hz si vous le voulez.",
+    "fr": "{was} {zahl} stations choisies à la main chez IYAMBAE FM, chacune en 432 Hz si tu le veux.",
     "es": "{was} {zahl} emisoras elegidas a mano en IYAMBAE FM, cada una en 432 Hz si quieres.",
     "it": "{was} {zahl} stazioni scelte a mano su IYAMBAE FM, ognuna a 432 Hz se lo vuoi.",
     "ja": "{was} IYAMBAE FM が選んだ {zahl} 局。希望すればどれも 432 Hz で流せます。",
@@ -57,7 +57,7 @@
   "satz432": {
     "de": "Jeder Sender hier läuft auf Wunsch in 432 Hz statt in den üblichen 440 — die Seite verschiebt die Tonhöhe um 31,77 Cent nach unten. Wir versprechen dir keine Wirkung. Wir geben dir einen Regler.",
     "en": "Every station here plays in 432 Hz instead of the usual 440 if you want it to — the page shifts the pitch down by 31.77 cents. We promise you no effect. We give you a dial.",
-    "fr": "Ici, chaque station passe en 432 Hz au lieu des 440 habituels si vous le souhaitez — la page abaisse la hauteur de 31,77 cents. Nous ne vous promettons aucun effet. Nous vous donnons un réglage.",
+    "fr": "Ici, chaque station passe en 432 Hz au lieu des 440 habituels si tu le souhaites — la page abaisse la hauteur de 31,77 cents. Nous ne te promettons aucun effet. Nous te donnons un réglage.",
     "es": "Aquí cada emisora suena en 432 Hz en lugar de los 440 habituales si tú quieres — la página baja la afinación 31,77 centésimas. No te prometemos ningún efecto. Te damos un control.",
     "it": "Qui ogni stazione suona a 432 Hz invece dei soliti 440, se lo vuoi — la pagina abbassa l'intonazione di 31,77 centesimi. Non ti promettiamo alcun effetto. Ti diamo una manopola.",
     "ja": "ここにあるどの局も、希望すれば通常の 440 Hz ではなく 432 Hz で流れます。ページが音の高さを 31.77 セント下げます。効果は約束しません。つまみをお渡しするだけです。",

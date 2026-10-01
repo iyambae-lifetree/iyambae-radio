@@ -130,7 +130,8 @@
 // empfangene Liste stehen. app.js, sw.js, die sieben Sprachkataloge.
 // v58: „Kostenlos testen“ statt „Kostenlos“ beim Tuner — er kostet fertig
 // 29 €. index.html, die sieben Sprachkataloge.
-const SW_VERSION = 'iyambae-v58';
+// v59: Französisch durchgehend tu — fr.json und die Regaltexte.
+const SW_VERSION = 'iyambae-v59';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
