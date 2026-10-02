@@ -236,7 +236,7 @@
   "frage.radio.2": "On te demande deux fois : la page interroge une fois, et le Tuner t'interroge. <strong>Sans ton accord, aucun site n'apprend que tu l'utilises</strong> — ni même qu'il est installé. Une liste de sites autorisés dans le code aurait été plus commode. Elle n'aurait fait que répondre à la mauvaise question.",
   "frage.preis.titel": "Combien cela coûte-t-il ?",
   "frage.preis.1": "Cette version d'essai ne coûte rien. Elle n'exige ni compte, ni adresse électronique, ni données de paiement — tu télécharges un fichier, et c'est tout.",
-  "frage.preis.2": "Les prix des versions achevées sont fixés, chacun en paiement unique et sans abonnement : le Tuner 29 €, le Converter 38 €, les deux ensemble 55 €. L’achat sera bientôt possible ici — d’ici là, la version de test reste gratuite.",
+  "frage.preis.2": "Les prix des versions achevées sont fixés, chacun en paiement unique et sans abonnement : le Tuner 29 €, le Converter 38 €, les deux ensemble 55 €. La vente ici est prévue — d’ici là, la version de test reste gratuite.",
   "frage.daten.titel": "Que deviennent mes données ?",
   "frage.daten.1": "<strong>Cette page</strong> ne pose aucun cookie, ne mesure rien et ne charge rien depuis des serveurs tiers. Les polices se trouvent sur le même serveur que la page — un lien vers une collection de polices aux États-Unis y enverrait ton adresse IP avant même que tu aies cliqué où que ce soit.",
   "frage.daten.2": "<strong>Le Tuner</strong> n'a besoin d'aucun compte et n'envoie rien. Il traite le son sur l'ordinateur lui-même et ne l'enregistre nulle part. La seule interface vers l'extérieur est le service destiné à la radio sur <code>127.0.0.1</code> — il ne quitte pas ton ordinateur et ne répond que si tu l'autorises.",
