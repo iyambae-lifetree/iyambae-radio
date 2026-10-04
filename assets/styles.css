@@ -80,7 +80,14 @@ a { color: var(--pink-hell); }
     transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 .ladeschirm.weg { opacity: 0; visibility: hidden; }
-.ladeschirm__marke { width: 150px; height: auto; animation: dreht 6s linear infinite; }
+.ladeschirm__marke {
+    width: 150px; height: auto; animation: dreht 6s linear infinite;
+    /* Gedreht wird um den blauen Punkt, nicht um die Bildmitte: Er sitzt
+       waagerecht mittig, senkrecht aber bei 65,9 % der Hoehe (gemessen an
+       den blauen Bildpunkten im eingebetteten PNG, 900 x 652). Um die
+       Bildmitte eierte das Logo. */
+    transform-origin: 50% 65.9%;
+}
 .ladeschirm__unter { font-family: var(--mono); font-size: 0.78rem; color: var(--text-leise); }
 
 /* ── Kopf ────────────────────────────────────────────────────────── */
