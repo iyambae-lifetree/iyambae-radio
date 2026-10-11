@@ -1573,9 +1573,33 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     pointer-events: none;
 }
 .karte__kaertchen span {
-    display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical;
+    display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;
     overflow: hidden;
 }
+/* Auf der Hülle hat das Kärtchen fünf Zeilen; gemessen am 11.10.2026 war
+   bei 1024 px keins kurz genug. „Ganz lesen“ öffnet es in voller Länge,
+   ohne einzuschalten. Der Schleier selbst lässt Klicks zur Hülle durch,
+   nur dieser Knopf fängt sie. */
+.karte__kaertchen { flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 0.35rem; }
+.karte__ganz {
+    pointer-events: auto;
+    padding: 0; border: 0; background: none;
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.04em;
+    color: var(--gold); text-decoration: underline; text-underline-offset: 0.2em;
+    cursor: pointer;
+}
+.karte__ganz:hover, .karte__ganz:focus-visible { color: var(--gold-hell, #FFD34D); outline: none; }
+[dir="rtl"] .karte__ganz { letter-spacing: normal; }
+
+/* Das Kärtchen in voller Länge — dieselbe Hülle wie die Einstellungen. */
+.kaertchen-fenster { padding: 1.4rem; }
+.kaertchen-fenster__kopf { display: flex; gap: 0.9rem; align-items: center; }
+.kaertchen-fenster__logo { width: 64px; height: 64px; object-fit: cover; border-radius: 4px; background: #100c1a; flex: none; }
+.kaertchen-fenster__name { font-family: var(--anzeige); font-size: 1.25rem; font-weight: 700; line-height: 1.2; margin: 0; }
+.kaertchen-fenster__ort { font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise); margin: 0.25rem 0 0; }
+.kaertchen-fenster__text { margin: 1.1rem 0 0; color: #d8cfe6; line-height: 1.6; overflow-y: auto; max-height: 50dvh; }
+.kaertchen-fenster__knoepfe { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.3rem; }
+.kaertchen-fenster__seite[hidden] { display: none; }
 .karte:hover .karte__kaertchen,
 .karte:focus-within .karte__kaertchen { opacity: 1; }
 /* Ohne Zeiger gibt es kein Überfahren — dort bleibt es weg, statt nie

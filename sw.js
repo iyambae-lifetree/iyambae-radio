@@ -152,7 +152,10 @@
 // v67: Senderprüfung 11.10. — Cowabunga tot (502, nur noch Podcasts), XJAZZ
 // direkt über https. sender.json.
 // v68: Radio Cowabunga raus, samt Texten und Logo. sender.json.
-const SW_VERSION = 'iyambae-v68';
+// v69: „Ganz lesen“ — das Kärtchen auf der Hülle hatte sechs Zeilen und war
+// bei 1024 px nie ganz zu sehen; jetzt öffnet es in voller Länge, ohne
+// einzuschalten (wie in Sonarium). app.js, styles.css, die sieben Sprachen.
+const SW_VERSION = 'iyambae-v69';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
