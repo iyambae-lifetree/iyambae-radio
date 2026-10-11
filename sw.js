@@ -154,7 +154,9 @@
 // v68: Radio Cowabunga raus, samt Texten und Logo. sender.json.
 // v69: 25 neue Sender (Prüfung 12.10.), Logos für sieben davon, „Ungarisch“
 // als Sprachname. sender.json, sender-texte.*.json, lang/*.json.
-const SW_VERSION = 'iyambae-v69';
+// v70: CORS über jeden Sprung geprüft — Klara Continuo, Rai Radio 3, Le Grigri,
+// Wraith Vision direkt auf die freigebende Adresse; ByteFM, WALM 2 HD ohne. sender.json.
+const SW_VERSION = 'iyambae-v70';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

@@ -1871,7 +1871,7 @@
       "samplerate": 44100,
       "status": "ok",
       "geprueft_am": "2026-10-11",
-      "cors": true,
+      "cors": false,
       "logo": "assets/logos/bytefm.webp",
       "logoQuelle": "og:image",
       "kanal": "ByteFM",
@@ -2893,7 +2893,7 @@
         "ohne-werbung",
         "community"
       ],
-      "stream": "https://www.radioking.com/play/legrigri/273715",
+      "stream": "https://play.radioking.io/legrigri/273715",
       "homepage": "https://www.le-grigri.com",
       "kaertchen": "Ein kleiner franzoesischer Sender, der afrikanische Musik, Free Jazz und Hip-Hop in denselben Topf wirft und umruehrt. Genau die Sorte Nachbarschaft, in der Genremixes entstehen, die sonst niemand auflegt.",
       "codec": "mp3",
@@ -3716,7 +3716,7 @@
       "etiketten": [
         "community"
       ],
-      "stream": "https://stream.laut.fm/wraith-vision",
+      "stream": "https://wraith-vision.stream.laut.fm/wraith-vision",
       "homepage": "https://wraith-vision-radio.com",
       "kaertchen": "Doo Wop, Crooner und Rhythm and Blues der Fünfziger und Sechziger. Die Musik, mit der Popmusik anfing, gespielt ohne den Nostalgiefilter, den Oldiesender sonst darüberlegen — als wären die Aufnahmen gerade erst erschienen.",
       "status": "ok",
@@ -4009,7 +4009,7 @@
       "codec": "opus",
       "bitrate": 192,
       "samplerate": 48000,
-      "cors": true,
+      "cors": false,
       "geprueft_am": "2026-10-11",
       "kanal": "WALM 2 HD"
     },
@@ -4466,7 +4466,7 @@
       "etiketten": [
         "mensch-am-mikro"
       ],
-      "stream": "https://icestreaming.rai.it/3.mp3",
+      "stream": "https://icecdn-19d24861e90342cc8decb03c24c8a419.msvdn.net/icecastRelay/S56630579/yEbkcBtIoSwd/icecast",
       "homepage": "https://www.raiplaysound.it/radio3",
       "kaertchen": "1950 als „Terzo Programma“ nach dem Vorbild des BBC Third Programme gegründet: das Kulturradio Italiens. Klassik und Neue Musik, Konzerte aus ganz Europa, dazwischen Literatur, Philosophie und Wissenschaft — viel Gespräch, in 320 kbit/s.",
       "codec": "mp3",
@@ -4489,7 +4489,7 @@
         "ohne-werbung",
         "nur-instrumental"
       ],
-      "stream": "https://icecast.vrtcdn.be/klaracontinuo-high.mp3",
+      "stream": "https://quantumcast.vrtcdn.be/klaracontinuo/mp3-128",
       "homepage": "https://www.vrt.be/vrtmax/kanalen/klara-continuo/",
       "kaertchen": "Der Nonstop-Klassikkanal des flämischen Rundfunks, seit 2004. Die Reihenfolge stellt eine Software nach festen Regeln zusammen: kein Werk zweimal in 25 Tagen, nie zwei langsame Stücke hintereinander — und kein Wort dazwischen.",
       "codec": "mp3",
