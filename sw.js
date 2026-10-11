@@ -149,7 +149,7 @@
 // v65: Die Stillewache stuft stummgeschaltete Hoerer nicht mehr herab.
 // app.js.
 // v66: Der Ladeschirm dreht das Logo um den blauen Punkt. styles.css.
-const SW_VERSION = 'iyambae-v66';
+const SW_VERSION = 'iyambae-v67';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
