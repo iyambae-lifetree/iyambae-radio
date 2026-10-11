@@ -156,7 +156,8 @@
 // als Sprachname. sender.json, sender-texte.*.json, lang/*.json.
 // v70: CORS über jeden Sprung geprüft — Klara Continuo, Rai Radio 3, Le Grigri,
 // Wraith Vision direkt auf die freigebende Adresse; ByteFM, WALM 2 HD ohne. sender.json.
-const SW_VERSION = 'iyambae-v70';
+// v71: drei Kärtchen auf Belegtes zurückgeschnitten. sender.json, sender-texte.*.json.
+const SW_VERSION = 'iyambae-v71';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
