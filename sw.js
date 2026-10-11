@@ -149,7 +149,10 @@
 // v65: Die Stillewache stuft stummgeschaltete Hoerer nicht mehr herab.
 // app.js.
 // v66: Der Ladeschirm dreht das Logo um den blauen Punkt. styles.css.
-const SW_VERSION = 'iyambae-v67';
+// v67: Senderprüfung 11.10. — Cowabunga tot (502, nur noch Podcasts), XJAZZ
+// direkt über https. sender.json.
+// v68: Radio Cowabunga raus, samt Texten und Logo. sender.json.
+const SW_VERSION = 'iyambae-v68';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

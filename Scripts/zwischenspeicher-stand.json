@@ -1,5 +1,5 @@
 {
-  "fassung": "iyambae-v67",
+  "fassung": "iyambae-v68",
   "dateien": {
     "/ar/": "97334158651c9147",
     "/ar/manifest.webmanifest": "37521de3623f7c28",
@@ -33,7 +33,7 @@
     "/assets/schrift/schriften.css": "1eb89046159d41c0",
     "/assets/styles.css": "5d6acb9159f1f7e6",
     "/assets/wasm/retuner.wasm": "c6cc9a4f9c88b066",
-    "/data/sender.json": "cf44a45ec9c1a291",
+    "/data/sender.json": "2b8a128a44669b17",
     "/de/": "d2799b6bc937493b",
     "/de/manifest.webmanifest": "13ea6a582b643b27",
     "/en/": "eac195387079a260",

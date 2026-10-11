@@ -3660,30 +3660,6 @@
       "kanal": "Left Coast 70s"
     },
     {
-      "id": "cowabunga",
-      "name": "Radio Cowabunga",
-      "betreiber": "Radio Cowabunga",
-      "ort": "Madrid",
-      "land": "ES",
-      "regal": "rueckspiegel",
-      "etiketten": [
-        "community",
-        "ohne-werbung"
-      ],
-      "stream": "https://hello.citrus3.com:2020/stream/radiocowabunga",
-      "homepage": "https://www.cowabunga.es",
-      "kaertchen": "Northern Soul, Boogaloo, Garage und Power Pop aus einem spanischen Kollektiv. Musik, die in den Sechzigern gefloppt ist und Jahrzehnte später in britischen Tanzsälen wiederentdeckt wurde — die zweite Karriere schlechter verkaufter Platten.",
-      "logo": "assets/logos/cowabunga.webp",
-      "logoQuelle": "apple-touch-icon",
-      "status": "tot",
-      "codec": "aac",
-      "samplerate": 44100,
-      "bitrate": 128,
-      "cors": true,
-      "geprueft_am": "2026-10-11",
-      "kanal": "Radio Cowabunga"
-    },
-    {
       "id": "xraydio-jukebox",
       "name": "XRaydio 2 — Vintage Jukebox",
       "betreiber": "XRaydio",
