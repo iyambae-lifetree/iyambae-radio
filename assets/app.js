@@ -1181,7 +1181,8 @@ class UI {
                  <img class="huelle__marke" src="${MARKE}" alt="" draggable="false" width="28" height="20">
                </div>`}
           <div class="karte__schleier"></div>
-          <p class="karte__kaertchen"><span>${sender.kaertchen}</span></p>
+          <p class="karte__kaertchen"><span>${sender.kaertchen}</span>
+             <button class="karte__ganz" type="button">${t('karte.ganzLesen')}</button></p>
           <button class="karte__favorit${favorit ? ' ist-favorit' : ''}"
                   aria-label="${t(favorit ? 'karte.favorit.entfernen' : 'karte.favorit.hinzu', { name: sender.name })}">${symbol(favorit ? 'gemerkt' : 'merken', 20)}</button>
           <button class="karte__teilen" aria-label="${t('karte.teilen.sender', { name: sender.name })}"
@@ -1235,6 +1236,16 @@ class UI {
       karte.querySelector('.karte__favorit')?.addEventListener('click', (e) => {
         e.stopPropagation();
         this.toggleFavorit(id);
+      });
+      /*
+       Das Kärtchen ganz lesen, ohne den Sender einzuschalten — wie in
+       Sonarium. Auf der Hülle hat es nur sechs Zeilen; gemessen am
+       11.10.2026 waren bei 1024 px Breite alle 172 Kärtchen länger.
+      */
+      karte.querySelector('.karte__ganz')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sender = this.senderMitId(id);
+        if (sender) this.zeigeKaertchen(sender);
       });
       karte.querySelector('.karte__teilen')?.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1963,6 +1974,59 @@ class UI {
   markiereAktiv() {
     document.querySelectorAll('.karte').forEach(k =>
       k.classList.toggle('ist-aktiv', k.dataset.senderId === this.aktuelleId));
+  }
+
+  /*
+   Das Kärtchen eines Senders in voller Länge, in einem eigenen Fenster.
+   Dasselbe wie `Senderkaertchen` in Sonarium: Logo, Name, Herkunft, der
+   ganze Text, und Abspielen, ohne dass Lesen schon einschaltet.
+   Das Fenster entsteht beim ersten Gebrauch; im Markup steht es nicht,
+   damit index.html und die sieben Sprachseiten unberührt bleiben.
+  */
+  zeigeKaertchen(sender) {
+    let d = document.getElementById('kaertchenFenster');
+    if (!d) {
+      d = document.createElement('dialog');
+      d.id = 'kaertchenFenster';
+      d.className = 'einstellungen kaertchen-fenster';
+      d.innerHTML = `
+        <div class="kaertchen-fenster__kopf">
+          <img class="kaertchen-fenster__logo" alt="" width="64" height="64" draggable="false">
+          <div>
+            <h2 class="kaertchen-fenster__name"></h2>
+            <p class="kaertchen-fenster__ort"></p>
+          </div>
+        </div>
+        <p class="kaertchen-fenster__text"></p>
+        <div class="kaertchen-fenster__knoepfe">
+          <button class="knopf knopf--gross kaertchen-fenster__spielen" type="button"></button>
+          <a class="knopf kaertchen-fenster__seite" target="_blank" rel="noopener"></a>
+          <button class="knopf kaertchen-fenster__zu" type="button"></button>
+        </div>`;
+      // Ein Klick neben das Fenster schließt es — wie bei den Einstellungen.
+      d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+      d.querySelector('.kaertchen-fenster__zu').addEventListener('click', () => d.close());
+      document.body.append(d);
+    }
+    const laeuft = this.aktuelleId === sender.id && window.app?.engine?.laeuft;
+    d.querySelector('.kaertchen-fenster__logo').src = senderbild(sender);
+    d.querySelector('.kaertchen-fenster__name').textContent = sender.name;
+    d.querySelector('.kaertchen-fenster__ort').textContent =
+      [sender.betreiber, [sender.ort, sender.land].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
+    d.querySelector('.kaertchen-fenster__text').textContent = sender.kaertchen ?? '';
+    const spielen = d.querySelector('.kaertchen-fenster__spielen');
+    spielen.textContent = t(laeuft ? 'hero.knopf.pausieren' : 'hero.knopf.abspielen');
+    spielen.onclick = () => {
+      d.close();
+      if (this.aktuelleId === sender.id) window.app.wechselSpiel();
+      else window.app.spieleSender(sender);
+    };
+    const seite = d.querySelector('.kaertchen-fenster__seite');
+    seite.hidden = !sender.homepage;
+    if (sender.homepage) { seite.href = sender.homepage; seite.textContent = t('allgemein.senderseite'); }
+    d.querySelector('.kaertchen-fenster__zu').textContent = t('filter.panel.schliessen');
+    d.showModal();
+    spielen.focus();
   }
 
   zeigeSender(sender) {

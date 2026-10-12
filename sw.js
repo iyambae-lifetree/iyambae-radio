@@ -157,7 +157,10 @@
 // v70: CORS über jeden Sprung geprüft — Klara Continuo, Rai Radio 3, Le Grigri,
 // Wraith Vision direkt auf die freigebende Adresse; ByteFM, WALM 2 HD ohne. sender.json.
 // v71: drei Kärtchen auf Belegtes zurückgeschnitten. sender.json, sender-texte.*.json.
-const SW_VERSION = 'iyambae-v71';
+// v72: „Ganz lesen“ — das Kärtchen auf der Hülle hatte sechs Zeilen und war
+// bei 1024 px nie ganz zu sehen; jetzt öffnet es in voller Länge, ohne
+// einzuschalten (wie in Sonarium). app.js, styles.css, die sieben Sprachen.
+const SW_VERSION = 'iyambae-v72';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
