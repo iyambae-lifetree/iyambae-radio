@@ -152,10 +152,15 @@
 // v67: Senderprüfung 11.10. — Cowabunga tot (502, nur noch Podcasts), XJAZZ
 // direkt über https. sender.json.
 // v68: Radio Cowabunga raus, samt Texten und Logo. sender.json.
-// v69: „Ganz lesen“ — das Kärtchen auf der Hülle hatte sechs Zeilen und war
+// v69: 25 neue Sender (Prüfung 12.10.), Logos für sieben davon, „Ungarisch“
+// als Sprachname. sender.json, sender-texte.*.json, lang/*.json.
+// v70: CORS über jeden Sprung geprüft — Klara Continuo, Rai Radio 3, Le Grigri,
+// Wraith Vision direkt auf die freigebende Adresse; ByteFM, WALM 2 HD ohne. sender.json.
+// v71: drei Kärtchen auf Belegtes zurückgeschnitten. sender.json, sender-texte.*.json.
+// v72: „Ganz lesen“ — das Kärtchen auf der Hülle hatte sechs Zeilen und war
 // bei 1024 px nie ganz zu sehen; jetzt öffnet es in voller Länge, ohne
 // einzuschalten (wie in Sonarium). app.js, styles.css, die sieben Sprachen.
-const SW_VERSION = 'iyambae-v69';
+const SW_VERSION = 'iyambae-v72';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

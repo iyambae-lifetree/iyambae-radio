@@ -49,6 +49,28 @@ ZEITLIMIT = 12
 ARBEITER = 12
 
 
+FREIGABE = ("*", "https://iyambae.fm")
+
+
+class MerktSpruenge(urllib.request.HTTPRedirectHandler):
+    """Hält fest, ob jede Weiterleitung unterwegs den Zugriff freigibt.
+
+    Der Browser prüft CORS bei JEDEM Sprung, nicht nur am Ziel. Gibt eine
+    Weiterleitung keine Freigabe, bricht er ab — mit crossOrigin spielt der
+    Strom dann gar nicht („Format error“). Bis 12.10.2026 sah dieses Skript
+    nur das Ziel an und meldete Klara Continuo und Rai Radio 3 als „CORS ja“;
+    im Browser blieben beide stumm. Dieselbe Falle hatte am 01.10. schon die
+    sieben NTS-Kanäle erwischt.
+    """
+    def __init__(self):
+        self.spruenge_frei = True
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if (headers.get("access-control-allow-origin") or "") not in FREIGABE:
+            self.spruenge_frei = False
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def hole_kopf(url):
     """GET mit sofortigem Abbruch — Icecast antwortet auf HEAD oft gar nicht."""
     anfrage = urllib.request.Request(url, headers={
@@ -58,7 +80,9 @@ def hole_kopf(url):
         "Origin": "https://iyambae.fm",
         "Range": "bytes=0-2047",
     })
-    with urllib.request.urlopen(anfrage, timeout=ZEITLIMIT) as antwort:
+    spruenge = MerktSpruenge()
+    oeffner = urllib.request.build_opener(spruenge)
+    with oeffner.open(anfrage, timeout=ZEITLIMIT) as antwort:
         # Die ersten Bytes werden gebraucht: Bei Ogg steht der Codec darin,
         # und der Kopf allein verraet ihn nicht.
         rumpf = antwort.read(2048)
@@ -66,8 +90,9 @@ def hole_kopf(url):
         # so, mal so. Bis 01.10.2026 stand hier dict(antwort.headers), und
         # das Nachschlagen unter „Access-Control-Allow-Origin" verfehlte die
         # klein geschriebenen — ein Dutzend Sender mit CORS galten als Sender ohne.
-        return (antwort.status, {k.lower(): v for k, v in antwort.headers.items()},
-                antwort.url, rumpf)
+        kopf = {k.lower(): v for k, v in antwort.headers.items()}
+        kopf["_spruenge_frei"] = spruenge.spruenge_frei
+        return antwort.status, kopf, antwort.url, rumpf
 
 
 def loese_abspielliste(url):
@@ -216,7 +241,8 @@ def pruefe(name, url):
             abtastrate_aus_mp3(rumpf) if format_aus(kopf, rumpf) == "mp3" else None),
         "sendername": kopf.get("icy-name"),
         # Nur wer hier antwortet, kann umgestimmt werden.
-        "cors": (kopf.get("access-control-allow-origin") or "") in ("*", "https://iyambae.fm"),
+        "cors": ((kopf.get("access-control-allow-origin") or "") in FREIGABE
+                 and kopf["_spruenge_frei"]),
         "endgueltig": endgueltig if endgueltig != url else None,
     })
     return ergebnis
