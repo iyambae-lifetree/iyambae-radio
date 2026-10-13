@@ -23,7 +23,12 @@ COPY . .
 # Sprachseiten entstehen erst dabei, und genau sie sind es, die zuletzt
 # unbemerkt im Zwischenspeicher veralteten.
 #
-# Scripts/test/ am Ende: 58 Tests, die den ausgelieferten Code selbst
+# pruefe-uebersetzungen.py direkt nach den Regalen: Fehlt einer Sprache ein
+# Sendertext, fiel die Seite bisher still auf den deutschen Satz zurück —
+# genau der Rückfall, den Sāmi-Ra schon einmal gemeldet hat. Jetzt bricht
+# der Bau ab (432hz-radio#45).
+#
+# Scripts/test/ am Ende: 85 Tests (Stand 13.10.2026), die den ausgelieferten Code selbst
 # festnageln — Gewichtung, Wochentipp, Senderbild, Verwandtschaft, der
 # Wechsel zwischen Sendern mit und ohne CORS, die Regel des Service Workers.
 #
@@ -34,6 +39,7 @@ COPY . .
 # den keine Auslieferung laufen laesst, ist kein Test.
 RUN python3 Scripts/baue-sprachen.py \
  && python3 Scripts/baue-regale.py \
+ && python3 Scripts/pruefe-uebersetzungen.py \
  && python3 Scripts/baue-recht.py \
  && python3 Scripts/baue-apps-sprachen.py \
  && python3 Scripts/pruefe-shell-dateien.py \
@@ -41,6 +47,7 @@ RUN python3 Scripts/baue-sprachen.py \
  && node Scripts/pruefe-messung.mjs \
  && node Scripts/pruefe-verlauf.mjs \
  && node Scripts/pruefe-konto.mjs \
+ && ls Scripts/test/*.test.mjs > /dev/null \
  && node --test "Scripts/test/*.test.mjs"
 
 # ── Stufe 2: ausliefern ─────────────────────────────────────────────
@@ -72,9 +79,16 @@ COPY --from=erzeuger --chown=101:101 /bau/apps /srv/apps
 # Innerhalb von /srv/radio hat die Apps-Seite nichts zu suchen; sie wäre
 # sonst zusätzlich unter iyambae.fm/apps erreichbar und damit doppelt
 # indexierbar.
+#
+# Dazu die ROHVORLAGEN: regal.html und apps/*.html sind Eingaben der
+# Bauskripte, die gebauten Seiten liegen unter /<sprache>/…. Über
+# `try_files $uri` waren sie sonst abrufbar — halbe Seiten mit {{…}}-Marken,
+# frei indexierbar (432hz-radio#45). Nur die oberste Ebene von /srv/apps;
+# die Sprachordner darunter bleiben.
 USER root
 RUN rm -rf /srv/radio/apps /srv/radio/deploy /srv/radio/infra /srv/radio/Scripts \
-           /srv/radio/.git /srv/radio/docs
+           /srv/radio/.git /srv/radio/docs \
+ && rm -f /srv/radio/regal.html /srv/apps/*.html
 USER 101
 
 EXPOSE 8080

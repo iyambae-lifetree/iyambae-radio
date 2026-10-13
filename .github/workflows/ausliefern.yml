@@ -93,6 +93,12 @@ jobs:
           # Kennung nicht.
           fetch-depth: 0
 
+      # Die Probe „die Oberfläche erfindet keine Endpunkte" vergleicht mit
+      # dienst/src/. Im Bau fehlt dienst/ (.dockerignore), dort wird sie
+      # übersprungen — hier liegt das ganze Repository vor (432hz-radio#45).
+      - name: Konto-Probe gegen dienst/
+        run: node Scripts/pruefe-konto.mjs
+
       - name: Anmelden
         uses: azure/login@v2
         with:
