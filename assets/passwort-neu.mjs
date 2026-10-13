@@ -92,10 +92,10 @@ function starte() {
     Umschalten den Link gekostet. Sie steht nur im Verweis, nicht in der
     Adresse, und geht auch so nie zum Server.
   */
+  const sprachverweise = [...document.querySelectorAll('.sprachen a')];
+  const ohneMarke = sprachverweise.map((a) => a.getAttribute('href'));
   if (marke) {
-    for (const a of document.querySelectorAll('.sprachen a')) {
-      a.href = a.getAttribute('href') + '#marke=' + encodeURIComponent(marke);
-    }
+    sprachverweise.forEach((a, i) => { a.href = ohneMarke[i] + '#marke=' + encodeURIComponent(marke); });
   }
 
   const formNeu = $('formNeu');
@@ -112,14 +112,18 @@ function starte() {
     ziel.hidden = !text;
   }
 
+  // Der Link ist hin: Formular weg, Feld leer, und die Sprachwahl traegt
+  // die tote Marke nicht weiter.
   function zeigeLinkAnfordern(eingangstext) {
+    feld.value = '';
+    $('vorwort').hidden = true;
+    sprachverweise.forEach((a, i) => { a.href = ohneMarke[i]; });
     formNeu.hidden = true;
     formLink.hidden = false;
     if (eingangstext) melde(meldung, eingangstext);
   }
 
   if (!marke) {
-    $('vorwort').hidden = true;
     zeigeLinkAnfordern(texte.fehlt);
   }
 
