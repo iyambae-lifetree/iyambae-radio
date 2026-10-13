@@ -244,6 +244,18 @@ export async function loeseMarkeEin(speicher, marke, zweck = 'passwort', jetzt =
         return { ok: false, grund: 'abgelaufen' };
     }
 
-    await speicher.loesche(TABELLE_KONTEN, partition, MARKENZEILE(zweck));
+    /*
+      BEDINGT verbrauchen, mit dem ETag von eben. Ohne ihn lasen zwei
+      gleichzeitige Anfragen dieselbe Zeile, verglichen beide richtig und
+      loeschten beide — eine Marke, die zweimal gilt (432hz-radio#42). So
+      gewinnt genau eine; die andere sieht einen Konflikt und bekommt
+      dasselbe wie jede schon verbrauchte Marke.
+    */
+    try {
+        await speicher.loesche(TABELLE_KONTEN, partition, MARKENZEILE(zweck), { etag: zeile.etag });
+    } catch (fehler) {
+        if (fehler.art === 'konflikt') return { ok: false, grund: 'verbraucht' };
+        throw fehler;
+    }
     return { ok: true, partition };
 }

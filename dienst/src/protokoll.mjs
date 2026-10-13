@@ -39,7 +39,7 @@ const ERLAUBTE_FELDER = new Set([
     'laufend',      // belegte Plaetze eines Semaphors
     'versuch',      // Nummer eines Wiederholungsversuchs
     'stand',        // Versionszaehler der Merkliste
-    'achse',        // welche Drosselachse gegriffen hat: 'adresse'|'netz'|'global'
+    'achse',        // welche Drosselachse gegriffen hat: 'adresse'|'netz'|'global'|'konto'
     'dienst',       // Fremddienst, der ausgefallen ist: 'hibp'|'acs'|'tabellen'
     // Welcher Anmeldeanbieter, nicht WER sich angemeldet hat. Ohne diese
     // Zeile verwarf der Filter das Feld still, und in der Stoerungssuche
@@ -96,7 +96,7 @@ function saeubereWert(wert) {
 
 /*
   Die Kontokennung ist ein Zufallswert und faellt damit unter
-  SIEHT_AUS_WIE_GEHEIMNIS. Sie soll aber ins Protokoll, sonst laesst sich
+  siehtAusWieGeheimnis. Sie soll aber ins Protokoll, sonst laesst sich
   eine Beschwerde nicht nachvollziehen. Gekuerzt auf zwoelf Zeichen: das
   reicht, um zwei Zeilen derselben Sitzung zusammenzubringen, und es ist
   ohne die Kontotabelle nichts wert.

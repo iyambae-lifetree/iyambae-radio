@@ -133,9 +133,14 @@ export function speicherImArbeitsspeicher() {
             return neu.etag;
         },
 
-        async loesche(tabelle, pk, rk) {
+        async loesche(tabelle, pk, rk, optionen = {}) {
             pruefeStoerung();
-            holeTabelle(tabelle).delete(schluessel(pk, rk));
+            const t = holeTabelle(tabelle);
+            const s = schluessel(pk, rk);
+            if (optionen.etag && t.get(s)?.etag !== optionen.etag) {
+                throw new SpeicherFehler('konflikt');
+            }
+            t.delete(s);
         },
 
         async *liste(tabelle, pk, praefix = '') {
@@ -212,6 +217,8 @@ async function baueAzure({ endpunkt, azurite }) {
             try {
                 return await tun();
             } catch (fehler) {
+                // Schon eingeordnet (bedingtes Loeschen): nicht umetikettieren.
+                if (fehler instanceof SpeicherFehler) throw fehler;
                 if (fehler?.statusCode === 404) throw new SpeicherFehler('nicht_gefunden', fehler);
                 if (fehler?.statusCode === 412 || fehler?.statusCode === 409) throw new SpeicherFehler('konflikt', fehler);
                 if (!istVoruebergehend(fehler) || versuch === 3) {
@@ -251,11 +258,21 @@ async function baueAzure({ endpunkt, azurite }) {
                 return antwort.etag;
             }),
 
-        loesche: (tabelle, pk, rk) =>
+        /*
+          Mit `etag` wird BEDINGT geloescht: Nur wer die Zeile in genau dem
+          Stand gelesen hat, darf sie wegnehmen. Dann ist „schon weg" kein
+          gewuenschter Zustand mehr, sondern die Nachricht, dass jemand
+          anders schneller war — und damit ein Konflikt.
+        */
+        loesche: (tabelle, pk, rk, optionen = {}) =>
             mitWiederholung(async () => {
                 try {
-                    await klient(tabelle).deleteEntity(pk, rk);
+                    await klient(tabelle).deleteEntity(pk, rk,
+                        optionen.etag ? { etag: optionen.etag } : undefined);
                 } catch (fehler) {
+                    if (optionen.etag && (fehler?.statusCode === 404 || fehler?.statusCode === 412)) {
+                        throw new SpeicherFehler('konflikt', fehler);
+                    }
                     // Schon weg ist der gewuenschte Zustand, kein Fehler.
                     if (fehler?.statusCode !== 404) throw fehler;
                 }
@@ -311,6 +328,19 @@ function naechsterPraefix(praefix) {
 export async function erzeugeSpeicher(umgebung = process.env) {
     if (umgebung.AZURITE === '1') return baueAzure({ azurite: true });
     if (umgebung.TABELLEN_ENDPUNKT) return baueAzure({ endpunkt: umgebung.TABELLEN_ENDPUNKT });
+    /*
+      Im Betrieb ist der Arbeitsspeicher kein Notbehelf, sondern ein
+      Ausfall, der wie Betrieb aussieht: Konten entstehen, Anmeldungen
+      gelingen — und mit dem naechsten Neustart ist alles weg
+      (432hz-radio#46, Punkt 6). Also abbrechen, laut.
+
+      Container Apps setzt CONTAINER_APP_NAME in jedem Container selbst;
+      main.bicep setzt kein NODE_ENV. Beides wird geprueft, damit es auch
+      gilt, wenn der Dienst einmal anderswo laeuft.
+    */
+    if (umgebung.CONTAINER_APP_NAME || umgebung.NODE_ENV === 'production') {
+        throw new Error('TABELLEN_ENDPUNKT fehlt — im Betrieb laeuft der Dienst nicht im Arbeitsspeicher');
+    }
     return speicherImArbeitsspeicher();
 }
 
@@ -404,7 +434,15 @@ export function normalisiereAdresse(mail) {
   regelmaessig gueltige Adressen ab, und der Betroffene kann nichts dagegen
   tun.
 */
-const ADRESSE_MUSTER = /^[^\s@]{1,64}@[^\s@.]+(\.[^\s@.]+)+$/;
+/*
+  Der lokale Teil nur aus RFC-5322-atext und Punkten, der Domainteil ohne
+  Trenn- und Klammerzeichen. Vorher war `[^\s@]` erlaubt, also auch
+  `, ; < > "` — und ob ACS `a,b@x.de` als zwei Empfaenger liest, wollten
+  wir nicht erst im Betrieb herausfinden (432hz-radio#46, Punkt 7).
+  Buchstaben jeder Schrift bleiben erlaubt, vorn wie hinten (RFC 6531):
+  Ein bestehendes Konto `jürgen@…` bekaeme sonst still keinen Code mehr.
+*/
+const ADRESSE_MUSTER = /^[\p{L}\p{N}!#$%&'*+/=?^_`{|}~.-]{1,64}@[^\s@.,;:<>()[\]\\"]+(\.[^\s@.,;:<>()[\]\\"]+)+$/iu;
 export function adresseSiehtEchtAus(mail) {
     const sauber = normalisiereAdresse(mail);
     return sauber.length <= 254 && ADRESSE_MUSTER.test(sauber);

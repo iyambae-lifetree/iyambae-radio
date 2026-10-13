@@ -127,8 +127,14 @@ const TEXTE = {
     },
 };
 
+/*
+  `Object.hasOwn` und nicht `TEXTE[sprache] ?? …`: Die Sprache kommt aus dem
+  Anfragekoerper. `__proto__` oder `constructor` fanden ueber die Kette ein
+  Objekt ohne `code`, der Versand warf, wurde dreimal wiederholt und belegte
+  so lange Plaetze in der Warteschlange (432hz-radio#46, Punkt 1).
+*/
 function texte(sprache) {
-    return TEXTE[sprache] ?? TEXTE.en;
+    return Object.hasOwn(TEXTE, sprache) ? TEXTE[sprache] : TEXTE.en;
 }
 
 // ── Der Versender ───────────────────────────────────────────────────
