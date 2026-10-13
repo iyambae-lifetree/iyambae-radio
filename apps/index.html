@@ -1610,7 +1610,9 @@ code {
         demselben Rechenkern, der auch im Tuner sitzt, und zwar in seiner besten
         Stufe: <strong>die Tonhöhe wandert, das Tempo bleibt stehen</strong>.
         Deshalb steht dort 100 %, egal wohin du ziehst. Die Anzeige nimmt an, die
-        Aufnahme liege auf 440 — der Tuner auf deinem Rechner rät nicht, er misst.
+        Aufnahme liege auf 440 — der Tuner auf deinem Rechner misst nach, sobald
+        die Musik klare, gehaltene Töne hat; sonst bleibt auch er bei 440, bis du
+        selbst wählst.
       </p>
     </div>
 
@@ -2451,9 +2453,12 @@ code {
             auf 435 statt auf 432.
           </p>
           <p data-text="frage.webseite.2">
-            Der Tuner bestimmt die tatsächliche Stimmung des laufenden Klangs und
-            rechnet den Abstand zum Ziel daraus. Was auf 443 liegt, wird um
-            443 → 432 verschoben, nicht um 440 → 432. Und er kommt an den
+            Der Tuner versucht, die tatsächliche Stimmung des laufenden Klangs zu
+            bestimmen. Bei klaren, gehaltenen Tönen gelingt das, und dann wird, was
+            auf 443 liegt, um 443 → 432 verschoben, nicht um 440 → 432. Bei
+            gemischter Musik — Gesang mit Vibrato, mehrere Stimmen, Schlagzeug — ist
+            die Messung noch zu unsicher; dann bleibt er bei 440 Hz, bis du selbst
+            wählst. Und er kommt an den
             Systemton, nicht nur an einen Tab.
           </p>
           <ul class="werte">
