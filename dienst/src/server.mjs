@@ -204,9 +204,9 @@ export function erzeugeDrossel({ hoechstensSchluessel = 20_000, uhr = Date.now }
   frei erfindet — die Begrenzung waere eine Zierde. Der letzte Eintrag ist
   der, den die Plattform selbst geschrieben hat.
 
-  ACHTUNG, OFFENER PUNKT: deploy/nginx.conf nimmt in der Karte `$besucher`
-  den ERSTEN Eintrag. Fuer das Protokoll ist das eine Ungenauigkeit, hier
-  waere es ein Loch. Steht im README.
+  deploy/nginx.conf nimmt seit dem 21.08.2026 ebenfalls den LETZTEN
+  Eintrag (Karte `$adresse_echt`). Vorher nahm es den ersten — fuer das
+  Protokoll eine Ungenauigkeit, hier waere es ein Loch gewesen.
 */
 export function netzVon(kopfzeile) {
     const teile = String(kopfzeile ?? '').split(',').map((s) => s.trim()).filter(Boolean);

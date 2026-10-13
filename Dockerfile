@@ -7,7 +7,10 @@
 # Textwechsel. So entstehen sie bei jedem Bau neu aus der Vorlage.
 
 # ── Stufe 1: die Sprachseiten erzeugen ──────────────────────────────
-FROM python:3.12-alpine AS erzeuger
+# Basisabbilder per Digest, nicht nur per Etikett (432hz-radio#47): Ein
+# Etikett zeigt morgen auf etwas anderes, ein Digest nie. Neue Fassungen
+# schlaegt Dependabot vor (.github/dependabot.yml).
+FROM python:3.12-alpine@sha256:1b668429b3511ab407d8e00648891631b0b1a4d7e15e3ca70f38ab5b91ad4ab4 AS erzeuger
 WORKDIR /bau
 # node für die drei Prüfungen, die Modulcode tatsächlich AUSFÜHREN statt ihn
 # zu lesen: die Erlaubnisliste der Messung, die Reihenfolge im Regal
@@ -54,7 +57,7 @@ RUN python3 Scripts/baue-sprachen.py \
 #
 # nginx-unprivileged statt nginx: läuft als Benutzer 101 auf Port 8080, ohne
 # root im Container. Azure Container Apps braucht keinen privilegierten Port.
-FROM nginxinc/nginx-unprivileged:1.29-alpine
+FROM nginxinc/nginx-unprivileged:1.29-alpine@sha256:0c79d56aee561a1d81c63f00eee5fb5fe29279560cdc55e91425133104c7fbe6
 
 # Die eigene Konfiguration ersetzt die mitgelieferte vollständig.
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
