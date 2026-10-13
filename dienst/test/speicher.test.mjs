@@ -35,6 +35,26 @@ test('zwei gleichzeitige Schreiber verlieren einander nicht', async () => {
     }
 });
 
+test('bedingtes Loeschen: nur mit dem gelesenen ETag, und weg ist dann Konflikt', async () => {
+    const speicher = speicherImArbeitsspeicher();
+    await speicher.setze(TABELLE_KONTEN, { partitionKey: KONTO, rowKey: 'z', wert: 1 });
+    const alt = await speicher.hole(TABELLE_KONTEN, KONTO, 'z');
+    await speicher.setze(TABELLE_KONTEN, { partitionKey: KONTO, rowKey: 'z', wert: 2 });
+
+    await assert.rejects(
+        speicher.loesche(TABELLE_KONTEN, KONTO, 'z', { etag: alt.etag }),
+        (f) => f instanceof SpeicherFehler && f.art === 'konflikt');
+
+    const neu = await speicher.hole(TABELLE_KONTEN, KONTO, 'z');
+    await speicher.loesche(TABELLE_KONTEN, KONTO, 'z', { etag: neu.etag });
+    await assert.rejects(
+        speicher.loesche(TABELLE_KONTEN, KONTO, 'z', { etag: neu.etag }),
+        (f) => f instanceof SpeicherFehler && f.art === 'konflikt');
+
+    // Ohne ETag bleibt es wie bisher: schon weg ist kein Fehler.
+    await speicher.loesche(TABELLE_KONTEN, KONTO, 'z');
+});
+
 test('nach drei Kollisionen kommt konflikt, keine Endlosschleife', async () => {
     const speicher = speicherImArbeitsspeicher();
     const p = fangeProtokoll();

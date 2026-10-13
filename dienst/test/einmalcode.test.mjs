@@ -124,6 +124,21 @@ test('eine Marke gilt einmal und traegt ihre Partition selbst', async () => {
     assert.deepEqual(await loeseMarkeEin(speicher, marke), { ok: false, grund: 'verbraucht' });
 });
 
+test('zwei gleichzeitige Einloesungen derselben Marke: genau eine gewinnt', async () => {
+    // Befund 432hz-radio#42: hole, vergleiche, loesche ohne ETag liess
+    // beide durch. Eine Marke, die zweimal gilt, ist kein Einmalgeheimnis.
+    const speicher = speicherImArbeitsspeicher();
+    const marke = await legeMarkeAn(speicher, KONTO);
+
+    const ergebnisse = await Promise.all([
+        loeseMarkeEin(speicher, marke),
+        loeseMarkeEin(speicher, marke),
+    ]);
+
+    assert.equal(ergebnisse.filter((e) => e.ok).length, 1);
+    assert.deepEqual(ergebnisse.find((e) => !e.ok), { ok: false, grund: 'verbraucht' });
+});
+
 test('eine abgelaufene Marke wird abgewiesen und weggeraeumt', async () => {
     const speicher = speicherImArbeitsspeicher();
     const jetzt = 1_800_000_000_000;

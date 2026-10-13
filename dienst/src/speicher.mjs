@@ -133,9 +133,14 @@ export function speicherImArbeitsspeicher() {
             return neu.etag;
         },
 
-        async loesche(tabelle, pk, rk) {
+        async loesche(tabelle, pk, rk, optionen = {}) {
             pruefeStoerung();
-            holeTabelle(tabelle).delete(schluessel(pk, rk));
+            const t = holeTabelle(tabelle);
+            const s = schluessel(pk, rk);
+            if (optionen.etag && t.get(s)?.etag !== optionen.etag) {
+                throw new SpeicherFehler('konflikt');
+            }
+            t.delete(s);
         },
 
         async *liste(tabelle, pk, praefix = '') {
@@ -212,6 +217,8 @@ async function baueAzure({ endpunkt, azurite }) {
             try {
                 return await tun();
             } catch (fehler) {
+                // Schon eingeordnet (bedingtes Loeschen): nicht umetikettieren.
+                if (fehler instanceof SpeicherFehler) throw fehler;
                 if (fehler?.statusCode === 404) throw new SpeicherFehler('nicht_gefunden', fehler);
                 if (fehler?.statusCode === 412 || fehler?.statusCode === 409) throw new SpeicherFehler('konflikt', fehler);
                 if (!istVoruebergehend(fehler) || versuch === 3) {
@@ -251,11 +258,21 @@ async function baueAzure({ endpunkt, azurite }) {
                 return antwort.etag;
             }),
 
-        loesche: (tabelle, pk, rk) =>
+        /*
+          Mit `etag` wird BEDINGT geloescht: Nur wer die Zeile in genau dem
+          Stand gelesen hat, darf sie wegnehmen. Dann ist „schon weg" kein
+          gewuenschter Zustand mehr, sondern die Nachricht, dass jemand
+          anders schneller war — und damit ein Konflikt.
+        */
+        loesche: (tabelle, pk, rk, optionen = {}) =>
             mitWiederholung(async () => {
                 try {
-                    await klient(tabelle).deleteEntity(pk, rk);
+                    await klient(tabelle).deleteEntity(pk, rk,
+                        optionen.etag ? { etag: optionen.etag } : undefined);
                 } catch (fehler) {
+                    if (optionen.etag && (fehler?.statusCode === 404 || fehler?.statusCode === 412)) {
+                        throw new SpeicherFehler('konflikt', fehler);
+                    }
                     // Schon weg ist der gewuenschte Zustand, kein Fehler.
                     if (fehler?.statusCode !== 404) throw fehler;
                 }

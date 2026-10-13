@@ -703,7 +703,16 @@ export function baueDienst({
                 versender.reiheEin({
                     art: kontoId ? 'marke' : 'unbekannt',
                     an: adresse,
-                    verweis: SEITE + '/passwort-neu?marke=' + encodeURIComponent(marke),
+                    /*
+                      Die Marke im FRAGMENT, nicht in der Query. Ein
+                      Fragment schickt der Browser nie zum Server, also
+                      auch nie als Referrer der Nachladeanfragen ins
+                      nginx-Protokoll — wer dort liest, saehe sonst 60
+                      Minuten lang uebernehmbare Konten (432hz-radio#42).
+                      Die Seite liest `location.hash` und loest per POST
+                      an /api/passwort/neu ein.
+                    */
+                    verweis: SEITE + '/passwort-neu#marke=' + encodeURIComponent(marke),
                     minuten: Math.round(MARKE_GUELTIG_MS / 60_000),
                     sprache: koerper.sprache,
                 });
