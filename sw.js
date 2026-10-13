@@ -160,7 +160,11 @@
 // v72: „Ganz lesen“ — das Kärtchen auf der Hülle hatte sechs Zeilen und war
 // bei 1024 px nie ganz zu sehen; jetzt öffnet es in voller Länge, ohne
 // einzuschalten (wie in Sonarium). app.js, styles.css, die sieben Sprachen.
-const SW_VERSION = 'iyambae-v73';
+// v74: Nichts mehr ablegen, was der Server nicht abgelegt haben will —
+// `Cache-Control: no-store` oder `private`, und /api/ nie (432hz-radio#47).
+// Die neue Nummer raeumt, was unter v73 und frueher so hineingeraten ist,
+// z. B. /gesund und /.well-known/*. Nur sw.js.
+const SW_VERSION = 'iyambae-v74';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -271,6 +275,27 @@ const SHELL_FILES = [
     '/data/sender.json',
 ];
 
+/*
+ Ob eine Antwort in einen Zwischenspeicher darf. Steht vor JEDEM cache.put.
+
+ Bis v73 kam jede 200-Antwort des eigenen Ursprungs hinein — auch die, zu
+ denen nginx ausdruecklich `Cache-Control: no-store` sagt (/gesund,
+ /.well-known/*). Gemeldet in 432hz-radio#47. /api/ wurde schon vorher
+ durchgereicht; die Regel sagt es trotzdem selbst, damit eine spaetere
+ Aenderung am fetch-Behandler nicht still eine Merkliste ablegt.
+
+ Dieselbe Funktion steht in assets/lib/sw-regel.mjs und wird dort getestet.
+ Scripts/test/sw-regel.test.mjs prueft, dass beide gleich lauten.
+*/
+function darfAblegen(antwort, pfad) {
+    if (!antwort || !antwort.ok || antwort.status !== 200) return false;
+    if (pfad.startsWith('/api/')) return false;
+    const steuerung = (antwort.headers.get('Cache-Control') || '')
+        .split(',')
+        .map((teil) => teil.split('=')[0].trim().toLowerCase());
+    return !steuerung.includes('no-store') && !steuerung.includes('private');
+}
+
 /** Welche Sprachseite zu dieser Adresse gehoert — Rueckfall Englisch. */
 function sprachseite(url) {
     const erster = url.pathname.split('/').filter(Boolean)[0];
@@ -289,6 +314,7 @@ self.addEventListener('install', (event) => {
             Promise.allSettled(SHELL_FILES.map((u) =>
                 fetch(new Request(u, { cache: 'reload' })).then((res) => {
                     if (!res.ok) throw new Error(`${u}: ${res.status}`);
+                    if (!darfAblegen(res, u)) throw new Error(`${u}: Server sagt no-store/private`);
                     return cache.put(u, res);
                 })
             )).then((ergebnisse) => {
@@ -396,7 +422,7 @@ self.addEventListener('fetch', (event) => {
                     speicher.match(req).then((gespeichert) => {
                         if (gespeichert) return gespeichert;
                         const hole = () => fetch(req).then((res) => {
-                            if (res && res.status === 200) speicher.put(req, res.clone());
+                            if (darfAblegen(res, url.pathname)) speicher.put(req, res.clone());
                             return res;
                         });
                         return hole().catch(() =>
@@ -418,7 +444,7 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(
             fetch(req)
                 .then((res) => {
-                    if (res && res.status === 200 && res.type === 'basic') {
+                    if (res && res.type === 'basic' && darfAblegen(res, url.pathname)) {
                         const kopie = res.clone();
                         caches.open(SHELL_CACHE).then((c) => c.put(req, kopie));
                     }

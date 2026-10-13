@@ -19,3 +19,23 @@ export function darfAbfangen(anfrageUrl, eigenerUrsprung) {
   try { url = new URL(anfrageUrl); } catch { return false; }
   return url.origin === eigenerUrsprung;
 }
+
+// Entscheidet, ob der Service Worker eine Antwort ablegen darf.
+//
+// Bis v73 legte er jede 200-Antwort des eigenen Ursprungs ab — auch solche,
+// zu denen nginx ausdruecklich `Cache-Control: no-store` sagt (/gesund,
+// /.well-known/*). Gemeldet in 432hz-radio#47. Private Daten waren nicht
+// betroffen, weil /api/ schon vorher durchgereicht wurde; diese Regel sagt
+// es trotzdem noch einmal selbst, damit eine spaetere Aenderung am
+// fetch-Behandler nicht still eine Merkliste in den Speicher legt.
+//
+// Wie darfAbfangen steht auch diese Funktion in sw.js von Hand, Zeichen fuer
+// Zeichen gleich. Scripts/test/sw-regel.test.mjs vergleicht die beiden.
+export function darfAblegen(antwort, pfad) {
+    if (!antwort || !antwort.ok || antwort.status !== 200) return false;
+    if (pfad.startsWith('/api/')) return false;
+    const steuerung = (antwort.headers.get('Cache-Control') || '')
+        .split(',')
+        .map((teil) => teil.split('=')[0].trim().toLowerCase());
+    return !steuerung.includes('no-store') && !steuerung.includes('private');
+}
