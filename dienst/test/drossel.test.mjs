@@ -143,7 +143,7 @@ async function bisGedrosselt(rufe, hoechstens) {
     return null;
 }
 
-test('passwort/setzen: das sechste in zehn Minuten wird gedrosselt, ein anderes Konto nicht', async () => {
+test('passwort/setzen: das elfte in zehn Minuten wird gedrosselt, ein anderes Konto nicht', async () => {
     const p = fangeProtokoll();
     // Eingefrorene Uhr: Sonst fuellt sich der Eimer waehrend der Schleife
     // nach, und ob die 61. oder die 62. Anfrage scheitert, haengt an der Last.
@@ -154,9 +154,12 @@ test('passwort/setzen: das sechste in zehn Minuten wird gedrosselt, ein anderes 
         // Drossel muss trotzdem davor stehen.
         const setze = () => d.rufe('POST', '/api/passwort/setzen', { passwort: 'x' });
 
-        const gedrosselt = await bisGedrosselt(setze, 8);
+        const gedrosselt = await bisGedrosselt(setze, 12);
         assert.ok(gedrosselt, 'die Drossel hat gar nicht gegriffen');
-        assert.equal(gedrosselt.nach, 6);
+        assert.equal(gedrosselt.nach, 11);
+        const zeile = p.zeilen.find((z) => z.art === 'drossel');
+        assert.equal(zeile.achse, 'konto');
+        assert.ok(zeile.konto, 'welches Konto gedrosselt wurde, gehoert ins Protokoll');
         assert.ok(Number(gedrosselt.antwort.kopf.get('retry-after')) >= 1);
 
         await meldeAn(d, 'zweites@example.org');

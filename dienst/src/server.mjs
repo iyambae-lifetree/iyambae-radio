@@ -462,10 +462,10 @@ export function baueDienst({
         return sitzung;
     }
 
-    function drossle(achsen) {
+    function drossle(achsen, kontoId) {
         const ergebnis = drossel.pruefe(achsen);
         if (!ergebnis.ok) {
-            protokolliere({ art: 'drossel', ergebnis: 'gedrosselt', achse: ergebnis.achse });
+            protokolliere({ art: 'drossel', ergebnis: 'gedrosselt', achse: ergebnis.achse, konto: kontoId });
             throw new HttpFehler(429, 'zu_viele_versuche', { 'Retry-After': String(ergebnis.sekunden) });
         }
     }
@@ -489,7 +489,9 @@ export function baueDienst({
       Sitzungspruefung — und VOR jeder Speicher- oder Argon2-Arbeit.
     */
     const KONTODROSSEL = {
-        setzen:  ['pwset', 5, 10 * 60_000],
+        // 10 und nicht 5: Auch abgelehnte Passwoerter (zu kurz, geleakt)
+        // zaehlen, und wer zweimal daneben liegt, soll nicht warten muessen.
+        setzen:  ['pwset', 10, 10 * 60_000],
         platten: ['abgl-platten', 60, 60_000],
         verlauf: ['abgl-verlauf', 60, 60_000],
         ausfuhr: ['ausfuhr', 5, 60 * 60_000],
@@ -497,7 +499,7 @@ export function baueDienst({
 
     function drossleKonto(weg, kontoId) {
         const [kuerzel, erlaubt, fenster] = KONTODROSSEL[weg];
-        drossle([['konto', kuerzel + ':' + kontoId, erlaubt, fenster]]);
+        drossle([['konto', kuerzel + ':' + kontoId, erlaubt, fenster]], kontoId);
     }
 
     /**

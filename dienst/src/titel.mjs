@@ -173,9 +173,15 @@ for (const [netz, praefix] of [
     ['0.0.0.0', 8], ['10.0.0.0', 8], ['100.64.0.0', 10], ['127.0.0.0', 8],
     ['169.254.0.0', 16], ['172.16.0.0', 12], ['192.0.0.0', 24],
     ['192.168.0.0', 16], ['198.18.0.0', 15], ['224.0.0.0', 4], ['240.0.0.0', 4],
+    // Azures Plattformadresse (WireServer: DNS, Lebensprobe, Zielzustand).
+    // Oeffentlich vergeben, aber nur von innen erreichbar — und genau das
+    // macht sie zum Ziel, wenn ein Dienst in Azure fremde Adressen abruft.
+    ['168.63.129.16', 32],
 ]) NICHT_OEFFENTLICH.addSubnet(netz, praefix, 'ipv4');
 for (const [netz, praefix] of [
     ['::', 127], ['64:ff9b::', 96], ['100::', 64],
+    // 6to4 und Teredo betten IPv4-Adressen ein, auch innere.
+    ['2002::', 16], ['2001::', 32],
     ['fc00::', 7], ['fe80::', 10], ['ff00::', 8],
 ]) NICHT_OEFFENTLICH.addSubnet(netz, praefix, 'ipv6');
 
@@ -370,11 +376,12 @@ function ohneAnhang(t) {
 export async function liesIcyTitel(url, {
     holeStrom = fetch, zeitlimit = ZEITLIMIT_MS,
     /*
-      Die Zielprüfung gehört zum echten Netz. Wer `holeStrom` ersetzt —
-      die Tests —, hat kein Ziel, das man auflösen könnte; dort prüft nur,
-      wer `pruefeZiel` ausdrücklich mitgibt.
+      Die Zielprüfung ist IMMER an. Wer sie nicht will — die Tests, die
+      kein echtes Netz haben —, muss das ausdrücklich sagen. Andersherum
+      (aus, sobald `holeStrom` nicht `fetch` ist) schaltete ein späterer
+      Umschlag um fetch, etwa für Messwerte, sie still ab.
     */
-    pruefeZiel = holeStrom === fetch ? zielIstOeffentlich : async () => true,
+    pruefeZiel = zielIstOeffentlich,
 } = {}) {
     const abbruch = new AbortController();
     const wecker = setTimeout(() => abbruch.abort(), zeitlimit);
@@ -473,6 +480,7 @@ function zusammen(teile, gesamt) {
 export function erzeugeTitel({
     holeSenderliste, holeBeobachtete = async () => null,
     holeStrom = fetch, jetzt = () => Date.now(), protokolliere = () => {},
+    pruefeZiel = zielIstOeffentlich,
 } = {}) {
     /** id -> { titel, stand } */
     const stand = new Map();
@@ -568,7 +576,7 @@ export function erzeugeTitel({
                     for (;;) {
                         const s = reihe.shift();
                         if (!s) return;
-                        const { titel } = await liesIcyTitel(s.stream, { holeStrom });
+                        const { titel } = await liesIcyTitel(s.stream, { holeStrom, pruefeZiel });
                         const sauber = saeubereTitel(titel, s.name);
                         // Auch ein Fehlschlag setzt den Zeitstempel: Sonst
                         // stünde derselbe tote Sender bei jedem Zug wieder

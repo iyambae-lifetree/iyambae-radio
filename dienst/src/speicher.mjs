@@ -439,9 +439,10 @@ export function normalisiereAdresse(mail) {
   Trenn- und Klammerzeichen. Vorher war `[^\s@]` erlaubt, also auch
   `, ; < > "` — und ob ACS `a,b@x.de` als zwei Empfaenger liest, wollten
   wir nicht erst im Betrieb herausfinden (432hz-radio#46, Punkt 7).
-  Umlaute im Domainteil bleiben erlaubt, die gibt es.
+  Buchstaben jeder Schrift bleiben erlaubt, vorn wie hinten (RFC 6531):
+  Ein bestehendes Konto `jürgen@…` bekaeme sonst still keinen Code mehr.
 */
-const ADRESSE_MUSTER = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]{1,64}@[^\s@.,;:<>()[\]\\"]+(\.[^\s@.,;:<>()[\]\\"]+)+$/i;
+const ADRESSE_MUSTER = /^[\p{L}\p{N}!#$%&'*+/=?^_`{|}~.-]{1,64}@[^\s@.,;:<>()[\]\\"]+(\.[^\s@.,;:<>()[\]\\"]+)+$/iu;
 export function adresseSiehtEchtAus(mail) {
     const sauber = normalisiereAdresse(mail);
     return sauber.length <= 254 && ADRESSE_MUSTER.test(sauber);

@@ -73,7 +73,7 @@ test('Trenn- und Klammerzeichen im lokalen Teil sind keine Adresse', () => {
         assert.equal(adresseSiehtEchtAus(mail), false, mail);
     }
     for (const mail of ['vor.name+tag@example.org', "o'brien@example.ie", 'a_b-c@sub.example.co.uk',
-        'name@münchen.de']) {
+        'name@münchen.de', 'jürgen@example.de']) {
         assert.equal(adresseSiehtEchtAus(mail), true, mail);
     }
 });
