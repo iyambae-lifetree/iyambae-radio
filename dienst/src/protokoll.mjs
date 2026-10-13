@@ -96,7 +96,7 @@ function saeubereWert(wert) {
 
 /*
   Die Kontokennung ist ein Zufallswert und faellt damit unter
-  SIEHT_AUS_WIE_GEHEIMNIS. Sie soll aber ins Protokoll, sonst laesst sich
+  siehtAusWieGeheimnis. Sie soll aber ins Protokoll, sonst laesst sich
   eine Beschwerde nicht nachvollziehen. Gekuerzt auf zwoelf Zeichen: das
   reicht, um zwei Zeilen derselben Sitzung zusammenzubringen, und es ist
   ohne die Kontotabelle nichts wert.

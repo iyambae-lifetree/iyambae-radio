@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 
 import {
     liesIcyTitel, saeubereTitel, erzeugeTitel,
+    istOeffentlicheAdresse, zielIstOeffentlich,
     ALTER_MS, ALTER_BEOBACHTET_MS, JE_ZUG, REIHUM, METAINT_HOECHSTENS,
+    SPRUENGE_HOECHSTENS,
 } from '../src/titel.mjs';
 
 /*
@@ -522,4 +524,71 @@ test('ueber mehrere Zuege kommt jeder Sender einmal dran', async () => {
     for (let i = 0; i < 8; i += 1) { await laden.fuelle(); uhr.t += 1; }
     const erreicht = new Set(angefragt);
     assert.equal(erreicht.size, 12, 'keiner bleibt liegen: ' + [...erreicht].join(','));
+});
+
+
+// ── Weiterleitungen und Ziele (432hz-radio#46, Punkt 3) ─────────────
+
+test('innere Adressen sind kein Ziel, oeffentliche schon', () => {
+    for (const ip of ['127.0.0.1', '10.1.2.3', '172.16.0.1', '192.168.1.1',
+        '169.254.169.254', '100.64.0.1', '0.0.0.0', '224.0.0.1', '255.255.255.255',
+        '::1', '::', 'fe80::1', 'fd00::1', '::ffff:127.0.0.1', '::ffff:7f00:1', 'ff02::1',
+        'kein-ip']) {
+        assert.equal(istOeffentlicheAdresse(ip), false, ip);
+    }
+    for (const ip of ['93.184.216.34', '1.1.1.1', '172.32.0.1', '2606:4700::1111']) {
+        assert.equal(istOeffentlicheAdresse(ip), true, ip);
+    }
+});
+
+test('ein Name, der auch nur EINE innere Adresse liefert, ist kein Ziel', async () => {
+    const loeseAuf = async (name) => ({
+        gemischt: [{ address: '93.184.216.34' }, { address: '10.0.0.5' }],
+        draussen: [{ address: '93.184.216.34' }],
+    }[name] ?? []);
+
+    assert.equal(await zielIstOeffentlich('https://gemischt/strom', { loeseAuf }), false);
+    assert.equal(await zielIstOeffentlich('https://draussen/strom', { loeseAuf }), true);
+    assert.equal(await zielIstOeffentlich('https://unbekannt/strom', { loeseAuf }), false);
+    assert.equal(await zielIstOeffentlich('http://127.0.0.1:8081/api/leben', { loeseAuf }), false);
+    assert.equal(await zielIstOeffentlich('http://[::1]/', { loeseAuf }), false);
+    assert.equal(await zielIstOeffentlich('file:///etc/passwd', { loeseAuf }), false);
+    assert.equal(await zielIstOeffentlich('kein url', { loeseAuf }), false);
+});
+
+function weiterleitung(wohin) {
+    return { ok: false, status: 302, headers: { get: (n) => (n.toLowerCase() === 'location' ? wohin : null) } };
+}
+
+test('eine Weiterleitung nach innen wird nicht verfolgt', async () => {
+    const angefragt = [];
+    const { titel } = await liesIcyTitel('https://sender.example/strom', {
+        holeStrom: async (url, optionen) => {
+            angefragt.push(url);
+            assert.equal(optionen.redirect, 'manual');
+            return weiterleitung('http://169.254.169.254/latest/meta-data/');
+        },
+        pruefeZiel: async (url) => !url.includes('169.254'),
+    });
+    assert.equal(titel, null);
+    assert.deepEqual(angefragt, ['https://sender.example/strom']);
+});
+
+test('eine Weiterleitung nach draussen wird verfolgt, auch relativ', async () => {
+    const strom = stromMit('Maali - Someday');
+    const { titel } = await liesIcyTitel('https://sender.example/a', {
+        holeStrom: async (url) => (url.endsWith('/a') ? weiterleitung('/b') : strom()),
+        pruefeZiel: async () => true,
+    });
+    assert.equal(titel, 'Maali - Someday');
+});
+
+test('mehr Spruenge als erlaubt: kein Titel, keine weitere Anfrage', async () => {
+    let anfragen = 0;
+    const { titel } = await liesIcyTitel('https://sender.example/0', {
+        holeStrom: async () => { anfragen++; return weiterleitung('https://sender.example/' + anfragen); },
+        pruefeZiel: async () => true,
+    });
+    assert.equal(titel, null);
+    assert.equal(anfragen, SPRUENGE_HOECHSTENS + 1);
 });

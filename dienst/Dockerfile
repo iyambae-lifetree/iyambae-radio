@@ -2,8 +2,9 @@
 #
 # Er laeuft NICHT allein, sondern als zweiter Container in derselben Replik
 # wie nginx (siehe infra/main.bicep). nginx reicht /api/ an 127.0.0.1:8081
-# weiter — dieser Container lauscht dort und sonst nirgends. Es gibt keinen
-# Ingress auf ihn, keinen eigenen Hostnamen, keine Adresse von aussen.
+# weiter. Gelauscht wird auf 0.0.0.0:8081, weil die Lebensprobe von
+# Container Apps von ausserhalb des Containers kommt; es gibt trotzdem
+# keinen Ingress auf ihn, keinen eigenen Hostnamen, keine Adresse von aussen.
 #
 # Zwei Stufen. Nicht aus Gewohnheit, sondern weil `npm ci` einen Cache, eine
 # package-lock.json und ein Gedaechtnis hinterlaesst, das in einem Abbild

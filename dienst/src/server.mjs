@@ -2,9 +2,11 @@
   Der Anmeldedienst — HTTP, Weiche, Fehlerbehandlung.
 
   Er laeuft als zweiter Container NEBEN nginx in derselben Replik und hoert
-  auf 127.0.0.1:8081. Von aussen kommt nichts direkt an ihn heran; nginx
-  reicht /api/ weiter (siehe den Block „NOCH ZU TUN" in
-  infra/konto.bicep.entwurf).
+  auf Port 8081 — gebunden an 0.0.0.0, nicht an 127.0.0.1: Die Lebensprobe
+  von Container Apps (main.bicep, `httpGet` auf 8081) kommt von ausserhalb
+  des Containers und faende ihn sonst nicht. Von aussen kommt trotzdem
+  nichts direkt an ihn heran, denn der Ingress fuehrt nur auf 8080 (nginx),
+  und nginx reicht /api/ an 127.0.0.1:8081 weiter.
 
   Kein Framework. node:http kann alles, was hier gebraucht wird, und jede
   Abhaengigkeit an dieser Stelle waere eine, die man bei jeder
@@ -242,8 +244,8 @@ async function liesKoerper(anfrage) {
               Aufhoeren zu lesen, aber NICHT die Verbindung wegwerfen.
               nginx begrenzt mit client_max_body_size schon auf 32k; der
               Dienst darf sich trotzdem nicht darauf verlassen, denn er
-              hoert auf 127.0.0.1 und wer je im selben Netzwerknamensraum
-              steht, kommt an nginx vorbei.
+              hoert auf 8081 und wer je im selben Netzwerknamensraum steht
+              (oder die Lebensprobe), kommt an nginx vorbei.
 
               GEMESSEN, und es war der Unterschied zwischen einer Antwort
               und keiner: Mit `anfrage.destroy()` an dieser Stelle bekam der
@@ -397,7 +399,7 @@ export async function baueFremdanmeldung(speicher, zusatz = {}) {
   Ohne sie sind diese Wege ein kostenloser Hebel gegen Google und Apple:
   Jeder Start ist eine Anfrage, die wir dort verursachen, ohne dass jemand
   angemeldet sein muss. konto.bicep.entwurf zieht in nginx dieselbe Grenze
-  ein zweites Mal; hier steht sie, weil der Dienst auf 127.0.0.1 hoert und
+  ein zweites Mal; hier steht sie, weil der Dienst auf 8081 hoert und
   wer im selben Namensraum steht, an nginx vorbeikommt.
 
   Die Zahlen sind KEINE neuen. Ein Anbieterstart ist eine Anmeldung, nur bei

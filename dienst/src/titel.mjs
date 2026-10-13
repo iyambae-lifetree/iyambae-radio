@@ -68,6 +68,9 @@
   ═══════════════════════════════════════════════════════════════════
 */
 
+import { lookup } from 'node:dns/promises';
+import { BlockList, isIP } from 'node:net';
+
 /** Wie lange ein gelesener Titel als frisch gilt. */
 export const ALTER_MS = 90_000;
 
@@ -141,6 +144,74 @@ export const ZEITLIMIT_MS = 6_000;
  * 10 MB nennt, bekommt hier ein Nein statt unserer Bandbreite.
  */
 export const METAINT_HOECHSTENS = 64_000;
+
+/*
+  Weiterleitungen werden VON HAND verfolgt, höchstens so viele.
+
+  Mit `redirect: 'follow'` konnte ein Senderbetreiber — oder wer eine
+  Domain übernimmt, die im Katalog steht — den Dienst auf 127.0.0.1:8081,
+  169.254.169.254 oder ins eigene Netz schicken (432hz-radio#46, Punkt 3).
+  Zurück käme nur `StreamTitle`, also kaum etwas Lesbares; aber eine
+  Anfrage von innen an eine Adresse von innen ist genau die Sorte Tür, die
+  man nicht offen lässt, weil heute nichts dahinter liegt.
+*/
+export const SPRUENGE_HOECHSTENS = 3;
+
+/*
+  Was kein öffentliches Ziel ist. Wörtlich die Bereiche aus RFC 6890 und
+  seinen Nachfolgern, die ein Strom nie haben kann: eigenes Netz, Schleife,
+  Link-local (dort steht der Metadatendienst der Cloud), CGNAT, Mehrfach-
+  versand, reserviert.
+
+  Die eingebetteten IPv4-Adressen (::ffff:0:0/96) stehen NICHT in der
+  Liste, sondern unten von Hand: `BlockList` prüft jede IPv4-Adresse auch
+  gegen diesen Bereich, und mit ihm darin galt das ganze Internet als
+  gesperrt. Ein Strom hat nie eine solche Adresse, also fallen sie alle.
+*/
+const NICHT_OEFFENTLICH = new BlockList();
+for (const [netz, praefix] of [
+    ['0.0.0.0', 8], ['10.0.0.0', 8], ['100.64.0.0', 10], ['127.0.0.0', 8],
+    ['169.254.0.0', 16], ['172.16.0.0', 12], ['192.0.0.0', 24],
+    ['192.168.0.0', 16], ['198.18.0.0', 15], ['224.0.0.0', 4], ['240.0.0.0', 4],
+]) NICHT_OEFFENTLICH.addSubnet(netz, praefix, 'ipv4');
+for (const [netz, praefix] of [
+    ['::', 127], ['64:ff9b::', 96], ['100::', 64],
+    ['fc00::', 7], ['fe80::', 10], ['ff00::', 8],
+]) NICHT_OEFFENTLICH.addSubnet(netz, praefix, 'ipv6');
+
+/** Ist das eine Adresse, an die der Dienst einen Strom holen darf? */
+export function istOeffentlicheAdresse(ip) {
+    const art = isIP(ip);
+    if (art === 0) return false;
+    if (art === 6 && /^::ffff:/i.test(ip)) return false;
+    return !NICHT_OEFFENTLICH.check(ip, art === 4 ? 'ipv4' : 'ipv6');
+}
+
+/**
+ * Löst das Ziel auf und prüft JEDE Adresse, die herauskommt. Eine einzige
+ * innere reicht zum Nein: Welche davon `fetch` dann nimmt, entscheidet nicht
+ * dieser Code.
+ *
+ * Was bleibt, und es gehört dazugesagt: Zwischen dieser Auflösung und der
+ * von `fetch` liegt ein Augenblick, in dem ein Namensserver umschwenken
+ * könnte. Gegen dieses Umschwenken hülfe nur, die geprüfte Adresse selbst
+ * anzuwählen — mit eigenem TLS-Namen, für eine Textzeile. Die Tür ist damit
+ * nicht zu, aber sie steht nicht mehr offen.
+ */
+export async function zielIstOeffentlich(url, { loeseAuf = lookup } = {}) {
+    let ziel;
+    try { ziel = new URL(url); } catch { return false; }
+    if (ziel.protocol !== 'http:' && ziel.protocol !== 'https:') return false;
+    const name = ziel.hostname.replace(/^\[|\]$/g, '');
+    try {
+        const adressen = isIP(name)
+            ? [{ address: name }]
+            : await loeseAuf(name, { all: true, verbatim: true });
+        return adressen.length > 0 && adressen.every((a) => istOeffentlicheAdresse(a.address));
+    } catch {
+        return false;
+    }
+}
 
 /*
   Zeichenketten, die kein Titel sind.
@@ -298,16 +369,37 @@ function ohneAnhang(t) {
  */
 export async function liesIcyTitel(url, {
     holeStrom = fetch, zeitlimit = ZEITLIMIT_MS,
+    /*
+      Die Zielprüfung gehört zum echten Netz. Wer `holeStrom` ersetzt —
+      die Tests —, hat kein Ziel, das man auflösen könnte; dort prüft nur,
+      wer `pruefeZiel` ausdrücklich mitgibt.
+    */
+    pruefeZiel = holeStrom === fetch ? zielIstOeffentlich : async () => true,
 } = {}) {
     const abbruch = new AbortController();
     const wecker = setTimeout(() => abbruch.abort(), zeitlimit);
     let leser = null;
     try {
-        const antwort = await holeStrom(url, {
-            headers: { 'Icy-MetaData': '1' },
-            signal: abbruch.signal,
-            redirect: 'follow',
-        });
+        let ziel = url;
+        let antwort = null;
+        for (let sprung = 0; sprung <= SPRUENGE_HOECHSTENS; sprung++) {
+            if (!(await pruefeZiel(ziel))) return { titel: null };
+            antwort = await holeStrom(ziel, {
+                headers: { 'Icy-MetaData': '1' },
+                signal: abbruch.signal,
+                redirect: 'manual',
+            });
+            const status = antwort.status ?? 200;
+            if (status < 300 || status >= 400) break;
+
+            const wohin = antwort.headers.get('location');
+            try { await antwort.body?.cancel?.(); } catch {}
+            if (!wohin) return { titel: null };
+            ziel = new URL(wohin, ziel).href;
+            antwort = null;
+        }
+        // Mehr Sprünge als erlaubt: kein Titel, keine weitere Anfrage.
+        if (!antwort) return { titel: null };
         if (!antwort.ok || !antwort.body) return { titel: null };
 
         const intervall = Number(antwort.headers.get('icy-metaint'));

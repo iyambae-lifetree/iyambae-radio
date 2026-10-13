@@ -328,6 +328,19 @@ function naechsterPraefix(praefix) {
 export async function erzeugeSpeicher(umgebung = process.env) {
     if (umgebung.AZURITE === '1') return baueAzure({ azurite: true });
     if (umgebung.TABELLEN_ENDPUNKT) return baueAzure({ endpunkt: umgebung.TABELLEN_ENDPUNKT });
+    /*
+      Im Betrieb ist der Arbeitsspeicher kein Notbehelf, sondern ein
+      Ausfall, der wie Betrieb aussieht: Konten entstehen, Anmeldungen
+      gelingen — und mit dem naechsten Neustart ist alles weg
+      (432hz-radio#46, Punkt 6). Also abbrechen, laut.
+
+      Container Apps setzt CONTAINER_APP_NAME in jedem Container selbst;
+      main.bicep setzt kein NODE_ENV. Beides wird geprueft, damit es auch
+      gilt, wenn der Dienst einmal anderswo laeuft.
+    */
+    if (umgebung.CONTAINER_APP_NAME || umgebung.NODE_ENV === 'production') {
+        throw new Error('TABELLEN_ENDPUNKT fehlt — im Betrieb laeuft der Dienst nicht im Arbeitsspeicher');
+    }
     return speicherImArbeitsspeicher();
 }
 
@@ -421,7 +434,14 @@ export function normalisiereAdresse(mail) {
   regelmaessig gueltige Adressen ab, und der Betroffene kann nichts dagegen
   tun.
 */
-const ADRESSE_MUSTER = /^[^\s@]{1,64}@[^\s@.]+(\.[^\s@.]+)+$/;
+/*
+  Der lokale Teil nur aus RFC-5322-atext und Punkten, der Domainteil ohne
+  Trenn- und Klammerzeichen. Vorher war `[^\s@]` erlaubt, also auch
+  `, ; < > "` — und ob ACS `a,b@x.de` als zwei Empfaenger liest, wollten
+  wir nicht erst im Betrieb herausfinden (432hz-radio#46, Punkt 7).
+  Umlaute im Domainteil bleiben erlaubt, die gibt es.
+*/
+const ADRESSE_MUSTER = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]{1,64}@[^\s@.,;:<>()[\]\\"]+(\.[^\s@.,;:<>()[\]\\"]+)+$/i;
 export function adresseSiehtEchtAus(mail) {
     const sauber = normalisiereAdresse(mail);
     return sauber.length <= 254 && ADRESSE_MUSTER.test(sauber);
