@@ -1,0 +1,82 @@
+/*
+  Was „Neues Passwort" ueber regal.css hinaus braucht: Felder, Meldungen.
+
+  Die Felder sehen aus wie im Anmeldefenster des Radios (.anmeldung__eingabe
+  in styles.css) — wer dort sein Passwort gesetzt hat, soll hier dieselbe
+  Sorte Feld wiedererkennen. Die Fehlerfarbe ist dieselbe wie
+  .anmeldung__fehler.
+*/
+
+.konto { max-width: 30rem; }
+
+.konto__titel {
+    font-family: var(--anzeige); font-weight: 900;
+    font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.15;
+    margin: 0 0 0.9rem;
+}
+
+.konto__was { margin: 0 0 1.6rem; }
+
+.konto__form { display: grid; gap: 0.5rem; margin: 0 0 1.2rem; }
+.konto__form[hidden],
+.konto__fertig[hidden],
+.konto__meldung[hidden],
+.konto__was[hidden] { display: none; }
+.konto__form .knopf { justify-self: start; margin-top: 0.4rem; border: 0; cursor: pointer; font-family: inherit; }
+.konto__form .knopf:disabled { opacity: 0.6; cursor: progress; }
+
+.konto__form--link { margin-top: 2rem; padding-top: 1.6rem; border-top: 1px solid var(--rand); }
+.konto__form h2,
+.konto__fertig h2 {
+    font-family: var(--anzeige); font-size: 1rem; font-weight: 900;
+    letter-spacing: 0.04em; margin: 0 0 0.4rem;
+}
+.konto__fertig h2:focus { outline: none; }
+
+.konto__feld { font-size: 0.8rem; color: var(--text-leise); }
+.konto__eingabe {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    background: var(--karte);
+    border: 1px solid var(--rand-hell);
+    border-radius: var(--rund);
+    color: var(--text);
+    font: inherit; font-size: 1rem;
+}
+.konto__eingabe:focus-visible {
+    outline: 2px solid var(--gold); outline-offset: 1px;
+    border-color: var(--gold);
+}
+
+.konto__regel,
+.konto__hinweis { font-size: 0.82rem; color: var(--text-leise); margin: 0; }
+.konto__hinweis {
+    border-inline-start: 2px solid var(--rand-hell);
+    padding-inline-start: 0.7rem; margin-top: 0.3rem;
+}
+
+.konto__zeigen {
+    font-size: 0.85rem; color: var(--text-leise);
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    cursor: pointer; justify-self: start;
+}
+.konto__zeigen input { accent-color: var(--gold); margin: 0; }
+
+.konto__meldung {
+    font-size: 0.88rem; line-height: 1.5;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid rgba(255, 92, 92, 0.5);
+    border-radius: var(--rund);
+    background: var(--karte);
+    margin: 0 0 1.2rem;
+}
+.konto__meldung[data-art="ok"] { border-color: rgba(53, 224, 138, 0.5); }
+.konto__form .konto__meldung { margin: 0.4rem 0 0; }
+
+.konto__fertig {
+    border: 1px solid rgba(53, 224, 138, 0.5);
+    border-radius: var(--rund);
+    background: var(--karte);
+    padding: 1.2rem 1.2rem 0.4rem;
+    margin: 0 0 1.2rem;
+}

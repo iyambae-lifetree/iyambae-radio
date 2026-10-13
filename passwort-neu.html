@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--
+  VORLAGE FUER „NEUES PASSWORT". Gefuellt von Scripts/baue-passwort-neu.py,
+  nach demselben Muster wie regal.html: Marken in doppelten geschweiften
+  Klammern, die Saetze aus data/passwort-neu-texte.json.
+
+  Hierher fuehrt der Link aus der Mail „Passwort vergessen". Die Marke steht
+  im Fragment (#marke=…) und wird in assets/passwort-neu.mjs gelesen und
+  sofort aus der Adresse genommen — siehe dort.
+
+  no-referrer und noindex: Die Seite hat niemandem etwas zu erzaehlen, und
+  sie soll nicht in einer Suchmaschine stehen.
+-->
+<html data-sprache="{{SPRACHE}}" lang="{{SPRACHE}}" dir="{{RICHTUNG}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <meta name="robots" content="noindex, nofollow">
+    <title>{{TITEL}}</title>
+    <meta name="description" content="{{BESCHREIBUNG}}">
+    <meta name="theme-color" content="#05020a">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/schrift/schriften.css">
+    <link rel="stylesheet" href="/assets/regal.css">
+    <link rel="stylesheet" href="/assets/passwort-neu.css">
+    <script type="module" src="/assets/passwort-neu.mjs"></script>
+</head>
+<body>
+
+<header class="kopf">
+    <a class="marke" href="{{HEIM}}">IYAMBAE <span class="marke__fm">FM</span></a>
+    <nav class="sprachen" aria-label="{{SPRACHWAHL_TITEL}}">
+{{SPRACHWAHL}}
+    </nav>
+</header>
+
+<main class="blatt konto">
+
+    <p class="augenbraue">{{AUGENBRAUE}}</p>
+
+    <h1 class="konto__titel">{{UEBERSCHRIFT}}</h1>
+
+    <p class="konto__was" id="vorwort">{{VORWORT}}</p>
+
+    <!-- Das Formular steht von Anfang an im Dokument: Ein Feld, das erst
+         per Programmcode entsteht, findet kein Passwortverwalter. -->
+    <form class="konto__form" id="formNeu" novalidate>
+        <label class="konto__feld" for="feldPasswort">{{FELD}}</label>
+        <input class="konto__eingabe" type="password" id="feldPasswort" name="passwort"
+               autocomplete="new-password" minlength="15" maxlength="256"
+               spellcheck="false" autocapitalize="off" required
+               aria-describedby="regel">
+        <p class="konto__regel" id="regel">{{REGEL}}</p>
+        <label class="konto__zeigen"><input type="checkbox" id="zeigen"> {{ZEIGEN}}</label>
+        <p class="konto__hinweis">{{EINMAL}}</p>
+        <button class="knopf" type="submit" id="knopfSpeichern">{{SENDEN}}</button>
+    </form>
+
+    <p class="konto__meldung" id="meldung" role="alert" hidden></p>
+
+    <section class="konto__fertig" id="fertig" hidden>
+        <h2 tabindex="-1">{{OK_TITEL}}</h2>
+        <p>{{OK_TEXT}}</p>
+        <p><a class="knopf" href="{{HEIM}}">{{OK_KNOPF}}</a></p>
+    </section>
+
+    <form class="konto__form konto__form--link" id="formLink" hidden novalidate>
+        <h2>{{LINK_TITEL}}</h2>
+        <label class="konto__feld" for="feldMail">{{LINK_FELD}}</label>
+        <input class="konto__eingabe" type="email" id="feldMail" name="mail"
+               autocomplete="email" spellcheck="false" placeholder="{{LINK_PLATZHALTER}}">
+        <button class="knopf" type="submit" id="knopfLink">{{LINK_SENDEN}}</button>
+        <p class="konto__meldung" id="linkMeldung" role="status" hidden></p>
+    </form>
+
+</main>
+
+<footer class="fuss">
+{{FUSS}}
+</footer>
+
+<script type="application/json" id="texte">{{TEXTE}}</script>
+</body>
+</html>
