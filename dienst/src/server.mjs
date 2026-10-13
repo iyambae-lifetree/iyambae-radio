@@ -468,6 +468,36 @@ export function baueDienst({
         }
     }
 
+    /*
+      Drossel fuer die ANGEMELDETEN Wege, je Konto (432hz-radio#41).
+
+      Ein Konto kostet nur einen Mailcode. Ohne diese Grenze belegte ein
+      einziges mit parallelem `passwort/setzen` die vier Argon2-Plaetze —
+      und die Passwortanmeldung aller anderen antwortete 503. Die Abgleiche
+      und die Ausfuhr kosten je Anfrage Zugriffe auf den Tabellendienst.
+
+      Die Achse ist das Konto, nicht das Netz: Wer angemeldet ist, ist
+      bekannt, und eine Grenze je Netz traefe alle hinter demselben
+      Anschluss. Die Zahlen liegen weit ueber dem, was ein Mensch oder die
+      eigene Seite braucht (der Browser gleicht beim Start und nach
+      Aenderungen ab, nicht im Sekundentakt).
+
+      Gezaehlt wird NACH `verlangeSitzung` — ohne Sitzung gibt es keine
+      Kennung, und eine Anfrage ohne Sitzung kostet nichts ausser der
+      Sitzungspruefung — und VOR jeder Speicher- oder Argon2-Arbeit.
+    */
+    const KONTODROSSEL = {
+        setzen:  ['pwset', 5, 10 * 60_000],
+        platten: ['abgl-platten', 60, 60_000],
+        verlauf: ['abgl-verlauf', 60, 60_000],
+        ausfuhr: ['ausfuhr', 5, 60 * 60_000],
+    };
+
+    function drossleKonto(weg, kontoId) {
+        const [kuerzel, erlaubt, fenster] = KONTODROSSEL[weg];
+        drossle([['konto', kuerzel + ':' + kontoId, erlaubt, fenster]]);
+    }
+
     /**
      * Merkliste oder Verlauf lesen und verschmelzen, mit ETag.
      * Beide Zeilen haben dieselbe Form, deshalb eine Funktion.
@@ -642,6 +672,7 @@ export function baueDienst({
 
         'POST /api/passwort/setzen': async ({ anfrage, koerper }) => {
             const sitzung = await verlangeSitzung(anfrage);
+            drossleKonto('setzen', sitzung.kontoId);
             const kennung = await holeOderNichts(speicher, TABELLE_KONTEN, sitzung.kontoId, 'kennung:mail');
 
             const gepr = await pruefeNeuesPasswort(koerper.passwort, { adresse: kennung?.adresse });
@@ -822,6 +853,7 @@ export function baueDienst({
 
         'POST /api/platten/abgleich': async ({ anfrage, koerper }) => {
             const sitzung = await verlangeSitzung(anfrage);
+            drossleKonto('platten', sitzung.kontoId);
             const jetzt = Date.now();
             const eingehend = saeubereEintraege(koerper.eintraege);
             const ergebnis = await gleicheAb(sitzung.kontoId, 'platten', eingehend, verschmelzePlatten, jetzt);
@@ -848,6 +880,7 @@ export function baueDienst({
 
         'POST /api/verlauf/abgleich': async ({ anfrage, koerper }) => {
             const sitzung = await verlangeSitzung(anfrage);
+            drossleKonto('verlauf', sitzung.kontoId);
             const jetzt = Date.now();
             const eingehend = saeubereVerlauf(koerper.eintraege);
             const ergebnis = await gleicheAb(sitzung.kontoId, 'verlauf', eingehend, verschmelzeVerlauf, jetzt);
@@ -878,6 +911,7 @@ export function baueDienst({
         */
         'GET /api/konto/ausfuhr': async ({ anfrage }) => {
             const sitzung = await verlangeSitzung(anfrage);
+            drossleKonto('ausfuhr', sitzung.kontoId);
             const geheim = new Set(['abdruck', 'passwortHash', 'etag', 'timestamp']);
             const zeilen = [];
             for await (const zeile of speicher.liste(TABELLE_KONTEN, sitzung.kontoId)) {

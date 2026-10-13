@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { erzeugeDrossel, netzVon } from '../src/server.mjs';
-import { starteTestdienst, fangeProtokoll } from './hilfe.mjs';
+import { starteTestdienst, fangeProtokoll, meldeAn } from './hilfe.mjs';
 
 // ── Die Rechnung ────────────────────────────────────────────────────
 
@@ -121,6 +121,80 @@ test('eine gedrosselte Anfrage schickt keine Mail', async () => {
         }
         // Fuenf sind erlaubt, mehr darf der Mailversand nie zu sehen bekommen.
         assert.ok(d.mails.length <= 5, 'Mails: ' + d.mails.length);
+    } finally {
+        await d.schliesse();
+        p.zurueck();
+    }
+});
+
+// ── Angemeldete Wege (432hz-radio#41) ───────────────────────────────
+
+/*
+  Ein Konto kostet nur einen Mailcode. Ohne Drossel konnte ein einziges
+  davon die vier Argon2-Plaetze mit `passwort/setzen` belegen oder je
+  Anfrage Schreibvorgaenge im Tabellendienst ausloesen. Gezaehlt wird je
+  Konto, also trifft die Grenze nur das eine Konto.
+*/
+async function bisGedrosselt(rufe, hoechstens) {
+    for (let i = 1; i <= hoechstens; i++) {
+        const antwort = await rufe();
+        if (antwort.status === 429) return { nach: i, antwort };
+    }
+    return null;
+}
+
+test('passwort/setzen: das sechste in zehn Minuten wird gedrosselt, ein anderes Konto nicht', async () => {
+    const p = fangeProtokoll();
+    // Eingefrorene Uhr: Sonst fuellt sich der Eimer waehrend der Schleife
+    // nach, und ob die 61. oder die 62. Anfrage scheitert, haengt an der Last.
+    const d = await starteTestdienst({ drossel: erzeugeDrossel({ uhr: () => 0 }) });
+    try {
+        await meldeAn(d, 'erstes@example.org');
+        // Ein zu kurzes Passwort: abgelehnt mit 400, ohne Argon2 — die
+        // Drossel muss trotzdem davor stehen.
+        const setze = () => d.rufe('POST', '/api/passwort/setzen', { passwort: 'x' });
+
+        const gedrosselt = await bisGedrosselt(setze, 8);
+        assert.ok(gedrosselt, 'die Drossel hat gar nicht gegriffen');
+        assert.equal(gedrosselt.nach, 6);
+        assert.ok(Number(gedrosselt.antwort.kopf.get('retry-after')) >= 1);
+
+        await meldeAn(d, 'zweites@example.org');
+        assert.equal((await setze()).status, 400, 'ein anderes Konto darf nicht mitgedrosselt sein');
+    } finally {
+        await d.schliesse();
+        p.zurueck();
+    }
+});
+
+test('Abgleich: der 61. in einer Minute wird gedrosselt, je Weg getrennt', async () => {
+    const p = fangeProtokoll();
+    // Eingefrorene Uhr: Sonst fuellt sich der Eimer waehrend der Schleife
+    // nach, und ob die 61. oder die 62. Anfrage scheitert, haengt an der Last.
+    const d = await starteTestdienst({ drossel: erzeugeDrossel({ uhr: () => 0 }) });
+    try {
+        await meldeAn(d, 'abgleich@example.org');
+        const platten = () => d.rufe('POST', '/api/platten/abgleich', { eintraege: {} });
+        const verlauf = () => d.rufe('POST', '/api/verlauf/abgleich', { eintraege: {} });
+
+        const g1 = await bisGedrosselt(platten, 62);
+        assert.equal(g1?.nach, 61);
+        assert.equal((await verlauf()).status, 200, 'der Verlauf hat seinen eigenen Eimer');
+    } finally {
+        await d.schliesse();
+        p.zurueck();
+    }
+});
+
+test('Ausfuhr: die sechste in einer Stunde wird gedrosselt', async () => {
+    const p = fangeProtokoll();
+    // Eingefrorene Uhr: Sonst fuellt sich der Eimer waehrend der Schleife
+    // nach, und ob die 61. oder die 62. Anfrage scheitert, haengt an der Last.
+    const d = await starteTestdienst({ drossel: erzeugeDrossel({ uhr: () => 0 }) });
+    try {
+        await meldeAn(d, 'ausfuhr@example.org');
+        const g = await bisGedrosselt(() => d.rufe('GET', '/api/konto/ausfuhr'), 7);
+        assert.equal(g?.nach, 6);
     } finally {
         await d.schliesse();
         p.zurueck();
