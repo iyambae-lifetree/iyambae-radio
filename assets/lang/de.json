@@ -201,6 +201,7 @@
   "konto.zurueck.neu": "Konto angelegt. Willkommen.",
   "konto.zurueck.fehler": "Die Anmeldung hat nicht geklappt. Versuch es noch einmal.",
   "konto.zurueck.abgebrochen": "Anmeldung abgebrochen.",
+  "konto.zurueck.frisch": "Zur Sicherheit braucht das eine frische Anmeldung. Melde dich ab und wieder an und versuch es dann gleich noch einmal.",
   "karte.moderation": "Moderation auf {sprache}",
   "sprachname.de": "Deutsch",
   "sprachname.en": "Englisch",

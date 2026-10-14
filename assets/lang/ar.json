@@ -201,6 +201,7 @@
   "konto.zurueck.neu": "أُنشئ الحساب. أهلًا بك.",
   "konto.zurueck.fehler": "لم ينجح تسجيل الدخول. أعد المحاولة.",
   "konto.zurueck.abgebrochen": "أُلغي تسجيل الدخول.",
+  "konto.zurueck.frisch": "لأمانك، يلزم تسجيل دخول حديث. سجّل الخروج ثم ادخل من جديد، وأعد المحاولة فورًا.",
   "karte.moderation": "التقديم بـ{sprache}",
   "sprachname.de": "الألمانية",
   "sprachname.en": "الإنجليزية",

@@ -201,6 +201,7 @@
   "konto.zurueck.neu": "Cuenta creada. Bienvenida.",
   "konto.zurueck.fehler": "El acceso no funcionó. Inténtalo de nuevo.",
   "konto.zurueck.abgebrochen": "Acceso cancelado.",
+  "konto.zurueck.frisch": "Por seguridad, esto necesita un acceso reciente. Cierra la sesión, vuelve a entrar e inténtalo de nuevo enseguida.",
   "karte.moderation": "Locución en {sprache}",
   "sprachname.de": "alemán",
   "sprachname.en": "inglés",

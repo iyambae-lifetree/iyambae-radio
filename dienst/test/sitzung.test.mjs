@@ -6,6 +6,7 @@ import {
     erzeugeSitzung, pruefeSitzung, widerrufe, widerrufeAlle, raeumeKonto,
     baueSitzungsPlaetzchen, baueLoeschPlaetzchen, liesPlaetzchen,
     stosseAufraeumenAn, vergissAufraeumen, SITZUNGSDAUER_MS, abdruckVon,
+    LEERLAUF_MS, FRISCH_MS, istFrisch,
 } from '../src/sitzung.mjs';
 import { starteTestdienst, meldeAn, fangeProtokoll } from './hilfe.mjs';
 
@@ -63,10 +64,14 @@ test('eine abgelaufene Sitzung gilt nicht und wird im Vorbeigehen geloescht', as
     const p = fangeProtokoll();
     try {
         const jetzt = 1_800_000_000_000;
+        const bleibt = await erzeugeSitzung(speicher, KONTO, jetzt);
         const { wert, abdruck } = await erzeugeSitzung(speicher, KONTO, jetzt);
 
-        assert.ok(await pruefeSitzung(speicher, wert, jetzt + SITZUNGSDAUER_MS - 1));
-        assert.equal(await pruefeSitzung(speicher, wert, jetzt + SITZUNGSDAUER_MS + 1), null);
+        // Zwei Sitzungen, weil schon das Pruefen den Ablauf verschiebt
+        // (gleitendes Fenster) — dieselbe zweimal zu pruefen, maesse das
+        // Verschieben und nicht den Ablauf.
+        assert.ok(await pruefeSitzung(speicher, bleibt.wert, jetzt + LEERLAUF_MS - 1));
+        assert.equal(await pruefeSitzung(speicher, wert, jetzt + LEERLAUF_MS + 1), null);
 
         // Weg ist sie auch: Ein gueltiges Geheimnis, das niemand mehr
         // beobachtet, ist genau das, was nicht liegen bleiben soll.
@@ -74,6 +79,91 @@ test('eine abgelaufene Sitzung gilt nicht und wird im Vorbeigehen geloescht', as
     } finally {
         p.zurueck();
     }
+});
+
+// ── Leerlauf und Hoechstdauer (432hz-radio#40) ──────────────────────
+
+const TAG = 24 * 60 * 60 * 1000;
+
+test('die Fristen stehen im Rahmen aus #40', () => {
+    // 30 bis 90 Tage gleitend, frisch heisst 10 bis 15 Minuten.
+    assert.ok(LEERLAUF_MS >= 30 * TAG && LEERLAUF_MS <= 90 * TAG, 'Leerlauf ' + LEERLAUF_MS / TAG);
+    assert.ok(LEERLAUF_MS < SITZUNGSDAUER_MS, 'sonst gleitet nichts');
+    assert.ok(FRISCH_MS >= 10 * 60_000 && FRISCH_MS <= 15 * 60_000, 'frisch ' + FRISCH_MS / 60_000);
+});
+
+test('Leerlauf: wer nicht wiederkommt, ist nach LEERLAUF_MS abgemeldet, nicht erst nach einem Jahr', async () => {
+    const speicher = speicherImArbeitsspeicher();
+    const p = fangeProtokoll();
+    try {
+        const jetzt = 1_800_000_000_000;
+        const { wert, abdruck } = await erzeugeSitzung(speicher, KONTO, jetzt);
+        const zeile = await speicher.hole(TABELLE_KONTEN, KONTO, 'sitzung:' + abdruck);
+        assert.equal(zeile.ablauf, jetzt + LEERLAUF_MS, 'der Ablauf steht in der Zeile — darauf filtert das Aufraeumen');
+
+        assert.equal(await pruefeSitzung(speicher, wert, jetzt + LEERLAUF_MS + TAG), null);
+    } finally {
+        p.zurueck();
+    }
+});
+
+test('das Fenster gleitet: wer regelmaessig kommt, bleibt bis zur Hoechstdauer', async () => {
+    const speicher = speicherImArbeitsspeicher();
+    const p = fangeProtokoll();
+    try {
+        const jetzt = 1_800_000_000_000;
+        const { wert, abdruck } = await erzeugeSitzung(speicher, KONTO, jetzt);
+
+        // Alle 30 Tage einmal vorbeischauen — jedes Mal weit ueber den
+        // ersten Leerlauf hinaus, aber nie laenger als LEERLAUF_MS am Stueck.
+        let t = jetzt;
+        while (t + 30 * TAG < jetzt + SITZUNGSDAUER_MS) {
+            t += 30 * TAG;
+            assert.ok(await pruefeSitzung(speicher, wert, t), 'nach ' + (t - jetzt) / TAG + ' Tagen schon weg');
+            await new Promise((f) => setImmediate(f));
+        }
+
+        // Die Hoechstdauer gilt trotzdem: Der Ablauf schiebt sich nie ueber
+        // `angelegt + SITZUNGSDAUER_MS` hinaus — so lange lebt auch das
+        // Plaetzchen im Browser.
+        const zeile = await speicher.hole(TABELLE_KONTEN, KONTO, 'sitzung:' + abdruck);
+        assert.ok(zeile.ablauf <= jetzt + SITZUNGSDAUER_MS);
+        assert.equal(await pruefeSitzung(speicher, wert, jetzt + SITZUNGSDAUER_MS + 1), null);
+    } finally {
+        p.zurueck();
+    }
+});
+
+test('eine Zeile von vor #40 (Ablauf nach einem Jahr) faellt nach dem Leerlauf trotzdem', async () => {
+    const speicher = speicherImArbeitsspeicher();
+    const p = fangeProtokoll();
+    try {
+        const jetzt = 1_800_000_000_000;
+        const { wert, abdruck } = await erzeugeSitzung(speicher, KONTO, jetzt);
+        // So sah eine Zeile vorher aus: fester Ablauf nach 365 Tagen.
+        const zeile = await speicher.hole(TABELLE_KONTEN, KONTO, 'sitzung:' + abdruck);
+        const { etag: _weg, ...ohneEtag } = zeile;
+        await speicher.setze(TABELLE_KONTEN, { ...ohneEtag, ablauf: jetzt + 365 * TAG });
+
+        assert.equal(await pruefeSitzung(speicher, wert, jetzt + LEERLAUF_MS + 2 * TAG), null);
+    } finally {
+        p.zurueck();
+    }
+});
+
+test('frisch ist eine Sitzung nur in den ersten FRISCH_MS nach der Anmeldung', async () => {
+    const speicher = speicherImArbeitsspeicher();
+    const jetzt = 1_800_000_000_000;
+    const { wert } = await erzeugeSitzung(speicher, KONTO, jetzt);
+
+    const stand = await pruefeSitzung(speicher, wert, jetzt + 60_000);
+    assert.equal(stand.angemeldetAm, jetzt);
+    assert.equal(istFrisch(stand, jetzt + FRISCH_MS - 1), true);
+    assert.equal(istFrisch(stand, jetzt + FRISCH_MS + 1), false);
+    // Weiterbenutzen macht nicht frisch — nur eine neue Anmeldung.
+    const spaeter = await pruefeSitzung(speicher, wert, jetzt + 2 * TAG);
+    assert.equal(istFrisch(spaeter, jetzt + 2 * TAG), false);
+    assert.equal(istFrisch(null, jetzt), false);
 });
 
 test('erfundene und verstuemmelte Plaetzchen fallen durch', async () => {

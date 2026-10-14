@@ -201,6 +201,7 @@
   "konto.zurueck.neu": "Account created. Welcome.",
   "konto.zurueck.fehler": "Signing in did not work. Please try again.",
   "konto.zurueck.abgebrochen": "Sign-in cancelled.",
+  "konto.zurueck.frisch": "For your security, this needs a fresh sign-in. Sign out, sign in again, then try once more straight away.",
   "karte.moderation": "Presented in {sprache}",
   "sprachname.de": "German",
   "sprachname.en": "English",

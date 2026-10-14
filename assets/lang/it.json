@@ -201,6 +201,7 @@
   "konto.zurueck.neu": "Account creato. Benvenuta.",
   "konto.zurueck.fehler": "L'accesso non è riuscito. Riprova.",
   "konto.zurueck.abgebrochen": "Accesso annullato.",
+  "konto.zurueck.frisch": "Per sicurezza serve un accesso recente. Esci, accedi di nuovo e poi riprova subito.",
   "karte.moderation": "Conduzione in {sprache}",
   "sprachname.de": "tedesco",
   "sprachname.en": "inglese",

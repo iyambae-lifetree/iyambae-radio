@@ -47,7 +47,7 @@ import {
     legeKontoAn, verknuepfeKennung, leseKennungen, loescheKennung,
 } from './speicher.mjs';
 import {
-    pruefeSitzung, erzeugeSitzung, widerrufe, widerrufeAlle,
+    pruefeSitzung, erzeugeSitzung, widerrufe, widerrufeAlle, istFrisch,
     baueSitzungsPlaetzchen, baueLoeschPlaetzchen, liesPlaetzchen,
     stosseAufraeumenAn, raeumeKonto,
 } from './sitzung.mjs';
@@ -358,26 +358,39 @@ export function speicherSchnittstelle(speicher) {
     };
 }
 
+/*
+  Die Sitzung, wie fremd.mjs sie sieht. Aus demselben Grund eine eigene
+  Funktion wie `speicherSchnittstelle`: Ein Test soll genau das pruefen, was
+  der Betrieb benutzt — vor allem `frisch`, denn fehlt es, gilt in fremd.mjs
+  jede Sitzung als alt, und Passkeys und Verknuepfungen gingen nie mehr.
+*/
+export function sitzungSchnittstelle(speicher) {
+    return {
+        async erzeuge(kontoId) {
+            const { wert } = await erzeugeSitzung(speicher, kontoId);
+            /*
+              Ein fertiger Set-Cookie-Kopf, kein blosser Wert:
+              `plaetzchenKopf` in fremd.mjs erkennt ihn am Semikolon und
+              uebernimmt ihn unveraendert. So gelten fuer die
+              Fremdanmeldung dieselben Plaetzchenregeln wie fuer den
+              Einmalcode — auch PLAETZCHEN_UNSICHER=1.
+            */
+            return { plaetzchen: baueSitzungsPlaetzchen(wert), ablauf: null };
+        },
+        async pruefe(anfrage) {
+            const stand = await pruefeSitzung(speicher, liesPlaetzchen(anfrage.headers.cookie));
+            return stand?.kontoId ?? null;
+        },
+        async frisch(anfrage) {
+            return istFrisch(await pruefeSitzung(speicher, liesPlaetzchen(anfrage.headers.cookie)));
+        },
+    };
+}
+
 export async function baueFremdanmeldung(speicher, zusatz = {}) {
     return erzeugeFremdanmeldung({
         speicher: speicherSchnittstelle(speicher),
-        sitzung: {
-            async erzeuge(kontoId) {
-                const { wert } = await erzeugeSitzung(speicher, kontoId);
-                /*
-                  Ein fertiger Set-Cookie-Kopf, kein blosser Wert:
-                  `plaetzchenKopf` in fremd.mjs erkennt ihn am Semikolon und
-                  uebernimmt ihn unveraendert. So gelten fuer die
-                  Fremdanmeldung dieselben Plaetzchenregeln wie fuer den
-                  Einmalcode — auch PLAETZCHEN_UNSICHER=1.
-                */
-                return { plaetzchen: baueSitzungsPlaetzchen(wert), ablauf: null };
-            },
-            async pruefe(anfrage) {
-                const stand = await pruefeSitzung(speicher, liesPlaetzchen(anfrage.headers.cookie));
-                return stand?.kontoId ?? null;
-            },
-        },
+        sitzung: sitzungSchnittstelle(speicher),
         protokoll: {
             /*
               Zwei Argumente werden zu einem Objekt, und `kontoId` heisst in
@@ -459,6 +472,23 @@ export function baueDienst({
     async function verlangeSitzung(anfrage) {
         const sitzung = await holeAngemeldeten(anfrage);
         if (!sitzung) throw new HttpFehler(401, 'nicht_angemeldet');
+        return sitzung;
+    }
+
+    /*
+      Fuer die Wege, mit denen ein Fremder am offenen Geraet den Besitzer
+      aussperren oder sich eine Hintertuer bauen koennte (432hz-radio#40):
+      Die Sitzung muss jung sein, sonst 403. 403 und nicht 401 — angemeldet
+      IST man ja; die Seite soll „melde dich kurz neu an" sagen, nicht
+      „du bist abgemeldet". `art` landet im Protokoll, damit man sieht, wie
+      oft das jemanden trifft.
+    */
+    async function verlangeFrischeSitzung(anfrage, art) {
+        const sitzung = await verlangeSitzung(anfrage);
+        if (!istFrisch(sitzung)) {
+            protokolliere({ art, ergebnis: 'abgelehnt', konto: sitzung.kontoId, grund: 'nicht_frisch' });
+            throw new HttpFehler(403, 'frische_anmeldung_noetig');
+        }
         return sitzung;
     }
 
@@ -675,7 +705,13 @@ export function baueDienst({
         },
 
         'POST /api/passwort/setzen': async ({ anfrage, koerper }) => {
-            const sitzung = await verlangeSitzung(anfrage);
+            /*
+              Frisch, weil dieser Weg weder das alte Passwort noch einen Code
+              verlangt — und weil er alle ANDEREN Sitzungen beendet. Aus
+              einer alten Sitzung heraus waere das der Weg, den Besitzer
+              auszusperren (432hz-radio#40).
+            */
+            const sitzung = await verlangeFrischeSitzung(anfrage, 'passwort.gesetzt');
             drossleKonto('setzen', sitzung.kontoId);
             const kennung = await holeOderNichts(speicher, TABELLE_KONTEN, sitzung.kontoId, 'kennung:mail');
 
@@ -840,6 +876,10 @@ export function baueDienst({
                     bestaetigt: Boolean(kennung?.bestaetigtAm),
                     hatPasswort: Boolean(kennung?.passwortHash),
                     angelegt: konto?.angelegt ?? null,
+                    // Ob Passwort setzen, Passkey anlegen, Verknuepfen und
+                    // Loeschen gerade gehen. So kann die Seite VOR dem
+                    // Ausfuellen um eine neue Anmeldung bitten.
+                    frisch: istFrisch(sitzung),
                 },
             };
         },
@@ -945,7 +985,8 @@ export function baueDienst({
         },
 
         'DELETE /api/konto': async ({ anfrage, koerper }) => {
-            const sitzung = await verlangeSitzung(anfrage);
+            // Frisch: Loeschen laesst sich nicht zuruecknehmen (432hz-radio#40).
+            const sitzung = await verlangeFrischeSitzung(anfrage, 'konto.geloescht');
             /*
               Die Bestaetigung ist keine Zierde. Ein DELETE ohne Rumpf kann
               aus einem falsch geratenen Wiederholungsversuch kommen, aus
