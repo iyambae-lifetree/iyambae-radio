@@ -201,6 +201,7 @@
   "konto.zurueck.neu": "アカウントを作りました。ようこそ。",
   "konto.zurueck.fehler": "ログインできませんでした。もう一度お試しください。",
   "konto.zurueck.abgebrochen": "ログインを中止しました。",
+  "konto.zurueck.frisch": "安全のため、改めてログインが必要です。いったんログアウトしてログインし直し、すぐにもう一度お試しください。",
   "karte.moderation": "進行は{sprache}",
   "sprachname.de": "ドイツ語",
   "sprachname.en": "英語",

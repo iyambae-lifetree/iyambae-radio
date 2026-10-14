@@ -22,6 +22,7 @@ import {
   erzeugeBindung,
   plaetzchenKopf,
   pruefeBindung,
+  pruefeFrischeSitzung,
   pruefeIdToken,
   rueckkehrZiel,
   saubereSprache,
@@ -77,8 +78,20 @@ export function erzeugeGoogle({ speicher, sitzung, protokoll, einst, zustand, jw
     */
     let verknuepfeMit = null;
     if (url.searchParams.get('verknuepfen') === '1') {
-      verknuepfeMit = await sitzung.pruefe(anfrage);
-      if (!verknuepfeMit) throw new FremdFehler('nicht_angemeldet', 401);
+      /*
+        Verknuepfen nur aus einer FRISCHEN Sitzung (432hz-radio#40) — sonst
+        legt jeder, der kurz an ein offenes Geraet kommt, sein eigenes
+        Konto beim Anbieter als Hintertuer hinein. Der Start ist eine
+        Navigation, deshalb keine 403 mit JSON, sondern zurueck auf die
+        Seite; sie erklaert, dass erst neu angemeldet werden muss.
+      */
+      const stand = await pruefeFrischeSitzung(sitzung, anfrage);
+      if (!stand.frisch) {
+        protokoll?.schreib?.('fremd_start', { anbieter: 'google', kontoId: stand.kontoId, ergebnis: 'nicht_frisch' });
+        umleitung(antwort, rueckkehrZiel(sprache, { anmeldung: 'frisch' }));
+        return;
+      }
+      verknuepfeMit = stand.kontoId;
     }
 
     const pkce = erzeugePkce();

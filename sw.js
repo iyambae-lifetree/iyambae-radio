@@ -160,7 +160,9 @@
 // v72: „Ganz lesen“ — das Kärtchen auf der Hülle hatte sechs Zeilen und war
 // bei 1024 px nie ganz zu sehen; jetzt öffnet es in voller Länge, ohne
 // einzuschalten (wie in Sonarium). app.js, styles.css, die sieben Sprachen.
-const SW_VERSION = 'iyambae-v72';
+// v73: Rückweg „frische Anmeldung nötig“ (432hz-radio#40) zeigt eine Meldung.
+// app.js, die sieben Sprachen.
+const SW_VERSION = 'iyambae-v73';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

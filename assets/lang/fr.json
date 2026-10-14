@@ -201,6 +201,7 @@
   "konto.zurueck.neu": "Compte créé. Bienvenue.",
   "konto.zurueck.fehler": "La connexion n'a pas abouti. Réessaie.",
   "konto.zurueck.abgebrochen": "Connexion annulée.",
+  "konto.zurueck.frisch": "Par sécurité, il faut une connexion récente. Déconnecte-toi, reconnecte-toi, puis réessaie tout de suite.",
   "karte.moderation": "Animation en {sprache}",
   "sprachname.de": "allemand",
   "sprachname.en": "anglais",

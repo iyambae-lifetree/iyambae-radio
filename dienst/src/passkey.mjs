@@ -27,6 +27,7 @@ import {
   lesJson,
   plaetzchenKopf,
   pruefeUrsprung,
+  verlangeFrischeSitzung,
   zaehleAnmeldewege,
 } from './fremd.mjs';
 
@@ -72,8 +73,14 @@ export function erzeugePasskey({
 
   async function anlegenStart(anfrage, antwort) {
     pruefeUrsprung(anfrage, einst.urspruenge);
-    const kontoId = await sitzung.pruefe(anfrage);
-    if (!kontoId) throw new FremdFehler('nicht_angemeldet', 401);
+    /*
+      Ein neuer Passkey ist ein zweiter Schluessel, der auch einen spaeteren
+      Passwortwechsel des Besitzers ueberlebt. Deshalb nur aus einer FRISCHEN
+      Sitzung (432hz-radio#40) — am Anfang UND am Abschluss, denn der
+      Vorgang lebt fuenf Minuten, und eine Pruefung nur am Anfang liesse
+      die Frist um genau diese fuenf Minuten ueberziehen.
+    */
+    const kontoId = await verlangeFrischeSitzung(sitzung, anfrage);
 
     const { generateRegistrationOptions } = await bibliothek();
     const vorhandene = await lesePasskeys(kontoId);
@@ -129,8 +136,7 @@ export function erzeugePasskey({
 
   async function anlegenFertig(anfrage, antwort) {
     pruefeUrsprung(anfrage, einst.urspruenge);
-    const kontoId = await sitzung.pruefe(anfrage);
-    if (!kontoId) throw new FremdFehler('nicht_angemeldet', 401);
+    const kontoId = await verlangeFrischeSitzung(sitzung, anfrage);
 
     const rumpf = await lesJson(anfrage);
     const eintrag = vorgaenge.hole(rumpf.vorgang);
