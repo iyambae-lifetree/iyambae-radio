@@ -52,6 +52,11 @@ FROM nginxinc/nginx-unprivileged:1.29-alpine
 # Die eigene Konfiguration ersetzt die mitgelieferte vollständig.
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 
+# Die Sicherheitskoepfe, die jeder Block per `include koepfe/…` laedt
+# (432hz-radio#44). Neben conf.d/, nicht darin: Was in conf.d/ liegt, liest
+# nginx von selbst auf http-Ebene, fuer beide Hostnamen zugleich.
+COPY deploy/koepfe/ /etc/nginx/koepfe/
+
 # Die Konfiguration wird beim BAUEN geprueft, nicht erst beim Start.
 #
 # Ohne diese Zeile faellt ein Tippfehler in nginx.conf erst auf, wenn der
