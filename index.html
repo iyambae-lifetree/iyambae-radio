@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title data-text="seite.titel">IYAMBAE Radio — ein Plattenladen zum Zuhören, in 432 Hz</title>
-    <meta name="description" data-inhalt="seite.beschreibung" content="IYAMBAE Radio — ein handverlesener Plattenladen zum Zuhören. {senderzahl} Sender aus {laenderzahl} Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.">
+    <title data-text="seite.titel">IYAMBAE FM — ein Plattenladen zum Zuhören, in 432 Hz</title>
+    <meta name="description" data-inhalt="seite.beschreibung" content="IYAMBAE FM — ein handverlesener Plattenladen zum Zuhören. {senderzahl} Sender aus {laenderzahl} Ländern: Grenzgänger, Maschinenraum, Tiefe, Jazz & Verwandtes, Japan, Barrio, Klassik, Fundstücke, Freakshow, Rückspiegel, Die Wühlkiste.">
     <meta name="theme-color" content="#F2B705">
     <link rel="manifest" href="/de/manifest.webmanifest">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -995,6 +995,15 @@
         </div>
     </div>
     <div class="spieler__rechts">
+        <!-- Der Einschlaf-Timer: jeder Druck eine Stufe weiter, 15/30/60/90
+             Minuten, dann wieder aus. Die Restzeit steht im Knopf selbst —
+             wer im Dunkeln nachsieht, will nicht erst ein Menue oeffnen.
+             Logik in assets/lib/schlummer.mjs. -->
+        <button class="spieler__schlummer" id="barSchlummer" type="button"
+                data-aria="spieler.schlummer" data-titel="spieler.schlummer"
+                aria-label="Einschlaf-Timer" title="Einschlaf-Timer" aria-pressed="false">
+            <span data-symbol="mond" data-symbol-groesse="17"></span><span class="spieler__schlummer-rest" id="barSchlummerRest" hidden></span>
+        </button>
         <canvas id="miniVisualizer" width="160" height="48" aria-hidden="true"></canvas>
         <input type="range" id="lautstaerke" min="0" max="1" step="0.01" value="0.7" data-aria="spieler.lautstaerke" aria-label="Lautstärke">
     </div>

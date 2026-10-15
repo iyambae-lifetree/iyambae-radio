@@ -160,7 +160,7 @@
 // v72: „Ganz lesen“ — das Kärtchen auf der Hülle hatte sechs Zeilen und war
 // bei 1024 px nie ganz zu sehen; jetzt öffnet es in voller Länge, ohne
 // einzuschalten (wie in Sonarium). app.js, styles.css, die sieben Sprachen.
-const SW_VERSION = 'iyambae-v73';
+const SW_VERSION = 'iyambae-v74';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -247,6 +247,7 @@ const SHELL_FILES = [
     '/assets/lib/titel.mjs',
     '/assets/lib/wochentipp.mjs',
     '/assets/lib/senderbild.mjs',
+    '/assets/lib/schlummer.mjs',
     // lib/hls.light.min.mjs steht BEWUSST NICHT hier: app.js laedt es erst
     // beim ersten HLS-Sender nach, und ohne Netz gibt es keinen Stream.
     '/assets/lib/symbole.mjs',
