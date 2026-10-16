@@ -1852,32 +1852,6 @@
       "logo": "assets/logos/radionica.webp"
     },
     {
-      "id": "bytefm",
-      "name": "ByteFM",
-      "betreiber": "ByteFM",
-      "ort": "Hamburg",
-      "land": "DE",
-      "regal": "fundstuecke",
-      "etiketten": [
-        "mensch-am-mikro",
-        "community",
-        "ohne-werbung"
-      ],
-      "stream": "https://bytefm.cast.addradio.de/bytefm/main/high/stream",
-      "homepage": "https://www.byte.fm",
-      "kaertchen": "Ein hörerfinanzierter Hamburger Sender, der seit 2008 Musikjournalismus im besten Sinne betreibt: Sendungen mit Thema, Recherche und Haltung statt Rotationsplaylist. Das nächstgelegene deutsche Gegenstück zu WFMU.",
-      "codec": "mp3",
-      "bitrate": 192,
-      "samplerate": 44100,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "cors": false,
-      "logo": "assets/logos/bytefm.webp",
-      "logoQuelle": "og:image",
-      "kanal": "ByteFM",
-      "sprache": "de"
-    },
-    {
       "id": "wdr-cosmo",
       "name": "WDR Cosmo",
       "betreiber": "WDR",
@@ -2334,30 +2308,6 @@
       "logo": "assets/logos/nolife-radio.webp",
       "logoQuelle": "icon",
       "kanal": "NoLife Radio"
-    },
-    {
-      "id": "shmup-radio",
-      "name": "Shoot em Up Radio",
-      "betreiber": "Shmup Radio",
-      "ort": "Sankt Petersburg",
-      "land": "RU",
-      "regal": "freakshow",
-      "etiketten": [
-        "nur-instrumental",
-        "ohne-werbung"
-      ],
-      "stream": "https://stream.shmupradio.com/320",
-      "homepage": "https://shmupradio.com",
-      "kaertchen": "Ausschließlich Musik aus Shoot-em-up-Automatenspielen, überwiegend japanischen der Neunziger. Ein extrem enges Genre mit erstaunlich hoher musikalischer Dichte — Bläsersätze und Basslinien für Spiele, die neun Minuten dauern.",
-      "codec": "mp3",
-      "bitrate": 320,
-      "samplerate": 44100,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "cors": false,
-      "logo": "assets/logos/shmup-radio.webp",
-      "logoQuelle": "apple-touch-icon",
-      "kanal": "Shoot em Up Radio"
     },
     {
       "id": "gamesboro",
