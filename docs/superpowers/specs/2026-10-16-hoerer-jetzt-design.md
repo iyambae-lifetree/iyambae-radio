@@ -43,7 +43,7 @@ die bestehende Messung.
 Browser / Fernseher                Dienst (konto, je Exemplar)          Tabelle `hoerer`
 ──────────────────                 ──────────────────────────          ────────────────
 spielt → POST /api/hoeren ──────▶  Minutenzähler im Speicher +1
-         alle 60 s                 alle 30 s: Zeile des Exemplars ──▶  PK „jetzt“, RK Exemplar
+         alle 60 s                 ≥30 s seit zuletzt: Zeile ────▶    PK „jetzt“, RK Exemplar
                                    überschreiben {minute, anzahl}       {minute, anzahl}
          ◀── {hoeren: n|null} ───  liest alle Zeilen, summiert
 spielt nicht, Seite sichtbar →     die der letzten zwei Minuten,
@@ -58,14 +58,19 @@ Eine Einheit mit einer Aufgabe: Pulsschläge zählen, Zahl liefern.
   `{ puls(), zahl(), schreibe(), stoppe() }`
 - **Zählen:** Ein Zähler je Kalenderminute (UTC, `Math.floor(t/60000)`) im
   Arbeitsspeicher; gehalten werden nur die letzten drei Minuten.
-- **Schreiben:** alle 30 s überschreibt das Exemplar **seine eine Zeile** in
+- **Schreiben:** höchstens alle 30 s überschreibt das Exemplar **seine eine Zeile** in
   der Tabelle `hoerer`: `partitionKey: 'jetzt'`, `rowKey: exemplar`,
   Felder `minute` (laufende Minute, Zahl) und `zaehler` (JSON
   `{"<minute>": n}` für die letzten drei Minuten).
   Kein ETag nötig — jede Zeile hat genau einen Schreiber.
+  **Kein Timer.** Geschrieben wird nur beim Bearbeiten einer echten Anfrage,
+  wenn der letzte Schreibvorgang über 30 s her ist. Regel 3 in `server.mjs`
+  („keine Grundlast im Leerlauf“) verbietet Timer; ein Timer würde die
+  Leerlaufabrechnung reißen (4,29 → 12,88 €/Monat).
 - **Exemplarname:** `process.env.CONTAINER_APP_REPLICA_NAME`, sonst eine beim
   Start gezogene UUID. Der Zufall entsteht auf dem Server, nicht beim Hörer.
-- **Lesen:** alle Zeilen der Partition `jetzt`; aus jeder Zeile die Zähler
+- **Lesen:** die eigenen Zähler aus dem Speicher, dazu alle fremden Zeilen
+  der Partition `jetzt`; aus jeder Zeile die Zähler
   der beiden letzten **vollständigen** Minuten (m−1, m−2) nehmen und über alle
   Exemplare summieren. Hörerzahl = (Summe m−1 + Summe m−2) ÷ 2, gerundet. Die
   Mittelung glättet, wenn Taktabweichungen einen Puls in die Nachbarminute
@@ -122,9 +127,9 @@ Eine Einheit mit einer Aufgabe: Pulsschläge zählen, Zahl liefern.
 - Platz: Vorschlag ist eine kleine, gedämpfte Zeile unter dem Sendernamen im
   Abspieler (`· 7 hören gerade`). **Sāmi-Ra entscheidet Platz und Gestaltung.**
 - Sprachschlüssel `hoerer.jetzt` in allen sieben `assets/lang/*.json`.
-  Bei ≥ 3 genügt im Deutschen eine Pluralform; für Arabisch (Formen für
-  3–10 und ab 11) über `Intl.PluralRules`, falls `sprache.mjs` das nicht
-  schon kann — im Plan prüfen.
+  Weil die Zahl nie unter 3 liegt, genügt in jeder der sieben Sprachen eine
+  Pluralform (Arabisch: Verb im Plural, gilt für 3–10 wie für ab 11).
+  Kein `Intl.PluralRules`.
 - Neue Datei → `SHELL_FILES` und `SW_VERSION` in `sw.js` hochzählen.
 
 ### Fernseher: `MyRetuner/fm-tv` (zweiter PR, Repo `apps`)
@@ -132,7 +137,9 @@ Eine Einheit mit einer Aufgabe: Pulsschläge zählen, Zahl liefern.
 - `wiedergabe/Hoerer.kt`: Solange `WiedergabeDienst` spielt, alle 60 s
   `POST https://iyambae.fm/api/hoeren` (Coroutine, ohne Körper, Zeitlimit
   10 s, Fehler still). Ohne Wiedergabe kein Puls.
-- `ui/Oberflaeche.kt`: Zahl dezent im Kopf, nur wenn nicht `null`.
+- `ui/Oberflaeche.kt`: Zahl dezent im Hero unter Ort/Land, nur wenn nicht
+  `null`. Der Fernseher zeigt die Zahl nur während der Wiedergabe (keine
+  Abfrage ohne Musik).
 - Die Fernseh-App hat keinen Schalter „nicht mitzählen“. Für die erste
   Fassung gilt: Der Fernseher zählt mit, die Datenschutzerklärung sagt das.
   Ein Schalter wäre ein eigener Schritt.
