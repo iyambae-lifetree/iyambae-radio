@@ -163,7 +163,12 @@
 // v73: Tuner-Versprechen eingeschränkt (misst nur bei gehaltenen Tönen). lang/*.json, apps.
 // v74: ByteFM und Shoot em Up Radio raus — beide haben die CORS-Freigabe
 // abgelehnt (15.10.), samt Texten und Logos. sender.json, sender-texte.*.json.
-const SW_VERSION = 'iyambae-v74';
+// v75: Einschlaf-Timer in der Spielerleiste; Name überall IYAMBAE FM. app.js,
+// schlummer.mjs, styles.css, die sieben Sprachen, index.html, Manifeste.
+// v76: „Diesen Sender unterstützen“ auf Kärtchen und im Fenster, der leise
+// Tuner-Hinweis nach zwanzig Minuten in 432 Hz, der Feed „Neu im Laden“ im
+// Fuß. app.js, unterstuetzen.mjs, tunerhinweis.mjs, sender.json, die Sprachen.
+const SW_VERSION = 'iyambae-v76';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -250,6 +255,9 @@ const SHELL_FILES = [
     '/assets/lib/titel.mjs',
     '/assets/lib/wochentipp.mjs',
     '/assets/lib/senderbild.mjs',
+    '/assets/lib/unterstuetzen.mjs',
+    '/assets/lib/tunerhinweis.mjs',
+    '/assets/lib/schlummer.mjs',
     // lib/hls.light.min.mjs steht BEWUSST NICHT hier: app.js laedt es erst
     // beim ersten HLS-Sender nach, und ohne Netz gibt es keinen Stream.
     '/assets/lib/symbole.mjs',

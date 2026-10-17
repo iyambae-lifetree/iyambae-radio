@@ -28,6 +28,10 @@ __pycache__/
 # gelogen, und eine Karte, die luegt, ist schlechter als keine.
 /llms.txt
 
+# Die Feeds „Neu im Laden“ erzeugt Scripts/baue-neu-im-laden.py aus
+# data/sender.json. Aus demselben Grund wie die Sitemap nicht von Hand.
+/feed/
+
 # Die Rechtsseiten erzeugt Scripts/baue-recht.py aus docs/recht/*.md.
 # Die Markdown-Quellen sind der Bestand, das HTML ist Ergebnis.
 /recht/

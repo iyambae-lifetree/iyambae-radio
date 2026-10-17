@@ -237,6 +237,11 @@ RELATIV = re.compile(r'(\s(?:href|src)=")(?!https?:|/|#|data:|mailto:)')
 # suchte von vorn.
 APPSVERWEIS = re.compile(r'(\shref="https://apps\.iyambae\.fm)/de/')
 
+# Der Feed „Neu im Laden“ liegt je Sprache unter /feed/<kuerzel>.xml
+# (Scripts/baue-neu-im-laden.py). In der Vorlage steht der deutsche; jede
+# Sprachseite verweist auf ihren eigenen, im Kopf wie im Fuss.
+FEEDVERWEIS = re.compile(r'(\shref="/feed/)de(\.xml")')
+
 
 def erzeuge_seite(vorlage_quelle, kuerzel, texte, alle_kuerzel, katalog):
     zerleger = Zerleger()
@@ -288,6 +293,7 @@ def erzeuge_seite(vorlage_quelle, kuerzel, texte, alle_kuerzel, katalog):
     seite = zusammen(stuecke)
     seite = RELATIV.sub(r"\1/", seite)
     seite = APPSVERWEIS.sub(rf"\1/{kuerzel}/", seite)
+    seite = FEEDVERWEIS.sub(rf"\g<1>{kuerzel}\2", seite)
 
     # Die arabischen Schriften brauchen hier keine Sonderbehandlung mehr.
     # Frueher stand ein eigener <link> auf Google Fonts im Kopf, und diese

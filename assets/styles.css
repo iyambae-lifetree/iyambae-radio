@@ -1894,6 +1894,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .fuss__kanal a { color: var(--text-leise); text-decoration: none; }
 .fuss__kanal a:hover,
 .fuss__kanal a:focus-visible { color: var(--gold); text-decoration: underline; }
+.fuss__rss { margin-inline-start: 1rem; }
 
 .fuss__recht {
     display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
@@ -2098,6 +2099,23 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .spieler__rechts { display: flex; align-items: center; gap: 0.8rem; }
 .spieler__rechts canvas { width: 110px; height: 34px; }
 #lautstaerke { width: 5.5rem; accent-color: var(--pink); }
+/* Der Einschlaf-Timer. Leise, solange er aus ist; laeuft er, traegt er
+   Gold wie Abspielen und Teilen und zeigt die Restminuten — ein Blick im
+   Dunkeln genuegt. */
+.spieler__schlummer {
+    flex: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem;
+    min-width: 1.75rem; height: 1.75rem; padding: 0 0.4rem;
+    border: 0; border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.05); color: var(--text-leise);
+    font-family: var(--mono); font-size: 0.68rem;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+.spieler__schlummer:hover,
+.spieler__schlummer:focus-visible { color: var(--text); background: rgba(255, 255, 255, 0.1); }
+.spieler__schlummer[aria-pressed="true"] { color: var(--gold); background: rgba(233, 179, 74, 0.16); }
+.spieler__schlummer-rest[hidden] { display: none; }
 
 /* ── Meldungen ───────────────────────────────────────────────────── */
 .meldungen { position: fixed; inset-inline-end: 1rem; bottom: 5.5rem; z-index: 90; display: grid; gap: 0.5rem; }
@@ -2203,10 +2221,10 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
         bottom: var(--leiste-hoehe, 3.9rem);
         padding: 0.5rem 0.9rem;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr) auto auto;
         grid-template-areas:
-            "info    knopf"
-            "zustand regler";
+            "info    info      knopf"
+            "zustand schlummer regler";
         column-gap: 0.8rem;
         row-gap: 0.4rem;
         align-items: center;
@@ -2217,6 +2235,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     .spieler__status { grid-area: zustand; white-space: nowrap; }
     .spieler__rechts canvas { display: none; }
     #lautstaerke     { grid-area: regler; width: 100%; min-width: 6rem; }
+    #barSchlummer    { grid-area: schlummer; }
     .meldungen { inset-inline: 0.7rem; bottom: 9rem; }
 
     .handy-leiste {
@@ -2499,3 +2518,24 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .spieler__titel[hidden] { display: none; }
+
+/* ── Diesen Sender unterstützen ──────────────────────────────────────
+   Leise wie „Ganz lesen“: ein Wort am Fuß der Hülle, kein Knopf. Es steht
+   nur bei Sendern, die von ihren Hörern leben (lib/unterstuetzen.mjs). */
+.karte__unterstuetzen {
+    margin-inline-start: auto; align-self: center;
+    font-family: var(--mono); font-size: 0.6rem; color: var(--text-leise);
+    text-decoration: underline; text-underline-offset: 0.2em;
+    text-decoration-color: rgba(255, 255, 255, 0.25);
+}
+.karte__unterstuetzen:hover, .karte__unterstuetzen:focus-visible {
+    color: var(--gold-hell, #FFD34D); text-decoration-color: currentColor; outline: none;
+}
+.kaertchen-fenster__unterstuetzen {
+    display: inline-block; margin-top: 0.9rem;
+    font-family: var(--mono); font-size: 0.74rem; color: var(--gold);
+    text-decoration: underline; text-underline-offset: 0.2em;
+}
+.kaertchen-fenster__unterstuetzen:hover,
+.kaertchen-fenster__unterstuetzen:focus-visible { color: var(--gold-hell, #FFD34D); outline: none; }
+.kaertchen-fenster__unterstuetzen[hidden] { display: none; }
