@@ -2099,6 +2099,23 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .spieler__rechts { display: flex; align-items: center; gap: 0.8rem; }
 .spieler__rechts canvas { width: 110px; height: 34px; }
 #lautstaerke { width: 5.5rem; accent-color: var(--pink); }
+/* Der Einschlaf-Timer. Leise, solange er aus ist; laeuft er, traegt er
+   Gold wie Abspielen und Teilen und zeigt die Restminuten — ein Blick im
+   Dunkeln genuegt. */
+.spieler__schlummer {
+    flex: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem;
+    min-width: 1.75rem; height: 1.75rem; padding: 0 0.4rem;
+    border: 0; border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.05); color: var(--text-leise);
+    font-family: var(--mono); font-size: 0.68rem;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+.spieler__schlummer:hover,
+.spieler__schlummer:focus-visible { color: var(--text); background: rgba(255, 255, 255, 0.1); }
+.spieler__schlummer[aria-pressed="true"] { color: var(--gold); background: rgba(233, 179, 74, 0.16); }
+.spieler__schlummer-rest[hidden] { display: none; }
 
 /* ── Meldungen ───────────────────────────────────────────────────── */
 .meldungen { position: fixed; inset-inline-end: 1rem; bottom: 5.5rem; z-index: 90; display: grid; gap: 0.5rem; }
@@ -2204,10 +2221,10 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
         bottom: var(--leiste-hoehe, 3.9rem);
         padding: 0.5rem 0.9rem;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr) auto auto;
         grid-template-areas:
-            "info    knopf"
-            "zustand regler";
+            "info    info      knopf"
+            "zustand schlummer regler";
         column-gap: 0.8rem;
         row-gap: 0.4rem;
         align-items: center;
@@ -2218,6 +2235,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     .spieler__status { grid-area: zustand; white-space: nowrap; }
     .spieler__rechts canvas { display: none; }
     #lautstaerke     { grid-area: regler; width: 100%; min-width: 6rem; }
+    #barSchlummer    { grid-area: schlummer; }
     .meldungen { inset-inline: 0.7rem; bottom: 9rem; }
 
     .handy-leiste {

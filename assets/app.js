@@ -19,6 +19,7 @@ import { senderbild, labelbild, hatEigenesLogo, regalton, REGALTON, MARKE, LABEL
          huellengroesse, regalmosaik, zerlegeName, haeuserMitMehreren, bandbreite }
   from './lib/senderbild.mjs';
 import { symbol, setzeSymbole } from './lib/symbole.mjs';
+import { naechsteStufe, zustand as schlummerZustand } from './lib/schlummer.mjs';
 import { leererFilter, istGefiltert, anzahlAktiv, wendeAn, vorschau,
          regionVon, etikettName, regionName, SCHNELL,
          istEinschlafen, schalteEinschlafen } from './lib/achsen.mjs';
@@ -2641,6 +2642,65 @@ class App {
     if (!this.engine.laeuft) this.visualizer.stopp();
   }
 
+  /*
+   Der Einschlaf-Timer (Rechnung in lib/schlummer.mjs).
+
+   Ausgeblendet wird ueber die Lautstaerke der Audioelemente, nicht ueber
+   setzeLautstaerke(): Die merkt sich den Wert, und wer am naechsten Abend
+   auflegt, saesse sonst vor einem Regler auf null. Nach dem Anhalten wird
+   die eingestellte Lautstaerke zurueckgesetzt.
+  */
+  schalteSchlummer() {
+    this._schlummerMinuten = naechsteStufe(this._schlummerMinuten ?? 0);
+    clearInterval(this._schlummerTakt);
+    this._schlummerEnde = this._schlummerMinuten
+      ? Date.now() + this._schlummerMinuten * 60_000 : null;
+    this._stelleSchlummerZurueck();
+    if (this._schlummerEnde) {
+      this._schlummerTakt = setInterval(() => this._schlummerTick(), 1000);
+      this.ui.meldung(t('schlummer.an', { minuten: this._schlummerMinuten }));
+    } else {
+      this.ui.meldung(t('schlummer.aus'));
+    }
+    this._zeigeSchlummer();
+  }
+
+  _schlummerTick() {
+    const z = schlummerZustand(this._schlummerEnde, Date.now());
+    if (z.phase === 'schluss') {
+      clearInterval(this._schlummerTakt);
+      this._schlummerEnde = null;
+      this._schlummerMinuten = 0;
+      if (this.engine.laeuft) this.wechselSpiel();
+      this._stelleSchlummerZurueck();
+      this._zeigeSchlummer();
+      return;
+    }
+    if (z.phase === 'blendet' && !this.engine.istStumm) {
+      for (const el of [this.engine.audioDirekt, this.engine.audioAnalyse]) {
+        el.volume = this.engine.lautstaerke * z.faktor;
+      }
+    }
+    this._zeigeSchlummer(z.restMinuten);
+  }
+
+  _stelleSchlummerZurueck() {
+    if (!this.engine.istStumm) this.engine.setzeLautstaerke(this.engine.lautstaerke, false);
+  }
+
+  _zeigeSchlummer(restMinuten = this._schlummerMinuten) {
+    const knopf = document.getElementById('barSchlummer');
+    const rest = document.getElementById('barSchlummerRest');
+    if (!knopf || !rest) return;
+    const an = Boolean(this._schlummerEnde);
+    knopf.setAttribute('aria-pressed', String(an));
+    rest.hidden = !an;
+    rest.textContent = an ? `${restMinuten}′` : '';
+    const text = an ? t('schlummer.rest', { minuten: restMinuten }) : t('spieler.schlummer');
+    knopf.title = text;
+    knopf.setAttribute('aria-label', text);
+  }
+
   // ── Die drei Zugänge ─────────────────────────────────────────────
   // Zurueckgenommene Regale sind ausgenommen — die Wuehlkiste ist da, um
   // Besucher abzuholen, die etwas Vertrautes suchen. Wer das will, legt
@@ -3308,6 +3368,7 @@ class App {
       const sender = this.ui.senderMitId(this.ui.aktuelleId);
       if (sender) this.teileSender(sender);
     });
+    anKlick('barSchlummer', () => this.schalteSchlummer());
     /* Teilen vom grossen Namen. Er zeigt den Sender, der oben steht — und
        das ist nicht immer der laufende. */
     anKlick('heroTeilen', () => {
@@ -3606,8 +3667,8 @@ class App {
     try {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: sender.name,
-        artist: sender.betreiber ?? 'IYAMBAE Radio',
-        album: 'IYAMBAE Radio',
+        artist: sender.betreiber ?? 'IYAMBAE FM',
+        album: 'IYAMBAE FM',
       });
       // Play spielt, Pause haelt an — nichts davon schaltet um. Sonst
       // spielt ein doppelt gemeldetes „pause" die Musik wieder an.
