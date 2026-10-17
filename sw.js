@@ -160,7 +160,12 @@
 // v72: „Ganz lesen“ — das Kärtchen auf der Hülle hatte sechs Zeilen und war
 // bei 1024 px nie ganz zu sehen; jetzt öffnet es in voller Länge, ohne
 // einzuschalten (wie in Sonarium). app.js, styles.css, die sieben Sprachen.
-const SW_VERSION = 'iyambae-v74';
+// v73: Tuner-Versprechen eingeschränkt (misst nur bei gehaltenen Tönen). lang/*.json, apps.
+// v74: ByteFM und Shoot em Up Radio raus — beide haben die CORS-Freigabe
+// abgelehnt (15.10.), samt Texten und Logos. sender.json, sender-texte.*.json.
+// v75: Einschlaf-Timer in der Spielerleiste; Name überall IYAMBAE FM. app.js,
+// schlummer.mjs, styles.css, die sieben Sprachen, index.html, Manifeste.
+const SW_VERSION = 'iyambae-v75';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
