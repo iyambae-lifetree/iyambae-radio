@@ -168,7 +168,11 @@
 // v76: „Diesen Sender unterstützen“ auf Kärtchen und im Fenster, der leise
 // Tuner-Hinweis nach zwanzig Minuten in 432 Hz, der Feed „Neu im Laden“ im
 // Fuß. app.js, unterstuetzen.mjs, tunerhinweis.mjs, sender.json, die Sprachen.
-const SW_VERSION = 'iyambae-v76';
+// v77: SomaFM raus, alle 23 Kanäle samt Texten und Logos — die Bedingungen
+// (Stand 04.09.2026) verbieten Einbetten und Verändern ohne schriftliche
+// Erlaubnis, und Erlaubnisse für fremde Seiten gibt SomaFM nicht. sender.json,
+// sender-texte.*.json.
+const SW_VERSION = 'iyambae-v77';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
