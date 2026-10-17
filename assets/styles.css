@@ -1894,6 +1894,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .fuss__kanal a { color: var(--text-leise); text-decoration: none; }
 .fuss__kanal a:hover,
 .fuss__kanal a:focus-visible { color: var(--gold); text-decoration: underline; }
+.fuss__rss { margin-inline-start: 1rem; }
 
 .fuss__recht {
     display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
@@ -2517,3 +2518,24 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .spieler__titel[hidden] { display: none; }
+
+/* ── Diesen Sender unterstützen ──────────────────────────────────────
+   Leise wie „Ganz lesen“: ein Wort am Fuß der Hülle, kein Knopf. Es steht
+   nur bei Sendern, die von ihren Hörern leben (lib/unterstuetzen.mjs). */
+.karte__unterstuetzen {
+    margin-inline-start: auto; align-self: center;
+    font-family: var(--mono); font-size: 0.6rem; color: var(--text-leise);
+    text-decoration: underline; text-underline-offset: 0.2em;
+    text-decoration-color: rgba(255, 255, 255, 0.25);
+}
+.karte__unterstuetzen:hover, .karte__unterstuetzen:focus-visible {
+    color: var(--gold-hell, #FFD34D); text-decoration-color: currentColor; outline: none;
+}
+.kaertchen-fenster__unterstuetzen {
+    display: inline-block; margin-top: 0.9rem;
+    font-family: var(--mono); font-size: 0.74rem; color: var(--gold);
+    text-decoration: underline; text-underline-offset: 0.2em;
+}
+.kaertchen-fenster__unterstuetzen:hover,
+.kaertchen-fenster__unterstuetzen:focus-visible { color: var(--gold-hell, #FFD34D); outline: none; }
+.kaertchen-fenster__unterstuetzen[hidden] { display: none; }

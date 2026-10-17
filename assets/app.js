@@ -13,6 +13,8 @@ import { frageMyRetuner, wartAufEinwilligung, frageBerechtigung,
          anzeigeStimmung, anzeigeQuelle, ZUSTAND, AUSGANG }
   from './lib/myretuner.mjs';
 import { tippDerWoche, dazuPassend } from './lib/wochentipp.mjs';
+import { unterstuetzenAdresse } from './lib/unterstuetzen.mjs';
+import { hoeruhr } from './lib/tunerhinweis.mjs';
 import { senderbild, labelbild, hatEigenesLogo, regalton, REGALTON, MARKE, LABEL_MARKE, huellenzeilen,
          huellengroesse, regalmosaik, zerlegeName, haeuserMitMehreren, bandbreite }
   from './lib/senderbild.mjs';
@@ -1148,6 +1150,8 @@ class UI {
      Abzeichen. Bis dahin waere jede Anzeige eine Wiederholung.
     */
     const eigenes = hatEigenesLogo(sender);
+    // Nur bei hörerfinanzierten Sendern, siehe lib/unterstuetzen.mjs.
+    const unterstuetzt = unterstuetzenAdresse(sender);
     return `
       <article class="karte${aktiv}${wackelig}" data-sender-id="${sender.id}"
                style="--regalton:${regalton(sender)}">
@@ -1219,6 +1223,10 @@ class UI {
           ${breite ? `<p class="karte__leitung">${t('karte.bandbreite', { wert: breite })}</p>` : ''}
           <div class="karte__fuss">
             ${(sender.etiketten ?? []).slice(0, 2).map(e => `<span class="marke marke--etikett">${e}</span>`).join('')}
+            ${unterstuetzt
+              ? `<a class="karte__unterstuetzen" href="${unterstuetzt}" target="_blank" rel="noopener"
+                    title="${t('karte.unterstuetzen.titel', { name: sender.name })}">${t('karte.unterstuetzen')}</a>`
+              : ''}
           </div>
         </div>
       </article>`;
@@ -1231,6 +1239,8 @@ class UI {
         if (e.target.closest('.karte__favorit')) return;
         if (e.target.closest('.karte__teilen')) return;
         if (e.target.closest('.karte__spielen')) return;
+        // Der Link zum Sender öffnet dessen Seite; einschalten soll er nicht.
+        if (e.target.closest('.karte__unterstuetzen')) return;
         const sender = this.senderMitId(id);
         if (sender) window.app.spieleSender(sender);
       });
@@ -2003,7 +2013,8 @@ class UI {
           <button class="knopf knopf--gross kaertchen-fenster__spielen" type="button"></button>
           <a class="knopf kaertchen-fenster__seite" target="_blank" rel="noopener"></a>
           <button class="knopf kaertchen-fenster__zu" type="button"></button>
-        </div>`;
+        </div>
+        <a class="kaertchen-fenster__unterstuetzen" target="_blank" rel="noopener"></a>`;
       // Ein Klick neben das Fenster schließt es — wie bei den Einstellungen.
       d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
       d.querySelector('.kaertchen-fenster__zu').addEventListener('click', () => d.close());
@@ -2025,6 +2036,10 @@ class UI {
     const seite = d.querySelector('.kaertchen-fenster__seite');
     seite.hidden = !sender.homepage;
     if (sender.homepage) { seite.href = sender.homepage; seite.textContent = t('allgemein.senderseite'); }
+    const unterstuetzen = d.querySelector('.kaertchen-fenster__unterstuetzen');
+    const adresse = unterstuetzenAdresse(sender);
+    unterstuetzen.hidden = !adresse;
+    if (adresse) { unterstuetzen.href = adresse; unterstuetzen.textContent = t('kaertchen.unterstuetzen'); }
     d.querySelector('.kaertchen-fenster__zu').textContent = t('filter.panel.schliessen');
     d.showModal();
     spielen.focus();
@@ -2184,8 +2199,11 @@ class UI {
    Anders als `meldung()`: kein Zeitablauf. Fuer Fragen, die eine Antwort
    brauchen — Fehlerbericht senden, neue Fassung laden. Wer nicht antwortet,
    hat damit auch geantwortet: Es passiert nichts.
+
+   `dauer` nur fuer Hinweise, die keine Antwort brauchen (der Tuner): Sie
+   gehen nach dieser Zeit von selbst, statt auf ewig stehen zu bleiben.
   */
-  frage(text, aktionen) {
+  frage(text, aktionen, { dauer } = {}) {
     const behaelter = document.getElementById('meldungen');
     if (!behaelter) return;
 
@@ -2207,6 +2225,10 @@ class UI {
     }
 
     behaelter.appendChild(kasten);
+    if (dauer) setTimeout(() => {
+      kasten.classList.add('geht');
+      setTimeout(() => kasten.remove(), 300);
+    }, dauer);
   }
 
   meldung(text, art = 'info') {
@@ -2356,6 +2378,9 @@ class App {
      vielleicht nie passiert, und staende zwischen Besucher und Musik.
     */
     beobachteFehler({ fassung: FASSUNG, melde: this.ui });
+
+    // Nach zwanzig Minuten in 432 Hz einmal der Tuner. Siehe unten.
+    this.wacheTunerHinweis();
 
     /*
      Das Konto. Ganz zum Schluss, ohne await: Nichts hier oben wartet auf
@@ -3060,6 +3085,31 @@ class App {
   }
 
   // ── IYAMBAE Tuner ────────────────────────────────────────────────
+  /*
+   Der leise Hinweis auf den Tuner, nach zwanzig Minuten in 432 Hz.
+   Die Regeln dafür stehen in lib/tunerhinweis.mjs: einmal je Besuch, nichts
+   auf dem Gerät, keine Wirkung versprochen. Alle 15 Sekunden wird
+   nachgesehen; das kostet nichts und trifft die Schwelle auf eine Viertel-
+   minute genau.
+
+   Die Meldung bleibt stehen, bis jemand antwortet, höchstens aber eine
+   Minute. Wer gerade nicht hinsieht, verpasst einen Werbesatz, und das ist
+   in Ordnung so.
+  */
+  wacheTunerHinweis() {
+    const uhr = hoeruhr();
+    const wache = setInterval(() => {
+      const zaehlt = this.engine.laeuft && this.engine.ist432An && !this.myRetunerAktiv;
+      if (!uhr.tick(Date.now(), zaehlt)) return;
+      clearInterval(wache);
+      this.ui.frage(t('tuner.hinweis.text'), [
+        { text: t('tuner.hinweis.ansehen'), haupt: true,
+          tun: () => window.open(`https://apps.iyambae.fm/${sprache()}/`, '_blank', 'noopener') },
+        { text: t('tuner.hinweis.spaeter') },
+      ], { dauer: 60_000 });
+    }, 15_000);
+  }
+
   // Stufe 1: von Hand geschaltet. In Runde 3 ruft die Erkennung dieselbe
   // Funktion mit quelle='erkannt' auf — die Oberfläche bleibt identisch.
   setzeMyRetuner(istAn, quelle = 'nutzer') {

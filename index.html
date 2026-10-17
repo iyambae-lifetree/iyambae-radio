@@ -8,6 +8,10 @@
     <meta name="theme-color" content="#F2B705">
     <link rel="manifest" href="/de/manifest.webmanifest">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <!-- „Neu im Laden“ als RSS, je Sprache ein Feed. Erzeugt von
+         Scripts/baue-neu-im-laden.py; baue-sprachen.py setzt die Sprache ein. -->
+    <link rel="alternate" type="application/rss+xml" href="/feed/de.xml"
+          data-titel="fuss.rss.titel" title="IYAMBAE FM — Neu im Laden">
     <!-- Die Schriften kommen aus dem eigenen Haus, nicht von Google.
 
          Vorher standen hier zwei preconnect und zwei Stylesheet-Verweise auf
@@ -755,6 +759,7 @@
 
     <p class="fuss__kanal">
         <a href="https://t.me/iyambae_fm" rel="noopener" data-text="fuss.telegram">IYAMBAE FM auf Telegram</a>
+        <a class="fuss__rss" href="/feed/de.xml" type="application/rss+xml" data-text="fuss.rss">Neu im Laden (RSS)</a>
     </p>
 
     <!-- Rechtsverweise und der Widerruf.
