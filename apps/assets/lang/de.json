@@ -232,7 +232,7 @@
   "frage.latenz.w2.was": "<strong>High Quality</strong> (Signalsmith). Klingt besser, ist bei Video aber unbrauchbar — eine Viertelsekunde Versatz sieht man.",
   "frage.latenz.2": "Der Umschalter blendet über 25 ms über, damit der Wechsel nicht knackt.",
   "frage.radio.titel": "Was hat das mit dem Radio zu tun?",
-  "frage.radio.1": "Läuft der Tuner auf demselben Rechner, kann\n            <a href=\"https://iyambae.fm\">IYAMBAE Radio</a> das bemerken und seine\n            eigene, ratende Umstimmung abschalten. Dann übernimmt die App, die\n            misst.",
+  "frage.radio.1": "Läuft der Tuner auf demselben Rechner, kann\n            <a href=\"https://iyambae.fm\">IYAMBAE FM</a> das bemerken und seine\n            eigene, ratende Umstimmung abschalten. Dann übernimmt die App, die\n            misst.",
   "frage.radio.2": "Gefragt wird dabei zweimal: Die Seite fragt einmal nach, und der Tuner\n            fragt dich. <strong>Ohne deine Zustimmung erfährt keine Webseite, dass\n            du ihn benutzt</strong> — auch nicht, dass er installiert ist. Eine\n            Liste erlaubter Webseiten im Programmtext wäre bequemer gewesen. Sie\n            hätte nur die falsche Frage beantwortet.",
   "frage.preis.titel": "Was kostet es?",
   "frage.preis.1": "Diese Testausgabe kostet nichts. Sie verlangt kein Konto, keine\n            E-Mail-Adresse und keine Zahlungsdaten — du lädst eine Datei, und das\n            war es.",

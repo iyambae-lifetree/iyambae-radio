@@ -33,6 +33,9 @@ const PFADE = {
              'fill="currentColor"/>',
 
     // Pfeil aus dem Kasten heraus — die übliche Form für „öffnet woanders".
+    // Einschlaf-Timer: eine Mondsichel, wie auf jedem Uhrenradio.
+    mond: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+
     // Weitergeben: drei Punkte, durch zwei Linien verbunden.
     teilen: '<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/>' +
             '<circle cx="18" cy="19" r="2.6"/>' +
