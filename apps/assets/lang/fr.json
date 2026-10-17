@@ -232,7 +232,7 @@
   "frage.latenz.w2.was": "<strong>High Quality</strong> (Signalsmith). Meilleur son, mais inutilisable avec la vidéo — un quart de seconde de décalage se voit.",
   "frage.latenz.2": "Le commutateur enchaîne sur 25 ms pour que le changement ne craque pas.",
   "frage.radio.titel": "Quel rapport avec la radio ?",
-  "frage.radio.1": "Si le Tuner tourne sur le même ordinateur, <a href=\"https://iyambae.fm\">IYAMBAE Radio</a> peut s'en apercevoir et couper son propre réaccord approximatif. C'est alors l'application qui mesure qui prend le relais.",
+  "frage.radio.1": "Si le Tuner tourne sur le même ordinateur, <a href=\"https://iyambae.fm\">IYAMBAE FM</a> peut s'en apercevoir et couper son propre réaccord approximatif. C'est alors l'application qui mesure qui prend le relais.",
   "frage.radio.2": "On te demande deux fois : la page interroge une fois, et le Tuner t'interroge. <strong>Sans ton accord, aucun site n'apprend que tu l'utilises</strong> — ni même qu'il est installé. Une liste de sites autorisés dans le code aurait été plus commode. Elle n'aurait fait que répondre à la mauvaise question.",
   "frage.preis.titel": "Combien cela coûte-t-il ?",
   "frage.preis.1": "Cette version d'essai ne coûte rien. Elle n'exige ni compte, ni adresse électronique, ni données de paiement — tu télécharges un fichier, et c'est tout.",
