@@ -1311,31 +1311,6 @@
       "logoQuelle": "direkt"
     },
     {
-      "id": "ella-bebop",
-      "name": "Ella Radio Bebop",
-      "betreiber": "Ella Radio",
-      "ort": "Hamburg",
-      "land": "DE",
-      "regal": "jazz",
-      "etiketten": [
-        "ohne-werbung",
-        "nur-instrumental"
-      ],
-      "stream": "https://stream.ella-radio.de/ella-bebop/mp3-192/",
-      "homepage": "https://ella-radio.de",
-      "kaertchen": "Ein kleiner Hamburger Jazzsender mit mehreren Spartenkanälen, hier der für Bebop und Hard Bop. Deutsche Jazzradios sind selten geworden — dieses hier arbeitet ohne Werbung und mit spürbarer Sachkenntnis.",
-      "codec": "mp3",
-      "bitrate": 192,
-      "samplerate": 44100,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": true,
-      "logo": "assets/logos/ella-bebop.webp",
-      "logoQuelle": "apple-touch-icon",
-      "kanal": "Ella Radio Bebop"
-    },
-    {
       "id": "ashiya-radio",
       "name": "Ashiya Radio",
       "betreiber": "Ashiya Radio",
