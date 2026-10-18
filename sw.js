@@ -175,7 +175,10 @@
 // v78: 25 neue Sender als Ersatz für SomaFM, ByteFM und Shoot em Up Radio,
 // jeder mit CORS über die ganze Kette und ohne Verbot in den Bedingungen.
 // sender.json, sender-texte.*.json, sechs Logos.
-const SW_VERSION = 'iyambae-v78';
+// v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
+// das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
+// Einverständnis. sender.json, sender-texte.*.json.
+const SW_VERSION = 'iyambae-v79';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
