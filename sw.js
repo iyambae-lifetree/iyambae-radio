@@ -172,7 +172,10 @@
 // (Stand 04.09.2026) verbieten Einbetten und Verändern ohne schriftliche
 // Erlaubnis, und Erlaubnisse für fremde Seiten gibt SomaFM nicht. sender.json,
 // sender-texte.*.json.
-const SW_VERSION = 'iyambae-v77';
+// v78: 25 neue Sender als Ersatz für SomaFM, ByteFM und Shoot em Up Radio,
+// jeder mit CORS über die ganze Kette und ohne Verbot in den Bedingungen.
+// sender.json, sender-texte.*.json, sechs Logos.
+const SW_VERSION = 'iyambae-v78';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
