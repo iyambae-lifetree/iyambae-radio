@@ -178,7 +178,9 @@
 // v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
 // das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
 // Einverständnis. sender.json, sender-texte.*.json.
-const SW_VERSION = 'iyambae-v79';
+// v85: Sprungmarke ohne left:-9999px — auf /ar/ machte sie die Seite
+// 10.374 px breit und schob sie beim Laden seitlich weg. styles.css.
+const SW_VERSION = 'iyambae-v85';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

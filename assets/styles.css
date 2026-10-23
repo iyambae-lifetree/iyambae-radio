@@ -727,14 +727,24 @@ body.spielt .glanz {
    visibility:hidden — beides nimmt sie auch der Tastatur weg.
 
    Gemessen am 05.09.2026: Diese Seite hat 768 mit Tab erreichbare Stellen.
-   Ohne Sprungmarke fuehrt der erste Weg durch die ganze Kopfleiste. */
+   Ohne Sprungmarke fuehrt der erste Weg durch die ganze Kopfleiste.
+
+   Versteckt wird sie an Ort und Stelle (clip-path, 1 px), nicht mit
+   left:-9999px. Auf /ar/ (dir="rtl") zaehlt ein negatives left als
+   scrollbarer Ueberlauf: gemessen am 23.10.2026 war das Dokument bei
+   375 px 10.374 px breit und stand nach dem Laden auf scrollX -1125. */
 .sprungmarke {
-    position: absolute; left: -9999px; top: 0; z-index: 100;
+    position: absolute; inset-inline-start: 0; top: 0; z-index: 100;
+    width: 1px; height: 1px; overflow: hidden;
+    clip-path: inset(50%); white-space: nowrap;
     padding: 0.7rem 1.2rem;
     background: var(--pink); color: var(--grund);
     font-weight: 600; text-decoration: none; border-radius: var(--rund);
 }
-.sprungmarke:focus { left: 0.6rem; top: 0.6rem; }
+.sprungmarke:focus {
+    inset-inline-start: 0.6rem; top: 0.6rem;
+    width: auto; height: auto; overflow: visible; clip-path: none;
+}
 
 .knopf {
     display: inline-flex; align-items: center; gap: 0.45rem;
