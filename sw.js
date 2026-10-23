@@ -190,7 +190,9 @@
 // v84: Der Laden bei Tag — eine helle Fassung, die der Systemeinstellung
 // folgt; dunkel bleibt unverändert. (v80 bis v83 sind in offenen Zweigen
 // vergeben.) styles.css.
-const SW_VERSION = 'iyambae-v84';
+// v85: Sprungmarke ohne left:-9999px — auf /ar/ machte sie die Seite
+// 10.374 px breit und schob sie beim Laden seitlich weg. styles.css.
+const SW_VERSION = 'iyambae-v85';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
