@@ -178,7 +178,9 @@
 // v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
 // das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
 // Einverständnis. sender.json, sender-texte.*.json.
-const SW_VERSION = 'iyambae-v79';
+// v80: Fußtext zum Tuner berichtigt — beim ersten Mal verbindet ein Klick die
+// App, erst danach erkennt die Seite sie von selbst. lang/*.json, index.html.
+const SW_VERSION = 'iyambae-v80';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

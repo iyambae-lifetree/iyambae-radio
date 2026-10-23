@@ -60,7 +60,7 @@
   "leer.hinweis": "Un autre terme de recherche, ou remets les filtres à zéro.",
   "ausfall.text": "{name} ne répond pas pour l'instant.",
   "ausfall.knopf": "{name} à la place",
-  "fuss.hinweis": "Cette page <em>devine</em>. Elle suppose que chaque station est accordée à 440 Hz et descend tout de 1,8 pour cent, sans distinction. Sur un enregistrement en public, une gravure d'époque ou un morceau déjà produit en 432, elle désaccorde donc dans le mauvais sens. <strong>IYAMBAE Tuner</strong> <em>mesure</em> l'accord là où la musique le permet : sur des notes nettes et tenues, il corrige au plus juste ; sur une musique mêlée, il reste à 440 Hz jusqu'à ce que tu choisisses toi-même — et gère aussi d'autres accords que 432 Hz. Si l'application tourne sur cet ordinateur, la page s'en aperçoit d'elle-même et lui laisse la main.",
+  "fuss.hinweis": "Cette page <em>devine</em>. Elle suppose que chaque station est accordée à 440 Hz et descend tout de 1,8 pour cent, sans distinction. Sur un enregistrement en public, une gravure d'époque ou un morceau déjà produit en 432, elle désaccorde donc dans le mauvais sens. <strong>IYAMBAE Tuner</strong> <em>mesure</em> l'accord là où la musique le permet : sur des notes nettes et tenues, il corrige au plus juste ; sur une musique mêlée, il reste à 440 Hz jusqu'à ce que tu choisisses toi-même — et gère aussi d'autres accords que 432 Hz. Si l'application tourne sur cet ordinateur, tu la connectes une fois d'un clic ; ensuite la page s'en aperçoit d'elle-même et lui laisse la main.",
   "fuss.powered": "powered by",
   "fuss.telegram": "IYAMBAE FM sur Telegram — en allemand",
   "fuss.rss": "Nouveau chez le disquaire (RSS)",

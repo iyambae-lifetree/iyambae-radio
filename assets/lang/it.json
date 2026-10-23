@@ -60,7 +60,7 @@
   "leer.hinweis": "Prova un altro termine, oppure disattiva di nuovo i filtri.",
   "ausfall.text": "{name} al momento non risponde.",
   "ausfall.knopf": "In alternativa {name}",
-  "fuss.hinweis": "Questa pagina <em>tira a indovinare</em>. Dà per scontato che ogni stazione sia accordata a 440 Hz e abbassa tutto di un 1,8 per cento fisso. Con una registrazione dal vivo, un'incisione storica o un brano già prodotto a 432, sposta quindi l'intonazione nella direzione sbagliata. <strong>IYAMBAE Tuner</strong> <em>misura</em> l'accordatura dove la musica lo consente: con note nitide e tenute la corregge con precisione; con musica mista resta a 440 Hz finché non scegli tu — e gestisce anche accordature diverse da 432 Hz. Se l'app è in funzione su questo computer, la pagina se ne accorge da sola e le lascia il campo.",
+  "fuss.hinweis": "Questa pagina <em>tira a indovinare</em>. Dà per scontato che ogni stazione sia accordata a 440 Hz e abbassa tutto di un 1,8 per cento fisso. Con una registrazione dal vivo, un'incisione storica o un brano già prodotto a 432, sposta quindi l'intonazione nella direzione sbagliata. <strong>IYAMBAE Tuner</strong> <em>misura</em> l'accordatura dove la musica lo consente: con note nitide e tenute la corregge con precisione; con musica mista resta a 440 Hz finché non scegli tu — e gestisce anche accordature diverse da 432 Hz. Se l'app è in funzione su questo computer, la colleghi una volta con un clic; poi la pagina se ne accorge da sola e le lascia il campo.",
   "fuss.powered": "powered by",
   "fuss.telegram": "IYAMBAE FM su Telegram — in tedesco",
   "fuss.rss": "Novità in negozio (RSS)",
