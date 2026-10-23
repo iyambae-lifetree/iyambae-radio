@@ -178,6 +178,18 @@
 // v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
 // das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
 // Einverständnis. sender.json, sender-texte.*.json.
+// v80: Fußtext zum Tuner berichtigt — beim ersten Mal verbindet ein Klick die
+// App, erst danach erkennt die Seite sie von selbst. lang/*.json, index.html.
+// v81: AAC-Sender nicht mehr als „MP3“ ausgewiesen; die Einstellungen nennen
+// vollständig, was auf dem Gerät liegt und was gemessen wird. app.js, lang/*.json,
+// index.html. (v80 ist der Fußtext-PR; die Zählung bleibt so auch bei
+// anderer Merge-Reihenfolge eindeutig.)
+// v82: Kleinste Lesegroesse 12 px, Leisetext heller; auf dem Handy eine
+// Kopfzeile statt zwei und eine niedrigere Leiste unten. styles.css.
+// (v80/v81 sind die beiden Text-PRs.)
+// v84: Der Laden bei Tag — eine helle Fassung, die der Systemeinstellung
+// folgt; dunkel bleibt unverändert. (v80 bis v83 sind in offenen Zweigen
+// vergeben.) styles.css.
 // v85: Sprungmarke ohne left:-9999px — auf /ar/ machte sie die Seite
 // 10.374 px breit und schob sie beim Laden seitlich weg. styles.css.
 const SW_VERSION = 'iyambae-v85';
