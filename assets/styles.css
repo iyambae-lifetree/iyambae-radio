@@ -12,7 +12,12 @@
     --rand:         rgba(255, 255, 255, 0.08);
     --rand-hell:    rgba(255, 255, 255, 0.16);
     --text:         #f2edf7;
-    --text-leise:   #a294b8;
+    --text-leise:   #b3a7c7;
+    /* Die kleinste Lesegroesse, 12 px. Darunter lag ein Dutzend Werte
+       zwischen 9,6 und 11,8 px — auf dem Handy nicht mehr zu lesen, und
+       jede Stufe sah aus wie ein Versehen der Nachbarstufe. Ausgenommen
+       ist nur das „FM" der Wortmarke: Das ist Zeichnung, kein Text. */
+    --klein:        0.75rem;
     --pink:         #F2B705;   /* Logo-Gelb, trägt jetzt die Marke */
     --pink-hell:    #FFD34D;
     --gold:         #F2B705;
@@ -148,7 +153,7 @@ a { color: var(--pink-hell); }
     padding: 0.35rem 0.7rem;
     border: 1px solid var(--gold); border-radius: 2px;
     background: none; color: var(--gold);
-    font-family: var(--mono); font-size: 0.68rem;
+    font-family: var(--mono); font-size: var(--klein);
     letter-spacing: 0.1em; text-transform: uppercase;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease;
@@ -298,7 +303,7 @@ body.stimmt-432 .stimmung__mehr {
     border: 1px solid var(--rand);
     border-radius: 999px;
     color: var(--text-leise);
-    font-family: var(--mono); font-size: 0.72rem;
+    font-family: var(--mono); font-size: var(--klein);
     cursor: pointer;
     transition: border-color 0.2s ease, color 0.2s ease;
 }
@@ -347,7 +352,7 @@ body.stimmt-432 .stimmung__mehr {
     border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
     border-radius: 999px;
     color: var(--gold);
-    font-family: var(--mono); font-size: 0.74rem;
+    font-family: var(--mono); font-size: var(--klein);
     text-decoration: none;
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
@@ -358,7 +363,7 @@ body.stimmt-432 .stimmung__mehr {
 .abstand__weg[hidden] { display: none; }
 
 .messung {
-    font-family: var(--mono); font-size: 0.72rem;
+    font-family: var(--mono); font-size: var(--klein);
     color: var(--gruen);
 }
 .messung[hidden] { display: none; }
@@ -698,7 +703,7 @@ body.spielt .glanz {
     body.spielt .glanz { animation: none; opacity: 0.7; }
 }
 
-.hero__guete { font-family: var(--mono); font-size: 0.72rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; }
+.hero__guete { font-family: var(--mono); font-size: var(--klein); color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; }
 .hero__name { font-family: var(--anzeige); font-size: clamp(1.6rem, 5vw, 2.6rem); font-weight: 900; line-height: 1.15; margin: 0.3rem 0; }
 .hero__ort { font-size: 0.9rem; color: var(--text-leise); }
 
@@ -783,7 +788,7 @@ body.spielt .glanz {
 .griff__icon  { font-size: 1.5rem; }
 .griff__titel { font-weight: 600; font-size: 1rem; }
 .griff__unter {
-    font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
     /* Der Zaehler wird nachgetragen — Hoehe vorher festhalten. */
     min-height: 1.1em; display: block;
 }
@@ -803,17 +808,17 @@ body.spielt .glanz {
 .tipp[hidden] { display: none; }
 .tipp__marke {
     display: inline-flex; align-items: center; gap: 0.4rem;
-    font-family: var(--mono); font-size: 0.68rem;
+    font-family: var(--mono); font-size: var(--klein);
     letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);
 }
 .tipp__stern { font-size: 0.8rem; }
 .tipp__inhalt { display: grid; gap: 1.2rem; margin-top: 0.7rem; }
 @media (min-width: 860px) { .tipp__inhalt { grid-template-columns: 1fr 15rem; } }
 .tipp__name { font-family: var(--anzeige); font-size: clamp(1.3rem, 3.5vw, 1.9rem); font-weight: 600; }
-.tipp__ort { font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise); margin-top: 0.2rem; }
+.tipp__ort { font-family: var(--mono); font-size: var(--klein); color: var(--text-leise); margin-top: 0.2rem; }
 .tipp__kaertchen { margin-top: 0.7rem; max-width: 44rem; color: #d3c9e2; }
 .tipp__knoepfe { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1rem; }
-.tipp__dazuTitel { font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise); text-transform: uppercase; letter-spacing: 0.1em; }
+.tipp__dazuTitel { font-family: var(--mono); font-size: var(--klein); color: var(--text-leise); text-transform: uppercase; letter-spacing: 0.1em; }
 .tipp__dazuListe { display: grid; gap: 0.4rem; margin-top: 0.5rem; }
 .tipp__dazuKnopf {
     display: grid; justify-items: start; gap: 0.05rem;
@@ -824,7 +829,7 @@ body.spielt .glanz {
     transition: all 0.15s ease;
 }
 .tipp__dazuKnopf:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--rand-hell); }
-.tipp__dazuKnopf span { font-family: var(--mono); font-size: 0.62rem; color: var(--text-leise); }
+.tipp__dazuKnopf span { font-family: var(--mono); font-size: var(--klein); color: var(--text-leise); }
 
 /* ── Auslage ─────────────────────────────────────────────────────── */
 .auslage { padding: clamp(1.5rem, 4vw, 2.5rem) 0 0; min-width: 0; }
@@ -873,7 +878,7 @@ body.spielt .glanz {
 .regalwand { padding: clamp(1.2rem, 3.5vw, 2rem) clamp(1rem, 4vw, 2.5rem) 0.5rem; }
 .regalwand__kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
 .regalwand__titel { font-family: var(--anzeige); font-size: 1.15rem; font-weight: 600; }
-.regalwand__zahl { font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise); }
+.regalwand__zahl { font-family: var(--mono); font-size: var(--klein); color: var(--text-leise); }
 
 .regalwand__raster {
     display: flex; flex-wrap: wrap;
@@ -922,7 +927,7 @@ body.spielt .glanz {
 }
 .regalfach__zahl {
     font-family: var(--mono);
-    font-size: 0.7rem; line-height: 1;
+    font-size: var(--klein); line-height: 1;
     padding: 0.2rem 0.4rem;
     border-radius: 0.35rem;
     background: color-mix(in srgb, var(--regalton) 24%, rgba(0, 0, 0, 0.35));
@@ -968,13 +973,13 @@ body.spielt .glanz {
     border-inline-start: 3px solid var(--pink);
     border-radius: var(--rund);
     color: var(--text);
-    font-family: var(--mono); font-size: 0.74rem;
+    font-family: var(--mono); font-size: var(--klein);
     cursor: pointer;
     transition: background-color 0.18s ease, border-color 0.18s ease;
 }
 .filter__knopf:hover { background: #241636; }
 .filter__anzahl {
-    font-size: 0.64rem; color: var(--text-leise);
+    font-size: var(--klein); color: var(--text-leise);
     font-variant-numeric: tabular-nums;
 }
 /* Greift ein Filter, steht die Zahl der aktiven Achsen im Knopf — golden,
@@ -990,7 +995,7 @@ body.spielt .glanz {
     min-width: 1.15rem; height: 1.15rem;
     padding: 0 0.25rem;
     background: var(--pink); color: var(--grund);
-    font-size: 0.64rem; font-weight: 700;
+    font-size: var(--klein); font-weight: 700;
     font-variant-numeric: tabular-nums;
 }
 
@@ -1013,14 +1018,14 @@ body.spielt .glanz {
     background: var(--karte);
     color: var(--text-leise);
     border: 1px solid var(--rand); border-radius: var(--rund);
-    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.02em;
+    font-family: var(--mono); font-size: var(--klein); letter-spacing: 0.02em;
     cursor: pointer;
     transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
 }
 .chip:hover { color: var(--text); border-color: var(--rand-hell); }
 .chip span {
     font-variant-numeric: tabular-nums;
-    font-size: 0.66rem; color: var(--text-leise); opacity: 0.7;
+    font-size: var(--klein); color: var(--text-leise); opacity: 0.7;
 }
 
 .chip.ist-aktiv {
@@ -1046,14 +1051,14 @@ body.spielt .glanz {
 }
 .filter__stand[hidden] { display: none; }
 .filter__zahl {
-    font-family: var(--mono); font-size: 0.7rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
     font-variant-numeric: tabular-nums;
 }
 .filter__zuruecksetzen {
     padding: 0.3rem 0.7rem;
     background: none; color: var(--text-leise);
     border: 1px solid var(--rand); border-radius: var(--rund);
-    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+    font-family: var(--mono); font-size: var(--klein); cursor: pointer;
     transition: color 0.18s ease, border-color 0.18s ease;
 }
 .filter__zuruecksetzen:hover { color: var(--text); border-color: var(--rand-hell); }
@@ -1104,13 +1109,13 @@ body.spielt .glanz {
 }
 .filter-panel__stand {
     margin-inline-end: auto;
-    font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
     font-variant-numeric: tabular-nums;
 }
 
 .filter__gruppe { display: grid; gap: 0.5rem; }
 .filter__titel {
-    font-family: var(--mono); font-size: 0.64rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
     text-transform: uppercase; letter-spacing: 0.12em;
 }
 /* Hier darf umbrechen — das ist der ganze Sinn des Panels. */
@@ -1152,7 +1157,7 @@ body.spielt .glanz {
     background: var(--regalton, var(--pink));
 }
 .regal__zahl {
-    font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
     font-variant-numeric: tabular-nums;
 }
 .regal__beschreibung {
@@ -1313,7 +1318,7 @@ body.spielt .glanz {
 }
 .mitnehmen__titel {
     font-family: var(--mono);
-    font-size: 0.72rem;
+    font-size: var(--klein);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--gold);
@@ -1335,7 +1340,7 @@ body.spielt .glanz {
    aber nur, wenn es eine andere ist als die des Lesers. Leise gesetzt:
    Es ist ein Hinweis, keine Warnung. */
 .karte__stimme {
-    font-size: 0.74rem;
+    font-size: var(--klein);
     /* Gedaempft, nicht in Gold: Gold ist auf dieser Seite die Farbe der
        wichtigen Dinge. Hier steht eine Auskunft, keine Warnung — wer
        Englisch versteht, soll nicht bei jeder zweiten Huelle aufschauen. */
@@ -1372,7 +1377,7 @@ body.spielt .glanz {
 }
 .reihe-block__zeichen { display: grid; place-items: center; color: var(--text-leise); }
 .reihe-block__zahl {
-    font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
     font-variant-numeric: tabular-nums;
 }
 
@@ -1584,7 +1589,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .karte__ganz {
     pointer-events: auto;
     padding: 0; border: 0; background: none;
-    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.04em;
+    font-family: var(--mono); font-size: var(--klein); letter-spacing: 0.04em;
     color: var(--gold); text-decoration: underline; text-underline-offset: 0.2em;
     cursor: pointer;
 }
@@ -1596,7 +1601,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .kaertchen-fenster__kopf { display: flex; gap: 0.9rem; align-items: center; }
 .kaertchen-fenster__logo { width: 64px; height: 64px; object-fit: cover; border-radius: 4px; background: #100c1a; flex: none; }
 .kaertchen-fenster__name { font-family: var(--anzeige); font-size: 1.25rem; font-weight: 700; line-height: 1.2; margin: 0; }
-.kaertchen-fenster__ort { font-family: var(--mono); font-size: 0.72rem; color: var(--text-leise); margin: 0.25rem 0 0; }
+.kaertchen-fenster__ort { font-family: var(--mono); font-size: var(--klein); color: var(--text-leise); margin: 0.25rem 0 0; }
 .kaertchen-fenster__text { margin: 1.1rem 0 0; color: #d8cfe6; line-height: 1.6; overflow-y: auto; max-height: 50dvh; }
 .kaertchen-fenster__knoepfe { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.3rem; }
 .kaertchen-fenster__seite[hidden] { display: none; }
@@ -1707,14 +1712,14 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
    Titel groß in der Mitte steht. */
 .karte__haus {
     display: block;
-    font-family: var(--mono); font-size: 0.62rem; font-weight: 400;
+    font-family: var(--mono); font-size: var(--klein); font-weight: 400;
     letter-spacing: 0.06em;
     color: var(--text-leise);
     margin-bottom: 0.05rem;
 }
 
 .karte__ort {
-    font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
@@ -1722,7 +1727,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
    Abzeichen keine Zahl trägt. Für audiophile Hörer die Frage vor dem Klick:
    Reicht meine Verbindung? */
 .karte__leitung {
-    font-family: var(--mono); font-size: 0.62rem;
+    font-family: var(--mono); font-size: var(--klein);
     color: var(--gruen);
     opacity: 0.8;
     white-space: nowrap;
@@ -1734,7 +1739,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     padding: 0.14rem 0.42rem;
     border-inline-start: 3px solid currentColor;
     background: rgba(255, 255, 255, 0.06);
-    font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+    font-family: var(--mono); font-size: var(--klein); font-weight: 700;
     letter-spacing: 0.04em; text-transform: uppercase;
     cursor: help;
     white-space: nowrap;
@@ -1759,7 +1764,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .marke {
     padding: 0.1rem 0.4rem;
     background: rgba(255, 255, 255, 0.06);
-    font-family: var(--mono); font-size: 0.6rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
 }
 .marke--etikett { background: rgba(255, 255, 255, 0.04); }
 
@@ -1767,7 +1772,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     position: absolute; inset-inline-start: 0.6rem; inset-block-start: 0.6rem; z-index: 3;
     padding: 0.12rem 0.45rem;
     background: rgba(0, 0, 0, 0.75);
-    font-family: var(--mono); font-size: 0.62rem; color: var(--rot);
+    font-family: var(--mono); font-size: var(--klein); color: var(--rot);
 }
 
 /* ── Ausfall-Vorschlag ───────────────────────────────────────────── */
@@ -1839,7 +1844,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
    nur nicht wie eine Überschrift aussehen. */
 .katalogtext__titel {
     display: inline;
-    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    font-family: var(--mono); font-size: var(--klein); font-weight: 600;
     letter-spacing: 0.04em;
 }
 .katalogtext__hinweis {
@@ -1853,7 +1858,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     font-size: 0.95rem; font-weight: 600;
 }
 .katalogtext__zahl {
-    font-family: var(--mono); font-size: 0.68rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
 }
 .katalogtext__was {
     font-size: 0.82rem; color: var(--text-leise);
@@ -1899,7 +1904,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .fuss__recht {
     display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
     margin-top: 1rem;
-    font-family: var(--mono); font-size: 0.72rem;
+    font-family: var(--mono); font-size: var(--klein);
 }
 .fuss__recht a { color: var(--text-leise); text-decoration: none; }
 .fuss__recht a:hover { color: var(--text); text-decoration: underline; }
@@ -1908,7 +1913,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     background: none; color: var(--text-leise);
     border: 1px solid var(--rand); border-radius: var(--rund);
     border-inline-start: 3px solid var(--rand-hell);
-    font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+    font-family: var(--mono); font-size: var(--klein); cursor: pointer;
     transition: color 0.18s ease, border-color 0.18s ease;
 }
 .fuss__widerruf[hidden] { display: none; }
@@ -1957,7 +1962,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 }
 .einstellungen__fest {
     flex: none;
-    font-family: var(--mono); font-size: 0.66rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
     padding-top: 0.2rem;
 }
 
@@ -2052,7 +2057,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .fuss__test {
     margin-inline-start: 0.5rem; padding: 0.1rem 0.45rem;
     background: rgba(255, 200, 87, 0.14); color: var(--gold);
-    border-radius: 0.35rem; font-size: 0.65rem;
+    border-radius: 0.35rem; font-size: var(--klein);
 }
 
 /* ── Spielerleiste ───────────────────────────────────────────────── */
@@ -2088,9 +2093,9 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .spieler__teilen:hover,
 .spieler__teilen:focus-visible { background: rgba(233, 179, 74, 0.22); }
 .spieler__teilen[hidden] { display: none; }
-.spieler__regal { font-family: var(--mono); font-size: 0.67rem; color: var(--text-leise); }
+.spieler__regal { font-family: var(--mono); font-size: var(--klein); color: var(--text-leise); }
 .spieler__mitte { display: flex; align-items: center; gap: 0.8rem; }
-.spieler__status { display: flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.68rem; color: var(--text-leise); }
+.spieler__status { display: flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: var(--klein); color: var(--text-leise); }
 .status-punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--text-leise); }
 .status-punkt--live   { background: var(--gruen); box-shadow: 0 0 8px var(--gruen); }
 .status-punkt--laden  { background: var(--gold); animation: pulst 1s ease-in-out infinite; }
@@ -2108,7 +2113,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     min-width: 1.75rem; height: 1.75rem; padding: 0 0.4rem;
     border: 0; border-radius: 0.9rem;
     background: rgba(255, 255, 255, 0.05); color: var(--text-leise);
-    font-family: var(--mono); font-size: 0.68rem;
+    font-family: var(--mono); font-size: var(--klein);
     cursor: pointer;
     transition: color 0.15s ease, background-color 0.15s ease;
 }
@@ -2137,7 +2142,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     border-color: rgba(242, 183, 5, 0.45);
 }
 .meldung__knopf {
-    font-family: var(--mono); font-size: 0.74rem;
+    font-family: var(--mono); font-size: var(--klein);
     padding: 0.3rem 0.7rem; border-radius: var(--rund); cursor: pointer;
     border: 1px solid transparent; color: var(--grund); font-weight: 700;
     background: linear-gradient(180deg, var(--pink-hell), var(--pink));
@@ -2177,15 +2182,20 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     .hero__name { font-size: 1.75rem; }
     .hero__knoepfe { gap: 0.5rem; }
     .hero__knoepfe .knopf { padding: 0.5rem 0.9rem; font-size: 0.82rem; }
-    .kopf__suche { order: 3; flex-basis: 100%; }
+    /* Zu ist die Lupe auf dem Handy weg: „Suche" in der Leiste unten oeffnet
+       dasselbe Feld (oeffneSuche). Vorher stand sie allein in einer zweiten
+       Kopfzeile und kostete 60 px bis zum Plattenspieler. Offen bekommt die
+       Suche ihre eigene Zeile wie bisher. */
+    .kopf__suche:not(.ist-offen) { display: none; }
+    .kopf__suche.ist-offen { order: 3; flex-basis: 100%; }
     /* Der CTA-Text ist allein 217 px breit. Neben Logo und 432-Schalter lief
        er auf 390 px Breite um 100 px ueber den Rand — sichtbar abgeschnitten,
        weil body overflow-x versteckt. Eigene Zeile statt Kuerzung: Der Satz
        ist das Angebot, ein Kuerzel waere keins. */
     /* Auf dem Handy hat die Kopfzeile jetzt nur noch Marke, Suche und
        Sprache — die Stimmung sitzt unten beim Spieler. */
-    .stimmung__schalter { font-size: 0.72rem; }
-    .stimmung__mehr, .stimmung__frage { font-size: 0.68rem; }
+    .stimmung__schalter { font-size: var(--klein); }
+    .stimmung__mehr, .stimmung__frage { font-size: var(--klein); }
 
     .hero { padding-top: 1rem; }
     .griffe { grid-template-columns: 1fr 1fr; }
@@ -2250,9 +2260,13 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
         display: flex; flex-direction: column; align-items: center; gap: 0.12rem;
         padding: 0.5rem 0 0.45rem;
         background: none; border: 0; color: var(--text-leise);
-        font-family: inherit; font-size: 0.65rem; cursor: pointer;
+        font-family: inherit; font-size: var(--klein); cursor: pointer;
     }
-    .handy-leiste button span { font-size: 1.1rem; }
+    /* Nur das Symbol ist gross. Die Regel galt vorher fuer jedes span, also
+       auch fuer die Beschriftung — „Laden", „Meine" standen in 17,6 px da und
+       machten die Leiste so hoch wie den Spieler darueber. */
+    .handy-leiste button span[data-symbol] { font-size: 1.1rem; }
+    .handy-leiste button span:not([data-symbol]) { font-size: var(--klein); }
     /* Und die Beschriftung bricht nicht mehr um. Ein zweizeiliger Eintrag
        neben drei einzeiligen sieht aus wie ein Fehler, und er war die
        Ursache der Ueberlappung. */
@@ -2285,7 +2299,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     padding: 0.35rem 0.7rem;
     background: var(--karte); border: 1px solid var(--rand); border-radius: var(--rund);
     color: var(--text-leise);
-    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em;
+    font-family: var(--mono); font-size: var(--klein); letter-spacing: 0.06em;
     cursor: pointer; list-style: none;
     transition: all 0.15s ease;
 }
@@ -2349,7 +2363,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 }
 .menue__gruppe {
     margin: 0.5rem 0 0.2rem; padding: 0 0.65rem;
-    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.14em;
+    font-family: var(--mono); font-size: var(--klein); letter-spacing: 0.14em;
     text-transform: uppercase; color: var(--text-leise); opacity: .75;
 }
 .menue__gruppe:first-child { margin-top: 0.2rem; }
@@ -2493,7 +2507,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     padding: 0.45rem 0.6rem;
     background: var(--grund); color: var(--text-leise);
     border: 1px solid var(--rand); border-radius: 0.35rem;
-    font-family: var(--mono); font-size: 0.72rem;
+    font-family: var(--mono); font-size: var(--klein);
 }
 
 /* ── Was gerade laeuft ───────────────────────────────────────────
@@ -2513,7 +2527,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
     opacity: 0.7;
 }
 .spieler__titel {
-    font-family: var(--mono); font-size: 0.68rem;
+    font-family: var(--mono); font-size: var(--klein);
     color: var(--gold);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
@@ -2524,7 +2538,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
    nur bei Sendern, die von ihren Hörern leben (lib/unterstuetzen.mjs). */
 .karte__unterstuetzen {
     margin-inline-start: auto; align-self: center;
-    font-family: var(--mono); font-size: 0.6rem; color: var(--text-leise);
+    font-family: var(--mono); font-size: var(--klein); color: var(--text-leise);
     text-decoration: underline; text-underline-offset: 0.2em;
     text-decoration-color: rgba(255, 255, 255, 0.25);
 }
@@ -2533,7 +2547,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 }
 .kaertchen-fenster__unterstuetzen {
     display: inline-block; margin-top: 0.9rem;
-    font-family: var(--mono); font-size: 0.74rem; color: var(--gold);
+    font-family: var(--mono); font-size: var(--klein); color: var(--gold);
     text-decoration: underline; text-underline-offset: 0.2em;
 }
 .kaertchen-fenster__unterstuetzen:hover,

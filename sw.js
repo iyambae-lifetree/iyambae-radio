@@ -178,7 +178,10 @@
 // v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
 // das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
 // Einverständnis. sender.json, sender-texte.*.json.
-const SW_VERSION = 'iyambae-v79';
+// v82: Kleinste Lesegroesse 12 px, Leisetext heller; auf dem Handy eine
+// Kopfzeile statt zwei und eine niedrigere Leiste unten. styles.css.
+// (v80/v81 sind die beiden Text-PRs.)
+const SW_VERSION = 'iyambae-v82';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
