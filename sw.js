@@ -190,7 +190,10 @@
 // v84: Der Laden bei Tag — eine helle Fassung, die der Systemeinstellung
 // folgt; dunkel bleibt unverändert. (v80 bis v83 sind in offenen Zweigen
 // vergeben.) styles.css.
-const SW_VERSION = 'iyambae-v84';
+// v85: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
+// app.js, mikesch.css, lib/mikesch.mjs, drei Bilder, alle sieben Kataloge.
+// (v83 war sein Platzhalter, solange er offen lag.)
+const SW_VERSION = 'iyambae-v85';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -263,6 +266,7 @@ const SHELL_FILES = [
       dem gezeichneten Plattenspieler, den sie ueberzogen haben.
     */
     '/assets/styles.css',
+    '/assets/mikesch.css',
     '/assets/schrift/schriften.css',
     // Die SIL OFL verlangt, dass der Lizenztext die Schriften begleitet.
     '/assets/schrift/LIZENZEN.txt',
@@ -279,6 +283,10 @@ const SHELL_FILES = [
     '/assets/lib/senderbild.mjs',
     '/assets/lib/unterstuetzen.mjs',
     '/assets/lib/tunerhinweis.mjs',
+    '/assets/lib/mikesch.mjs',
+    '/assets/bild/mikesch/kopf.webp',
+    '/assets/bild/mikesch/ohr.webp',
+    '/assets/bild/mikesch/lider.webp',
     '/assets/lib/schlummer.mjs',
     // lib/hls.light.min.mjs steht BEWUSST NICHT hier: app.js laedt es erst
     // beim ersten HLS-Sender nach, und ohne Netz gibt es keinen Stream.

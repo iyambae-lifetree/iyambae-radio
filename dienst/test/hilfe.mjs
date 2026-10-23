@@ -29,7 +29,7 @@ export function fangeProtokoll() {
  * Startet den Dienst auf einem freien Port.
  * @returns Werkzeug zum Rufen, plus `speicher`, `mails` und `schliesse`.
  */
-export async function starteTestdienst({ drossel, fremd, zahlen, titel } = {}) {
+export async function starteTestdienst({ drossel, fremd, zahlen, titel, mikesch } = {}) {
     await bereiteVor();
     vergissAufraeumen();
 
@@ -62,6 +62,8 @@ export async function starteTestdienst({ drossel, fremd, zahlen, titel } = {}) {
         // beilaeufig mitprueft, dass der Weg ohne Einrichtung nicht
         // etwa offen dasteht.
         titel: titel ?? null,
+        // Ebenso: ohne Angabe kein Kater, wie im Betrieb ohne Schluessel.
+        mikesch: mikesch ?? null,
     }));
     await new Promise((f) => server.listen(0, '127.0.0.1', f));
     const basis = 'http://127.0.0.1:' + server.address().port;
