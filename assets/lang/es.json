@@ -60,7 +60,7 @@
   "leer.hinweis": "Prueba con otra búsqueda, o vuelve a apagar los filtros.",
   "ausfall.text": "{name} ahora mismo no responde.",
   "ausfall.knopf": "Mejor {name}",
-  "fuss.hinweis": "Esta página <em>adivina</em>. Da por hecho que cada emisora está afinada a 440 Hz y lo baja todo un 1,8 por ciento fijo. En una grabación en directo, en una interpretación histórica o en una pieza ya producida en 432, desafina por eso en la dirección equivocada. <strong>IYAMBAE Tuner</strong> <em>mide</em> la afinación donde la música lo permite: con notas claras y sostenidas la corrige con exactitud; con música mezclada se queda en 440 Hz hasta que elijas tú — y también maneja otras afinaciones además de 432 Hz. Si la app está funcionando en este equipo, la página lo nota por sí sola y le cede el terreno.",
+  "fuss.hinweis": "Esta página <em>adivina</em>. Da por hecho que cada emisora está afinada a 440 Hz y lo baja todo un 1,8 por ciento fijo. En una grabación en directo, en una interpretación histórica o en una pieza ya producida en 432, desafina por eso en la dirección equivocada. <strong>IYAMBAE Tuner</strong> <em>mide</em> la afinación donde la música lo permite: con notas claras y sostenidas la corrige con exactitud; con música mezclada se queda en 440 Hz hasta que elijas tú — y también maneja otras afinaciones además de 432 Hz. Si la app está funcionando en este equipo, la conectas una vez con un clic; después la página lo nota por sí sola y le cede el terreno.",
   "fuss.powered": "powered by",
   "fuss.telegram": "IYAMBAE FM en Telegram — en alemán",
   "fuss.rss": "Novedades en la tienda (RSS)",

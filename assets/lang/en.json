@@ -60,7 +60,7 @@
   "leer.hinweis": "Another search term, or switch the filters off again.",
   "ausfall.text": "{name} is not answering right now.",
   "ausfall.knopf": "{name} instead",
-  "fuss.hinweis": "This page <em>guesses</em>. It assumes every station is tuned to 440 Hz and pulls everything down by a flat 1.8 percent. On a live recording, a historical performance or a track produced at 432 in the first place, it therefore detunes in the wrong direction. <strong>IYAMBAE Tuner</strong> <em>measures</em> the tuning where the music allows it: on clear, sustained notes it corrects exactly; on mixed music it stays at 440 Hz until you choose yourself — and handles tunings other than 432 Hz as well. If the app is running on this machine, the page notices by itself and leaves the field to it.",
+  "fuss.hinweis": "This page <em>guesses</em>. It assumes every station is tuned to 440 Hz and pulls everything down by a flat 1.8 percent. On a live recording, a historical performance or a track produced at 432 in the first place, it therefore detunes in the wrong direction. <strong>IYAMBAE Tuner</strong> <em>measures</em> the tuning where the music allows it: on clear, sustained notes it corrects exactly; on mixed music it stays at 440 Hz until you choose yourself — and handles tunings other than 432 Hz as well. If the app is running on this machine, you connect it once with a click; after that the page notices it by itself and leaves the field to it.",
   "fuss.powered": "powered by",
   "fuss.telegram": "IYAMBAE FM on Telegram — in German",
   "fuss.rss": "New in the shop (RSS)",
