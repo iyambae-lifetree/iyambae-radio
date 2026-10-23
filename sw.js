@@ -178,7 +178,10 @@
 // v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
 // das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
 // Einverständnis. sender.json, sender-texte.*.json.
-const SW_VERSION = 'iyambae-v79';
+// v84: Der Laden bei Tag — eine helle Fassung, die der Systemeinstellung
+// folgt; dunkel bleibt unverändert. (v80 bis v83 sind in offenen Zweigen
+// vergeben.) styles.css.
+const SW_VERSION = 'iyambae-v84';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
