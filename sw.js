@@ -184,7 +184,10 @@
 // vollständig, was auf dem Gerät liegt und was gemessen wird. app.js, lang/*.json,
 // index.html. (v80 ist der Fußtext-PR; die Zählung bleibt so auch bei
 // anderer Merge-Reihenfolge eindeutig.)
-const SW_VERSION = 'iyambae-v81';
+// v82: Kleinste Lesegroesse 12 px, Leisetext heller; auf dem Handy eine
+// Kopfzeile statt zwei und eine niedrigere Leiste unten. styles.css.
+// (v80/v81 sind die beiden Text-PRs.)
+const SW_VERSION = 'iyambae-v82';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
