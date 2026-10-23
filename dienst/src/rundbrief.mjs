@@ -130,15 +130,22 @@ export async function bestaetige(speicher, marke, jetzt = Date.now()) {
     if (!teile) return 'ungueltig';
     const zeile = await holeOderNichts(speicher, TABELLE_RUNDBRIEF, teile.pk, 'a');
     if (!zeile) return 'ungueltig';
-    if (zeile.zustand === 'dabei') return 'schon';
+    /*
+      ERST die Marke, DANN der Zustand. Der Abdruck ist ohne Geheimnis aus
+      der Adresse zu rechnen; meldete `'schon'` vor der Pruefung, verriete
+      `<abdruck>.<irgendwas>`, ob eine fremde Adresse auf der Liste steht.
+      Deshalb bleibt der Hash der Marke nach dem Bestaetigen stehen: Nur
+      wer den echten Link hat, erfaehrt „schon dabei".
+    */
     if (!gleich(zeile.marke, sha(teile.geheim))) return 'ungueltig';
+    if (zeile.zustand === 'dabei') return 'schon';
     if (jetzt > zeile.marke_bis) return 'abgelaufen';
 
     const { etag, ...rest } = zeile;
     await speicher.setze(TABELLE_RUNDBRIEF, {
         ...rest,
         zustand: 'dabei',
-        marke: '', marke_bis: 0,
+        marke_bis: 0,
         abmelden: zufall(),
         bestaetigt_am: jetzt,
     }, { etag });

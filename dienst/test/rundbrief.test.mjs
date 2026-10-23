@@ -46,6 +46,8 @@ test('Ablauf: anmelden, bestaetigen, abmelden', async () => {
     assert.equal(await bestaetige(s, marke.slice(0, -1) + 'x', 2000), 'ungueltig');
     assert.equal(await bestaetige(s, marke, 2000), 'ok');
     assert.equal(await bestaetige(s, marke, 3000), 'schon');
+    // Kein Orakel: Der Abdruck allein laesst sich aus der Adresse rechnen.
+    assert.equal(await bestaetige(s, rundbriefAbdruck('leser@example.org') + '.' + 'A'.repeat(32), 3000), 'ungueltig');
 
     const [leser] = await bestaetigteLeser(s);
     assert.equal(leser.mail, 'leser@example.org');
