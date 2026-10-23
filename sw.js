@@ -8,7 +8,7 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-// v80: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
+// v83: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
 // app.js, mikesch.css, lib/mikesch.mjs, drei Bilder, alle sieben Kataloge.
 //
 // v47: Eine Sprungmarke fuer die Tastatur. Die Seite hat 768 mit Tab
@@ -181,7 +181,7 @@
 // v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
 // das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
 // Einverständnis. sender.json, sender-texte.*.json.
-const SW_VERSION = 'iyambae-v80';
+const SW_VERSION = 'iyambae-v83';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
