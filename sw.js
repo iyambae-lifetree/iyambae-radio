@@ -8,9 +8,6 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
-// v83: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
-// app.js, mikesch.css, lib/mikesch.mjs, drei Bilder, alle sieben Kataloge.
-//
 // v47: Eine Sprungmarke fuer die Tastatur. Die Seite hat 768 mit Tab
 // erreichbare Stellen und hatte keinen Weg daran vorbei.
 // index.html, styles.css.
@@ -181,7 +178,22 @@
 // v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
 // das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
 // Einverständnis. sender.json, sender-texte.*.json.
-const SW_VERSION = 'iyambae-v83';
+// v80: Fußtext zum Tuner berichtigt — beim ersten Mal verbindet ein Klick die
+// App, erst danach erkennt die Seite sie von selbst. lang/*.json, index.html.
+// v81: AAC-Sender nicht mehr als „MP3“ ausgewiesen; die Einstellungen nennen
+// vollständig, was auf dem Gerät liegt und was gemessen wird. app.js, lang/*.json,
+// index.html. (v80 ist der Fußtext-PR; die Zählung bleibt so auch bei
+// anderer Merge-Reihenfolge eindeutig.)
+// v82: Kleinste Lesegroesse 12 px, Leisetext heller; auf dem Handy eine
+// Kopfzeile statt zwei und eine niedrigere Leiste unten. styles.css.
+// (v80/v81 sind die beiden Text-PRs.)
+// v84: Der Laden bei Tag — eine helle Fassung, die der Systemeinstellung
+// folgt; dunkel bleibt unverändert. (v80 bis v83 sind in offenen Zweigen
+// vergeben.) styles.css.
+// v85: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
+// app.js, mikesch.css, lib/mikesch.mjs, drei Bilder, alle sieben Kataloge.
+// (v83 war sein Platzhalter, solange er offen lag.)
+const SW_VERSION = 'iyambae-v85';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
