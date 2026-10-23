@@ -1,5 +1,5 @@
 {
-  "fassung": "iyambae-v84",
+  "fassung": "iyambae-v85",
   "dateien": {
     "/ar/": "bac1a9a810151ef1",
     "/ar/manifest.webmanifest": "b38a789b8f8feeee",
@@ -34,7 +34,7 @@
     "/assets/logo/iyambae-marke.svg": "c292f4e0c80fb8f6",
     "/assets/schrift/LIZENZEN.txt": "6efb0456d876202a",
     "/assets/schrift/schriften.css": "1eb89046159d41c0",
-    "/assets/styles.css": "90acb1e917566164",
+    "/assets/styles.css": "01cc6d3225a68b51",
     "/assets/wasm/retuner.wasm": "c6cc9a4f9c88b066",
     "/data/sender.json": "2293d48af8b2fe39",
     "/de/": "182e699121fa4cd1",
