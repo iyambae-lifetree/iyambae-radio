@@ -187,7 +187,10 @@
 // v82: Kleinste Lesegroesse 12 px, Leisetext heller; auf dem Handy eine
 // Kopfzeile statt zwei und eine niedrigere Leiste unten. styles.css.
 // (v80/v81 sind die beiden Text-PRs.)
-const SW_VERSION = 'iyambae-v82';
+// v84: Der Laden bei Tag — eine helle Fassung, die der Systemeinstellung
+// folgt; dunkel bleibt unverändert. (v80 bis v83 sind in offenen Zweigen
+// vergeben.) styles.css.
+const SW_VERSION = 'iyambae-v84';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
