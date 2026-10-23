@@ -8,6 +8,9 @@
 // bestehende Besucher ihren alten Zwischenspeicher — und damit alles, was
 // darin fehlt. Genau daran hing der Offline-Fehler mit den drei nicht
 // gelisteten Modulen.
+// v80: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
+// app.js, mikesch.css, lib/mikesch.mjs, drei Bilder, alle sieben Kataloge.
+//
 // v47: Eine Sprungmarke fuer die Tastatur. Die Seite hat 768 mit Tab
 // erreichbare Stellen und hatte keinen Weg daran vorbei.
 // index.html, styles.css.
@@ -178,7 +181,7 @@
 // v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
 // das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
 // Einverständnis. sender.json, sender-texte.*.json.
-const SW_VERSION = 'iyambae-v79';
+const SW_VERSION = 'iyambae-v80';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -251,6 +254,7 @@ const SHELL_FILES = [
       dem gezeichneten Plattenspieler, den sie ueberzogen haben.
     */
     '/assets/styles.css',
+    '/assets/mikesch.css',
     '/assets/schrift/schriften.css',
     // Die SIL OFL verlangt, dass der Lizenztext die Schriften begleitet.
     '/assets/schrift/LIZENZEN.txt',
@@ -267,6 +271,10 @@ const SHELL_FILES = [
     '/assets/lib/senderbild.mjs',
     '/assets/lib/unterstuetzen.mjs',
     '/assets/lib/tunerhinweis.mjs',
+    '/assets/lib/mikesch.mjs',
+    '/assets/bild/mikesch/kopf.webp',
+    '/assets/bild/mikesch/ohr.webp',
+    '/assets/bild/mikesch/lider.webp',
     '/assets/lib/schlummer.mjs',
     // lib/hls.light.min.mjs steht BEWUSST NICHT hier: app.js laedt es erst
     // beim ersten HLS-Sender nach, und ohne Netz gibt es keinen Stream.

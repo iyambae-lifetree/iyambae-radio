@@ -1,0 +1,306 @@
+/*
+ ── KATER MIKESCH ────────────────────────────────────────────────────
+
+ Der Kopf, die Sprechblase und das Gespraechsfenster. Gebaut wird alles in
+ assets/lib/mikesch.mjs; hier steht nur, wie es aussieht.
+
+ Alles mit logischen Eigenschaften (inset-inline-end statt right): Auf der
+ arabischen Seite kommt Mikesch von links unten, ohne eine Zeile extra.
+
+ Die Lage im Bild (alle drei Bilder 320 × 425, deckungsgleich):
+   Augenband  y 39,3 % … 46,1 %   — dort fahren die Lider herunter
+   Ohrfuss    x 76,5 %, y 28,2 %  — darum dreht sich das Ohr
+*/
+
+.mikesch {
+    --b: 132px;                       /* Breite des Kopfes */
+    --neigung: -7deg;
+    position: fixed;
+    inset-inline-end: 0;
+    bottom: var(--mikesch-unten, 0px);
+    z-index: 80;                      /* ueber Spieler (55) und Leiste (60), unter Meldungen (90) */
+    pointer-events: none;
+    font-family: var(--schrift);
+    color: var(--text);
+}
+[dir="rtl"] .mikesch { --neigung: 7deg; }
+.mikesch > * { pointer-events: auto; }
+
+.mikesch__sr {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ── Kopf ────────────────────────────────────────────────────────── */
+.mikesch__kopf {
+    display: block; position: relative;
+    width: var(--b); height: calc(var(--b) * 1.02);
+    margin-inline-end: clamp(0.4rem, 2vw, 1.4rem);
+    padding: 0; border: 0; background: none; cursor: pointer;
+    /* Nur unten beschneiden: Der Hals verschwindet hinter der Kante, Ohren
+       und geneigte Wange duerfen ueber die Box hinaus. Mit overflow: hidden
+       fehlte dem rechten Ohr die Spitze. */
+    clip-path: inset(-60% -40% 0 -40%);
+    -webkit-tap-highlight-color: transparent;
+}
+.mikesch__kopf:focus-visible { outline: 2px solid var(--gold); outline-offset: -4px; border-radius: 8px; }
+
+.mikesch__gesicht {
+    position: absolute; inset-inline-start: 0; top: 0;
+    width: 100%; aspect-ratio: 320 / 425;
+    transform-origin: 50% 100%;
+    transform: translateY(105%) rotate(0deg);
+    transition: transform 0.75s cubic-bezier(0.22, 1.2, 0.36, 1);
+    filter: drop-shadow(0 -2px 10px rgba(0, 0, 0, 0.45));
+}
+.mikesch__bild {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    user-select: none; -webkit-user-drag: none;
+}
+
+.mikesch[data-zustand="versteckt"] .mikesch__kopf { visibility: hidden; }
+.mikesch[data-zustand="da"] .mikesch__gesicht,
+.mikesch[data-zustand="gruesst"] .mikesch__gesicht,
+.mikesch[data-zustand="offen"] .mikesch__gesicht { transform: translateY(6%) rotate(var(--neigung)); }
+.mikesch[data-zustand="da"] .mikesch__kopf:hover .mikesch__gesicht { transform: translateY(1%) rotate(var(--neigung)); }
+
+/* Weggeschickt: nur noch die Ohrenspitzen am Rand. */
+.mikesch[data-zustand="weg"] .mikesch__gesicht { transform: translateY(calc(var(--b) * 0.9 - 16px)) rotate(0deg); opacity: 0.85; }
+.mikesch[data-zustand="weg"] .mikesch__kopf:hover .mikesch__gesicht,
+.mikesch[data-zustand="weg"] .mikesch__kopf:focus-visible .mikesch__gesicht { transform: translateY(calc(var(--b) * 0.9 - 34px)) rotate(0deg); opacity: 1; }
+
+/* Blinzeln: die Lider fahren von oben ins Augenband. */
+.mikesch__lider { clip-path: inset(38.5% 0 61.5% 0); }
+.mikesch.blinzelt .mikesch__lider { animation: mikesch-lider 0.22s ease-in-out; }
+@keyframes mikesch-lider {
+    0%, 100% { clip-path: inset(38.5% 0 61.5% 0); }
+    45%, 60% { clip-path: inset(38.5% 0 53% 0); }
+}
+
+/* Ohr zucken: eine kleine Drehung um den Ohrfuss. */
+.mikesch__ohr { transform-origin: 76.5% 28.2%; }
+.mikesch.zuckt .mikesch__ohr { animation: mikesch-ohr 0.52s ease-out; }
+@keyframes mikesch-ohr {
+    0%, 100% { transform: rotate(0deg); }
+    18%      { transform: rotate(11deg); }
+    40%      { transform: rotate(-4deg); }
+    62%      { transform: rotate(6deg); }
+}
+
+/* ── Sprechblase ─────────────────────────────────────────────────── */
+.mikesch__blase {
+    position: absolute;
+    bottom: calc(var(--b) * 0.92);
+    inset-inline-end: calc(var(--b) * 0.62);
+    width: max-content; max-width: min(16.5rem, calc(100vw - var(--b) - 1rem));
+    padding: 0.85rem 2.1rem 0.85rem 1rem;
+    background: var(--karte-hoch);
+    border: 1px solid var(--rand-hell);
+    border-radius: 14px; border-end-end-radius: 3px;
+    box-shadow: var(--schatten);
+    font-size: 0.9rem; line-height: 1.45;
+    opacity: 0; visibility: hidden;
+    transform: translateY(8px) scale(0.96); transform-origin: 100% 100%;
+    /* Weg geht sie sofort; nur das Kommen wartet, bis der Kopf oben ist. */
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
+}
+[dir="rtl"] .mikesch__blase { transform-origin: 0 100%; padding: 0.85rem 1rem 0.85rem 2.1rem; }
+.mikesch[data-zustand="gruesst"] .mikesch__blase {
+    opacity: 1; visibility: visible; transform: none;
+    transition: opacity 0.3s ease 0.55s, transform 0.4s cubic-bezier(0.22, 1.2, 0.36, 1) 0.55s, visibility 0s;
+}
+.mikesch__blasentext { margin: 0 0 0.6rem; }
+.mikesch__blasenzeile { display: flex; gap: 0.5rem; }
+.mikesch__blasenknopf {
+    font: inherit; font-weight: 600; font-size: 0.85rem;
+    padding: 0.4rem 0.9rem; border: 0; border-radius: var(--rund);
+    background: var(--gold); color: #140b02; cursor: pointer;
+}
+.mikesch__blasenknopf:hover { background: var(--pink-hell); }
+.mikesch__weg, .mikesch__zu {
+    position: absolute; top: 0.3rem; inset-inline-end: 0.3rem;
+    width: 1.9rem; height: 1.9rem; display: grid; place-items: center;
+    font: inherit; font-size: 1.15rem; line-height: 1;
+    border: 0; border-radius: 50%; background: none; color: var(--text-leise); cursor: pointer;
+}
+.mikesch__weg:hover, .mikesch__zu:hover { color: var(--text); background: rgba(255, 255, 255, 0.07); }
+.mikesch button:focus-visible, .mikesch a:focus-visible,
+.mikesch input:focus-visible, .mikesch textarea:focus-visible,
+.mikesch summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* ── Fenster ─────────────────────────────────────────────────────── */
+.mikesch__fenster {
+    position: absolute;
+    bottom: calc(var(--b) * 0.86);
+    inset-inline-end: clamp(0.6rem, 2vw, 1.4rem);
+    width: min(23.5rem, calc(100vw - 1.5rem));
+    max-height: min(38rem, calc(100dvh - var(--mikesch-unten, 0px) - var(--b) - 1.5rem));
+    display: flex; flex-direction: column;
+    background: var(--karte);
+    border: 1px solid var(--rand-hell);
+    border-radius: 10px;
+    box-shadow: var(--schatten), 0 0 0 1px rgba(242, 183, 5, 0.12);
+    /* Reicht die Hoehe nicht (niedriges Handy, Schnurrpost aufgeklappt),
+       rollt das ganze Fenster, statt das Formular abzuschneiden. */
+    overflow-y: auto; overscroll-behavior: contain;
+    animation: mikesch-auf 0.28s cubic-bezier(0.22, 1.2, 0.36, 1);
+}
+.mikesch__fenster[hidden] { display: none; }
+@keyframes mikesch-auf { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
+
+.mikesch__kopfzeile {
+    position: relative; display: flex; align-items: center; gap: 0.65rem;
+    padding: 0.7rem 2.6rem 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--rand);
+    background: linear-gradient(180deg, rgba(242, 183, 5, 0.07), transparent);
+}
+[dir="rtl"] .mikesch__kopfzeile { padding: 0.7rem 0.85rem 0.6rem 2.6rem; }
+.mikesch__zu { top: 50%; transform: translateY(-50%); }
+.mikesch__avatar {
+    width: 2.5rem; height: 2.5rem; object-fit: cover; object-position: 50% 30%;
+    border-radius: 50%; background: var(--karte-hoch); border: 1px solid var(--rand-hell);
+}
+.mikesch__namen { display: flex; align-items: baseline; gap: 0.5rem; min-width: 0; }
+.mikesch__titel {
+    margin: 0; font-family: var(--anzeige); font-size: 0.86rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold);
+}
+.mikesch__ki {
+    font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em;
+    padding: 0.08rem 0.38rem; border: 1px solid var(--rand-hell); border-radius: var(--rund);
+    color: var(--text-leise);
+}
+.mikesch__hinweis {
+    margin: 0; padding: 0.5rem 0.9rem;
+    font-size: 0.72rem; line-height: 1.4; color: var(--text-leise);
+    border-bottom: 1px solid var(--rand);
+}
+.mikesch__hinweis a, .mikesch__postds a { color: var(--text-leise); text-decoration: underline; text-underline-offset: 2px; }
+.mikesch__hinweis a:hover, .mikesch__postds a:hover { color: var(--text); }
+
+.mikesch__verlauf {
+    flex: 1 1 auto; min-height: 7rem; overflow-y: auto; overscroll-behavior: contain;
+    padding: 0.85rem 0.9rem 0.4rem;
+    display: flex; flex-direction: column; gap: 0.6rem;
+}
+.mikesch__zug {
+    max-width: 88%; padding: 0.55rem 0.8rem;
+    font-size: 0.9rem; line-height: 1.5;
+    border-radius: 12px; overflow-wrap: anywhere;
+}
+.mikesch__zug p { margin: 0; }
+.mikesch__zug p + p { margin-top: 0.5rem; }
+.mikesch__zug--mikesch {
+    align-self: flex-start; background: var(--karte-hoch);
+    border: 1px solid var(--rand); border-end-start-radius: 3px;
+}
+.mikesch__zug--gast {
+    align-self: flex-end; background: rgba(242, 183, 5, 0.14);
+    border: 1px solid rgba(242, 183, 5, 0.28); border-end-end-radius: 3px;
+}
+.mikesch__zug--fehler { border-color: rgba(255, 255, 255, 0.16); color: var(--text-leise); }
+
+.mikesch__sender {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    margin: 0.15rem 0.2rem; padding: 0.12rem 0.55rem;
+    font: inherit; font-size: 0.82rem; font-weight: 600;
+    color: var(--gold); background: rgba(242, 183, 5, 0.08);
+    border: 1px solid rgba(242, 183, 5, 0.45); border-radius: 999px; cursor: pointer;
+}
+.mikesch__sender:hover { background: rgba(242, 183, 5, 0.18); color: var(--pink-hell); }
+
+.mikesch__punkte { display: inline-flex; gap: 0.25rem; padding: 0.2rem 0; }
+.mikesch__punkte i {
+    width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--text-leise);
+    animation: mikesch-punkt 1s infinite ease-in-out;
+}
+.mikesch__punkte i:nth-child(2) { animation-delay: 0.15s; }
+.mikesch__punkte i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes mikesch-punkt { 0%, 80%, 100% { opacity: 0.3; transform: none; } 40% { opacity: 1; transform: translateY(-3px); } }
+
+.mikesch__vorschlaege { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.2rem 0.9rem 0.6rem; }
+.mikesch__vorschlaege[hidden] { display: none; }
+.mikesch__vorschlag {
+    font: inherit; font-size: 0.78rem; padding: 0.3rem 0.7rem;
+    color: var(--text); background: transparent;
+    border: 1px solid var(--rand-hell); border-radius: 999px; cursor: pointer;
+}
+.mikesch__vorschlag:hover { border-color: var(--gold); color: var(--gold); }
+
+.mikesch__eingabe {
+    display: flex; align-items: flex-end; gap: 0.45rem;
+    padding: 0.6rem 0.75rem; border-top: 1px solid var(--rand);
+}
+.mikesch__feld {
+    flex: 1; min-width: 0; resize: none; max-height: 8rem; overflow-y: hidden;
+    font: inherit; font-size: 0.92rem; line-height: 1.4;
+    padding: 0.5rem 0.7rem; color: var(--text);
+    background: var(--grund-hoch); border: 1px solid var(--rand-hell); border-radius: 8px;
+}
+.mikesch__feld::placeholder, .mikesch__mail::placeholder { color: var(--text-leise); opacity: 1; }
+.mikesch__senden {
+    flex: none; width: 2.4rem; height: 2.4rem; display: grid; place-items: center;
+    font-size: 1rem; border: 0; border-radius: 50%; cursor: pointer;
+    background: var(--gold); color: #140b02;
+}
+[dir="rtl"] .mikesch__senden { transform: scaleX(-1); }
+.mikesch__senden:disabled { opacity: 0.45; cursor: progress; }
+
+/* ── Schnurrpost ─────────────────────────────────────────────────── */
+.mikesch__post { border-top: 1px solid var(--rand); background: var(--grund-hoch); }
+.mikesch__posttitel {
+    padding: 0.55rem 0.9rem; cursor: pointer; list-style: none;
+    font-size: 0.8rem; font-weight: 600; color: var(--text-leise);
+}
+.mikesch__posttitel::-webkit-details-marker { display: none; }
+.mikesch__posttitel::before { content: '✉  '; }
+.mikesch__posttitel::after { content: ' ▾'; font-size: 0.7rem; }
+.mikesch__post[open] .mikesch__posttitel::after { content: ' ▴'; }
+.mikesch__posttitel:hover { color: var(--text); }
+.mikesch__postform { padding: 0 0.9rem 0.8rem; font-size: 0.8rem; line-height: 1.45; }
+.mikesch__posttext { margin: 0 0 0.5rem; color: var(--text-leise); }
+.mikesch__postzeile { display: flex; gap: 0.4rem; }
+.mikesch__mail {
+    flex: 1; min-width: 0; font: inherit; font-size: 0.85rem;
+    padding: 0.42rem 0.6rem; color: var(--text);
+    background: var(--karte); border: 1px solid var(--rand-hell); border-radius: 6px;
+}
+.mikesch__postknopf {
+    flex: none; font: inherit; font-size: 0.82rem; font-weight: 600;
+    padding: 0.42rem 0.8rem; border: 1px solid var(--gold); border-radius: var(--rund);
+    background: transparent; color: var(--gold); cursor: pointer;
+}
+.mikesch__postknopf:hover { background: rgba(242, 183, 5, 0.12); }
+.mikesch__haken { display: flex; gap: 0.5rem; align-items: flex-start; margin-top: 0.55rem; cursor: pointer; }
+.mikesch__haken input { margin: 0.18rem 0 0; accent-color: var(--gold); flex: none; }
+.mikesch__postds { margin: 0.3rem 0 0; padding-inline-start: 1.4rem; font-size: 0.74rem; }
+.mikesch__poststand { margin: 0.45rem 0 0; color: var(--gold); }
+.mikesch__poststand:empty { display: none; }
+
+/* ── Handy ───────────────────────────────────────────────────────── */
+@media (max-width: 719px) {
+    .mikesch { --b: 84px; }
+    .mikesch__blase { font-size: 0.86rem; }
+    /* Das Fenster wird ein Blatt von unten, ueber die ganze Breite; der
+       Kopf duckt sich so lange weg, er staende sonst mitten darin. */
+    .mikesch__fenster {
+        position: fixed; inset-inline: 0; bottom: var(--mikesch-unten, 0px);
+        width: auto;
+        max-height: calc(100dvh - var(--mikesch-unten, 0px) - 2.5rem);
+        border-radius: 14px 14px 0 0; border-bottom: 0;
+    }
+    .mikesch[data-zustand="offen"] .mikesch__gesicht { transform: translateY(105%); }
+    .mikesch[data-zustand="offen"] .mikesch__kopf { pointer-events: none; }
+    .mikesch__feld { font-size: 1rem; }     /* unter 16 px zoomt iOS beim Antippen */
+    .mikesch__mail { font-size: 1rem; }
+}
+
+/* ── Ruhig ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .mikesch__gesicht, .mikesch__blase { transition: none; }
+    .mikesch__fenster { animation: none; }
+    .mikesch.blinzelt .mikesch__lider, .mikesch.zuckt .mikesch__ohr { animation: none; }
+    .mikesch__punkte i { animation: none; opacity: 0.7; }
+}
+
+@media print { .mikesch { display: none; } }

@@ -11,6 +11,7 @@
     "test": "node --test"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.130.0",
     "@azure/communication-email": "^1.0.0",
     "@azure/data-tables": "^13.3.1",
     "@azure/identity": "^4.5.0",

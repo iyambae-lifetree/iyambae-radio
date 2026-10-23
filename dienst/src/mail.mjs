@@ -127,6 +127,82 @@ const TEXTE = {
     },
 };
 
+/*
+  Die Bestaetigung fuer Mikeschs Schnurrpost — in ALLEN sieben Sprachen,
+  anders als die Kontomails darueber. Der Rundbrief wird je Sprache
+  verschickt; wer sich auf /ja/ anmeldet, liest ihn auf Japanisch, und die
+  erste Mail davon darf nicht die einzige auf Englisch sein.
+
+  Die Mail sagt, was der Klick bedeutet, und was passiert, wenn man nicht
+  klickt: nichts. Das ist der Teil, auf den es bei einer doppelten
+  Bestaetigung ankommt.
+*/
+const RUNDBRIEF = {
+    de: {
+        betreff: 'Bitte bestätigen: Mikeschs Schnurrpost',
+        text: (v, h) => 'Miau! Jemand — hoffentlich du — möchte Mikeschs Schnurrpost von IYAMBAE FM bekommen: '
+            + 'ab und zu neue Sender im Laden und Neues vom IYAMBAE Tuner.\n\n'
+            + 'Ein Klick, und du bist dabei:\n\n    ' + v + '\n\n'
+            + 'Der Link gilt ' + h + ' Stunden. Klickst du nicht, passiert nichts: Du bekommst keine weitere Mail, '
+            + 'und deine Adresse wird nach einer Woche gelöscht. Abmelden geht jederzeit über den Link in jeder Ausgabe.\n\n'
+            + 'Kater Mikesch und IYAMBAE FM',
+    },
+    en: {
+        betreff: 'Please confirm: Mikesch\'s Purr Post',
+        text: (v, h) => 'Meow! Someone — hopefully you — would like to receive Mikesch\'s Purr Post from IYAMBAE FM: '
+            + 'new stations in the shop now and then, and news about the IYAMBAE Tuner.\n\n'
+            + 'One click and you are in:\n\n    ' + v + '\n\n'
+            + 'The link is valid for ' + h + ' hours. If you do not click it, nothing happens: you will get no further mail, '
+            + 'and your address is deleted after a week. You can unsubscribe at any time with the link in every issue.\n\n'
+            + 'Mikesch the cat and IYAMBAE FM',
+    },
+    fr: {
+        betreff: 'Merci de confirmer : la Ronron-Poste de Mikesch',
+        text: (v, h) => 'Miaou ! Quelqu\'un — toi, j\'espère — souhaite recevoir la Ronron-Poste de Mikesch d\'IYAMBAE FM : '
+            + 'de temps en temps de nouvelles stations et des nouvelles de l\'IYAMBAE Tuner.\n\n'
+            + 'Un clic et c\'est fait :\n\n    ' + v + '\n\n'
+            + 'Le lien est valable ' + h + ' heures. Si tu ne cliques pas, il ne se passe rien : aucun autre e-mail, '
+            + 'et ton adresse est effacée au bout d\'une semaine. Désinscription à tout moment via le lien présent dans chaque numéro.\n\n'
+            + 'Le chat Mikesch et IYAMBAE FM',
+    },
+    es: {
+        betreff: 'Confirma, por favor: el Ronroneo de Mikesch',
+        text: (v, h) => '¡Miau! Alguien — ojalá tú — quiere recibir el Ronroneo de Mikesch de IYAMBAE FM: '
+            + 'de vez en cuando emisoras nuevas en la tienda y novedades del IYAMBAE Tuner.\n\n'
+            + 'Un clic y estás dentro:\n\n    ' + v + '\n\n'
+            + 'El enlace vale ' + h + ' horas. Si no haces clic, no pasa nada: no recibirás más correos '
+            + 'y tu dirección se borra al cabo de una semana. Puedes darte de baja cuando quieras con el enlace de cada número.\n\n'
+            + 'El gato Mikesch e IYAMBAE FM',
+    },
+    it: {
+        betreff: 'Conferma, per favore: le Fusa di Mikesch',
+        text: (v, h) => 'Miao! Qualcuno — speriamo tu — vuole ricevere le Fusa di Mikesch da IYAMBAE FM: '
+            + 'ogni tanto nuove stazioni nel negozio e novità sull\'IYAMBAE Tuner.\n\n'
+            + 'Un clic e ci sei:\n\n    ' + v + '\n\n'
+            + 'Il link vale ' + h + ' ore. Se non clicchi, non succede nulla: nessun\'altra e-mail, '
+            + 'e il tuo indirizzo viene cancellato dopo una settimana. Puoi disiscriverti in qualsiasi momento con il link in ogni numero.\n\n'
+            + 'Il gatto Mikesch e IYAMBAE FM',
+    },
+    ja: {
+        betreff: '確認のお願い：ミケシュのゴロゴロ便り',
+        text: (v, h) => 'にゃあ！ どなたか（きっとあなた）が IYAMBAE FM の「ミケシュのゴロゴロ便り」の受け取りを希望しました。'
+            + 'ときどき、お店の新しい局と IYAMBAE Tuner のお知らせをお届けします。\n\n'
+            + 'クリックひとつで登録完了です：\n\n    ' + v + '\n\n'
+            + 'リンクの有効期限は ' + h + ' 時間です。クリックしなければ何も起きません。これ以上メールは届かず、'
+            + 'アドレスは1週間後に削除されます。配信停止は毎号のリンクからいつでもできます。\n\n'
+            + '猫のミケシュと IYAMBAE FM',
+    },
+    ar: {
+        betreff: 'يرجى التأكيد: خرخرة ميكش',
+        text: (v, h) => 'مياو! شخص ما — ونأمل أنه أنت — يرغب في تلقي «خرخرة ميكش» من IYAMBAE FM: '
+            + 'محطات جديدة في المتجر من حين لآخر وأخبار عن IYAMBAE Tuner.\n\n'
+            + 'نقرة واحدة وتصبح معنا:\n\n    ' + v + '\n\n'
+            + 'الرابط صالح لمدة ' + h + ' ساعة. إن لم تنقر فلن يحدث شيء: لن تصلك رسائل أخرى، '
+            + 'وسيُحذف عنوانك بعد أسبوع. يمكنك إلغاء الاشتراك في أي وقت عبر الرابط في كل عدد.\n\n'
+            + 'القط ميكش و IYAMBAE FM',
+    },
+};
+
 function texte(sprache) {
     return TEXTE[sprache] ?? TEXTE.en;
 }
@@ -186,7 +262,10 @@ export function erzeugeVersender({ endpunkt, absender, jetzt = Date.now, versend
           Wer sie bekommt, erfaehrt, dass jemand seine Adresse eingetippt
           hat, und das ist eine Auskunft, die ihm zusteht.
         */
-        const inhalt = auftrag.art === 'code'
+        const brief = RUNDBRIEF[auftrag.sprache] ?? RUNDBRIEF.en;
+        const inhalt = auftrag.art === 'rundbrief'
+            ? { subject: brief.betreff, plainText: brief.text(auftrag.verweis, auftrag.stunden) }
+            : auftrag.art === 'code'
             ? { subject: t.code.betreff(auftrag.code), plainText: t.code.text(auftrag.code, auftrag.minuten) }
             : auftrag.art === 'unbekannt'
                 ? { subject: t.unbekannt.betreff(), plainText: t.unbekannt.text() }
