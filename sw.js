@@ -178,7 +178,11 @@
 // v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
 // das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
 // Einverständnis. sender.json, sender-texte.*.json.
-const SW_VERSION = 'iyambae-v79';
+// v81: AAC-Sender nicht mehr als „MP3“ ausgewiesen; die Einstellungen nennen
+// vollständig, was auf dem Gerät liegt und was gemessen wird. app.js, lang/*.json,
+// index.html. (v80 ist der Fußtext-PR; die Zählung bleibt so auch bei
+// anderer Merge-Reihenfolge eindeutig.)
+const SW_VERSION = 'iyambae-v81';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

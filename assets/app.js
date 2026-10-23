@@ -1130,7 +1130,7 @@ class UI {
         : !sender.bitrate ? (sender.codec || 'MP3').toUpperCase()
         : ['opus', 'vorbis'].includes(sender.codec)
           ? t('karte.guete.opus', { codec: sender.codec.toUpperCase(), bitrate: sender.bitrate })
-          : t('karte.guete.mp3', { bitrate: sender.bitrate });
+          : t('karte.guete.mp3', { codec: (sender.codec || 'mp3').toUpperCase(), bitrate: sender.bitrate });
 
     /*
      Das Feld `kanal` wird bewusst NICHT gezeigt.
