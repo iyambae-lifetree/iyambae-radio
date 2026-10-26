@@ -7,7 +7,8 @@
     "macos": {
       "fassung": "0.29.0",
       "reife": "erprobung",
-      "datei": "IYAMBAE-Tuner-0.29.0.dmg"
+      "datei": null,
+      "_warum_null": "Seit dem 26.10.2026. Die oeffentliche Testfassung 0.29.0 laeuft am 31.10.2026 ab und wird bewusst nicht verlaengert. Wer einzeln fragt, bekommt eine Fassung persoenlich; oeffentlich kommt der Tuner spaeter wieder. Die Nummer bleibt fuer das JSON-LD stehen."
     },
     "linux": {
       "fassung": "0.3.0",

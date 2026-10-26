@@ -686,6 +686,9 @@ input[type="range"]::-moz-range-thumb {
 .plattform--wartet:hover { border-color: var(--kante-hell); background: transparent; }
 .plattform--wartet .plattform__tat { color: var(--leise); }
 .plattform--wartet:hover .plattform__zeichen { color: var(--leise); }
+/* Seit dem 26.10.2026 wartet der Mac-Tuner mit einem Weg zu uns: gedaempft
+   wie oben, aber anklickbar — der Zeiger sagt es. */
+.plattform--wartet[href] { cursor: pointer; }
 
 /* Das erkannte System steht vor, es verdraengt die anderen aber nicht.
    Ohne Erkennung — kein JavaScript, unbekanntes System — bleiben alle
@@ -705,10 +708,12 @@ html[data-os="linux"] .plattform[data-fuer="linux"] .plattform__zeichen {
 /* Auch auf dem eigenen System bleibt die wartende Kachel gedaempft: Sie
    steht vorn, weil sie den Besucher angeht — aber sie leuchtet nicht,
    als koennte man sie mitnehmen. */
+html[data-os="mac"]   .plattform--wartet[data-fuer="mac"],
 html[data-os="win"]   .plattform--wartet[data-fuer="win"],
 html[data-os="linux"] .plattform--wartet[data-fuer="linux"] {
   border-color: var(--kante-hell); background: transparent;
 }
+html[data-os="mac"]   .plattform--wartet[data-fuer="mac"]   .plattform__zeichen,
 html[data-os="win"]   .plattform--wartet[data-fuer="win"]   .plattform__zeichen,
 html[data-os="linux"] .plattform--wartet[data-fuer="linux"] .plattform__zeichen {
   color: var(--leise);
@@ -1635,11 +1640,20 @@ code {
              Faellt sie aus, stehen drei gleichberechtigte Knoepfe da statt
              eines Ersatztextes. -->
         <div class="plattformen">
-          <a class="plattform" data-fuer="mac" href="/herunterladen/IYAMBAE-Tuner-0.29.0.dmg">
+          <!-- Der Mac-Tuner, seit dem 26.10.2026 ohne Datei.
+
+               Die oeffentliche Testfassung 0.29.0 traegt einen eingebauten
+               Stichtag, den 31.10.2026, und wird bewusst nicht
+               verlaengert: Wer einzeln fragt, bekommt eine
+               Fassung; oeffentlich kommt der Tuner spaeter wieder. Nach dem
+               Stichtag haette diese Kachel eine App verteilt, die sich beim
+               ersten Start abschaltet. Deshalb gedaempft und mit dem Weg zu
+               uns statt zur Datei — die Adresse ist die von /mitmachen/.
+               Die DMG selbst beantwortet nginx mit 410. -->
+          <a class="plattform plattform--wartet" data-fuer="mac" href="mailto:info@iyambae.fm">
             <img class="plattform__zeichen" src="assets/plattform-mac.svg" alt="" width="24" height="24">
-            <span class="plattform__reife" data-reife="mac"></span>
-            <span class="plattform__tat" data-text="auf.mac.tat">Tuner für macOS laden</span>
-            <span class="plattform__zusatz" data-text="auf.mac.zusatz">DMG · 2,0 MB · ab macOS 14.4 · kein Konto · Testfassung bis 31.10.2026</span>
+            <span class="plattform__tat" data-text="auf.mac.tat">Tuner für macOS: Testphase vorbei</span>
+            <span class="plattform__zusatz" data-text="auf.mac.zusatz">Kommt bald wieder · ausprobieren? Schreib uns</span>
           </a>
           <!-- Der Converter, seit dem 13.09.2026 auf der Ladeseite.
 
@@ -1859,7 +1873,7 @@ code {
 <details class="rahmen teil teil--linie klappe" id="holen">
   <summary class="klappe__griff">
     <div class="eng">
-      <p class="eyebrow" data-text="holen.eyebrow">Testausgabe · kostenlos · kein Konto · macOS 0.29.0 · Windows 0.3.0 · Linux 0.3.0</p>
+      <p class="eyebrow" data-text="holen.eyebrow">Testausgabe · kostenlos · kein Konto · Windows 0.3.0 · Linux 0.3.0 · macOS bald wieder</p>
       <h2 class="kopf--holen" data-html="holen.titel">Hol es dir. <em>Dann drei Schritte.</em></h2>
       <h2 class="kopf--mobil" data-html="holen.titel.mobil">Am Telefon geht es <em>nicht</em>. Hier steht, warum.</h2>
     </div>
@@ -1879,11 +1893,13 @@ code {
         Die App selbst: Menüleiste, greift den Systemton ab und ersetzt ihn.
         Beim ersten Einschalten fragt macOS nach „Systemaudio aufnehmen“.
       </p>
+      <p class="karte__was" data-html="karte.mac.pause">
+        <strong>Die Testphase des Tuners ist vorbei.</strong> Er kommt bald
+        wieder. Wer ihn jetzt ausprobieren möchte, schreibt uns:
+        <a href="mailto:info@iyambae.fm">info@iyambae.fm</a>.
+      </p>
       <div class="karte__fuellen"></div>
       <div class="karte__tat">
-        <a class="laden" href="/herunterladen/IYAMBAE-Tuner-0.29.0.dmg">
-          <span data-text="karte.mac.laden">Tuner laden</span><span class="laden__groesse">2,0 MB</span>
-        </a>
         <a class="laden" href="/herunterladen/IYAMBAE-Converter-0.34.13.dmg">
           <span data-text="karte.conv.laden">Converter laden</span><span class="laden__groesse">3,0 MB</span>
         </a>
