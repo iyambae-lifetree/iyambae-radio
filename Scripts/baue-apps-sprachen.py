@@ -1245,11 +1245,16 @@ def pruefe_fassung_im_text(kataloge):
     # jemand gemerkt haette. Geprueft wird das Paar „Name Nummer", nicht die
     # Nummer allein: Windows und Linux stehen oft auf derselben, und eine
     # Nummer, die irgendwo im Satz vorkommt, sagt nichts ueber die Plattform.
+    #
+    # Nur Plattformen, die etwas zum Laden anbieten. Seit dem 26.10.2026 hat
+    # macOS keine Datei mehr (die Testfassung lief aus); die Nummer steht
+    # weiter in fassungen.json, im Satz soll sie dann gerade NICHT stehen.
     tuner = lade_fassungen()["tuner"]
     erwartet = [(name, tuner.get(schluessel, {}).get("fassung"))
                 for schluessel, name in (("macos", "macOS"),
                                          ("windows", "Windows"),
-                                         ("linux", "Linux"))]
+                                         ("linux", "Linux"))
+                if tuner.get(schluessel, {}).get("datei")]
     erwartet = [(name, fassung) for name, fassung in erwartet if fassung]
     if not erwartet:
         return True
