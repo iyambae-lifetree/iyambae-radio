@@ -190,10 +190,12 @@
 // v84: Der Laden bei Tag — eine helle Fassung, die der Systemeinstellung
 // folgt; dunkel bleibt unverändert. (v80 bis v83 sind in offenen Zweigen
 // vergeben.) styles.css.
-// v85: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
+// v85: Sprungmarke ohne left:-9999px — auf /ar/ machte sie die Seite
+// 10.374 px breit und schob sie beim Laden seitlich weg. styles.css.
+// v86: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
 // app.js, mikesch.css, lib/mikesch.mjs, drei Bilder, alle sieben Kataloge.
 // (v83 war sein Platzhalter, solange er offen lag.)
-const SW_VERSION = 'iyambae-v85';
+const SW_VERSION = 'iyambae-v86';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

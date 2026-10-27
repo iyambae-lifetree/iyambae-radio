@@ -13,8 +13,8 @@ nach Art. 30 Abs. 1 DSGVO — iyambae.fm und apps.iyambae.fm
 | Name | Infosys Consulting LLC |
 | Rechtsform | Limited Liability Company nach dem Recht des US-Bundesstaates Wyoming, USA |
 | Anschrift | 30 N Gould St, Suite N, Sheridan, WY 82801, United States of America |
-| Kennung | EIN 88-2269126 (US-Steuernummer, **keine** USt-IdNr.); Filing-ID Wyoming Secretary of State: [einzutragen] |
-| Vertretungsberechtigt | [Vor- und Nachname — „das Management" genügt hier nicht, siehe HINWEISE.md Punkt 3] |
+| Kennung | EIN 88-2269126 (US-Steuernummer, **keine** USt-IdNr.); Filing-ID Wyoming Secretary of State: 2022-001112806 (eingetragen 10.05.2022) |
+| Vertretungsberechtigt | das Management der Infosys Consulting LLC (Entscheidung Micha, 27.10.2026: kein Name, Wyoming-LLC; Risiko siehe HINWEISE.md Punkt 3) |
 | Kontakt | hello@infosys-consult.com; 0800 723 6054 |
 | Anwendbarkeit der DSGVO | **Art. 3 Abs. 2 lit. a DSGVO** — kein Sitz und (nach jetzigem Stand) keine Niederlassung in der Union; das Angebot richtet sich an betroffene Personen in der Union (sieben Sprachfassungen, davon fünf EU-Amtssprachen, deutschsprachige Rechtstexte, deutsche Service-Hotline) |
 
@@ -22,9 +22,9 @@ nach Art. 30 Abs. 1 DSGVO — iyambae.fm und apps.iyambae.fm
 
 | Feld | Inhalt |
 |---|---|
-| Name | [einzutragen — die gelieferten Angaben nennen nur eine Anschrift; Art. 13 Abs. 1 lit. a DSGVO verlangt Name **und** Kontaktdaten] |
+| Name | Infosys Consulting LLC – EU-Vertretung |
 | Anschrift | Flat 4, Xuereb Court, Triq ic-Cief, Għajnsielem, Għawdex, Malta |
-| Kontakt | [E-Mail des Vertreters — einzutragen] |
+| Kontakt | hello@infosys-consult.com |
 | Grundlage der Benennung | schriftliche Beauftragung nach Art. 27 Abs. 1 DSGVO — **Vorliegen und Datum dokumentieren** |
 | Aufgabe | Anlaufstelle für Aufsichtsbehörden und betroffene Personen in allen Fragen der Verarbeitung (Art. 27 Abs. 4 DSGVO); zusätzlich zur oder anstelle der Verantwortlichen |
 | **Eigene Verzeichnispflicht** | **Ja.** Art. 30 Abs. 1 Satz 1 DSGVO verpflichtet „jeder Verantwortliche und gegebenenfalls sein Vertreter". Der Vertreter muss dieses Verzeichnis führen bzw. vorhalten und auf Anforderung vorlegen können. Es ist ihm auszuhändigen und bei jeder Änderung erneut zuzuleiten — siehe HINWEISE.md, Punkt 11 |

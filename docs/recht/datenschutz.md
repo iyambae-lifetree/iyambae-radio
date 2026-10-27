@@ -39,7 +39,7 @@ Verantwortliche im Sinne von Art. 4 Nr. 7 DSGVO:
 | Angabe | Wert |
 |---|---|
 | Rechtsform | Limited Liability Company (LLC), Wyoming, USA |
-| Vertretungsberechtigt | [Vor- und Nachname — siehe HINWEISE.md, Punkt 3] |
+| Vertreten durch | das Management der Infosys Consulting LLC |
 | E-Mail | hello@infosys-consult.com |
 | Telefon | 0800 723 6054 (Service-Hotline Deutschland) |
 
@@ -48,11 +48,12 @@ Verantwortliche im Sinne von Art. 4 Nr. 7 DSGVO:
 Weil die Verantwortliche außerhalb der EU sitzt, aber ihren Dienst Menschen in
 der EU anbietet, hat sie einen Vertreter in der Union benannt:
 
-    [Name des Vertreters — siehe HINWEISE.md, Punkt 5]
+    Infosys Consulting LLC – EU-Vertretung
     Flat 4, Xuereb Court
     Triq ic-Cief
     Għajnsielem, Għawdex
     Malta
+    E-Mail: hello@infosys-consult.com
 
 **Was das für dich bedeutet, und es ist kein Nebensatz:** Du kannst dich in
 allen Fragen, die mit der Verarbeitung deiner Daten zu tun haben, **an diesen
