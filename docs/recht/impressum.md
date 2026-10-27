@@ -167,7 +167,7 @@ an der Rechtsform des Anbieters. Die Gründe, jeder nachprüfbar:
 Dieses Impressum nennt deshalb keinen gesonderten Verantwortlichen nach § 18
 Abs. 2 MStV.
 
-> **Entwurfsnotiz, nicht für die Seite:** In den gelieferten Angaben steht an dieser Stelle „Das Management der Infosys Consulting LLC". Das benennt niemanden und ist der greifbarste Mangel der Vorlage. Zwei Namen sind zu entscheiden — einer für § 5 DDG, einer für § 18 Abs. 2 MStV; es darf derselbe sein. HINWEISE.md, Punkt 3.
+> **Entwurfsnotiz, nicht für die Seite:** Entscheidung Micha, 27.10.2026: Bei der Wyoming-LLC wird kein Name genannt. Es bleibt bei „das Management der Infosys Consulting LLC“ wie auf den übrigen Seiten der LLC, und ein Verantwortlicher nach § 18 Abs. 2 MStV entfällt. Das Restrisiko steht in HINWEISE.md, Punkt 3.
 
 **Ändert sich der Charakter der Seite, ändert sich die Antwort.** Ein Blog,
 regelmäßige Sendungsbesprechungen, ein Newsletter mit eigenen Beiträgen,
