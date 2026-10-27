@@ -49,13 +49,12 @@ zuvor: Rechtsform, vertretungsberechtigte Person, Register.
 **Rechtsform:** Limited Liability Company (LLC) nach dem Recht des
 US-Bundesstaates Wyoming.
 
-**Vertretungsberechtigt:** [Vor- und Nachname der vertretungsberechtigten
-Person — siehe HINWEISE.md, Punkt 3]
+**Vertreten durch:** das Management der Infosys Consulting LLC
 
 **US-Steuernummer (Employer Identification Number):** 88-2269126
 
-**Eintragung:** Wyoming Secretary of State, Filing-ID [einzutragen — siehe
-HINWEISE.md, Punkt 4]
+**Eintragung:** Wyoming Secretary of State, Filing-ID 2022-001112806
+(eingetragen am 10.05.2022)
 
 Eine **Umsatzsteuer-Identifikationsnummer nach § 27a UStG** besteht nicht. Die
 oben genannte EIN ist eine US-Steuernummer und **keine**
@@ -84,26 +83,18 @@ anbietet, hat sie einen Vertreter in der Union benannt. An ihn kannst du dich in
 allen Fragen zum Datenschutz wenden — zusätzlich zur Anbieterin oder statt
 ihrer.
 
-    [Name des Vertreters — siehe HINWEISE.md, Punkt 5]
+    Infosys Consulting LLC – EU-Vertretung
     Flat 4, Xuereb Court
     Triq ic-Cief
     Għajnsielem, Għawdex
     Malta
+    E-Mail: hello@infosys-consult.com
 
 **Wofür der Vertreter zuständig ist und wofür nicht:** Er ist die Anlaufstelle
 für Datenschutzfragen (Art. 27 Abs. 4 DSGVO). Er ist **keine** allgemeine
 Zustellungsanschrift für sonstige Angelegenheiten, und er tritt nicht an die
 Stelle der Anbieterin: Rechtsbehelfe gegen die Anbieterin selbst bleiben möglich
 und unberührt (Art. 27 Abs. 5 DSGVO).
-
-### Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
-
-    [Vor- und Nachname]
-    [Straße und Hausnummer]
-    [PLZ Ort, Land]
-
-*(Ob diese Angabe nötig ist, steht weiter unten. Kurz: wahrscheinlich nicht —
-aber sie kostet wenig.)*
 
 ### Verbraucherstreitbeilegung
 
@@ -173,23 +164,8 @@ an der Rechtsform des Anbieters. Die Gründe, jeder nachprüfbar:
 3. **Keine Wiedergabe von Presseinhalten.** Nichts hier stammt aus einem periodischen Druckerzeugnis.
 4. **Meinungsbildung im politischen Sinn** findet nicht statt. Musikkritik ist kulturelle Wertung; die Vorschrift zielt auf presseähnliche Angebote.
 
-**Trotzdem empfehle ich, den Verantwortlichen zu nennen.** Die Abwägung ist
-einseitig: Die Angabe kostet drei Zeilen. Fehlt sie zu Unrecht, ist das eine
-Ordnungswidrigkeit und ein beliebter Abmahnanlass.
-
-**Und hier wird es durch den Betreiberwechsel konkret.** § 18 Abs. 2 Satz 2 MStV
-stellt Anforderungen an die **Person**: ständiger Aufenthalt in Deutschland oder
-der EU, mindestens 18 Jahre alt, unbeschränkt geschäftsfähig, Fähigkeit zur
-Bekleidung öffentlicher Ämter nicht verloren. Eine Gesellschaft in Wyoming
-erfüllt keine davon — eine Gesellschaft hat keinen Aufenthalt und kein Alter. Es
-muss also ein **Mensch mit Aufenthalt in der EU** benannt werden, und der
-EU-Vertreter nach Art. 27 DSGVO ist dafür nicht automatisch der richtige: Sein
-Auftrag betrifft den Datenschutz, nicht die inhaltliche Verantwortung.
-
-Dasselbe gilt für § 5 Abs. 1 Nr. 1 DDG: Dort sind bei juristischen Personen die
-**Vertretungsberechtigten** zu nennen. Gemeint sind Menschen mit Namen — dieselbe
-Angabe, die bei einer GmbH den Geschäftsführer nennt. Deshalb steht oben ein
-Name und keine Abteilung.
+Dieses Impressum nennt deshalb keinen gesonderten Verantwortlichen nach § 18
+Abs. 2 MStV.
 
 > **Entwurfsnotiz, nicht für die Seite:** In den gelieferten Angaben steht an dieser Stelle „Das Management der Infosys Consulting LLC". Das benennt niemanden und ist der greifbarste Mangel der Vorlage. Zwei Namen sind zu entscheiden — einer für § 5 DDG, einer für § 18 Abs. 2 MStV; es darf derselbe sein. HINWEISE.md, Punkt 3.
 
