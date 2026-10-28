@@ -195,7 +195,7 @@
 // v86: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
 // app.js, mikesch.css, lib/mikesch.mjs, drei Bilder, alle sieben Kataloge.
 // (v83 war sein Platzhalter, solange er offen lag.)
-const SW_VERSION = 'iyambae-v86';
+const SW_VERSION = 'iyambae-v87';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
