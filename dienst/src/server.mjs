@@ -67,6 +67,11 @@ import {
     liesSchluessel, schluesselStimmt,
 } from './zahlen.mjs';
 import { erzeugeTitel } from './titel.mjs';
+import { erzeugeMikesch, saeubereGespraech } from './mikesch.mjs';
+import {
+    saeubereAnmeldung, meldeAn as meldeRundbriefAn, bestaetige as bestaetigeRundbrief,
+    meldeAb as meldeRundbriefAb, raeumeAuf as raeumeRundbriefAuf, BESTAETIGEN_STUNDEN,
+} from './rundbrief.mjs';
 
 const PORT = Number(process.env.PORT ?? 8081);
 const HOECHSTER_KOERPER = Number(process.env.HOECHSTER_KOERPER ?? 32 * 1024);
@@ -444,8 +449,23 @@ function fremdDrossel(schluessel, netz) {
  */
 export function baueDienst({
     speicher, versender, drossel = erzeugeDrossel(), fremd = null, zahlen = null,
-    titel = null,
+    titel = null, mikesch = null,
 } = {}) {
+
+    /*
+      Unbestaetigte Rundbrief-Anmeldungen aufraeumen — wie das Aufraeumen der
+      Sitzungen an einer echten Anfrage haengend und nicht an einem Timer,
+      hoechstens alle sechs Stunden, und nach der Antwort.
+    */
+    let rundbriefGeraeumt = 0;
+    function stosseRundbriefAufraeumenAn() {
+        const nun = Date.now();
+        if (nun - rundbriefGeraeumt < 6 * 3_600_000) return;
+        rundbriefGeraeumt = nun;
+        raeumeRundbriefAuf(speicher, nun)
+            .then((weg) => { if (weg) protokolliere({ art: 'rundbrief.aufgeraeumt', ergebnis: 'ok', anzahl: weg }); })
+            .catch((fehler) => protokolliereFehler('rundbrief.aufraeumen', fehler));
+    }
 
     // ── Kleinkram, der von mehreren Stellen gebraucht wird ──────────
 
@@ -1354,6 +1374,100 @@ export function baueDienst({
           Endpunkt — eine Liveness-Probe hier kann die ganze Replik neu
           starten, und dann ist wegen des Anmeldedienstes das Radio weg.
         */
+        /*
+          Kater Mikesch — das Gespraech. Was hier geprueft und was nie
+          gespeichert wird, steht in mikesch.mjs.
+
+          Die Drossel je Netz laesst ein ordentliches Gespraech zu (dreissig
+          Zuege in zehn Minuten schreibt kein Mensch, der liest), die
+          globale ist die Notbremse fuer die Rechnung. Darunter liegt in
+          mikesch.mjs noch die Tagesgrenze.
+
+          Ohne Schluessel (oertlich, auf dem Spiegel) gibt es den Weg, aber
+          er sagt 503 „schlaeft" — die Seite zeigt dann Verweise statt
+          eines Gespraechs, und niemand sieht einen Fehler.
+        */
+        'POST /api/mikesch': async ({ koerper, netz, start }) => {
+            drossle([
+                ['netz', 'mik:' + netz, 30, 10 * 60_000],
+                ['global', 'mik:*', 120, 60_000],
+            ]);
+            const gespraech = saeubereGespraech(koerper);
+            if (!gespraech) {
+                protokolliere({ art: 'mikesch', ergebnis: 'abgelehnt', grund: 'nichts_erkannt' });
+                return { status: 400, koerper: { fehler: 'nichts_erkannt' } };
+            }
+            if (!mikesch) return { status: 503, koerper: { fehler: 'mikesch_schlaeft' }, kopf: { 'Retry-After': '3600' } };
+
+            let ergebnis;
+            try {
+                ergebnis = await mikesch.antworte(gespraech);
+            } catch (fehler) {
+                /*
+                  Was die API auch sagt — ueberlastet, Schluessel falsch,
+                  Zeit um —, beim Besucher kommt dasselbe an: Mikesch ist
+                  gerade nicht da. Die Einzelheiten gehoeren ins Protokoll,
+                  nicht in den Browser.
+                */
+                protokolliereFehler('mikesch', fehler, { status: 503, dauer: Date.now() - start });
+                return { status: 503, koerper: { fehler: 'mikesch_stumm' }, kopf: { 'Retry-After': '60' } };
+            }
+            if (ergebnis.schlaeft) {
+                protokolliere({ art: 'mikesch', ergebnis: 'gedrosselt', grund: 'tagesgrenze' });
+                return { status: 503, koerper: { fehler: 'mikesch_schlaeft' }, kopf: { 'Retry-After': '3600' } };
+            }
+            if (ergebnis.verweigert) return { status: 200, koerper: { verweigert: true } };
+            return { status: 200, koerper: { text: ergebnis.text } };
+        },
+
+        /*
+          Mikeschs Schnurrpost — Anmelden. Antwortet IMMER 204, auf dem
+          Zeitboden, wie /api/anmelden: Ob eine Adresse schon auf der Liste
+          steht, erfaehrt nur ihr Postfach. Drei Anfragen je Adresse am Tag
+          reichen fuer jeden Vertipper; mehr waere ein Weg, fremde
+          Postfaecher mit unserer Absenderadresse zu fuellen.
+        */
+        'POST /api/rundbrief/anmelden': async ({ koerper, netz, start }) => {
+            const anmeldung = saeubereAnmeldung(koerper);
+            drossle([
+                ['netz', 'post:' + netz, 5, 30 * 60_000],
+                ...(anmeldung ? [['adresse', 'post:' + adressSchluessel(anmeldung.mail), 3, 24 * 3_600_000]] : []),
+                ['global', 'post:*', 60, 10 * 60_000],
+            ]);
+            if (!anmeldung) {
+                protokolliere({ art: 'rundbrief', ergebnis: 'abgelehnt', grund: 'nichts_erkannt' });
+                return { status: 400, koerper: { fehler: 'nichts_erkannt' } };
+            }
+            const marke = await meldeRundbriefAn(speicher, anmeldung);
+            if (marke) {
+                versender.reiheEin({
+                    art: 'rundbrief', an: anmeldung.mail, sprache: anmeldung.sprache,
+                    verweis: SEITE + '/' + anmeldung.sprache + '/#schnurrpost=' + marke,
+                    stunden: BESTAETIGEN_STUNDEN,
+                });
+            }
+            protokolliere({ art: 'rundbrief', ergebnis: 'ok', grund: 'anmelden', dauer: Date.now() - start });
+            await aufBoden(start);
+            stosseRundbriefAufraeumenAn();
+            return { status: 204 };
+        },
+
+        'POST /api/rundbrief/bestaetigen': async ({ koerper, netz }) => {
+            drossle([['netz', 'postb:' + netz, 20, 10 * 60_000]]);
+            const ergebnis = await bestaetigeRundbrief(speicher, koerper.marke);
+            protokolliere({ art: 'rundbrief', ergebnis: ergebnis === 'ok' || ergebnis === 'schon' ? 'ok' : 'abgelehnt', grund: 'bestaetigen.' + ergebnis });
+            if (ergebnis === 'ok' || ergebnis === 'schon') return { status: 204 };
+            if (ergebnis === 'abgelaufen') return { status: 410, koerper: { fehler: 'abgelaufen' } };
+            return { status: 404, koerper: { fehler: 'ungueltig' } };
+        },
+
+        'POST /api/rundbrief/abmelden': async ({ koerper, netz }) => {
+            drossle([['netz', 'posta:' + netz, 20, 10 * 60_000]]);
+            const ergebnis = await meldeRundbriefAb(speicher, koerper.marke);
+            protokolliere({ art: 'rundbrief', ergebnis: ergebnis === 'ok' ? 'ok' : 'abgelehnt', grund: 'abmelden.' + ergebnis });
+            return ergebnis === 'ok' ? { status: 204 } : { status: 404, koerper: { fehler: 'ungueltig' } };
+        },
+
         'GET /api/leben': async () => ({ status: 204 }),
     };
 
@@ -1583,8 +1697,25 @@ export async function starte({ port = PORT } = {}) {
         protokolliere,
     });
 
+    /*
+      Kater Mikesch. Ohne ANTHROPIC_API_KEY kommt hier null zurueck, und der
+      Weg antwortet „schlaeft" — kein Startfehler, denn das Radio braucht
+      ihn nicht. Den Katalog holt er wie der Titelstand beim Nachbarn.
+    */
+    const mikesch = await erzeugeMikesch({
+        holeKatalog: async () => {
+            const antwort = await fetch('http://127.0.0.1:8080/data/sender.json');
+            if (!antwort.ok) throw new Error('sender.json ' + antwort.status);
+            return antwort.json();
+        },
+        protokolliere,
+    });
+    if (!mikesch) {
+        protokolliere({ art: 'start.warnung', ergebnis: 'fehler', grund: 'mikesch_ohne_schluessel' });
+    }
+
     const server = http.createServer(
-        baueDienst({ speicher, versender, fremd, zahlen, titel }));
+        baueDienst({ speicher, versender, fremd, zahlen, titel, mikesch }));
 
     /*
       Zeitgrenzen ausdruecklich setzen. Die Vorgaben von node:http sind

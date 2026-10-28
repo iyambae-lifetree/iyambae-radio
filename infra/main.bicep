@@ -215,6 +215,16 @@ param mitApple bool = false
 param mitZusammenfassung bool = false
 
 /*
+  Kater Mikesch — POST /api/mikesch.
+
+  Dasselbe Muster: Erst wenn `anthropic-schluessel` im Tresor liegt, wird er
+  gebunden. Ohne ihn antwortet der Weg „schläft" (503), das Radio läuft
+  unberührt weiter.
+*/
+@description('Liegt der Claude-Schlüssel (anthropic-schluessel) im Tresor?')
+param mitMikesch bool = false
+
+/*
   NICHT VORBELEGT, und das ist eine bewusst OFFENE Entscheidung.
 
   Am 21.08.2026 gegen die Berechtigungsliste von Microsoft.Communication
@@ -580,6 +590,16 @@ resource tabelleHoertest 'Microsoft.Storage/storageAccounts/tableServices/tables
 resource tabelleStimmung 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
   parent: tabellendienst
   name: 'stimmung'
+}
+
+/*
+  Schnurrpost, Mikeschs Rundbrief. Eigene Tabelle aus demselben Grund wie die
+  Umfrage: Sie gehört zu keinem Konto. Eine Zeile je Adresse, Schlüssel ist
+  ein Hash der Adresse (`dienst/src/rundbrief.mjs`).
+*/
+resource tabelleRundbrief 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
+  parent: tabellendienst
+  name: 'rundbrief'
 }
 
 /*
@@ -1078,6 +1098,8 @@ var kontoUmgebung = concat([
   */
   { name: 'LOG_ARBEITSBEREICH', value: protokolle.properties.customerId }
   { name: 'ZUSAMMENFASSUNG_SCHLUESSEL', secretRef: 'zusammenfassung-schluessel' }
+], !mitMikesch ? [] : [
+  { name: 'ANTHROPIC_API_KEY', secretRef: 'anthropic-schluessel' }
 ])
 
 var kontoSondierungen = bereitschaftKonto ? [
@@ -1272,6 +1294,12 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
         {
           name: 'zusammenfassung-schluessel'
           keyVaultUrl: '${tresor.properties.vaultUri}secrets/zusammenfassung-schluessel'
+          identity: dienstIdentitaet.id
+        }
+      ], !mitMikesch ? [] : [
+        {
+          name: 'anthropic-schluessel'
+          keyVaultUrl: '${tresor.properties.vaultUri}secrets/anthropic-schluessel'
           identity: dienstIdentitaet.id
         }
       ])

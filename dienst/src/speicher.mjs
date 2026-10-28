@@ -70,6 +70,14 @@ export const TABELLE_HOERTEST = 'hoertest';
 export const TABELLE_STIMMUNG = 'stimmung';
 
 /*
+  Die sechste: Mikeschs Schnurrpost, der Rundbrief. Begruendung in
+  `rundbrief.mjs`. Eigene Tabelle und KEIN Feld, das auf ein Konto zeigt:
+  Wer den Rundbrief liest, hat damit kein Konto, und wer ein Konto hat,
+  bekommt keinen Rundbrief, nur weil er eines hat.
+*/
+export const TABELLE_RUNDBRIEF = 'rundbrief';
+
+/*
   Fehler, bei denen ein zweiter Versuch Sinn ergibt: Table Storage drosselt
   (503 ServerBusy), die Verbindung bricht weg, oder die Anfrage laeuft in
   ihre Zeitgrenze. Alles andere — 401, 403, 404, ein kaputter Schluessel —

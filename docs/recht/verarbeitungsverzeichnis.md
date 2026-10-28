@@ -106,6 +106,8 @@ zwingt dazu, einmal aufzuschreiben, was man eigentlich tut.
 | V9 | Benutzerkonten | **geplant** | Art. 6 I b |
 | V10 | Versand von Transaktionsmails | **geplant** | Art. 6 I b |
 | V11 | Reichweitenmessung (sechs Ereignisarten) | **neu am 21.08.2026** | Art. 6 I f |
+| V12 | Gesprächsassistent Kater Mikesch | **neu am 24.10.2026** | Art. 6 I f |
+| V13 | Rundbrief „Mikeschs Schnurrpost" | **neu am 24.10.2026** | Art. 6 I a; § 7 II UWG |
 
 ---
 
@@ -369,6 +371,42 @@ eine Meldung geraten könnte. Wer das Modul ändert, sollte das wissen.
 
 ---
 
+## V12 — Gesprächsassistent Kater Mikesch *(neu am 24.10.2026)*
+
+| Feld | Inhalt |
+|---|---|
+| **Bezeichnung** | KI-Gesprächsassistent auf der Seite; Antworten erzeugt Claude (Anthropic PBC) über die Programmierschnittstelle |
+| **Zweck** | Fragen der Besucher zur Seite und zum Senderkatalog beantworten |
+| **Rechtsgrundlage** | Art. 6 Abs. 1 lit. f DSGVO. Berechtigtes Interesse: Hilfe auf Anfrage. Abwägung: Übermittlung nur, wenn der Besucher selbst schreibt; Hinweis auf KI und USA vor dem ersten Satz; keine Speicherung des Gesprächs; keine Kennung |
+| **Kategorien betroffener Personen** | Besucher, die Mikesch eine Frage schreiben |
+| **Kategorien personenbezogener Daten** | Gesprächstext (höchstens 16 Züge à 800 Zeichen), Seitensprache. Personenbezogen nur, soweit der Besucher selbst etwas über sich schreibt |
+| **Nicht erhoben** | IP-Adresse (geht nicht an Anthropic und nicht ins Protokoll); Cookies; Inhalte des örtlichen Speichers; der Gesprächstext im eigenen Protokoll |
+| **Empfänger** | Anthropic PBC, USA (Auftragsverarbeiter); Microsoft wie V1 für den Betrieb des Dienstes |
+| **Drittlandübermittlung** | USA, an Anthropic. Garantie: EU-Standardvertragsklauseln (Modul 2) im Data Processing Addendum, das Teil der kommerziellen Bedingungen von Anthropic ist |
+| **Löschfrist** | Im eigenen Bestand entsteht keine Kopie des Gesprächs. Protokollzeilen (nur Zählwerte) 30 Tage wie V1. Bei Anthropic nach dessen Bedingungen befristet, kein Training. **[Konkrete Aufbewahrungsfrist der API-Daten bei Anthropic nachschlagen und hier eintragen.]** |
+| **TOM** | Schlüssel nur im Dienst, als Geheimnis im Key Vault, nie im Browser oder Repository; Gesprächslänge begrenzt; Drosselung je Netz (gekürzte, gehashte Adresse, nur im Arbeitsspeicher, 10 Minuten) und global; Tagesgrenze (`MIKESCH_JE_TAG`); monatliches Ausgabenlimit im Anthropic-Konto; Protokoll nur mit Zählwerten |
+| **Fundstellen** | `dienst/src/mikesch.mjs`, `dienst/src/server.mjs` (`POST /api/mikesch`), `assets/lib/mikesch.mjs`, `docs/mikesch-assistent.md` |
+
+---
+
+## V13 — Rundbrief „Mikeschs Schnurrpost" *(neu am 24.10.2026)*
+
+| Feld | Inhalt |
+|---|---|
+| **Bezeichnung** | E-Mail-Rundbrief mit doppelter Bestätigung |
+| **Zweck** | Versand des Rundbriefs an Personen, die ihn bestellt haben |
+| **Rechtsgrundlage** | Art. 6 Abs. 1 lit. a DSGVO; § 7 Abs. 2 UWG |
+| **Kategorien betroffener Personen** | Personen, die sich anmelden |
+| **Kategorien personenbezogener Daten** | E-Mail-Adresse; Seitensprache; Zeitpunkt der Anmeldung und der Bestätigung; Fassung des Einwilligungstextes (`EINWILLIGUNG_FASSUNG`); SHA-256-Prüfwert des Bestätigungs-/Abmeldelinks |
+| **Nicht erhoben** | IP-Adresse; Öffnungs- und Klickverhalten |
+| **Empfänger** | Microsoft Ireland Operations Limited (Table Storage, Communication Services; Auftragsverarbeiterin); der E-Mail-Anbieter des Empfängers |
+| **Drittlandübermittlung** | wie V10 |
+| **Löschfrist** | Unbestätigte Anmeldungen nach 7 Tagen (`OFFEN_TAGE`); bei Abmeldung sofort und vollständig |
+| **TOM** | Doppelte Bestätigung; nur Prüfwerte der Links gespeichert; Öffnungs- und Klickverfolgung abgeschaltet; Anmeldeweg antwortet immer gleich, damit sich nicht erfragen lässt, wer eingetragen ist; Drosselung wie V12 |
+| **Fundstellen** | `dienst/src/rundbrief.mjs`, `dienst/src/mail.mjs`, `assets/lang/*.json` (`mikesch.post.einwilligung`) |
+
+---
+
 ## Kapitel V und der Sitz in einem Drittland
 
 Dieser Abschnitt ist neu und gehört an eine Stelle, an der man ihn nicht
@@ -404,6 +442,7 @@ eine Schutzmaßnahme.
 | Microsoft Ireland Operations Limited | Azure Container Apps, Log Analytics | Germany West Central | Microsoft Products and Services Data Protection Addendum (DPA) nebst EU-Standardvertragsklauseln — **Bezug und Fassung dokumentieren** |
 | Microsoft Ireland Operations Limited | Azure Table Storage *(geplant)* | Germany West Central | wie oben |
 | Microsoft Ireland Operations Limited | Azure Communication Services *(geplant)* | Datenhaltung „Germany", Ressource global | wie oben |
+| Anthropic PBC | Sprachmodell Claude für Kater Mikesch (V12) | USA | Data Processing Addendum mit EU-Standardvertragsklauseln (Modul 2), Teil der Commercial Terms of Service — **Fassung und Datum dokumentieren** |
 | [Anbieter des Postfachs hello@infosys-consult.com] | Postfach für Kontakt und Betroffenenanfragen | [einzutragen] | **[AV-Vertrag erforderlich]** |
 | [Anbieter des Postfachs des EU-Vertreters] | Postfach für Anfragen nach Art. 27 Abs. 4 | Malta / [einzutragen] | **[AV-Vertrag erforderlich]** |
 | Cloudflare, Inc. | **nur autoritatives DNS**, kein Proxy („graue Wolke") | — | Kein Auftragsverarbeitungsverhältnis für Besucherdaten: Ohne Proxy fließt kein Besucherverkehr über Cloudflare. Cloudflare beantwortet Namensauflösungen gegenüber den Auflösern der Zugangsanbieter, sieht dabei nicht die IP-Adresse des Besuchers. **Wird der Proxy je eingeschaltet, ändert sich das grundlegend** — dann läuft der gesamte Verkehr über einen US-Anbieter und braucht einen eigenen Eintrag hier und einen Absatz in der Datenschutzerklärung |
@@ -507,6 +546,7 @@ hinzukommt.
 | 21.08.2026 | Katalogzahlen auf 146 Sender aus 31 Ländern gebracht (vorher 129 aus 29); „TDDG" durchgängig zu „TDDDG" berichtigt |
 | 21.08.2026 | **V11 nachgezogen, zweite Runde.** Adressfeld aus `log_format messung` entfernt — die Zeile hat jetzt `art`, `zeit`, `ereignis`. Kein serverseitiges Sprachfeld mehr (`$sprache` hätte `$cookie_hz_sprache` gelesen); das Kürzel kommt aus dem Pfad. Trefferzahl der Achse „gemerkte" entfällt. Drei bis dahin tote Ereignisarten (`suche`, `sprache`, `installiert`) sind verdrahtet und hier aufgenommen. Der Posten „Erkennbare Restfrage" ist erledigt und durch die Begründung ersetzt |
 | 21.08.2026 | **V1: Bereitschaftsprüfung von `/` auf `/gesund` verlegt und aus der Protokollierung genommen.** Zuvor rund 26 000 nicht von Menschen stammende Zeilen am Tag. V2 um einen Hinweis zur Aussagekraft der Zahlen ergänzt |
+| 24.10.2026 | **V12 und V13 neu** — Kater Mikesch und Mikeschs Schnurrpost; Anthropic PBC als Auftragsverarbeiter aufgenommen |
 
 **Stand: 21.08.2026 · Nächste Durchsicht: [Datum eintragen, spätestens in einem
 Jahr] · Geführt von: [Name] · Beim Vertreter nach Art. 27 hinterlegt am:

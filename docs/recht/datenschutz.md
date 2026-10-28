@@ -1,6 +1,6 @@
 # Datenschutz
 
-> **Entwurf, Stand 21.08.2026 — zweite Fassung.** Zwei Dinge haben sich gegenüber der ersten geändert, und beide reichen tief: Verantwortliche ist eine Gesellschaft in den USA mit einem EU-Vertreter auf Malta, nicht eine deutsche Privatperson. Und es wird jetzt gemessen, welcher Sender gestartet wird — die erste Fassung sagte an drei Stellen das Gegenteil. Abschnitt 3 ist am 21.08.2026 ein zweites Mal nachgezogen worden: Das Adressfeld ist aus der Messzeile verschwunden, und die Sprachangabe kommt nicht mehr aus dem Cookie, sondern aus dem Pfad. Am 23.08.2026 ist Abschnitt 11 aus dem Konjunktiv geholt worden: Die Anmeldung steht jetzt in der Seite, und damit gilt der Abschnitt. Mitgezogen sind Abschnitt 8 (zwei neue Einträge im örtlichen Speicher, dazu das Sitzungscookie) und der Satz über Drittlandübermittlungen weiter unten. Offene Punkte: [HINWEISE.md](HINWEISE.md).
+> **Entwurf, Stand 21.08.2026 — zweite Fassung.** Zwei Dinge haben sich gegenüber der ersten geändert, und beide reichen tief: Verantwortliche ist eine Gesellschaft in den USA mit einem EU-Vertreter auf Malta, nicht eine deutsche Privatperson. Und es wird jetzt gemessen, welcher Sender gestartet wird — die erste Fassung sagte an drei Stellen das Gegenteil. Abschnitt 3 ist am 21.08.2026 ein zweites Mal nachgezogen worden: Das Adressfeld ist aus der Messzeile verschwunden, und die Sprachangabe kommt nicht mehr aus dem Cookie, sondern aus dem Pfad. Am 23.08.2026 ist Abschnitt 11 aus dem Konjunktiv geholt worden: Die Anmeldung steht jetzt in der Seite, und damit gilt der Abschnitt. Mitgezogen sind Abschnitt 8 (zwei neue Einträge im örtlichen Speicher, dazu das Sitzungscookie) und der Satz über Drittlandübermittlungen weiter unten. Am 24.10.2026 sind die Abschnitte 12 (Kater Mikesch) und 13 (Mikeschs Schnurrpost) hinzugekommen; die bisherigen Abschnitte 12 bis 14 heißen seither 14 bis 16. Offene Punkte: [HINWEISE.md](HINWEISE.md).
 
 ---
 
@@ -20,6 +20,10 @@ sitzt in den **USA**, auch wenn die Daten in Deutschland liegen (Abschnitt 1).
 Und alles, was diese Seite lädt, kommt vom eigenen Server, auch die Schriften
 (Abschnitt 6) — beim Aufbau der Seite geht keine einzige Anfrage an Google, an
 ein Werbenetz oder an einen Analysedienst.
+
+Und wenn du Kater Mikesch, dem Assistenten unten rechts, eine Frage schreibst,
+geht dieser Text an Anthropic in den **USA**, damit eine Antwort entsteht
+(Abschnitt 12). Wenn du nichts schreibst, geht nichts dorthin.
 
 ---
 
@@ -54,7 +58,7 @@ der EU anbietet, hat sie einen Vertreter in der Union benannt:
 **Was das für dich bedeutet, und es ist kein Nebensatz:** Du kannst dich in
 allen Fragen, die mit der Verarbeitung deiner Daten zu tun haben, **an diesen
 Vertreter wenden — zusätzlich zu uns oder statt uns** (Art. 27 Abs. 4 DSGVO).
-Auch dein Auskunfts-, Berichtigungs- oder Löschverlangen (Abschnitt 13) kannst
+Auch dein Auskunfts-, Berichtigungs- oder Löschverlangen (Abschnitt 15) kannst
 du dorthin richten. Du musst dafür nicht in die USA schreiben, und du musst dich
 nicht vorher an uns wenden. Der Vertreter ist die einfachere Adresse, und dafür
 gibt es ihn.
@@ -72,7 +76,7 @@ Verantwortliche ohne Niederlassung in der Union, wenn sie betroffenen Personen
 in der Union Dienstleistungen anbieten. Diese Seite spricht sieben Sprachen,
 darunter fünf Amtssprachen der EU, und richtet sich damit ausdrücklich an
 Menschen in der Union. Also gilt für sie dasselbe Recht wie für einen deutschen
-Anbieter — einschließlich deiner sämtlichen Rechte aus Abschnitt 13.
+Anbieter — einschließlich deiner sämtlichen Rechte aus Abschnitt 15.
 
 **Deine Daten liegen weiter in Deutschland.** Server, Protokolle und (später)
 Kontodaten liegen in der Azure-Region Germany West Central. Der Sitz der
@@ -99,9 +103,9 @@ gelöscht.
 
 **Wirkliche Drittlandübermittlungen gibt es hier trotzdem**, und sie stehen an
 ihrem Platz: die Verbindung deines Geräts zu den Senderservern (Abschnitt 7),
-die Fernwartung durch Microsoft-Personal außerhalb der EU (Abschnitt 2) und die
-Anmeldung über Google (Abschnitt 11) — letztere aber nur, wenn du sie selbst
-anstößt. Wer sich nicht anmeldet, hat mit Google nichts zu tun: Beim Aufbau der
+die Fernwartung durch Microsoft-Personal außerhalb der EU (Abschnitt 2), die
+Anmeldung über Google (Abschnitt 11) und das Gespräch mit Kater Mikesch
+(Abschnitt 12) — die beiden letzten aber nur, wenn du sie selbst anstößt. Wer sich nicht anmeldet, hat mit Google nichts zu tun: Beim Aufbau der
 Seite geht keine einzige Anfrage dorthin.
 
 ### Datenschutzbeauftragter
@@ -522,6 +526,7 @@ nirgendwohin.
 | `hz_fehlerbericht` | deine Antwort auf die Fehlerbericht-Frage |
 | `hz_messung` | **nur, wenn** du die Reichweitenmessung abgeschaltet hast (Abschnitt 5) |
 | `hz_sprache` | deine gewählte Sprache |
+| `iyambae.mikesch` | ob Kater Mikesch dich schon begrüßt hat oder ob du ihn weggeschickt hast (Abschnitt 12) — **nicht** das Gespräch |
 
 `hz_messung` ist dabei ein Sonderfall, der Erwähnung verdient: Gespeichert wird
 **nur die Ablehnung**. Wer die Messung anlässt, hinterlässt gar nichts — ein
@@ -812,7 +817,84 @@ gehört benannt — mitsamt der Zahl der Personen, die sie haben.
 
 ---
 
-## 12. Was hier nicht passiert
+## 12. Kater Mikesch, der Gesprächsassistent
+
+Unten rechts sitzt Kater Mikesch. Er beantwortet Fragen zur Seite und zu den
+Sendern. **Mikesch ist eine KI:** Die Antworten schreibt das Sprachmodell
+Claude der Anthropic PBC, San Francisco, USA. Das steht auch im Fenster selbst,
+bevor du etwas schreibst.
+
+**Was übermittelt wird.** Wenn du eine Frage abschickst, geht an unseren Server
+der Text des Gesprächs (deine Fragen und Mikeschs bisherige Antworten,
+höchstens 16 Züge zu je höchstens 800 Zeichen) und die Sprache der Seite. Unser
+Server reicht genau das an Anthropic weiter, zusammen mit einer festen
+Beschreibung der Seite und des Senderkatalogs. **Deine IP-Adresse, Cookies,
+deine Merkliste oder sonst etwas aus deinem Browser gehen nicht an Anthropic.**
+
+**Was wir speichern.** Das Gespräch selbst: nichts. Es liegt nur im
+Arbeitsspeicher deines Browsers und ist weg, sobald du die Seite neu lädst
+oder schließt. In unser Protokoll schreibt der Dienst je Antwort eine Zeile
+mit Zählwerten — wie viele Züge, wie viele Textbausteine („Tokens") hinein und
+heraus —, **ohne den Text und ohne Adresse.** Gegen Missbrauch begrenzen wir die
+Zahl der Fragen je Netz (gekürzte Adresse, gehasht, nur im Arbeitsspeicher, nach
+zehn Minuten vergessen) und je Tag insgesamt. Im örtlichen Speicher deines
+Browsers merken wir uns nur, ob Mikesch dich schon begrüßt hat oder ob du ihn
+weggeschickt hast (`iyambae.mikesch`, Abschnitt 8).
+
+**Bei Anthropic.** Anthropic verarbeitet die Anfrage als
+**Auftragsverarbeiter** nach Art. 28 DSGVO. Grundlage ist der
+Auftragsverarbeitungsvertrag (Data Processing Addendum), der Teil der
+kommerziellen Bedingungen von Anthropic ist. Nach diesen Bedingungen werden
+Eingaben und Ausgaben über die Programmierschnittstelle **nicht zum Training**
+der Modelle verwendet und nur befristet gespeichert, etwa zur Erkennung von
+Missbrauch.
+
+**Drittland.** Anthropic sitzt in den USA, und die Antworten entstehen auf
+Rechnern in den USA. Das ist eine Übermittlung in ein Drittland im Sinne von
+Kapitel V DSGVO. Sie stützt sich auf die EU-Standardvertragsklauseln
+(Durchführungsbeschluss (EU) 2021/914, Modul 2), die im
+Auftragsverarbeitungsvertrag enthalten sind.
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse
+ist, Fragen zur Seite zu beantworten, die du selbst stellst. Du entscheidest,
+ob und was du schreibst; schreibst du nichts, entsteht keine Übermittlung.
+
+**Bitte schreib Mikesch nichts Persönliches** — keine Namen, Adressen,
+Gesundheitsangaben oder Zugangsdaten. Er braucht so etwas nicht, und es ginge
+mit in die USA.
+
+---
+
+## 13. Mikeschs Schnurrpost (Rundbrief per E-Mail)
+
+Bei Mikesch kannst du dich für einen Rundbrief eintragen. Das geht nur mit
+deiner ausdrücklichen Einwilligung (Häkchen) und mit doppelter Bestätigung.
+
+**Was wir speichern.** Deine E-Mail-Adresse, die Sprache der Seite, den
+Zeitpunkt der Anmeldung und der Bestätigung und die Fassung des
+Einwilligungstextes, dem du zugestimmt hast. **Keine IP-Adresse.** Für die Links
+zum Bestätigen und Abmelden speichern wir nur einen Prüfwert (SHA-256), nicht
+den Link selbst.
+
+**Ablauf.** Nach der Anmeldung bekommst du eine Mail mit einem Link. Erst mit
+dem Klick darauf bist du eingetragen. Klickst du nicht, löschen wir die Adresse
+nach **sieben Tagen** von selbst.
+
+**Abmelden** kannst du dich jederzeit über den Link in jeder Mail. Dann löschen
+wir deine Adresse **vollständig**, ohne „abgemeldet"-Vermerk.
+
+**Wo die Daten liegen.** In derselben Datenbank wie die Konten (Abschnitt 11,
+Azure Table Storage in Deutschland). Die Mails verschickt Azure Communication
+Services, wie in Abschnitt 11 unter „E-Mails" beschrieben, ohne Öffnungs- und
+Klickzählung. An Anthropic geht von der Schnurrpost nichts.
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. a DSGVO (Einwilligung) und § 7 Abs. 2
+UWG. Die Einwilligung kannst du jederzeit mit Wirkung für die Zukunft
+widerrufen — über den Abmeldelink oder formlos an die Adresse in Abschnitt 1.
+
+---
+
+## 14. Was hier nicht passiert
 
 Damit es einmal in einer Liste steht:
 
@@ -831,7 +913,7 @@ Damit es einmal in einer Liste steht:
 
 ---
 
-## 13. Deine Rechte
+## 15. Deine Rechte
 
 Du hast die folgenden Rechte. Alle kosten nichts, und für alle reicht eine
 formlose Nachricht — **an uns unter hello@infosys-consult.com oder an unseren
@@ -877,7 +959,7 @@ nächsten ist.
 
 ---
 
-## 14. Änderungen an diesem Hinweis
+## 16. Änderungen an diesem Hinweis
 
 Ändert sich, was die Seite tut, ändert sich dieser Text. Die jeweils geltende
 Fassung steht immer hier. Wesentliche Änderungen — etwa der Start der Konten —
@@ -892,5 +974,9 @@ statt still eingearbeitet zu werden: Das Adressfeld ist aus der Messzeile
 entfernt worden, das Sprachkürzel kommt seither aus dem Pfad statt aus dem
 Cookie, und beim Filter „gemerkte" geht die Trefferzahl nicht mehr mit. Was
 vorher vertretbar war, ist jetzt schlicht nicht mehr vorhanden.
+
+**Am 24.10.2026 sind Kater Mikesch und seine Schnurrpost dazugekommen**
+(Abschnitte 12 und 13). Weil Mikesch Text in die USA schickt, steht das auch in
+den ersten Sätzen ganz oben und nicht nur hier.
 
 **Stand: [Datum des Livegangs].**

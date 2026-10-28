@@ -3805,3 +3805,12 @@ if (document.readyState === 'loading') {
 } else {
   richteMitnehmenEin();
 }
+
+/*
+ Kater Mikesch kommt zuletzt und fuer sich: Er braucht `window.app` (fuer
+ die Sender-Knoepfe in seinen Antworten), und faellt sein Modul aus, soll
+ das Radio davon nichts merken.
+*/
+import('./lib/mikesch.mjs')
+  .then(({ starteMikesch }) => starteMikesch())
+  .catch((fehler) => console.warn('Mikesch:', fehler));
