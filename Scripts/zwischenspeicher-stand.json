@@ -1,6 +1,8 @@
 {
-  "fassung": "iyambae-v86",
+  "fassung": "iyambae-v87",
   "dateien": {
+    "/ar/": "0c24f401081920b7",
+    "/ar/manifest.webmanifest": "b38a789b8f8feeee",
     "/assets/app.js": "e74ecb286658a6c2",
     "/assets/bild/mikesch/kopf.webp": "56242506d7532878",
     "/assets/bild/mikesch/lider.webp": "2e3239dea4fce323",
@@ -40,8 +42,20 @@
     "/assets/styles.css": "01cc6d3225a68b51",
     "/assets/wasm/retuner.wasm": "c6cc9a4f9c88b066",
     "/data/sender.json": "2293d48af8b2fe39",
+    "/de/": "35d490761d635cd6",
+    "/de/manifest.webmanifest": "a9a0daa901e18772",
+    "/en/": "828eb4a1f6c25136",
+    "/en/manifest.webmanifest": "4784c4b04760e703",
+    "/es/": "3e46ba7fce911365",
+    "/es/manifest.webmanifest": "6a086358c4be9a1a",
+    "/fr/": "aa16b1806d53cbd9",
+    "/fr/manifest.webmanifest": "31c6cf33aab468ad",
     "/icon-192.png": "16e5dc4d3b47891a",
     "/icon-512.png": "954e2ad6a2c70f36",
-    "/icon.svg": "32f736919c3d245e"
+    "/icon.svg": "32f736919c3d245e",
+    "/it/": "228ad13875e4c34b",
+    "/it/manifest.webmanifest": "cb12435bd6122922",
+    "/ja/": "6b833d576b6b5552",
+    "/ja/manifest.webmanifest": "289650fb26377ecd"
   }
 }
