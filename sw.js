@@ -206,7 +206,9 @@
 // v90: Jeder veraendernde Aufruf schickt `Content-Type: application/json`,
 // der Dienst weist ihn sonst mit 415 ab (432hz-radio#46, Punkt 5).
 // lib/konto.mjs, lib/fehlerbericht.mjs.
-const SW_VERSION = 'iyambae-v90';
+// v91: `?anmeldung=bitte` oeffnet das Anmeldefenster — der Link aus der
+// Warnmail vor der Loeschung eines inaktiven Kontos (432hz-radio#49). app.js.
+const SW_VERSION = 'iyambae-v91';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

@@ -149,6 +149,9 @@ und Weiche werden also mitgeprueft und nicht nachgebaut.
 | `MARKE_GUELTIG_MINUTEN` | `60` | Passwortlink |
 | `SITZUNGSDAUER_TAGE` | `365` | Hoechstdauer: Plaetzchen und Tabellenzeile |
 | `LEERLAUF_TAGE` | `90` | gleitend: so lange ohne Besuch, dann abgemeldet (#40) |
+| `INAKTIV_TAGE` | `730` | so lange ohne Anmeldung, dann wird das Konto geloescht (#49, `src/inaktiv.mjs`) |
+| `INAKTIV_WARNUNG_TAGE` | `28` | so viele Tage vorher geht die Warnmail |
+| `INAKTIV_WARNUNGEN_JE_LAUF` | `20` | hoechstens so viele Warnmails je Tagesdurchgang — schont das Mailkontingent der Anmeldecodes |
 | `FRISCH_MINUTEN` | `10` | nach der Anmeldung offen: Passwort setzen, Passkey anlegen, Verknuepfen, Konto loeschen (#40) |
 | `MAIL_JE_MINUTE` / `MAIL_JE_STUNDE` | `25` / `90` | unter Microsofts 30/100 |
 | `MAIL_WARTESCHLANGE` | `500` | danach faellt die aelteste Mail weg |

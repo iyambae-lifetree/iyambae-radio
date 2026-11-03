@@ -2427,6 +2427,18 @@ class App {
     if (!stand) return;
 
     history.replaceState(null, '', location.pathname);
+
+    /*
+     `bitte` kommt nicht von Google, sondern aus der Warnmail vor der
+     Loeschung eines inaktiven Kontos (dienst/src/inaktiv.mjs): Der Link
+     soll gleich dort landen, wo man sich anmeldet — eine Anmeldung ist das
+     Einzige, was die Loeschung aufhaelt.
+    */
+    if (stand === 'bitte') {
+      this.oeffneAnmeldung();
+      return;
+    }
+
     const saetze = {
       ok:          ['konto.zurueck.ok', 'info'],
       neu:         ['konto.zurueck.neu', 'info'],

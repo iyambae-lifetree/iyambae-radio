@@ -174,6 +174,25 @@ param passkeyDomain string = 'iyambae.fm'
 param grabsteinTage int = 90
 
 /*
+  Inaktive Konten (dienst/src/inaktiv.mjs; Entscheidung Micha, 03.11.2026,
+  432hz-radio#49): zwei Jahre ohne Anmeldung, Warnmail vier Wochen vorher.
+  Die Untergrenze 400 ist kein Geschmack: Darunter bekaeme jemand, dessen
+  Sitzung (hoechstens 365 Tage) noch gilt, die Mail „wird geloescht". Der
+  Dienst hebt eine zu kleine Zahl ohnehin selbst an; hier faellt sie schon
+  beim Ausrollen auf. Wer die Zahlen aendert, aendert auch datenschutz.md
+  Abschnitt 11 und V9 im Verarbeitungsverzeichnis — dort stehen sie als Zusage.
+*/
+@description('Nach so vielen Tagen ohne Anmeldung wird ein Konto gelöscht.')
+@minValue(400)
+@maxValue(1095)
+param inaktivTage int = 730
+
+@description('So viele Tage vor der Löschung geht die Warnmail an die Kontoadresse.')
+@minValue(14)
+@maxValue(90)
+param inaktivWarnungTage int = 28
+
+/*
   Google und Apple — die Kennungen sind ÖFFENTLICH, die Geheimnisse nicht.
 
   Eine Client-ID steht bei jedem Anmeldevorgang im Browser des Nutzers; sie
@@ -1075,6 +1094,8 @@ var kontoUmgebung = concat([
   { name: 'WEBAUTHN_RP_ID', value: passkeyDomain }
   { name: 'WEBAUTHN_RP_NAME', value: 'IYAMBAE FM' }
   { name: 'GRABSTEIN_TAGE', value: string(grabsteinTage) }
+  { name: 'INAKTIV_TAGE', value: string(inaktivTage) }
+  { name: 'INAKTIV_WARNUNG_TAGE', value: string(inaktivWarnungTage) }
   /*
     Die Kennung der benutzerzugewiesenen Identität. Sie MUSS hier stehen: An
     der Anwendung hängen zwei Identitäten (die alte systemzugewiesene und

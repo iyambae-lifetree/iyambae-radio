@@ -1668,7 +1668,7 @@ export function baueDienst({
                 antwort.setHeader('X-Content-Type-Options', 'nosniff');
                 antwort.setHeader('Referrer-Policy', 'no-referrer');
                 if (await fremd.behandle(anfrage, antwort)) {
-                    stosseAufraeumenAn(speicher);
+                    stosseAufraeumenAn(speicher, Date.now(), { versender, seite: SEITE });
                     return;
                 }
             }
@@ -1692,9 +1692,10 @@ export function baueDienst({
             /*
               Das Aufraeumen ganz am Ende, NACH der Antwort. Es haengt an
               einer echten Anfrage und nicht an einem Timer — und die Anfrage
-              wartet nicht darauf.
+              wartet nicht darauf. Der Versender geht mit, weil derselbe
+              Durchgang inaktive Konten warnt und loescht (inaktiv.mjs).
             */
-            stosseAufraeumenAn(speicher);
+            stosseAufraeumenAn(speicher, Date.now(), { versender, seite: SEITE });
 
         } catch (fehler) {
             behandleFehler(fehler, antwort, { anfrage, start });
