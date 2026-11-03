@@ -569,7 +569,9 @@ Werbung.
 
 **Eines nur für Angemeldete: `hz_sitzung`.** Es entsteht in dem Augenblick, in
 dem du dich anmeldest, und geht weg, wenn du dich abmeldest. Es trägt
-`HttpOnly`, `Secure`, `SameSite=Lax` und eine Laufzeit von einem Jahr. Sein
+`HttpOnly`, `Secure`, `SameSite=Lax` und eine Laufzeit von höchstens einem
+Jahr. Wer 90 Tage lang nicht wiederkommt, ist danach abgemeldet: Die Sitzung
+verfällt bei uns, auch wenn das Cookie im Browser noch liegt. Sein
 Inhalt ist ein Zufallswert und sonst nichts — bei uns liegt davon nur ein
 SHA-256-Abdruck (Abschnitt 11).
 
@@ -810,7 +812,7 @@ gehört benannt — mitsamt der Zahl der Personen, die sie haben.
 
 ### Speicherdauer und Löschung
 
-- **Sitzungen und Einmalcodes** tragen ein Ablaufdatum und werden weggeräumt, sobald sie abgelaufen sind — beim nächsten Zugriff, und zusätzlich durch einen Durchgang alle 24 Stunden, damit auch die Sitzung eines Menschen verschwindet, der nicht wiederkommt.
+- **Sitzungen und Einmalcodes** tragen ein Ablaufdatum und werden weggeräumt. Eine Sitzung läuft nach 90 Tagen ohne Besuch ab, spätestens aber nach einem Jahr. Weggeräumt werden sie, sobald sie abgelaufen sind — beim nächsten Zugriff, und zusätzlich durch einen Durchgang alle 24 Stunden, damit auch die Sitzung eines Menschen verschwindet, der nicht wiederkommt.
 - **Das Konto selbst** bleibt, bis du es löschst. Es gibt eine Löschfunktion in der App; sie entfernt in einem Vorgang alles: Merkliste, Verlauf, Sitzungen, Kennungen und den Eintrag in der Zuordnungstabelle. Alle Daten eines Kontos liegen zu diesem Zweck in einer einzigen Partition — damit kein Rest liegenbleibt, den später niemand mehr findet.
 - **[Frist für inaktive Konten: noch festzulegen — HINWEISE.md.]**
 - **[Was nach dem Löschen wie lange als „Grabstein" bestehen bleibt: noch zu klären — HINWEISE.md.]**
