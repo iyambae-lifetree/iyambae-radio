@@ -82,6 +82,26 @@
 
 .unsicher { padding: .9rem clamp(1rem, 3vw, 1.6rem); border-top: 1px solid var(--kante); color: var(--warm); font-size: .9rem; }
 
+/* ── Prüfsumme und Mess-Abzeichen (432hz-radio#27) ───────────────── */
+.ergebnis__summe { padding: .7rem clamp(1rem, 3vw, 1.6rem); border-top: 1px solid var(--kante); margin: 0; font-size: .78rem; color: var(--leiser); }
+.ergebnis__summe code { display: block; font-family: var(--daten); color: var(--leise); word-break: break-all; margin-top: .2rem; }
+.abz { border-top: 1px solid var(--kante); padding: 1rem clamp(1rem, 3vw, 1.6rem); }
+.abz__titel { font-weight: 600; margin: 0 0 .3rem; }
+.abz__dazu { font-size: .86rem; color: var(--leise); margin: 0 0 .8rem; }
+.abz__knopf {
+  cursor: pointer; font-family: var(--daten); font-size: .74rem; letter-spacing: .06em; font-weight: 700;
+  padding: .6rem 1.2rem; border: 1px solid var(--akzent); border-radius: 2px; background: transparent; color: var(--text);
+}
+.abz__knopf:hover { border-color: var(--akzent-hell); }
+.abz__fehler { color: var(--warm); font-size: .86rem; margin: .6rem 0 0; }
+.abz__warnung { border: 1px solid var(--warm); border-radius: 3px; padding: .7rem .9rem; font-size: .9rem; margin: 0 0 .9rem; }
+.abz__warnung strong { color: var(--warm); }
+.abz__feld { display: block; font-size: .78rem; color: var(--leiser); margin: 0 0 .7rem; }
+.abz__feld input, .abz__feld textarea {
+  display: block; width: 100%; margin-top: .25rem; font-family: var(--daten); font-size: .78rem;
+  padding: .45rem .5rem; background: var(--nacht); color: var(--text); border: 1px solid var(--kante-hell); border-radius: 2px;
+}
+
 /* ── Der Übergang zum Tuner ─────────────────────────────────────── */
 .brücke { border: 1px solid var(--akzent); border-radius: 3px; padding: clamp(1.2rem, 4vw, 1.8rem); background: rgba(76, 217, 115, .05); }
 .brücke h2 { margin-top: 0; }
@@ -152,6 +172,29 @@
         </span>
       </label>
       <p class="rueck__danke" id="rueckDanke" hidden data-text="rueck.danke">Angekommen. Danke — daraus wird die Zahl, die hier eines Tages steht.</p>
+    </div>
+
+    <!-- Die Prüfsumme rechnet der Browser aus der geladenen Datei; sie
+         verlässt den Rechner nur, wenn jemand unten ein Abzeichen erzeugt.
+         Sie steht hier, damit man eine Messung NACHMESSEN kann: dieselbe
+         Datei, dieselbe Zeichenfolge. -->
+    <p class="ergebnis__summe" id="ergebnisSumme" hidden><span data-text="mess.pruefsumme">Prüfsumme der Datei (SHA-256)</span> <code id="ergebnisSummeWert"></code></p>
+
+    <!-- Das Mess-Abzeichen (432hz-radio#27). Erscheint nur, wenn die
+         Messung trägt. Gesendet wird erst auf den Knopf, und nur der
+         Befund — siehe assets/lib/abzeichen.mjs. -->
+    <div class="abz" id="abzKasten" hidden>
+      <p class="abz__titel" data-text="abz.titel">Mess-Abzeichen für dein Video</p>
+      <p class="abz__dazu" data-html="abz.dazu">Gesendet werden nur der gemessene Kammerton, die Sicherheit, die Länge der Datei und ihre Prüfsumme. <strong>Nicht die Datei, nicht ihr Name.</strong> Das Abzeichen ist öffentlich und sagt nur, dass <em>diese</em> Datei heute so gemessen wurde — nicht, dass dein Video sie enthält. Nach zwei Jahren wird es gelöscht.</p>
+      <button type="button" class="abz__knopf" id="abzKnopf" data-text="abz.knopf">Abzeichen erzeugen</button>
+      <p class="abz__fehler" id="abzFehler" hidden data-text="abz.fehler">Das hat nicht geklappt. Versuch es gleich noch einmal.</p>
+      <div id="abzFertig" hidden>
+        <p class="abz__warnung" data-html="abz.nurjetzt"><strong>Nur jetzt sichtbar:</strong> Den Löschschlüssel speichern wir nicht und zeigen ihn nie wieder. Bewahr ihn auf, wenn du das Abzeichen später löschen willst.</p>
+        <label class="abz__feld"><span data-text="abz.link">Link zum Abzeichen</span><input id="abzLink" readonly></label>
+        <label class="abz__feld"><span data-text="abz.code">Einbettcode für Webseiten</span><textarea id="abzCode" rows="3" readonly></textarea></label>
+        <label class="abz__feld"><span data-text="abz.schluessel">Löschschlüssel</span><input id="abzSchluessel" readonly></label>
+        <p class="abz__dazu"><a id="abzAnsehen" href="#" target="_blank" rel="noopener" data-text="abz.ansehen">Abzeichen-Seite öffnen</a></p>
+      </div>
     </div>
   </div>
 </section>
@@ -251,10 +294,16 @@
 /* ═══════════════════════════════════════════════════════════════════
    Das Messwerkzeug.
 
-   Alles läuft hier: Datei einlesen, dekodieren, messen, anzeigen. Nichts
-   wird übertragen — und das ist keine Behauptung, sondern eine Eigenschaft
-   des Codes: Es gibt in dieser Datei kein fetch() und kein XHR, das die
-   Musikdaten anfasst. Wer es nachsehen will, sucht danach.
+   Alles läuft hier: Datei einlesen, dekodieren, messen, anzeigen. Die
+   Musikdaten werden nicht übertragen — und das ist keine Behauptung,
+   sondern eine Eigenschaft des Codes: Es gibt in dieser Datei kein fetch()
+   und kein XHR, das sie anfasst. Wer es nachsehen will, sucht danach.
+
+   Was hinausgehen KANN, steht in zwei Modulen und jeweils erst auf eine
+   Handlung hin: die anonyme Statistik (rueckmeldung.mjs, Häkchen) und das
+   Mess-Abzeichen (abzeichen.mjs, Knopf). Beim Abzeichen ist es die SHA-256
+   der Datei — eine Zahl über die Bytes, aus der sich die Musik nicht
+   zurückgewinnen lässt.
 
    WARUM KEIN WEB WORKER: Gemessen wird an höchstens 24 Proben zu vier
    Sekunden. Das sind rund 250 ms Rechnung für ein Stück beliebiger Länge —
@@ -264,6 +313,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 import { messeStimmung, KAMMERTOENE } from '/assets/lib/stimmung.mjs';
 import * as rueck from '/assets/lib/rueckmeldung.mjs';
+import * as abz from '/assets/lib/abzeichen.mjs';
 
 const zone = document.getElementById('zone');
 const datei = document.getElementById('datei');
@@ -316,8 +366,14 @@ async function nimm(f) {
   balken.style.width = '8%';
 
   let puffer;
+  let summe = null;
   try {
     const roh = await f.arrayBuffer();
+    /* Die Prüfsumme VOR dem Dekodieren: decodeAudioData übernimmt den
+       Puffer und lässt ihn leer zurück. Scheitert sie (kein sicherer
+       Kontext, also kein crypto.subtle), wird trotzdem gemessen — nur ohne
+       Prüfsumme und damit ohne Abzeichen. */
+    summe = await abz.pruefsumme(roh).catch(() => null);
     balken.style.width = '25%';
     arbeitText.textContent = wort('dekodiere', 'Wird dekodiert …');
     const hof = new (window.AudioContext || window.webkitAudioContext)();
@@ -353,13 +409,14 @@ async function nimm(f) {
   if (meiner !== lauf) return;
   balken.style.width = '100%';
   arbeit.hidden = true;
-  zeige(f, puffer, mess);
+  zeige(f, puffer, mess, summe);
 }
 
 /* Bei jeder neuen Datei alles zuruecksetzen: sonst haengt am Haken noch
    das Paket der vorigen Messung. */
 function rueckZuruecksetzen() {
   letztes = null;
+  abzZuruecksetzen();
   // Ohne Messung gibt es nichts zu senden — dann steht auch kein Kaestchen da.
   document.getElementById('rueckKasten').hidden = true;
   const haken = document.getElementById('rueckHaken');
@@ -379,7 +436,7 @@ function zeigeFehler(satz) {
   document.getElementById('ergebnisUnsicher').hidden = true;
 }
 
-function zeige(f, puffer, m) {
+function zeige(f, puffer, m, summe) {
   rueckZuruecksetzen();
   ergebnis.hidden = false;
   document.getElementById('ergebnisDatei').textContent = f.name;
@@ -467,6 +524,62 @@ function zeige(f, puffer, m) {
     sprache:    rueck.sprache(),
   };
   document.getElementById('rueckKasten').hidden = !rueck.moeglich();
+
+  document.getElementById('ergebnisSummeWert').textContent = summe || '';
+  document.getElementById('ergebnisSumme').hidden = !summe;
+  /* Ein Abzeichen nur, wenn die Messung trägt — sonst steht oben nicht
+     einmal eine Zahl — und nur mit Prüfsumme, denn ohne sie lässt sich
+     nichts nachmessen. */
+  if (traegt && summe) {
+    abzBefund = abz.befund(m, puffer.duration, summe);
+    document.getElementById('abzKasten').hidden = false;
+  }
+}
+
+/* ── Das Mess-Abzeichen ────────────────────────────────────────────
+   Der Löschschlüssel steht nur in dieser einen Antwort. Wer eine neue
+   Datei hineinzieht, setzt alles zurück — und der Schlüssel ist weg. Das
+   sagt der Kasten „Nur jetzt sichtbar" ausdrücklich. */
+let abzBefund = null;
+const abzKnopf = document.getElementById('abzKnopf');
+
+function abzZuruecksetzen() {
+  abzBefund = null;
+  document.getElementById('abzKasten').hidden = true;
+  document.getElementById('abzFehler').hidden = true;
+  document.getElementById('abzFertig').hidden = true;
+  for (const id of ['abzLink', 'abzCode', 'abzSchluessel']) document.getElementById(id).value = '';
+  abzKnopf.hidden = false;
+  abzKnopf.disabled = false;
+  document.getElementById('ergebnisSumme').hidden = true;
+}
+
+abzKnopf.addEventListener('click', async () => {
+  const b = abzBefund;
+  if (!b) return;
+  const meiner = lauf;
+  abzKnopf.disabled = true;
+  document.getElementById('abzFehler').hidden = true;
+  const neu = await abz.erzeuge(b);
+  if (meiner !== lauf) return;
+  if (!neu) {
+    // Kein Link für etwas, das nicht angekommen ist.
+    document.getElementById('abzFehler').hidden = false;
+    abzKnopf.disabled = false;
+    return;
+  }
+  const v = abz.verweise(location.origin, neu.kennung);
+  const alt = wort('abzAlt', '{hz} Hz gemessen — Selbstauskunft, IYAMBAE').replace('{hz}', zahl(b.a4, 1));
+  document.getElementById('abzLink').value = v.seite;
+  document.getElementById('abzCode').value = abz.einbettcode(v, alt);
+  document.getElementById('abzSchluessel').value = neu.loeschschluessel;
+  document.getElementById('abzAnsehen').href = v.seite;
+  abzKnopf.hidden = true;
+  document.getElementById('abzFertig').hidden = false;
+});
+for (const id of ['abzLink', 'abzCode', 'abzSchluessel']) {
+  // Ein Klick markiert alles — kopieren soll nicht an der Maus scheitern.
+  document.getElementById(id).addEventListener('focus', e => e.target.select());
 }
 
 /* Erst beim Anhaken geht etwas hinaus — die Einwilligung kommt vor der
@@ -498,6 +611,7 @@ rueck.kaestchen(
   <span data-wort="wertAbstand432" data-text="mess.wort.wertAbstand432">Abstand zu 432</span>
   <span data-wort="wertDauer" data-text="mess.wort.wertDauer">Gemessene Länge</span>
   <span data-wort="wertSicherheit" data-text="mess.wort.wertSicherheit">Sicherheit</span>
+  <span data-wort="abzAlt" data-text="abz.alt">{hz} Hz gemessen — Selbstauskunft, IYAMBAE</span>
   <span data-wort="warnUnsicher" data-text="mess.wort.warnUnsicher">Die Sicherheit liegt unter 35 Prozent. Bei Perkussion, Sprache oder sehr dichtem Satz trägt diese Zahl nicht — nimm eine andere Aufnahme.</span>
   <!-- Die Namen der Kammertöne aus stimmung.mjs, je Sprache. -->
   <span data-wort="kammerton.415" data-text="mess.kammerton.415">Barock</span>

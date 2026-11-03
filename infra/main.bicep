@@ -605,6 +605,19 @@ resource tabelleRundbrief 'Microsoft.Storage/storageAccounts/tableServices/table
 }
 
 /*
+  Das Mess-Abzeichen (432hz-radio#27). Eigene Tabelle, und hier aus dem
+  umgekehrten Grund wie bei `stimmung`: Dort haengt keine Zeile an einer
+  Person, hier haengt JEDE an einem Creator — sie steht oeffentlich unter
+  seinem Video. Eine Zeile je Kennung, Ablauf nach zwei Jahren; geraeumt
+  wird vom Dienst selbst (`dienst/src/abzeichen.mjs`), es braucht keine
+  Lebenszyklusregel.
+*/
+resource tabelleAbzeichen 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
+  parent: tabellendienst
+  name: 'abzeichen'
+}
+
+/*
   ZWEITE TABELLE, und sie ist unvermeidlich.
 
   Beim Anmelden kennt der Server die kontoId noch nicht, sondern nur die

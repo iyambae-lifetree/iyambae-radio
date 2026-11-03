@@ -78,6 +78,16 @@ export const TABELLE_STIMMUNG = 'stimmung';
 export const TABELLE_RUNDBRIEF = 'rundbrief';
 
 /*
+  Die siebte: das Mess-Abzeichen (432hz-radio#27). Begruendung in
+  `abzeichen.mjs`. Eigene Tabelle, und hier ist der Grund ein anderer als
+  bei den Nachbarn: In `stimmung` haengt keine Zeile an einer Person, hier
+  haengt JEDE an einem Creator — sie steht oeffentlich unter seinem Video.
+  Beide Arten in einer Tabelle waeren genau die Mischung, vor der der Kopf
+  dieser Datei warnt.
+*/
+export const TABELLE_ABZEICHEN = 'abzeichen';
+
+/*
   Fehler, bei denen ein zweiter Versuch Sinn ergibt: Table Storage drosselt
   (503 ServerBusy), die Verbindung bricht weg, oder die Anfrage laeuft in
   ihre Zeitgrenze. Alles andere — 401, 403, 404, ein kaputter Schluessel —

@@ -71,6 +71,10 @@ import {
 import { erzeugeTitel } from './titel.mjs';
 import { erzeugeMikesch, saeubereGespraech } from './mikesch.mjs';
 import {
+    saeubereBefund, legeAbzeichenAn, holeAbzeichen, loescheAbzeichen, raeumeAbzeichenAuf,
+    kennungSiehtEchtAus, schluesselSiehtEchtAus, waehleSprache, baueSeite, baueBild,
+} from './abzeichen.mjs';
+import {
     saeubereAnmeldung, meldeAn as meldeRundbriefAn, bestaetige as bestaetigeRundbrief,
     meldeAb as meldeRundbriefAb, raeumeAuf as raeumeRundbriefAuf, BESTAETIGEN_STUNDEN,
 } from './rundbrief.mjs';
@@ -331,6 +335,48 @@ function pruefeHerkunft(anfrage) {
     if (!ERLAUBTE_URSPRUENGE.includes(herkunft)) throw new HttpFehler(403, 'herkunft_fremd');
 }
 
+/*
+  Nur JSON, und zwar VOR dem Lesen des Rumpfs.
+
+  Fuer die Wege des Mess-Abzeichens (432hz-radio#27) ausdruecklich
+  verlangt. Der Grund ist derselbe wie bei der Herkunft, eine Reihe weiter
+  hinten: Ein fremdes HTML-Formular kann `text/plain` oder
+  `application/x-www-form-urlencoded` schicken, ohne dass der Browser
+  vorher fragt. `application/json` kann es nicht — der Browser verlangt
+  dafuer einen Vorabflug, und den beantwortet hier niemand.
+*/
+const NUR_JSON = new Set(['POST /api/messung', 'DELETE /api/messung']);
+
+function pruefeJson(anfrage) {
+    const art = String(anfrage.headers['content-type'] ?? '').split(';')[0].trim().toLowerCase();
+    if (art !== 'application/json') throw new HttpFehler(415, 'nur_json');
+}
+
+/*
+  Seite und Bild des Mess-Abzeichens: die einzigen Wege dieses Dienstes,
+  die nicht unter /api/ liegen und kein JSON antworten.
+
+  `[0-9a-z]{1,16}` und nicht die genaue Form der Kennung: Was nicht passt,
+  soll trotzdem eine Seite „gibt es nicht" bekommen und kein JSON-404.
+  Ob es eine Kennung sein KANN, entscheidet abzeichen.mjs, ohne Tabelle.
+*/
+const ABZEICHEN_PFAD = /^\/messung\/([0-9a-z]{1,16})(\.svg)?$/;
+
+/*
+  Scharf, nicht nur berichtend — die Seite ist neu, es gibt nichts
+  aufzuraeumen, bevor sie gelten kann. nginx legt seine berichtende
+  Richtlinie fuer apps.iyambae.fm daneben; beide gelten nebeneinander.
+
+  Das Bild bekommt `default-src 'none'`: Oeffnet es jemand direkt statt in
+  einem <img>, ist es ein Dokument, und dann darf darin nichts laufen. Es
+  enthaelt nichts, was laufen koennte — die Zeile sorgt dafuer, dass es so
+  bleibt, auch wenn jemand eines Tages etwas hineinschreibt.
+*/
+const ABZEICHEN_SEITE_CSP = "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+    + "font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; "
+    + "frame-ancestors 'none'";
+const ABZEICHEN_BILD_CSP = "default-src 'none'; style-src 'unsafe-inline'";
+
 // ── Das Zwischenstueck zur Fremdanmeldung ───────────────────────────
 
 /*
@@ -480,6 +526,71 @@ export function baueDienst({
         raeumeRundbriefAuf(speicher, nun)
             .then((weg) => { if (weg) protokolliere({ art: 'rundbrief.aufgeraeumt', ergebnis: 'ok', anzahl: weg }); })
             .catch((fehler) => protokolliereFehler('rundbrief.aufraeumen', fehler));
+    }
+
+    /*
+      Abgelaufene Mess-Abzeichen wegraeumen: hoechstens einmal je
+      AUFRAEUM_STUNDEN (24), angestossen von einer echten Anfrage, nach der
+      Antwort. Kein Timer, also keine Grundlast (Regel 3 oben). Dazu raeumt
+      jeder Abruf eines abgelaufenen Eintrags ihn im Vorbeigehen weg.
+    */
+    const ABZEICHEN_ABSTAND_MS = Number(process.env.AUFRAEUM_STUNDEN ?? 24) * 3_600_000;
+    let abzeichenGeraeumt = 0;
+    function stosseAbzeichenAufraeumenAn() {
+        const nun = Date.now();
+        if (nun - abzeichenGeraeumt < ABZEICHEN_ABSTAND_MS) return;
+        abzeichenGeraeumt = nun;
+        raeumeAbzeichenAuf(speicher, nun)
+            .then((weg) => { if (weg) protokolliere({ art: 'abzeichen', ergebnis: 'ok', grund: 'aufgeraeumt', anzahl: weg }); })
+            .catch((fehler) => protokolliereFehler('abzeichen.aufraeumen', fehler));
+    }
+
+    /*
+      Seite oder Bild zu einer Kennung. Ein eigener Weg neben der Tafel
+      `wege`, weil die Kennung im Pfad steht.
+
+      DROSSEL nur je Netz, ohne globale Achse — dieselbe Ueberlegung wie bei
+      /api/zusammenfassung: Wer eine globale Achse leerschiesst, schaltet
+      jedes Abzeichen unter jedem Video ab, ohne irgendetwas zu wissen.
+
+      `public, max-age=300`: Ein Abzeichen unter einem vielgesehenen Video
+      soll nicht jeden Aufruf bis in die Tabelle schicken; ein Loeschen wirkt
+      trotzdem nach hoechstens fuenf Minuten. Auch 404 und 410 duerfen so
+      lange liegen.
+    */
+    async function zeigeAbzeichen(anfrage, kennung, alsBild, netz) {
+        drossle([['netz', 'abzs:' + netz, 120, 60_000]]);
+        const url = anfrage.url ?? '';
+        const abfrage = url.includes('?') ? url.slice(url.indexOf('?')) : '';
+        const sprache = waehleSprache(abfrage, anfrage.headers['accept-language']);
+        const eintrag = await holeAbzeichen(speicher, kennung);
+        const status = { da: 200, abgelaufen: 410, fehlt: 404 }[eintrag.zustand];
+        const kopf = {
+            'Cache-Control': 'public, max-age=300',
+            Vary: 'Accept-Language',
+            'X-Robots-Tag': 'noindex',
+        };
+        if (alsBild) {
+            return {
+                status, koerper: baueBild(eintrag, sprache),
+                kopf: {
+                    ...kopf,
+                    'Content-Type': 'image/svg+xml; charset=utf-8',
+                    'Content-Security-Policy': ABZEICHEN_BILD_CSP,
+                    // NUR hier: Das Bild soll auf fremden Seiten stehen
+                    // duerfen, auch auf solchen mit COEP.
+                    'Cross-Origin-Resource-Policy': 'cross-origin',
+                },
+            };
+        }
+        return {
+            status, koerper: baueSeite(eintrag, sprache),
+            kopf: {
+                ...kopf,
+                'Content-Type': 'text/html; charset=utf-8',
+                'Content-Security-Policy': ABZEICHEN_SEITE_CSP,
+            },
+        };
     }
 
     // ── Kleinkram, der von mehreren Stellen gebraucht wird ──────────
@@ -1177,6 +1288,66 @@ export function baueDienst({
         },
 
         /*
+          ── DAS MESS-ABZEICHEN (432hz-radio#27) ───────────────────────
+
+          Gebaut wie die beiden Wege darueber — Erlaubnisliste und Drossel —
+          mit zwei Unterschieden, und beide haben einen Grund:
+
+          1. NUR JSON (`pruefeJson` in der Weiche, vor dem Lesen). Hier
+             entsteht etwas Oeffentliches mit einem Schluessel; ein fremdes
+             Formular soll das nicht ausloesen koennen.
+
+          2. 201 MIT INHALT statt 204. Die Antwort traegt den
+             Loeschschluessel, und es ist das EINZIGE Mal, dass er
+             irgendwo steht. In der Tabelle liegt nur sein Abdruck, im
+             Protokoll nichts davon.
+
+          Die Drossel ist die der Umfrage: unangemeldet, selten.
+
+          INS PROTOKOLL KOMMT WEDER KENNUNG NOCH BEFUND. Die Kennung steht
+          oeffentlich unter einem Video und fuehrt damit zu einem Menschen;
+          mit Zeitpunkt und Netz aus dem Zugriffsprotokoll daneben waere sie
+          ein Faden von der Adresse zum Creator.
+        */
+        'POST /api/messung': async ({ koerper, netz, start }) => {
+            drossle([
+                ['netz', 'abz:' + netz, 10, 30 * 60_000],
+                ['global', 'abz:*', 60, 60_000],
+            ]);
+            const befund = saeubereBefund(koerper);
+            if (!befund.ok) {
+                protokolliere({ art: 'abzeichen', ergebnis: 'abgelehnt', grund: befund.feld ?? befund.fehler });
+                return { status: 400, koerper: { fehler: befund.fehler } };
+            }
+            const { kennung, loeschschluessel } = await legeAbzeichenAn(speicher, befund.befund);
+            protokolliere({ art: 'abzeichen', ergebnis: 'ok', grund: 'angelegt', dauer: Date.now() - start });
+            return { status: 201, koerper: { kennung, loeschschluessel } };
+        },
+
+        /*
+          Loeschen. Die Kennung steht im RUMPF, nicht im Pfad: nginx
+          schreibt den Pfad mit der gekuerzten Adresse ins Zugriffsprotokoll,
+          und dann stuende dort, aus welchem Netz ein Creator sein Abzeichen
+          geloescht hat.
+
+          403 bei falschem Schluessel verraet nichts — ob eine Kennung
+          existiert, zeigt die Seite ohnehin jedem.
+        */
+        'DELETE /api/messung': async ({ koerper, netz }) => {
+            drossle([['netz', 'abzl:' + netz, 10, 10 * 60_000]]);
+            const { kennung, loeschschluessel } = koerper;
+            if (!kennungSiehtEchtAus(kennung) || !schluesselSiehtEchtAus(loeschschluessel)) {
+                protokolliere({ art: 'abzeichen', ergebnis: 'abgelehnt', grund: 'loeschen.form' });
+                return { status: 400, koerper: { fehler: 'befund_ungueltig' } };
+            }
+            const ergebnis = await loescheAbzeichen(speicher, kennung, loeschschluessel);
+            protokolliere({ art: 'abzeichen', ergebnis: ergebnis === 'ok' ? 'ok' : 'abgelehnt', grund: 'loeschen.' + ergebnis });
+            if (ergebnis === 'ok') return { status: 204 };
+            if (ergebnis === 'schluessel_falsch') return { status: 403, koerper: { fehler: 'schluessel_falsch' } };
+            return { status: 404, koerper: { fehler: 'nicht_gefunden' } };
+        },
+
+        /*
           Die Zusammenfassung — dieselben Zahlen wie das Dashboard, als JSON.
 
           Der Satz dahinter ist von Saemi-Ra: „Ein Dashboard muss man
@@ -1607,6 +1778,19 @@ export function baueDienst({
                 }
             }
 
+            /*
+              Seite und Bild des Mess-Abzeichens. GET und HEAD — node
+              laesst bei HEAD den Rumpf von selbst weg.
+            */
+            const abzeichen = (anfrage.method === 'GET' || anfrage.method === 'HEAD')
+                ? ABZEICHEN_PFAD.exec(pfad) : null;
+            if (abzeichen) {
+                const ergebnis = await zeigeAbzeichen(anfrage, abzeichen[1], Boolean(abzeichen[2]), netz);
+                antworte(antwort, ergebnis.status, ergebnis.koerper, ergebnis.kopf);
+                stosseAbzeichenAufraeumenAn();
+                return;
+            }
+
             const behandler = wege[schluessel];
             if (!behandler) {
                 /*
@@ -1618,6 +1802,7 @@ export function baueDienst({
             }
 
             if (anfrage.method !== 'GET') pruefeHerkunft(anfrage);
+            if (NUR_JSON.has(schluessel)) pruefeJson(anfrage);
             const koerper = anfrage.method === 'GET' ? {} : await liesKoerper(anfrage);
 
             const ergebnis = await behandler({ anfrage, koerper, netz, start, pfad });
@@ -1629,6 +1814,7 @@ export function baueDienst({
               wartet nicht darauf.
             */
             stosseAufraeumenAn(speicher);
+            stosseAbzeichenAufraeumenAn();
 
         } catch (fehler) {
             behandleFehler(fehler, antwort, { anfrage, start });

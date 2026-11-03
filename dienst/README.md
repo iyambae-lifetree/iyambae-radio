@@ -23,6 +23,7 @@ eingetragen.
 | `src/mail.mjs` | ACS-Versand mit Warteschlange und eigener Ratenbegrenzung |
 | `src/abgleich.mjs` | Verschmelzen von Merkliste und Verlauf — reine Rechnung |
 | `src/umfrage.mjs` | die vier Fragen: Erlaubnisliste, Freitextsaeuberung, Ablage |
+| `src/abzeichen.mjs` | das Mess-Abzeichen (432hz-radio#27): Befund pruefen, Kennung, Loeschschluessel, Ablauf, Seite und Bild in sieben Sprachen |
 | `src/zahlen.mjs` | die Zusammenfassung: KQL aus dem Dashboard, Schluessel, Zwischenspeicher, Crawlertrennung |
 | `src/protokoll.mjs` | eine JSON-Zeile je Ereignis nach stdout, ohne Personenbezug |
 
@@ -260,6 +261,9 @@ Sprachen, der Dienst keine. Ein deutscher Satz aus dem Server waere auf
 | `GET /api/konto/ausfuhr` | 200 · 401 | Anhang `iyambae-konto.json` |
 | `DELETE /api/konto` | 204 · 400 · 401 | verlangt `{bestaetigung:"loeschen"}` |
 | `POST /api/umfrage` | 204 · 400 · 413 · 429 | — bzw. `{fehler:'nichts_erkannt'}` |
+| `POST /api/messung` | 201 · 400 · 403 · 415 · 429 | `{kennung, loeschschluessel}` — der Schluessel steht nur hier, nur einmal |
+| `DELETE /api/messung` | 204 · 400 · 403 · 404 · 415 | verlangt `{kennung, loeschschluessel}` im Rumpf, nicht im Pfad |
+| `GET /messung/<kennung>[.svg]` | 200 · 404 · 410 | Seite bzw. Bild; 410 nach zwei Jahren. Einzelheiten: `docs/superpowers/specs/2026-11-03-mess-abzeichen.md` |
 | `GET /api/zusammenfassung` | 200 · 401 · 424 · 429 | Schluessel als `Authorization: Bearer` |
 | `GET /api/titel` | 200 · 424 | ohne Schluessel, ohne Sender in der Anfrage |
 | `GET /api/leben` | 204 | ohne Sitzung, ohne Protokolleintrag |

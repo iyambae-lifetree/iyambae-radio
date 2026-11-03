@@ -1,6 +1,6 @@
 # Datenschutz
 
-> **Entwurf, Stand 21.08.2026 — zweite Fassung.** Zwei Dinge haben sich gegenüber der ersten geändert, und beide reichen tief: Verantwortliche ist eine Gesellschaft in den USA mit einem EU-Vertreter auf Malta, nicht eine deutsche Privatperson. Und es wird jetzt gemessen, welcher Sender gestartet wird — die erste Fassung sagte an drei Stellen das Gegenteil. Abschnitt 3 ist am 21.08.2026 ein zweites Mal nachgezogen worden: Das Adressfeld ist aus der Messzeile verschwunden, und die Sprachangabe kommt nicht mehr aus dem Cookie, sondern aus dem Pfad. Am 23.08.2026 ist Abschnitt 11 aus dem Konjunktiv geholt worden: Die Anmeldung steht jetzt in der Seite, und damit gilt der Abschnitt. Mitgezogen sind Abschnitt 8 (zwei neue Einträge im örtlichen Speicher, dazu das Sitzungscookie) und der Satz über Drittlandübermittlungen weiter unten. Am 24.10.2026 sind die Abschnitte 12 (Kater Mikesch) und 13 (Mikeschs Schnurrpost) hinzugekommen; die bisherigen Abschnitte 12 bis 14 heißen seither 14 bis 16. Offene Punkte: [HINWEISE.md](HINWEISE.md).
+> **Entwurf, Stand 21.08.2026 — zweite Fassung.** Zwei Dinge haben sich gegenüber der ersten geändert, und beide reichen tief: Verantwortliche ist eine Gesellschaft in den USA mit einem EU-Vertreter auf Malta, nicht eine deutsche Privatperson. Und es wird jetzt gemessen, welcher Sender gestartet wird — die erste Fassung sagte an drei Stellen das Gegenteil. Abschnitt 3 ist am 21.08.2026 ein zweites Mal nachgezogen worden: Das Adressfeld ist aus der Messzeile verschwunden, und die Sprachangabe kommt nicht mehr aus dem Cookie, sondern aus dem Pfad. Am 23.08.2026 ist Abschnitt 11 aus dem Konjunktiv geholt worden: Die Anmeldung steht jetzt in der Seite, und damit gilt der Abschnitt. Mitgezogen sind Abschnitt 8 (zwei neue Einträge im örtlichen Speicher, dazu das Sitzungscookie) und der Satz über Drittlandübermittlungen weiter unten. Am 24.10.2026 sind die Abschnitte 12 (Kater Mikesch) und 13 (Mikeschs Schnurrpost) hinzugekommen; die bisherigen Abschnitte 12 bis 14 heißen seither 14 bis 16. Am 03.11.2026 ist Abschnitt 14 (Mess-Abzeichen auf apps.iyambae.fm) dazugekommen; die bisherigen Abschnitte 14 bis 16 heißen seither 15 bis 17. Offene Punkte: [HINWEISE.md](HINWEISE.md).
 
 ---
 
@@ -58,7 +58,7 @@ der EU anbietet, hat sie einen Vertreter in der Union benannt:
 **Was das für dich bedeutet, und es ist kein Nebensatz:** Du kannst dich in
 allen Fragen, die mit der Verarbeitung deiner Daten zu tun haben, **an diesen
 Vertreter wenden — zusätzlich zu uns oder statt uns** (Art. 27 Abs. 4 DSGVO).
-Auch dein Auskunfts-, Berichtigungs- oder Löschverlangen (Abschnitt 15) kannst
+Auch dein Auskunfts-, Berichtigungs- oder Löschverlangen (Abschnitt 16) kannst
 du dorthin richten. Du musst dafür nicht in die USA schreiben, und du musst dich
 nicht vorher an uns wenden. Der Vertreter ist die einfachere Adresse, und dafür
 gibt es ihn.
@@ -76,7 +76,7 @@ Verantwortliche ohne Niederlassung in der Union, wenn sie betroffenen Personen
 in der Union Dienstleistungen anbieten. Diese Seite spricht sieben Sprachen,
 darunter fünf Amtssprachen der EU, und richtet sich damit ausdrücklich an
 Menschen in der Union. Also gilt für sie dasselbe Recht wie für einen deutschen
-Anbieter — einschließlich deiner sämtlichen Rechte aus Abschnitt 15.
+Anbieter — einschließlich deiner sämtlichen Rechte aus Abschnitt 16.
 
 **Deine Daten liegen weiter in Deutschland.** Server, Protokolle und (später)
 Kontodaten liegen in der Azure-Region Germany West Central. Der Sitz der
@@ -896,7 +896,54 @@ widerrufen — über den Abmeldelink oder formlos an die Adresse in Abschnitt 1.
 
 ---
 
-## 14. Was hier nicht passiert
+## 14. Das Mess-Abzeichen (apps.iyambae.fm/stimmung/)
+
+Auf `apps.iyambae.fm/stimmung/` misst du, auf welchen Kammerton eine Datei
+gestimmt ist. Die Datei bleibt dabei auf deinem Gerät. Wenn die Messung trägt,
+kannst du dazu ein **Mess-Abzeichen** erzeugen — einen Link und ein Bild, die
+du zum Beispiel unter ein Video setzen kannst.
+
+**Gesendet wird erst, wenn du auf „Abzeichen erzeugen" drückst**, und nur
+das: der gemessene Kammerton, die Sicherheit der Messung, die Länge der Datei
+in Sekunden und ihre Prüfsumme (SHA-256). Die Prüfsumme rechnet dein Browser
+aus der Datei; aus ihr lässt sich die Musik nicht zurückgewinnen. **Nicht
+gesendet werden die Datei und ihr Name.**
+
+**Was wir speichern.** Diese vier Angaben, den Zeitpunkt, eine Kennung (zehn
+Zeichen; die ersten drei stehen für den Tag der Erstellung) und einen Prüfwert
+des Löschschlüssels. **Keine IP-Adresse**, auch keine gekürzte, kein Konto,
+kein Cookie. Für die Begrenzung der Anfragen zählen wir je Netz kurz im
+Arbeitsspeicher mit; geschrieben wird das nirgends. Die Seiten des Abzeichens
+stehen nicht in unserem Zugriffsprotokoll.
+
+**Wer es sehen kann.** Jeder, der den Link kennt — das ist der Zweck. Seite
+und Bild sind ohne Anmeldung abrufbar. Suchmaschinen bitten wir, sie nicht
+aufzunehmen (`noindex`). Weil ein Abzeichen unter einem Video zu dir führen
+kann, behandeln wir es wie ein personenbezogenes Datum.
+
+**Was das Abzeichen sagt.** Nur, dass die Datei mit dieser Prüfsumme an
+diesem Tag bei diesem Wert gemessen wurde. Es sagt nicht, dass ein Video
+dieselbe Datei enthält; das kann niemand von außen feststellen, auch wir
+nicht. Es ist eine Selbstauskunft mit Zeitstempel, kein Beweis — so steht es
+auch auf der Seite des Abzeichens.
+
+**Wie lange.** **Zwei Jahre ab Erstellung.** Danach zeigen Seite und Bild
+„abgelaufen", und der Eintrag wird gelöscht. **Vorher löschen** kannst du ihn
+jederzeit auf der Seite des Abzeichens mit dem Löschschlüssel, der dir beim
+Erzeugen einmal angezeigt wird. Wir speichern ihn nicht und können ihn nicht
+wieder anzeigen. Hast du ihn verloren, schreib uns (Abschnitt 1) mit dem Link
+zum Abzeichen.
+
+**Wo die Daten liegen.** In Azure Table Storage in Deutschland, wie die
+Konten (Abschnitt 11); Microsoft ist Auftragsverarbeiterin.
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO — du forderst den Dienst
+ausdrücklich an. Das Senden aus deinem Browser ist dafür unbedingt
+erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG).
+
+---
+
+## 15. Was hier nicht passiert
 
 Damit es einmal in einer Liste steht:
 
@@ -915,7 +962,7 @@ Damit es einmal in einer Liste steht:
 
 ---
 
-## 15. Deine Rechte
+## 16. Deine Rechte
 
 Du hast die folgenden Rechte. Alle kosten nichts, und für alle reicht eine
 formlose Nachricht — **an uns unter hello@infosys-consult.com oder an unseren
@@ -961,7 +1008,7 @@ nächsten ist.
 
 ---
 
-## 16. Änderungen an diesem Hinweis
+## 17. Änderungen an diesem Hinweis
 
 Ändert sich, was die Seite tut, ändert sich dieser Text. Die jeweils geltende
 Fassung steht immer hier. Wesentliche Änderungen — etwa der Start der Konten —
@@ -980,5 +1027,9 @@ vorher vertretbar war, ist jetzt schlicht nicht mehr vorhanden.
 **Am 24.10.2026 sind Kater Mikesch und seine Schnurrpost dazugekommen**
 (Abschnitte 12 und 13). Weil Mikesch Text in die USA schickt, steht das auch in
 den ersten Sätzen ganz oben und nicht nur hier.
+
+**Am 03.11.2026 ist das Mess-Abzeichen dazugekommen** (Abschnitt 14). Es
+entsteht nur, wenn jemand es auf `apps.iyambae.fm/stimmung/` ausdrücklich
+erzeugt.
 
 **Stand: [Datum des Livegangs].**
