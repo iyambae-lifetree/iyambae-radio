@@ -110,6 +110,7 @@ zwingt dazu, einmal aufzuschreiben, was man eigentlich tut.
 | V13 | Rundbrief „Mikeschs Schnurrpost" | **neu am 24.10.2026** | Art. 6 I a; § 7 II UWG |
 | V14 | Ergebnisse des Blindtests (`/hoertest/`) | aktiv seit 01.09.2026, **nachgetragen am 03.11.2026** | Art. 6 I f |
 | V15 | Ergebnisse des Messwerkzeugs (`/stimmung/`) | aktiv seit 01.09.2026, **nachgetragen am 03.11.2026** | Art. 6 I f |
+| V16 | Mess-Abzeichen für Creator | **neu am 03.11.2026** | Art. 6 I b; § 25 II Nr. 2 TDDDG |
 
 ---
 
@@ -449,6 +450,24 @@ Gebaut in 432hz-radio#21, nachgetragen wie V14.
 
 ---
 
+## V16 — Mess-Abzeichen für Creator *(neu am 03.11.2026)*
+
+| Feld | Inhalt |
+|---|---|
+| **Bezeichnung** | Ablage und öffentlicher Abruf einer einzelnen Stimmungsmessung unter einer Kennung („Mess-Abzeichen"), auf Anforderung des Besuchers von `apps.iyambae.fm/stimmung/` |
+| **Zweck** | Überprüfbarer Nachweis einer Messung: Wer die gemessene Datei besitzt, kann sie nachmessen und ihre Prüfsumme gegen das Abzeichen halten. Das Abzeichen ist eine Selbstauskunft mit Zeitstempel; es sagt ausdrücklich nicht, dass ein Video, unter dem es steht, dieselbe Datei enthält |
+| **Rechtsgrundlage** | Art. 6 Abs. 1 lit. b DSGVO — ausdrücklich angeforderter Dienst: Der Besucher drückt „Abzeichen erzeugen", vorher wird nichts gesendet. Das Senden aus dem Browser deckt § 25 Abs. 2 Nr. 2 TDDDG (unbedingt erforderlich für den ausdrücklich gewünschten Dienst) |
+| **Kategorien betroffener Personen** | Wer ein Abzeichen erzeugt (in der Regel Creator auf Videoplattformen). Der Eintrag ist als personenbezogen behandelt: Unter einem Video führt er zum Creator |
+| **Kategorien personenbezogener Daten** | gemessener Kammerton (Hz, eine Nachkommastelle); Sicherheit der Messung; Länge der gemessenen Datei in Sekunden; SHA-256 der Datei; Zeitpunkt der Erstellung und des Ablaufs; Kennung (zehn Zeichen, darin der Erstellungstag); SHA-256 des Löschschlüssels |
+| **Nicht erhoben** | die Tondatei; der Dateiname; IP-Adresse (auch keine gekürzte, auch kein Abdruck — die Drossel zählt je Netz flüchtig im Arbeitsspeicher); Konto; Sprache; Browserkennzeichen; der Löschschlüssel selbst. Für `/messung/…` schreibt nginx kein Zugriffsprotokoll; der Löschweg trägt die Kennung im Rumpf, nicht im Pfad, damit sie nicht mit der gekürzten Adresse im Protokoll von V1 steht |
+| **Empfänger** | die Öffentlichkeit (Seite und Bild sind ohne Anmeldung abrufbar und zum Einbetten gedacht); Microsoft Ireland Operations Limited als Auftragsverarbeiterin (Azure Table Storage, Azure Container Apps) |
+| **Drittlandübermittlung** | Speicherung: nein, wie V1. Durch die Veröffentlichung ist der Eintrag weltweit abrufbar — auf Wunsch der betroffenen Person und zu genau diesem Zweck |
+| **Löschfrist** | **zwei Jahre ab Erstellung.** Danach antworten Seite und Bild mit „abgelaufen" (410); die Zeile wird beim nächsten Abruf oder im täglichen Durchgang des Dienstes gelöscht. Jederzeit vorher durch die betroffene Person mit dem Löschschlüssel, der nur einmal angezeigt und nur als Hash gespeichert wird. Zwischenspeicher halten Seite und Bild höchstens fünf Minuten |
+| **TOM** | Erlaubnisliste mit Wertebereichen (Kammerton 380–500 Hz, Sicherheit ab 0,35, Länge 1 s bis 24 h, SHA-256 genau 64 Hexzeichen); nur `application/json` und nur aus erlaubter Herkunft; Drosselung je Netz und global; eigene Tabelle `abzeichen`, getrennt von den anonymen Tabellen; Protokoll ohne Kennung, ohne Befund, ohne Adresse; scharfe Content-Security-Policy auf Seite und Bild, kein Skript im Bild; Seite mit `noindex` |
+| **Fundstellen** | `dienst/src/abzeichen.mjs`, `dienst/src/server.mjs` (`POST`/`DELETE /api/messung`, `GET /messung/…`), `apps/assets/lib/abzeichen.mjs`, `apps/stimmung.html`, `deploy/nginx.conf`, `infra/main.bicep`, `docs/superpowers/specs/2026-11-03-mess-abzeichen.md` |
+
+---
+
 ## Kapitel V und der Sitz in einem Drittland
 
 Dieser Abschnitt ist neu und gehört an eine Stelle, an der man ihn nicht
@@ -590,6 +609,7 @@ hinzukommt.
 | 21.08.2026 | **V1: Bereitschaftsprüfung von `/` auf `/gesund` verlegt und aus der Protokollierung genommen.** Zuvor rund 26 000 nicht von Menschen stammende Zeilen am Tag. V2 um einen Hinweis zur Aussagekraft der Zahlen ergänzt |
 | 24.10.2026 | **V12 und V13 neu** — Kater Mikesch und Mikeschs Schnurrpost; Anthropic PBC als Auftragsverarbeiter aufgenommen |
 | 03.11.2026 | **V14 und V15 nachgetragen** — Blindtest und Messwerkzeug, in Betrieb seit 01.09.2026 (432hz-radio#21), bis dahin hier vergessen. Löschfrist für beide noch offen |
+| 03.11.2026 | **V16 neu** — Mess-Abzeichen für Creator (432hz-radio#27). Nummer nach Michas Einschätzung vom 01.10.2026 ursprünglich V12; V12 bis V15 waren inzwischen vergeben bzw. vorgesehen |
 
 **Stand: 21.08.2026 · Nächste Durchsicht: [Datum eintragen, spätestens in einem
 Jahr] · Geführt von: [Name] · Beim Vertreter nach Art. 27 hinterlegt am:

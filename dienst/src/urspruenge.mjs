@@ -47,12 +47,20 @@ export function liesUrspruenge(umgebung = process.env) {
 }
 
 /*
-  Die drei Wege, die apps.iyambae.fm rufen darf. Alle drei sind anonym,
+  Die Wege, die apps.iyambae.fm rufen darf. Die ersten drei sind anonym,
   schreiben eine Zeile ohne Personenbezug und schicken keine Mail. Wer hier
-  einen vierten eintraegt, prueft vorher, dass das auch fuer ihn gilt.
+  einen weiteren eintraegt, prueft vorher, was davon fuer ihn gilt.
+
+  `/api/messung` (Mess-Abzeichen, 432hz-radio#27) ist die bewusste
+  Ausnahme beim Personenbezug: Ein Abzeichen steht unter dem Video eines
+  Creators und wird deshalb als personenbezogen behandelt (V16). Es haengt
+  aber an keinem Konto, schickt keine Mail, und loeschen kann nur, wer den
+  Loeschschluessel hat. Ein Kontoweg ist es damit nicht.
 */
 export const RUECKMELDEWEGE = new Set([
     'POST /api/umfrage',
     'POST /api/hoertest',
     'POST /api/stimmung',
+    'POST /api/messung',
+    'DELETE /api/messung',
 ]);

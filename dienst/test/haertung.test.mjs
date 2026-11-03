@@ -367,6 +367,27 @@ test('apps.iyambae.fm darf die drei Rueckmeldewege', async () => {
     }
 });
 
+test('apps.iyambae.fm darf das Mess-Abzeichen anlegen und loeschen (432hz-radio#27)', async () => {
+    /*
+      Das Abzeichen wird auf apps.iyambae.fm/stimmung/ erzeugt. Fehlt der Weg
+      in RUECKMELDEWEGE, bekommt die Seite 403 — genau das ist beim
+      Zusammenfuehren von #32 und dem Abzeichen-Zweig die Falle.
+    */
+    const p = fangeProtokoll();
+    const d = await starteTestdienst();
+    try {
+        const kopf = { Origin: APPS };
+        const an = await d.rufe('POST', '/api/messung',
+            { a4: 432.1, sicherheit: 0.87, dauer: 222, sha256: 'a'.repeat(64) }, { kopf });
+        assert.equal(an.status, 201);
+        const { kennung, loeschschluessel } = an.daten;
+        assert.equal((await d.rufe('DELETE', '/api/messung', { kennung, loeschschluessel }, { kopf })).status, 204);
+    } finally {
+        await d.schliesse();
+        p.zurueck();
+    }
+});
+
 test('apps.iyambae.fm bekommt auf jedem Kontoweg 403, auch mit der Umgebung aus main.bicep', async () => {
     /*
       Ausgerollt wird nur das Abbild, nicht main.bicep. In der laufenden
