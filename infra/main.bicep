@@ -141,8 +141,22 @@ param mailDomaene string = 'mail.iyambae.fm'
 @description('Wo die Kommunikationsdaten ruhen. Nach dem Anlegen nicht mehr änderbar.')
 param datenOrt string = 'Germany'
 
-@description('Erlaubte Ursprünge für den Anmeldedienst. Grundlage der Herkunftsprüfung UND des Passwortlinks.')
-param erlaubteUrspruenge string = 'https://iyambae.fm,https://www.iyambae.fm,https://apps.iyambae.fm'
+/*
+  Zwei Listen seit 432hz-radio#46 (Punkt 5). apps.iyambae.fm stand bis dahin
+  in der ersten und durfte damit jeden Weg des Dienstes rufen, auch „Konto
+  löschen". Die Seite dort braucht nur die Umfrage und die beiden
+  Messwerkzeuge.
+
+  Der Dienst zieht APPS_URSPRUENGE von ERLAUBTE_URSPRUENGE ab, bevor er die
+  Kontowege prüft (dienst/src/urspruenge.mjs). Ein Stand, in dem apps noch in
+  der ersten Liste steht — so läuft es, bis diese Vorlage das nächste Mal von
+  Hand ausgerollt wird —, ist deshalb kein Loch.
+*/
+@description('Ursprünge für alle Wege des Anmeldedienstes. Grundlage der Herkunftsprüfung UND des Passwortlinks; der erste ist die Adresse im Link.')
+param erlaubteUrspruenge string = 'https://iyambae.fm,https://www.iyambae.fm'
+
+@description('Ursprünge, die NUR /api/umfrage, /api/hoertest und /api/stimmung rufen dürfen.')
+param appsUrspruenge string = 'https://apps.iyambae.fm'
 
 /*
   Die RP-ID für Passkeys MUSS die registrierbare Domain sein, nicht der
@@ -158,6 +172,25 @@ param passkeyDomain string = 'iyambae.fm'
 @minValue(30)
 @maxValue(365)
 param grabsteinTage int = 90
+
+/*
+  Inaktive Konten (dienst/src/inaktiv.mjs; Entscheidung Micha, 03.11.2026,
+  432hz-radio#49): zwei Jahre ohne Anmeldung, Warnmail vier Wochen vorher.
+  Die Untergrenze 400 ist kein Geschmack: Darunter bekaeme jemand, dessen
+  Sitzung (hoechstens 365 Tage) noch gilt, die Mail „wird geloescht". Der
+  Dienst hebt eine zu kleine Zahl ohnehin selbst an; hier faellt sie schon
+  beim Ausrollen auf. Wer die Zahlen aendert, aendert auch datenschutz.md
+  Abschnitt 11 und V9 im Verarbeitungsverzeichnis — dort stehen sie als Zusage.
+*/
+@description('Nach so vielen Tagen ohne Anmeldung wird ein Konto gelöscht.')
+@minValue(400)
+@maxValue(1095)
+param inaktivTage int = 730
+
+@description('So viele Tage vor der Löschung geht die Warnmail an die Kontoadresse.')
+@minValue(14)
+@maxValue(90)
+param inaktivWarnungTage int = 28
 
 /*
   Google und Apple — die Kennungen sind ÖFFENTLICH, die Geheimnisse nicht.
@@ -602,6 +635,24 @@ resource tabelleStimmung 'Microsoft.Storage/storageAccounts/tableServices/tables
 resource tabelleRundbrief 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
   parent: tabellendienst
   name: 'rundbrief'
+}
+
+/*
+  Der Zwischenstand einer angefangenen Anmeldung bei Google, Apple oder mit
+  Passkey: state, nonce, PKCE-Verifier, WebAuthn-Herausforderung
+  (432hz-radio#43). Er lag vorher im Arbeitsspeicher des Dienstes und war
+  damit nur der Replik bekannt, auf der die Anmeldung begann — siehe den
+  Kommentar am `scale`-Block unten.
+
+  Eigene Tabelle und nicht `konten`: Eine Zeile hier gehört noch zu keinem
+  Konto und lebt höchstens zehn Minuten. Zeilenschlüssel ist der SHA-256 des
+  state, der Inhalt ist mit einem aus dem state abgeleiteten Schlüssel
+  verschlüsselt — wer die Tabelle liest, liest darin nichts. Einzelheiten
+  beim `Zustandsspeicher` in `dienst/src/fremd.mjs`.
+*/
+resource tabelleAnmeldezustand 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
+  parent: tabellendienst
+  name: 'anmeldezustand'
 }
 
 /*
@@ -1070,9 +1121,12 @@ var kontoUmgebung = concat([
   { name: 'ACS_ENDPUNKT', value: 'https://${kommunikation.properties.hostName}' }
   { name: 'ABSENDER', value: 'konto@${mailDomaene}' }
   { name: 'ERLAUBTE_URSPRUENGE', value: erlaubteUrspruenge }
+  { name: 'APPS_URSPRUENGE', value: appsUrspruenge }
   { name: 'WEBAUTHN_RP_ID', value: passkeyDomain }
   { name: 'WEBAUTHN_RP_NAME', value: 'IYAMBAE FM' }
   { name: 'GRABSTEIN_TAGE', value: string(grabsteinTage) }
+  { name: 'INAKTIV_TAGE', value: string(inaktivTage) }
+  { name: 'INAKTIV_WARNUNG_TAGE', value: string(inaktivWarnungTage) }
   /*
     Die Kennung der benutzerzugewiesenen Identität. Sie MUSS hier stehen: An
     der Anwendung hängen zwei Identitäten (die alte systemzugewiesene und
@@ -1170,6 +1224,9 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
   dependsOn: [
     tabelleKonten
     tabelleVerweise
+    // Ohne sie scheitert jeder Start bei Google, Apple und Passkey mit 503.
+    tabelleAnmeldezustand
+    tabelleAbzeichen
     dienstDarfSchreiben
     dienstDarfSenden
     // Auch bedingt aufgefuehrt: Ist mitZusammenfassung falsch, wird die
@@ -1346,35 +1403,24 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
         }
       ], kontoContainer)
       /*
-        HIER STEHT ETWAS UNGELÖSTES, und es wird bewusst NICHT hier gelöst.
+        Bis zu drei Repliken, OHNE Sitzungsbindung — und das geht seit
+        432hz-radio#43 auch für die Anmeldung über Google, Apple und Passkey.
 
-        `state`, `nonce`, der PKCE-Verifier und die WebAuthn-Herausforderungen
-        liegen im ARBEITSSPEICHER des Anmeldedienstes (siehe Abschnitt 7.1 in
-        dienst/FREMDANMELDUNG.md). Bei mehr als einer Replik muss der Rückweg
-        von Google oder Apple dieselbe Replik treffen wie der Start — sonst
-        scheitert ein Teil der Anmeldungen scheinbar zufällig.
+        Vorher lagen `state`, `nonce`, der PKCE-Verifier und die
+        WebAuthn-Herausforderungen im Arbeitsspeicher des Anmeldedienstes.
+        Begann eine Anmeldung auf Replik A und kam der Rückweg auf Replik B
+        an, scheiterte sie scheinbar zufällig — genau dann, wenn die Regel
+        unten ab 50 gleichzeitigen Anfragen hochskaliert hatte.
 
-        `hoechstExemplare` steht auf 3, und die Regel unten skaliert ab 50
-        gleichzeitigen Anfragen. Sobald also viel los ist, kann genau das
-        passieren. FREMDANMELDUNG.md geht an dieser Stelle noch davon aus,
-        main.bicep fahre eine Replik — das stimmt seit der Obergrenze 3 nicht
-        mehr.
+        Jetzt liegt der Zwischenstand in der Tabelle `anmeldezustand` (oben),
+        die alle Repliken sehen. Die beiden anderen Wege bleiben verworfen:
+        `affinity: sticky` setzte JEDEM Besucher ein Plätzchen, auch dem, der
+        nie ein Konto anlegt — eine Frage an § 25 TDDDG für eine Seite, die
+        heute ohne Einwilligung auskommt. Und `hoechstExemplare` auf 1
+        deckelte das Radio wegen der Anmeldung.
 
-        Drei Wege, und keiner gehört in diese Änderung:
-
-        1. `affinity: sticky` am Ingress. Wirkt sofort, setzt aber JEDEM
-           Besucher ein Plätzchen — auch dem, der nie ein Konto anlegt. Für
-           eine Seite, die heute ohne Einwilligung auskommt, weil sie nichts
-           auf dem Endgerät ablegt, ist das keine Kleinigkeit, sondern eine
-           Frage an § 25 TDDDG.
-        2. Den Vorgangsspeicher in die Tabelle `konten` legen. Sauber, kostet
-           eine Zeile je Anmeldeversuch und ist Arbeit am Dienst.
-        3. `hoechstExemplare` auf 1. Billig, aber es deckelt das Radio wegen
-           der Anmeldung.
-
-        Bis das entschieden ist, bleibt die Skalierung, wie sie war. Mail-,
-        Passwort- und Codeanmeldung sind davon nicht betroffen — sie halten
-        nichts im Arbeitsspeicher.
+        Was noch je Replik zählt, ist die Anfragedrosselung — siehe
+        dienst/README.md.
       */
       scale: {
         minReplicas: mindestExemplare

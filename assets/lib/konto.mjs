@@ -104,7 +104,14 @@ async function ruf(pfad, optionen = {}) {
   try {
     const antwort = await fetch(WEG + pfad, {
       credentials: 'same-origin',
-      headers: optionen.rumpf ? { 'Content-Type': 'application/json' } : undefined,
+      /*
+       Immer, nicht nur mit Rumpf. Der Dienst weist jede veraendernde
+       Anfrage ohne diesen Kopf mit 415 ab (432hz-radio#46, Punkt 5), und
+       ein `methode: 'DELETE'` ohne Rumpf ging bis hierher ohne ihn hinaus.
+       Bei GET schadet er nicht: Die Anfrage bleibt auf derselben Adresse,
+       ein Vorabflug entsteht nur zwischen zwei Ursprüngen.
+      */
+      headers: { 'Content-Type': 'application/json' },
       method: optionen.rumpf ? 'POST' : (optionen.methode ?? 'GET'),
       body: optionen.rumpf ? JSON.stringify(optionen.rumpf) : undefined,
       signal: AbortSignal.timeout(optionen.frist ?? 12000),

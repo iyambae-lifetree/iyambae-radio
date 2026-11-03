@@ -28,10 +28,38 @@
   Entwurf (`RowKey ge 'code:' and RowKey lt 'code;'`) weiter greift.
 
   Nebenwirkung, und sie ist erwuenscht: Es gibt hoechstens EINEN gueltigen
-  Code je Zweck und Konto. Wer einen neuen anfordert, macht den alten
-  ungueltig — sonst sammelten sich bei jedem Klick auf „nochmal senden"
-  weitere gueltige Codes an, und aus fuenf Rateversuchen wuerden fuenf mal
-  soundsoviele.
+  Code je Zweck und Konto — sonst sammelten sich bei jedem Klick auf
+  „nochmal senden" weitere gueltige Codes an, und aus fuenf Rateversuchen
+  wuerden fuenf mal soundsoviele.
+
+  ── Erneut senden statt ersetzen ────────────────────────────────────
+
+  Bis 432hz-radio#46 (Punkt 4) machte jede Anforderung einen NEUEN Code und
+  damit den alten wertlos. Wer eine fremde Adresse kannte, konnte ihr so die
+  Codeanmeldung verleiden: Er forderte im Minutentakt an, und der Code in
+  der Mail, die der Besitzer gerade las, galt schon nicht mehr.
+
+  Jetzt geht, solange ein Code offen ist, DERSELBE noch einmal hinaus. Offen
+  heisst: nicht abgelaufen, nicht eingeloest, nicht verbrannt. Frist und
+  Fehlversuche laufen weiter, sie beginnen nicht von vorn — sonst bekaeme
+  ein Fremder mit jeder Anforderung fuenf neue Rateversuche, und die Grenze
+  oben waere keine mehr.
+
+  WOHER DER KLARTEXT KOMMT, und das ist der Haken: In der Tabelle steht nur
+  der Abdruck, und dabei bleibt es. Der Code steht deshalb, solange er gilt,
+  im ARBEITSSPEICHER dieses Prozesses — dort, wo er bis zum Versand ohnehin
+  in der Mailwarteschlange liegt. Das hat zwei Folgen, die man kennen muss:
+
+    - Nach einem Neustart kennt der Dienst den Code nicht mehr und legt
+      einen neuen an, wie bisher. Einen Neustart kann ein Angreifer nicht
+      ausloesen.
+    - Bei mehr als einer Replik kennt nur die den Code, die ihn angelegt
+      hat. Landet die zweite Anforderung auf einer anderen, wird ersetzt,
+      wie bisher. main.bicep laesst bis zu drei zu; die Regel ist eine.
+
+  Beides faellt auf das alte Verhalten zurueck, nie auf ein schlechteres:
+  Ein gemerkter Code wird nur geschickt, wenn sein Abdruck noch der in der
+  Tabelle ist.
 
   ── Was der Abdruck wirklich schuetzt, und was nicht ────────────────
 
@@ -74,22 +102,78 @@ export function abdruckVonCode(kontoId, code) {
     return createHash('sha256').update(kontoId + ':' + String(code), 'utf8').digest('hex');
 }
 
+// ── Das Gedaechtnis fuer offene Codes ───────────────────────────────
+
+/*
+  Schluessel `kontoId|zweck`, Wert `{ code, abdruck, ablauf }`. Begrenzt,
+  aus demselben Grund wie die Eimer der Drossel: Sonst waere das Gedaechtnis
+  selbst der Angriffsweg — eine Million erfundener Adressen, eine Million
+  Eintraege. 10.000 offene Codes in zehn Minuten sind mehr, als der
+  Mailversand mit 25 je Minute je verschicken koennte.
+*/
+const OFFEN_HOECHSTENS = 10_000;
+const offeneCodes = new Map();
+const merkzeichen = (kontoId, zweck) => kontoId + '|' + zweck;
+
+function merke(kontoId, zweck, eintrag, jetzt) {
+    const schluessel = merkzeichen(kontoId, zweck);
+    offeneCodes.delete(schluessel);
+    if (offeneCodes.size >= OFFEN_HOECHSTENS) {
+        for (const [k, e] of offeneCodes) if (!(e.ablauf > jetzt)) offeneCodes.delete(k);
+    }
+    // Immer noch voll: der aelteste geht. Eine Map haelt die Reihenfolge des
+    // Einfuegens, und `delete` vor `set` oben schiebt Erneuertes nach hinten.
+    while (offeneCodes.size >= OFFEN_HOECHSTENS) offeneCodes.delete(offeneCodes.keys().next().value);
+    offeneCodes.set(schluessel, eintrag);
+}
+
+/** Wie nach einem Neustart. Fuer Tests. */
+export function vergissOffeneCodes() {
+    offeneCodes.clear();
+}
+
+/** Offen: nicht abgelaufen, nicht eingeloest, nicht verbrannt. */
+function istOffen(zeile, jetzt) {
+    return zeile.ablauf > jetzt && !zeile.verbraucht && (zeile.versuche ?? 0) < HOECHSTENS_VERSUCHE;
+}
+
 /**
- * Legt einen Code an und gibt ihn im Klartext zurueck — genau einmal, an
- * den Aufrufer, der ihn in die Mail schreibt. Danach existiert er nirgends
- * mehr ausser im Postfach des Empfaengers.
+ * Gibt einen Code im Klartext zurueck, an den Aufrufer, der ihn in die Mail
+ * schreibt. Ist noch einer offen und bekannt, ist es DERSELBE (`erneut:
+ * true`), mit seiner alten Frist. Sonst ein neuer.
+ *
+ * Mit If-Match, damit zwei gleichzeitige Anforderungen nicht beide einen
+ * neuen Code schreiben und die erste Mail einen Code traegt, den die zweite
+ * schon ueberschrieben hat.
+ *
+ * @returns {Promise<{code: string, ablauf: number, erneut: boolean}>}
  */
 export async function legeCodeAn(speicher, kontoId, zweck = 'anmeldung', jetzt = Date.now()) {
-    const code = erzeugeCode();
-    await speicher.setze(TABELLE_KONTEN, {
-        partitionKey: kontoId,
-        rowKey: ZEILE(zweck),
-        abdruck: abdruckVonCode(kontoId, code),
-        ablauf: jetzt + GUELTIG_MS,
-        angelegt: jetzt,
-        versuche: 0,
+    let ergebnis = null;
+    await mitEtag(speicher, TABELLE_KONTEN, kontoId, ZEILE(zweck), (zeile, gefunden) => {
+        const gemerkt = offeneCodes.get(merkzeichen(kontoId, zweck));
+        if (gefunden && istOffen(zeile, jetzt) && gemerkt
+            && gleichOhneZeitverrat(gemerkt.abdruck, zeile.abdruck)) {
+            ergebnis = { code: gemerkt.code, ablauf: zeile.ablauf, erneut: true };
+            return null;
+        }
+        const code = erzeugeCode();
+        ergebnis = { code, ablauf: jetzt + GUELTIG_MS, erneut: false };
+        // Eine frische Zeile, nichts vom alten Stand: kein `verbraucht`,
+        // keine alten Versuche.
+        return {
+            abdruck: abdruckVonCode(kontoId, code),
+            ablauf: jetzt + GUELTIG_MS,
+            angelegt: jetzt,
+            versuche: 0,
+        };
     });
-    return { code, ablauf: jetzt + GUELTIG_MS };
+    if (!ergebnis.erneut) {
+        merke(kontoId, zweck, {
+            code: ergebnis.code, abdruck: abdruckVonCode(kontoId, ergebnis.code), ablauf: ergebnis.ablauf,
+        }, jetzt);
+    }
+    return ergebnis;
 }
 
 /**
@@ -154,6 +238,11 @@ export async function pruefeCode(speicher, kontoId, code, zweck = 'anmeldung', j
       naechsten Aufraeumen weg.
     */
     if (zustand.ok || zustand.grund === 'zu_oft' || zustand.grund === 'abgelaufen') {
+        // Der Klartext braucht dann niemand mehr. Noetig waere es nicht, der
+        // Abgleich mit der Tabelle in `legeCodeAn` schickt ihn ohnehin nicht
+        // mehr — aber ein Code, der nicht mehr gilt, hat im Speicher nichts
+        // verloren.
+        offeneCodes.delete(merkzeichen(kontoId, zweck));
         await speicher.loesche(TABELLE_KONTEN, kontoId, ZEILE(zweck)).catch(() => {});
     }
 

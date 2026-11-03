@@ -719,7 +719,8 @@ noch nicht angeschlossen; was hier über ihn steht, gilt erst dann.
 | Öffentlicher Schlüssel und Zähler deines Passkeys | bei Anmeldung mit Passkey |
 | Merkliste | wenn du Sender merkst |
 | Hörverlauf: welche Sender wie oft, was zuletzt | wenn du hörst |
-| Datum des Anlegens und des letzten Besuchs — **nur das Datum, nicht die Uhrzeit** | immer |
+| Datum des Anlegens, des letzten Besuchs und der letzten Anmeldung — **nur das Datum, nicht die Uhrzeit** | immer |
+| Angekündigter Löschtag, falls dein Konto lange nicht benutzt wurde (siehe unten) | vier Wochen vor der Löschung |
 | Angemeldete Sitzungen: **nur ein SHA-256-Abdruck** des Sitzungswerts, mit Ablaufdatum | solange du angemeldet bist |
 | Einmalcodes: ebenfalls nur als Abdruck, mit Ablaufdatum | beim Anmelden per Mail |
 
@@ -813,8 +814,8 @@ gehört benannt — mitsamt der Zahl der Personen, die sie haben.
 ### Speicherdauer und Löschung
 
 - **Sitzungen und Einmalcodes** tragen ein Ablaufdatum und werden weggeräumt. Eine Sitzung läuft nach 90 Tagen ohne Besuch ab, spätestens aber nach einem Jahr. Weggeräumt werden sie, sobald sie abgelaufen sind — beim nächsten Zugriff, und zusätzlich durch einen Durchgang alle 24 Stunden, damit auch die Sitzung eines Menschen verschwindet, der nicht wiederkommt.
-- **Das Konto selbst** bleibt, bis du es löschst. Es gibt eine Löschfunktion in der App; sie entfernt in einem Vorgang alles: Merkliste, Verlauf, Sitzungen, Kennungen und den Eintrag in der Zuordnungstabelle. Alle Daten eines Kontos liegen zu diesem Zweck in einer einzigen Partition — damit kein Rest liegenbleibt, den später niemand mehr findet.
-- **[Frist für inaktive Konten: noch festzulegen — HINWEISE.md.]**
+- **Das Konto selbst** bleibt, bis du es löschst — oder bis sich zwei Jahre lang niemand damit angemeldet hat (nächster Punkt). Es gibt eine Löschfunktion in der App; sie entfernt in einem Vorgang alles: Merkliste, Verlauf, Sitzungen, Kennungen und den Eintrag in der Zuordnungstabelle. Alle Daten eines Kontos liegen zu diesem Zweck in einer einzigen Partition — damit kein Rest liegenbleibt, den später niemand mehr findet.
+- **Inaktive Konten** werden gelöscht, wenn sich **zwei Jahre** lang niemand damit angemeldet hat. **Vier Wochen vorher** schreiben wir dir an die Adresse des Kontos: „Dein Konto wird am … gelöscht, wenn du dich bis dahin nicht anmeldest“, mit einem Link zur Anmeldung. Meldest du dich an, beginnt die Frist von vorn. Es zählt die Anmeldung, nicht jeder Besuch: Wer mit einer bestehenden Sitzung hört, muss sich ohnehin spätestens nach einem Jahr neu anmelden. Hat ein Konto keine Mailadresse (etwa bei Apple mit verborgener Adresse), können wir nicht warnen; es wird nach Ablauf der zwei Jahre ohne Mail gelöscht. Gelöscht wird auf dieselbe Weise wie mit der Löschfunktion — alles, in einem Vorgang. Für Konten, die es schon vor dieser Regel gab, läuft die Frist frühestens ab dem 03.11.2026. Rechtsgrundlage ist der Grundsatz der Speicherbegrenzung (Art. 5 Abs. 1 lit. e DSGVO): Ein Konto, das niemand mehr benutzt, hat keinen Zweck mehr.
 - **[Was nach dem Löschen wie lange als „Grabstein" bestehen bleibt: noch zu klären — HINWEISE.md.]**
 
 ---

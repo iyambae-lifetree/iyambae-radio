@@ -108,6 +108,8 @@ zwingt dazu, einmal aufzuschreiben, was man eigentlich tut.
 | V11 | Reichweitenmessung (sechs Ereignisarten) | **neu am 21.08.2026** | Art. 6 I f |
 | V12 | Gesprächsassistent Kater Mikesch | **neu am 24.10.2026** | Art. 6 I f |
 | V13 | Rundbrief „Mikeschs Schnurrpost" | **neu am 24.10.2026** | Art. 6 I a; § 7 II UWG |
+| V14 | Ergebnisse des Blindtests (`/hoertest/`) | aktiv seit 01.09.2026, **nachgetragen am 03.11.2026** | Art. 6 I f |
+| V15 | Ergebnisse des Messwerkzeugs (`/stimmung/`) | aktiv seit 01.09.2026, **nachgetragen am 03.11.2026** | Art. 6 I f |
 | V16 | Mess-Abzeichen für Creator | **neu am 03.11.2026** | Art. 6 I b; § 25 II Nr. 2 TDDDG |
 
 ---
@@ -279,12 +281,12 @@ gehören mit ins Repository und ins Abbild — siehe HINWEISE.md.
 | **Zweck** | Führung des Kontos; Authentifizierung; geräteübergreifender Abgleich von Merkliste und Hörverlauf; Abwehr von Missbrauch bei der Anmeldung |
 | **Rechtsgrundlage** | **Art. 6 Abs. 1 lit. b DSGVO** — Erfüllung des Nutzungsvertrags. Ausdrücklich **nicht** Einwilligung. Für Anmeldedrosselung und Missbrauchsabwehr Art. 6 Abs. 1 lit. f DSGVO |
 | **Kategorien betroffener Personen** | registrierte Nutzer |
-| **Kategorien personenbezogener Daten** | Kontokennung; E-Mail-Adresse (Klartext in der Kontotabelle, als SHA-256-Abdruck in der Zuordnungstabelle); Passwort **ausschließlich als Hash**; Anbieterkennung (`sub`) bei Google-/Apple-Anmeldung; öffentlicher Passkey-Schlüssel nebst Zähler und Flags; Merkliste; Hörverlauf (Zähler je Sender, zuletzt Gehörtes); Anlagedatum und Datum des letzten Besuchs (**nur Datum, keine Uhrzeit**); Sitzungen und Einmalcodes **nur als SHA-256-Abdruck** mit Ablaufdatum |
+| **Kategorien personenbezogener Daten** | Kontokennung; E-Mail-Adresse (Klartext in der Kontotabelle, als SHA-256-Abdruck in der Zuordnungstabelle); Passwort **ausschließlich als Hash**; Anbieterkennung (`sub`) bei Google-/Apple-Anmeldung; öffentlicher Passkey-Schlüssel nebst Zähler und Flags; Merkliste; Hörverlauf (Zähler je Sender, zuletzt Gehörtes); Anlagedatum, Datum des letzten Besuchs und der letzten Anmeldung, bei inaktiven Konten der angekündigte Löschtag (**nur Datum, keine Uhrzeit**); Sitzungen und Einmalcodes **nur als SHA-256-Abdruck** mit Ablaufdatum |
 | **Empfänger** | Microsoft Ireland Operations Limited (Azure Table Storage, Auftragsverarbeiterin); bei sozialer Anmeldung: Google Ireland Limited / Google LLC bzw. Apple Inc. / Apple Distribution International; lesender Zugriff der benannten Personen |
 | **Drittlandübermittlung** | Speicherung: nein — Germany West Central, `Standard_LRS` (drei Kopien in **einem** Rechenzentrum, bewusst keine geografische Spiegelung). Bei Google-/Apple-Anmeldung: USA, gestützt auf den Angemessenheitsbeschluss vom 10.07.2023, soweit der Anbieter zertifiziert ist — **vor Livegang zu prüfen** |
-| **Löschfristen** | Sitzungen und Einmalcodes: mit Ablauf des Ablaufdatums, durchgesetzt beim nächsten Zugriff und zusätzlich durch einen Räumdurchgang alle 24 Stunden. Konto: bis zur Löschung durch den Nutzer (`DELETE /api/konto`, entfernt Merkliste, Verlauf, Sitzungen, Kennungen und den Eintrag in der Zuordnungstabelle in einem Vorgang). Inaktive Konten: **Frist noch festzulegen**. Grabsteine gelöschter Einträge: Parameter `grabsteinTage`, Vorgabe 90 Tage — **Wirkung noch zu klären** |
+| **Löschfristen** | Sitzungen und Einmalcodes: mit Ablauf des Ablaufdatums, durchgesetzt beim nächsten Zugriff und zusätzlich durch einen Räumdurchgang alle 24 Stunden. Konto: bis zur Löschung durch den Nutzer (`DELETE /api/konto`, entfernt Merkliste, Verlauf, Sitzungen, Kennungen und den Eintrag in der Zuordnungstabelle in einem Vorgang). Inaktive Konten: **zwei Jahre nach der letzten Anmeldung** (`INAKTIV_TAGE`, 730), mit Warnmail an die Kontoadresse **vier Wochen vorher** (`INAKTIV_WARNUNG_TAGE`, 28); eine Anmeldung setzt die Frist neu. Geprüft im selben 24-Stunden-Durchgang, gelöscht auf demselben Weg wie `DELETE /api/konto` (`dienst/src/inaktiv.mjs`). Bestandskonten ohne Anmeldedatum: Frist ab Anlage, frühestens ab 03.11.2026. Grabsteine gelöschter Einträge: Parameter `grabsteinTage`, Vorgabe 90 Tage — **Wirkung noch zu klären** |
 | **TOM** | Kontozugangsschlüssel des Speicherkontos abgeschaltet (`allowSharedKeyAccess: false`) — Zugriff ausschließlich über verwaltete Identität, es existiert keine Verbindungszeichenfolge, die abfließen könnte; TLS mindestens 1.2, ausschließlich HTTPS; kein öffentlicher Blobzugriff, keine mandantenübergreifende Replikation; Rollentrennung: die Anwendung schreibt, die Verwalter lesen nur; alle Daten eines Kontos in einer Partition, damit die Löschung nach Art. 17 DSGVO vollständig und in einem Vorgang gelingt; Sitzungsgeheimnisse nur als Abdruck gespeichert; Anmeldedrosselung 5 Versuche je Minute und Adresse; `no-store` für alle `/api/`-Antworten; Service Worker speichert `/api/`-Antworten nicht zwischen |
-| **Vor Inbetriebnahme offen** | Content-Security-Policy fehlt (im Quelltext vermerkt); ACS-Rollenkennung nicht belegt; Löschfristen (siehe oben); **Zugriffskonzept innerhalb der Gesellschaft (HINWEISE.md, Punkt 10)** |
+| **Vor Inbetriebnahme offen** | Content-Security-Policy fehlt (im Quelltext vermerkt); ACS-Rollenkennung nicht belegt; Grabsteine (siehe oben); **Zugriffskonzept innerhalb der Gesellschaft (HINWEISE.md, Punkt 10)** |
 | **Fundstellen** | `infra/konto.bicep.entwurf` |
 
 ---
@@ -408,10 +410,47 @@ eine Meldung geraten könnte. Wer das Modul ändert, sollte das wissen.
 
 ---
 
-## V16 — Mess-Abzeichen für Creator *(neu am 03.11.2026)*
+## V14 — Ergebnisse des Blindtests *(aktiv seit 01.09.2026, nachgetragen am 03.11.2026)*
 
-V14 und V15 (Blindtest und Messwerkzeug, 432hz-radio#21) werden in einem
-eigenen Schritt nachgetragen; die Nummern sind dafür freigehalten.
+Gebaut in 432hz-radio#21. Bis zum 03.11.2026 fehlte der Eintrag hier; nachgetragen auf Hinweis in 432hz-radio#27.
+
+| Feld | Inhalt |
+|---|---|
+| **Bezeichnung** | Ablage des Ergebnisses einer abgeschlossenen Runde des Blindtests „Merkst du's?" auf apps.iyambae.fm/hoertest/ |
+| **Zweck** | Auswerten, wie oft im Blindtest 432 Hz von 440 Hz unterschieden wird — auch wenn es gegen uns ausfällt; Prüfen, ob die Reihenfolge der Knöpfe das Ergebnis verzerrt (`wahl_a`) |
+| **Rechtsgrundlage** | Art. 6 Abs. 1 lit. f DSGVO, soweit überhaupt Personenbezug besteht. Nach unserer Einschätzung ist eine einzelne Zeile keiner Person zuzuordnen (siehe „Nicht erhoben"); geführt wird der Eintrag, damit nachvollziehbar ist, was gespeichert wird |
+| **Kategorien betroffener Personen** | Besucher, die eine Runde des Blindtests beenden |
+| **Kategorien von Daten** | Runde; Zahl der Treffer (0–5); wie oft der erste Knopf gewählt wurde; Seitensprache; Tag der Abgabe (UTC). Jede Runde ist eine eigene Zeile mit zufälliger Kennung, ohne Verbindung zu anderen Zeilen |
+| **Nicht erhoben** | IP-Adresse (nur flüchtig für die Drossel im Arbeitsspeicher, wie bei `/api/umfrage`); Cookies; Konto; Kennung, die zwei Runden derselben Person verbinden könnte; Uhrzeit |
+| **Empfänger** | Microsoft Ireland Operations Limited (Table Storage; Auftragsverarbeiterin). Veröffentlicht werden höchstens Summen |
+| **Drittlandübermittlung** | wie V1 |
+| **Löschfrist** | **[Offen: Derzeit gibt es keine automatische Löschung, die Zeilen bleiben unbegrenzt. Ausgewertet werden höchstens die letzten 365 Tage (`AUSWERTUNG_TAGE_HOECHSTENS`). Eine Frist festlegen und das Wegräumen ganzer Tagespartitionen bauen.]** |
+| **TOM** | Erlaubnisliste im Dienst — nichts außer den genannten Feldern wird angenommen; Drosselung je Netz; nur `application/json`; Tag statt Uhrzeit und Zufallskennung statt Zähler, damit keine Abfolge erkennbar ist |
+| **Fundstellen** | `dienst/src/rueckmeldung.mjs` (`saeubereHoertest`, `legeHoertestAb`), `dienst/src/server.mjs` (`POST /api/hoertest`), Tabelle `hoertest` |
+
+---
+
+## V15 — Ergebnisse des Messwerkzeugs *(aktiv seit 01.09.2026, nachgetragen am 03.11.2026)*
+
+Gebaut in 432hz-radio#21, nachgetragen wie V14.
+
+| Feld | Inhalt |
+|---|---|
+| **Bezeichnung** | Ablage einer gelungenen Messung des Kammertons einer Aufnahme auf apps.iyambae.fm/stimmung/. Die Messung selbst geschieht im Browser, die Tondatei verlässt das Gerät nicht |
+| **Zweck** | Auswerten, wie sich die gemessenen Kammertöne verteilen |
+| **Rechtsgrundlage** | wie V14 |
+| **Kategorien betroffener Personen** | Besucher, die eine Aufnahme messen |
+| **Kategorien von Daten** | gemessener Kammerton (eine Nachkommastelle, 380–500 Hz); Sicherheit der Messung (zwei Nachkommastellen); ob dem Besucher eine Zahl gezeigt wurde; Länge des ausgewerteten Ausschnitts in fünf Stufen; Zahl der Kanäle; Dateiendung aus einer festen Liste; Seitensprache; Tag (UTC). Jede Messung ist eine eigene Zeile mit zufälliger Kennung |
+| **Nicht erhoben** | die Tondatei und alles aus ihr außer den genannten Werten; Dateiname; Dateilänge; IP-Adresse (nur flüchtig für die Drossel); Cookies; Konto; Uhrzeit |
+| **Empfänger** | wie V14 |
+| **Drittlandübermittlung** | wie V1 |
+| **Löschfrist** | **[Offen, wie V14.]** |
+| **TOM** | wie V14; dazu gerundete Werte, damit eine Zeile sich nicht durch übergenaue Zahlen von allen anderen unterscheidet |
+| **Fundstellen** | `dienst/src/rueckmeldung.mjs` (`saeubereStimmung`, `legeStimmungAb`), `dienst/src/server.mjs` (`POST /api/stimmung`), Tabelle `stimmung` |
+
+---
+
+## V16 — Mess-Abzeichen für Creator *(neu am 03.11.2026)*
 
 | Feld | Inhalt |
 |---|---|
@@ -503,7 +542,8 @@ die tragende Schutzmaßnahme gegen den Zugriff aus einem Drittland (siehe oben):
 - `Accept-Language` wird nirgends protokolliert: Die volle gewichtete Liste ist einer der stärksten Fingerabdrücke, die ein Browser ungefragt mitschickt.
 - Die Bereitschaftsprüfung wird nicht protokolliert (V1). Das ist nebenbei Datenminimierung, vor allem aber Richtigkeit im Sinne von Art. 5 Abs. 1 lit. d DSGVO.
 - Die Hördauer wird nicht erhoben (ohne Konto technisch nicht erhebbar).
-- Zeitangaben im Konto auf Tagesgenauigkeit reduziert („zuletztGesehen").
+- Zeitangaben im Konto auf Tagesgenauigkeit reduziert („zuletztGesehen", „letzteAnmeldung", „loeschungAm").
+- Inaktive Konten werden nach zwei Jahren ohne Anmeldung gelöscht, mit Warnmail vier Wochen vorher (Art. 5 Abs. 1 lit. e DSGVO).
 - Sitzungsgeheimnisse und Einmalcodes nur als Abdruck.
 
 **Integrität und Verfügbarkeit**
@@ -518,7 +558,6 @@ die tragende Schutzmaßnahme gegen den Zugriff aus einem Drittland (siehe oben):
 
 - **Keine Content-Security-Policy.** Vor der Einführung von Konten zwingend nachzuholen; im Quelltext bereits vermerkt. Seit dem Wegfall der fremden Schriftquellen ist sie deutlich einfacher zu schreiben.
 - **Kein dokumentiertes Vorgehen für Datenschutzverletzungen** (Art. 33, 34 DSGVO): 72 Stunden sind kurz, wenn man erst dann anfängt zu überlegen. **Mit dem Betreiberwechsel ist das schwieriger geworden, nicht leichter:** Ohne federführende Aufsichtsbehörde ist im Ernstfall zu klären, welchen Behörden zu melden ist, und der EU-Vertreter ist einzubinden.
-- **Kein Löschkonzept für inaktive Konten** (geplant, Frist offen).
 - **Keine dokumentierte Prüfung der Wirksamkeit** nach Art. 32 Abs. 1 lit. d DSGVO. Für einen Betrieb dieser Größe genügt eine jährliche Durchsicht dieses Verzeichnisses, sie muss aber stattfinden und datiert werden.
 - **Das Verzeichnis liegt nur auf Deutsch vor.** Der Vertreter auf Malta muss es führen können (Art. 30 Abs. 1) und die maltesische Aufsichtsbehörde könnte es anfordern. Eine englische Fassung ist deshalb keine Kür — siehe HINWEISE.md, Punkt 11.
 
@@ -569,6 +608,7 @@ hinzukommt.
 | 21.08.2026 | **V11 nachgezogen, zweite Runde.** Adressfeld aus `log_format messung` entfernt — die Zeile hat jetzt `art`, `zeit`, `ereignis`. Kein serverseitiges Sprachfeld mehr (`$sprache` hätte `$cookie_hz_sprache` gelesen); das Kürzel kommt aus dem Pfad. Trefferzahl der Achse „gemerkte" entfällt. Drei bis dahin tote Ereignisarten (`suche`, `sprache`, `installiert`) sind verdrahtet und hier aufgenommen. Der Posten „Erkennbare Restfrage" ist erledigt und durch die Begründung ersetzt |
 | 21.08.2026 | **V1: Bereitschaftsprüfung von `/` auf `/gesund` verlegt und aus der Protokollierung genommen.** Zuvor rund 26 000 nicht von Menschen stammende Zeilen am Tag. V2 um einen Hinweis zur Aussagekraft der Zahlen ergänzt |
 | 24.10.2026 | **V12 und V13 neu** — Kater Mikesch und Mikeschs Schnurrpost; Anthropic PBC als Auftragsverarbeiter aufgenommen |
+| 03.11.2026 | **V14 und V15 nachgetragen** — Blindtest und Messwerkzeug, in Betrieb seit 01.09.2026 (432hz-radio#21), bis dahin hier vergessen. Löschfrist für beide noch offen |
 | 03.11.2026 | **V16 neu** — Mess-Abzeichen für Creator (432hz-radio#27). Nummer nach Michas Einschätzung vom 01.10.2026 ursprünglich V12; V12 bis V15 waren inzwischen vergeben bzw. vorgesehen |
 
 **Stand: 21.08.2026 · Nächste Durchsicht: [Datum eintragen, spätestens in einem

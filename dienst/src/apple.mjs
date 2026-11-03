@@ -180,7 +180,7 @@ export function erzeugeApple({ speicher, sitzung, protokoll, einst, zustand, jwk
       nicht mit, und JEDER Rueckweg schluege fehl.
     */
     const bindung = erzeugeBindung();
-    const state = zustand.lege({
+    const state = await zustand.lege({
       anbieter: 'apple',
       sprache,
       verifizierer: pkce.verifizierer,
@@ -222,7 +222,7 @@ export function erzeugeApple({ speicher, sitzung, protokoll, einst, zustand, jwk
     pruefeEinrichtung();
 
     const formular = await lesFormular(anfrage);
-    const eintrag = zustand.hole(formular.get('state'));
+    const eintrag = await zustand.hole(formular.get('state'));
     if (!eintrag || eintrag.anbieter !== 'apple') {
       protokoll?.schreib?.('fremd_rueckweg', { anbieter: 'apple', ergebnis: 'state_unbekannt' });
       umleitung(antwort, '/?anmeldung=fehler&grund=abgelaufen');

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { speicherImArbeitsspeicher, TABELLE_KONTEN } from '../src/speicher.mjs';
+import { speicherImArbeitsspeicher, TABELLE_KONTEN, TABELLE_ANMELDEZUSTAND } from '../src/speicher.mjs';
 import {
     erzeugeSitzung, pruefeSitzung, widerrufe, widerrufeAlle, raeumeKonto,
     baueSitzungsPlaetzchen, baueLoeschPlaetzchen, liesPlaetzchen,
@@ -225,6 +225,29 @@ test('der grosse Durchgang laeuft hoechstens einmal in 24 Stunden', async () => 
     assert.equal(stosseAufraeumenAn(speicher, start + 25 * 3600_000), true);
     await atemzug();
 
+    vergissAufraeumen();
+});
+
+test('der grosse Durchgang raeumt auch liegengebliebene Anmeldevorgaenge weg (432hz-radio#43)', async () => {
+    /*
+      Wer bei Google auf „Abbrechen" klickt und das Fenster schliesst, kommt
+      nie zurueck — sein state liegt in `anmeldezustand`, bis jemand ihn
+      wegnimmt. Das tut derselbe Durchgang, der auch die Sitzungen raeumt;
+      eine eigene Uhr dafuer gaebe es nur um den Preis einer Grundlast.
+    */
+    const speicher = speicherImArbeitsspeicher();
+    vergissAufraeumen();
+    const jetzt = 300 * 3600_000;
+    await speicher.setze(TABELLE_ANMELDEZUSTAND, { partitionKey: 'fremd', rowKey: 'a'.repeat(64), ablauf: jetzt - 1, daten: 'x' });
+    await speicher.setze(TABELLE_ANMELDEZUSTAND, { partitionKey: 'passkey', rowKey: 'b'.repeat(64), ablauf: jetzt - 1, daten: 'x' });
+    await speicher.setze(TABELLE_ANMELDEZUSTAND, { partitionKey: 'fremd', rowKey: 'c'.repeat(64), ablauf: jetzt + 60_000, daten: 'x' });
+
+    assert.equal(stosseAufraeumenAn(speicher, jetzt), true);
+    await new Promise((f) => setTimeout(f, 20));
+
+    const uebrig = [];
+    for await (const z of speicher.listeAlle(TABELLE_ANMELDEZUSTAND)) uebrig.push(z.rowKey);
+    assert.deepEqual(uebrig, ['c'.repeat(64)]);
     vergissAufraeumen();
 });
 
