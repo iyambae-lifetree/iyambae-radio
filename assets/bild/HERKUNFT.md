@@ -143,3 +143,21 @@ Ruhe -16°, Spiel +2°. Wer eine davon aendert, aendert sie in `.lager` und
 
 Geprueft vor dem Einbau, in allen drei Stellungen uebereinandergelegt
 (0°, -16°, +2°): kein Loch, keine doppelte Kante.
+
+# Kater Mikesch
+
+`mikesch/kopf.webp`, `mikesch/ohr.webp`, `mikesch/lider.webp` — der Kopf
+des Assistenten unten rechts (assets/lib/mikesch.mjs).
+
+| | |
+|---|---|
+| Quelle | Sāmi-Ras eigenes Porträt von Kater Mikesch (`Aussehen – Porträt.png`, 2048 × 2048, im Ordner „Kater Mikesch") |
+| Freigestellt | mit Apple Vision (`VNGenerateForegroundInstanceMaskRequest`) auf dem Mac, ohne Dienst im Netz |
+| Zuschnitt | 640 × 850 ab (705, 200), auf 320 × 425 verkleinert |
+
+**Drei deckungsgleiche Ebenen statt eines Bildes.** Das rechte Ohr liegt
+für sich, damit es zucken kann; die geschlossenen Lider sind aus demselben
+Porträt nachgearbeitet und liegen ebenfalls für sich, damit Mikesch blinzeln kann. Alle drei
+haben dasselbe Format und liegen exakt übereinander. Wer eines neu
+zuschneidet, muss die beiden anderen mitnehmen — und die Lagen in
+`assets/mikesch.css` (Augenband 39,3 … 46,1 %, Ohrfuß 76,5 % / 28,2 %).

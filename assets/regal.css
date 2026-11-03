@@ -206,3 +206,28 @@ a:hover { color: var(--gold-hell); }
 }
 .fuss a { color: var(--text-leise); text-decoration: none; }
 .fuss a:hover { color: var(--gold); }
+
+/* ── Bei Tag ───────────────────────────────────────────────────────
+   Dieselbe helle Fassung wie in styles.css („Der Laden bei Tag“), mit
+   denselben Werten — auch sie stehen hier ein zweites Mal, aus dem oben
+   genannten Grund. Gelb taugt auf Papier nicht als Schrift, deshalb wird
+   --gold zu Dunkelgold (5,6 : 1 auf --grund). Der Knopf bleibt eine gelbe
+   Flaeche mit dunkler Schrift wie bei Nacht; er holt sich das Gelb darum
+   ausdruecklich zurueck. */
+@media (prefers-color-scheme: light) {
+    :root {
+        --grund:        #f5f1ea;
+        --grund-hoch:   #fbf9f5;
+        --karte:        #fdfbf7;
+        --rand:         rgba(42, 24, 56, 0.13);
+        --rand-hell:    rgba(42, 24, 56, 0.26);
+        --text:         #1c1326;
+        --text-leise:   #5d5070;
+        --gold:         #7d5a00;
+        --gold-hell:    #5e4300;
+        --blau:         #1f639f;
+        --gruen:        #0f6b41;
+    }
+    .knopf { background: #F2B705; }
+    .knopf:hover { background: #FFD34D; }
+}
