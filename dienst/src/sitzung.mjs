@@ -49,6 +49,9 @@
        beliebigen Anfrage, hoechstens einmal in 24 Stunden, im Hintergrund.
        Kein Timer, keine Grundlast, und wenn tagelang niemand kommt, laeuft
        er eben tagelang nicht. Dann liegt aber auch keine Last an.
+
+  Derselbe Durchgang warnt und loescht inaktive Konten (inaktiv.mjs) —
+  angehaengt, nicht daneben gestellt, damit es bei einem Takt bleibt.
 */
 
 import { randomBytes, createHash } from 'node:crypto';
@@ -57,6 +60,7 @@ import {
 } from './speicher.mjs';
 import { gleichOhneZeitverrat } from './passwort.mjs';
 import { protokolliere } from './protokoll.mjs';
+import { merkeAnmeldung, pruefeInaktiveKonten } from './inaktiv.mjs';
 
 export const PLAETZCHEN = 'hz_sitzung';
 
@@ -177,6 +181,24 @@ export async function erzeugeSitzung(speicher, kontoId, jetzt = Date.now()) {
         // waere ein Bewegungsprofil; ein Datum reicht, um eine tote Sitzung
         // zu erkennen.
         zuletzt: tagVon(jetzt),
+    });
+    /*
+      Eine Sitzung entsteht nur durch eine Anmeldung — also ist hier die
+      eine Stelle, an der jede Anmeldeart vorbeikommt. Sie setzt
+      `letzteAnmeldung` und streicht eine angekuendigte Loeschung wegen
+      Inaktivitaet (inaktiv.mjs).
+
+      Scheitert das, scheitert die Anmeldung NICHT. Die Sitzung steht schon;
+      wer sie wegen einer Buchfuehrungszeile verweigert, sperrt jemanden aus,
+      der gerade alles richtig gemacht hat. Der Schaden bleibt klein: Bevor
+      ein Konto deshalb verschwindet, kommt die Warnmail, und die naechste
+      Anmeldung traegt das Datum nach.
+    */
+    await merkeAnmeldung(speicher, kontoId, jetzt).catch((fehler) => {
+        protokolliere({
+            art: 'anmeldung.vermerk', ergebnis: 'fehler', konto: kontoId,
+            grund: fehler instanceof SpeicherFehler ? fehler.art : 'unbekannt',
+        });
     });
     return { wert: kontoId + '.' + geheimnis, abdruck };
 }
@@ -300,7 +322,7 @@ let laeuft = false;
  * Protokoll und sonst nirgends — ein misslungener Durchgang wird morgen
  * wiederholt.
  */
-export function stosseAufraeumenAn(speicher, jetzt = Date.now()) {
+export function stosseAufraeumenAn(speicher, jetzt = Date.now(), { versender, seite } = {}) {
     if (laeuft) return false;
     if (jetzt - letzterDurchgang < AUFRAEUMABSTAND_MS) return false;
     letzterDurchgang = jetzt;
@@ -361,6 +383,27 @@ export function stosseAufraeumenAn(speicher, jetzt = Date.now()) {
             protokolliere({
                 art: 'aufraeumen.anmeldezustand', ergebnis: 'fehler',
                 grund: fehler instanceof SpeicherFehler ? fehler.art : 'unbekannt',
+            });
+        }
+
+        /*
+          Inaktive Konten (inaktiv.mjs) im selben Durchgang — kein eigener
+          Takt, keine zusaetzliche Grundlast. Mit eigenem Fehlerzweig: Ein
+          Ausfall beim Wegraeumen der Sitzungen soll die Pruefung nicht
+          verhindern, und umgekehrt. Ohne Versender (Tests, die nur das
+          Wegraeumen meinen) entfaellt sie.
+        */
+        const beginn = Date.now();
+        try {
+            if (versender) {
+                const { gewarnt, geloescht } = await pruefeInaktiveKonten(speicher, { versender, seite, jetzt });
+                protokolliere({ art: 'inaktiv', ergebnis: 'ok', anzahl: gewarnt + geloescht, dauer: Date.now() - beginn });
+            }
+        } catch (fehler) {
+            protokolliere({
+                art: 'inaktiv', ergebnis: 'fehler',
+                grund: fehler instanceof SpeicherFehler ? fehler.art : 'unbekannt',
+                dauer: Date.now() - beginn,
             });
         } finally {
             laeuft = false;

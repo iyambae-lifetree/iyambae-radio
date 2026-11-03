@@ -136,7 +136,8 @@ und Weiche werden also mitgeprueft und nicht nachgebaut.
 | `AZURITE` | — | `1` schaltet auf oertliches Azurite |
 | `ACS_ENDPUNKT` | — | Communication Services |
 | `ABSENDER` | — | volle Absenderadresse |
-| `ERLAUBTE_URSPRUENGE` | `https://iyambae.fm,https://www.iyambae.fm` | Origin-Pruefung und Grundlage des Passwortlinks |
+| `ERLAUBTE_URSPRUENGE` | `https://iyambae.fm,https://www.iyambae.fm` | Origin-Pruefung fuer alle Wege und Grundlage des Passwortlinks (der erste Eintrag) |
+| `APPS_URSPRUENGE` | `https://apps.iyambae.fm` | Ursprung, der NUR `POST /api/umfrage`, `/api/hoertest` und `/api/stimmung` darf. Wird von `ERLAUBTE_URSPRUENGE` abgezogen, auch wenn er dort steht (`src/urspruenge.mjs`) |
 | `GRABSTEIN_TAGE` | `90` | wie lange geloeschte Merklisteneintraege liegen bleiben |
 | `ARGON_GLEICHZEITIG` | `4` | Plaetze in der Argon2-Schranke — **siehe Messung** |
 | `ARGON_WARTESCHLANGE` | `64` | Wartende, danach 503 mit `Retry-After` |
@@ -148,6 +149,9 @@ und Weiche werden also mitgeprueft und nicht nachgebaut.
 | `MARKE_GUELTIG_MINUTEN` | `60` | Passwortlink |
 | `SITZUNGSDAUER_TAGE` | `365` | Hoechstdauer: Plaetzchen und Tabellenzeile |
 | `LEERLAUF_TAGE` | `90` | gleitend: so lange ohne Besuch, dann abgemeldet (#40) |
+| `INAKTIV_TAGE` | `730` | so lange ohne Anmeldung, dann wird das Konto geloescht (#49, `src/inaktiv.mjs`) |
+| `INAKTIV_WARNUNG_TAGE` | `28` | so viele Tage vorher geht die Warnmail |
+| `INAKTIV_WARNUNGEN_JE_LAUF` | `20` | hoechstens so viele Warnmails je Tagesdurchgang — schont das Mailkontingent der Anmeldecodes |
 | `FRISCH_MINUTEN` | `10` | nach der Anmeldung offen: Passwort setzen, Passkey anlegen, Verknuepfen, Konto loeschen (#40) |
 | `MAIL_JE_MINUTE` / `MAIL_JE_STUNDE` | `25` / `90` | unter Microsofts 30/100 |
 | `MAIL_WARTESCHLANGE` | `500` | danach faellt die aelteste Mail weg |
@@ -239,6 +243,14 @@ Der Container faellt in keinem der vier Faelle. Auch nicht im letzten.
 
 ## Was die Antworten sagen
 
+Fuer JEDEN veraendernden Weg gilt vorweg (432hz-radio#46, Punkt 5):
+
+- **403 `herkunft_fremd`**, wenn der Origin-Kopf nicht passt. Kontowege nehmen
+  nur `ERLAUBTE_URSPRUENGE`, die drei Rueckmeldewege dazu `APPS_URSPRUENGE`.
+- **415 `falscher_inhaltstyp`** ohne `Content-Type: application/json`, auch
+  wenn der Rumpf leer ist. Die Webseite schickt den Kopf ueberall mit;
+  `Scripts/test/inhaltstyp.test.mjs` prueft das beim Bau.
+
 Der Dienst gibt **maschinenlesbare Gruende** zurueck, keine deutschen Saetze.
 Das hat einen Grund, der nicht Bequemlichkeit ist: Die Webseite kann sieben
 Sprachen, der Dienst keine. Ein deutscher Satz aus dem Server waere auf
@@ -287,8 +299,10 @@ ist der Tag (`JJJJ-MM-TT`, UTC), Zeilenschluessel ein `randomUUID`, dazu die
 erlaubten Felder. **Nicht gespeichert wird**: Kennung, Plaetzchen, Sitzung,
 Adresse, Netz, Abdruck davon.
 
-**Mehrfachabgaben** begrenzt allein die Drossel, mit den Zahlen von
-`/api/passwort/vergessen` (10 je Netz und halber Stunde, 60 global je Minute).
+**Mehrfachabgaben** begrenzt allein die Drossel (10 je Netz und halber
+Stunde, 60 global je Minute — die frueheren Zahlen von
+`/api/passwort/vergessen`, das seit 432hz-radio#46 global der Versandrate
+folgt).
 Der Netzzaehler liegt ausschliesslich im Arbeitsspeicher, laeuft von selbst
 wieder voll und taucht in keiner Zeile auf — er ist deshalb keine Kennung,
 und Zaehler und Antwort sind nicht verbindbar.
@@ -617,6 +631,17 @@ Anmeldedienstes auch das Radio weg.
 - ~~`ERLAUBTE_URSPRUENGE` enthaelt `https://apps.iyambae.fm` nicht~~ —
   **erledigt** (`infra/main.bicep`, `erlaubteUrspruenge`). Der erste Eintrag
   bleibt `https://iyambae.fm`, er ist Grundlage des Passwortlinks.
+  **Seit 432hz-radio#46** steht apps dort nicht mehr, sondern in
+  `appsUrspruenge` / `APPS_URSPRUENGE`, und darf nur noch die drei
+  Rueckmeldewege. Ausgerollt wird die Vorlage nur von Hand; bis dahin zieht
+  der Dienst apps selbst von der Kontoliste ab.
+- **Einmalcode erneut senden haengt am Arbeitsspeicher.** Der offene Code
+  steht im Klartext nur im Prozess, nie in der Tabelle. Nach einem Neustart
+  oder auf einer anderen Replik wird wie frueher ein neuer angelegt
+  (`src/einmalcode.mjs`).
+- **Die Mail-Achse kennt nur die Minutengrenze (25).** Die Stundengrenze
+  des Versands (90) bildet sie nicht ab; ein Ansturm ueber eine Stunde
+  fuellt die Schlange weiter, nur langsamer (`src/server.mjs`, `MAILACHSE`).
 - **Die Umfrageantworten werden nie wieder weggeraeumt.** Es gibt keine Frist
   und keinen Durchgang. Weil die Zeilen niemandem zuzuordnen sind, verlangt
   auch niemand eine Loeschung — wer sie trotzdem will, loescht ganze

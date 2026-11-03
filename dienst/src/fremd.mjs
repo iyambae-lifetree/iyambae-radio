@@ -19,6 +19,7 @@
 
 import crypto from 'node:crypto';
 import { SpeicherFehler, TABELLE_ANMELDEZUSTAND, speicherImArbeitsspeicher } from './speicher.mjs';
+import { liesUrspruenge } from './urspruenge.mjs';
 
 // ── Sprachen ────────────────────────────────────────────────────────
 
@@ -1055,10 +1056,13 @@ function baueKopf(name, wert, ablauf) {
 }
 
 export function leseUmgebung(umgebung = process.env) {
-  const urspruenge = String(umgebung.ERLAUBTE_URSPRUENGE ?? 'https://iyambae.fm,https://www.iyambae.fm')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
+  /*
+    Die Kontoliste aus urspruenge.mjs, nicht ERLAUBTE_URSPRUENGE roh: Dort
+    steht in der laufenden Umgebung auch apps.iyambae.fm, und die Seite hat
+    an Google, Apple und Passkeys nichts verloren (432hz-radio#46, Punkt 5).
+    Die Liste ist zugleich `expectedOrigin` der Passkeys.
+  */
+  const urspruenge = liesUrspruenge(umgebung).konto;
   return {
     basis: String(umgebung.OEFFENTLICHE_ADRESSE ?? urspruenge[0] ?? 'https://iyambae.fm').replace(/\/+$/, ''),
     urspruenge,

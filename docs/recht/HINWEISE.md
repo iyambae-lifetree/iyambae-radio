@@ -610,13 +610,22 @@ Offen und **nicht** von hier aus entscheidbar:
   beschreibt beide schon.
 - **Auftragsverarbeitung Google.** Abschnitt 11 nennt Google LLC in den USA.
   Punkt 17 (AV-Verträge) ist dafür noch offen.
-- **Punkt 20 (Frist für inaktive Konten) und Punkt 21 (Grabsteine)** sind jetzt
-  dringlich: Grabsteine werden ab sofort wirklich geschrieben — auf dem Gerät in
+- **Punkt 20 (Frist für inaktive Konten)** ist seit 03.11.2026 erledigt.
+  **Punkt 21 (Grabsteine)** ist jetzt dringlich: Grabsteine werden ab sofort wirklich geschrieben — auf dem Gerät in
   `hz_favoriten_zeit`, im Dienst über `raeumeGrabsteine()` mit 90 Tagen.
 - **Der Hörverlauf geht heute nicht mit.** `POST /api/verlauf/abgleich` gibt es
   im Dienst, die Seite ruft ihn nicht. Abschnitt 11 sagt das jetzt so.
 
-### 20. Frist für inaktive Konten festlegen
+### 20. Frist für inaktive Konten festlegen — **erledigt am 03.11.2026**
+
+**Entschieden (Micha, 03.11.2026; 432hz-radio#49):** zwei Jahre ohne Anmeldung,
+Warnmail vier Wochen vorher, eine Anmeldung setzt die Frist neu. Gebaut in
+`dienst/src/inaktiv.mjs`, angehängt an den täglichen Räumdurchgang;
+eingetragen in `datenschutz.md` Abschnitt 11 und in V9. Das Feld
+`zuletztGesehen` wurde dafür nicht umgedeutet — es wird nur beim Anlegen
+geschrieben. Gemessen wird ein neues Feld `letzteAnmeldung`.
+
+Der ursprüngliche Auftrag:
 
 Art. 5 Abs. 1 lit. e DSGVO — Speicherbegrenzung. Es gibt keine gesetzliche Zahl;
 üblich und begründbar sind 24 bis 36 Monate ohne Anmeldung, mit einer Vorwarnung
