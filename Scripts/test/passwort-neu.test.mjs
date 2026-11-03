@@ -9,11 +9,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { liesMarke, vorpruefe, grundAlsSatz, MINDESTLAENGE, HOECHSTLAENGE } from '../../assets/passwort-neu.mjs';
 
 const WURZEL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+
+// dienst/ steht in .dockerignore: Im Bau gibt es den Ordner nicht, im
+// Arbeitsverzeichnis schon. Dort laufen die beiden Abgleiche, im Bau werden
+// sie uebersprungen statt rot (wie in pruefe-konto.mjs).
+const OHNE_DIENST = existsSync(path.join(WURZEL, 'dienst/src/passwort.mjs'))
+  ? false : 'dienst/ liegt nicht vor (steht in .dockerignore)';
 
 test('liesMarke: liest die URL-kodierte Marke aus dem Fragment', () => {
   const marke = 'a'.repeat(64) + '.' + 'b'.repeat(43);
@@ -34,13 +41,13 @@ test('vorpruefe: Laenge in Zeichen, nicht in Code-Einheiten', () => {
   assert.equal(vorpruefe('Der Plattenspieler dreht sich'), null);
 });
 
-test('vorpruefe: dieselben Grenzen wie der Dienst', async () => {
+test('vorpruefe: dieselben Grenzen wie der Dienst', { skip: OHNE_DIENST }, async () => {
   const dienst = await readFile(path.join(WURZEL, 'dienst/src/passwort.mjs'), 'utf8');
   assert.match(dienst, new RegExp(`MINDESTLAENGE = ${MINDESTLAENGE};`));
   assert.match(dienst, new RegExp(`HOECHSTLAENGE = ${HOECHSTLAENGE};`));
 });
 
-test('jeder Grund des Dienstes hat einen Satz', async () => {
+test('jeder Grund des Dienstes hat einen Satz', { skip: OHNE_DIENST }, async () => {
   const dienst = await readFile(path.join(WURZEL, 'dienst/src/passwort.mjs'), 'utf8');
   const texte = JSON.parse(await readFile(path.join(WURZEL, 'data/passwort-neu-texte.json'), 'utf8'));
   const gruende = [...dienst.matchAll(/gruende(?:\.push\(|: \[)\{ grund: '(\w+)'/g)].map((m) => m[1]);
