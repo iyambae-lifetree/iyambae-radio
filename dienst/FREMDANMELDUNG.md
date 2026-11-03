@@ -636,19 +636,33 @@ geprüft. Im Zweifel nicht geprüft.
 
 ## 7. Was noch drumherum gehört
 
-### 7.1 Nur eine Replik — oder klebende Sitzungen
+### 7.1 Der Zwischenstand liegt in der Tabelle
 
-`state`, `nonce`, PKCE-verifier und die WebAuthn-Herausforderungen liegen im
-**Arbeitsspeicher**. Bei mehr als einer Replik muss der Rückweg dieselbe Replik
-treffen wie der Start.
+`state`, `nonce`, PKCE-verifier und die WebAuthn-Herausforderungen liegen seit
+432hz-radio#43 in der Tabelle **`anmeldezustand`**, nicht mehr im
+Arbeitsspeicher. Vorher musste der Rückweg dieselbe Replik treffen wie der
+Start; `main.bicep` erlaubt aber bis zu drei Repliken ohne Sitzungsbindung, und
+dann scheiterte ein Teil der Anmeldungen scheinbar zufällig — der schlechteste
+Fehler, den es gibt.
 
-`main.bicep` fährt heute eine Replik, also passt es. Wer hochskaliert, braucht
-`affinity: sticky` am Ingress **oder** diesen Speicher in der Tabelle. Sonst
-scheitert ein Teil der Anmeldungen scheinbar zufällig — der schlechteste Fehler,
-den es gibt.
+- **Zeile:** Partition `fremd` (Google, Apple) bzw. `passkey`, Zeilenschlüssel
+  der SHA-256 des state. Ein Hash ohne Salz genügt, weil der state 32
+  Zufallsbytes sind — da gibt es nichts zu raten.
+- **Inhalt:** AES-256-GCM mit einem Schlüssel, der aus dem state abgeleitet
+  wird (HKDF). Die Tabelle sieht den state nie; wer nur sie liest, kann den
+  verifier nicht lesen. `ablauf` steht im Klartext daneben, damit der
+  Räumdurchgang filtern kann, und ist in die Prüfsumme eingebunden.
+- **Einmal gültig, auch über Repliken:** lesen, dann **bedingt** löschen (mit
+  dem gelesenen ETag). Lesen zwei Repliken gleichzeitig, gelingt das Löschen
+  nur einer; die andere bekommt 412/404 und behandelt den state als unbekannt.
+- **Ablauf:** 10 Minuten (OAuth) bzw. 5 Minuten (Passkey). Abgelaufenes wird
+  beim Zugriff gelöscht, Liegengebliebenes im 24-Stunden-Durchgang aus
+  `sitzung.mjs`. Kein eigener Timer.
+- **Ausfall:** Ist die Tabelle nicht erreichbar, antwortet der Dienst 503
+  (`anmeldezustand_nicht_erreichbar`) — geschlossen, ohne Rückfall in den
+  Arbeitsspeicher.
 
-Ein Neustart macht angefangene Anmeldungen ungültig. Der Nutzer klickt noch
-einmal. Das ist der günstigere Fehler als eine Tabellenzeile je Anmeldeversuch.
+Ein Neustart macht angefangene Anmeldungen damit nicht mehr ungültig.
 
 ### 7.2 Drosselung in nginx
 

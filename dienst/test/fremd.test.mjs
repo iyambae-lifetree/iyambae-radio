@@ -20,9 +20,12 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import { Readable } from 'node:stream';
 
+import { speicherImArbeitsspeicher, raeumeAbgelaufeneAuf, TABELLE_ANMELDEZUSTAND } from '../src/speicher.mjs';
+
 import {
   FremdFehler,
   JwksSpeicher,
+  STATE_LEBENSDAUER_MS,
   Zustandsspeicher,
   b64u,
   erzeugePkce,
@@ -42,7 +45,8 @@ import {
 
 import { APPLE, APPLE_HOECHSTLAUFZEIT_S, baueClientGeheimnis, erzeugeApple, erzeugeGeheimnisvorrat, leseErstangaben } from '../src/apple.mjs';
 import { erzeugeGoogle } from '../src/google.mjs';
-import { erzeugePasskey, normalisiereAnlegen, saubererName, waehleAnzeigenamen } from '../src/passkey.mjs';
+import { VORGANG_LEBENSDAUER_MS, erzeugePasskey, normalisiereAnlegen, saubererName, waehleAnzeigenamen } from '../src/passkey.mjs';
+import { baueFremdanmeldung } from '../src/server.mjs';
 
 // ════════════════════════════════════════════════════════════════════
 //  Attrappen
@@ -231,38 +235,171 @@ test('PKCE benutzt S256 und der Abgleich ist wirklich der Hashwert', () => {
   assert.notEqual(p.verifizierer, erzeugePkce().verifizierer);
 });
 
-test('state ist genau EINMAL gueltig', () => {
+/*
+  Der state-Speicher liegt seit 432hz-radio#43 in der Tabelle
+  `anmeldezustand`, nicht mehr im Arbeitsspeicher des Prozesses. Die Tests
+  laufen gegen den Speicher aus speicher.mjs — dieselbe Schnittstelle, die
+  der Betrieb benutzt, nur ohne Azure darunter. Zwei `Zustandsspeicher` ueber
+  EINER Ablage sind zwei Repliken.
+*/
+
+/** Wie viele Zeilen in der Zustandstabelle liegen. */
+async function zeilenZahl(ablage) {
+  return (await alleZeilen(ablage)).length;
+}
+
+async function alleZeilen(ablage) {
+  const zeilen = [];
+  for await (const z of ablage.listeAlle(TABELLE_ANMELDEZUSTAND)) zeilen.push(z);
+  return zeilen;
+}
+
+test('state ist genau EINMAL gueltig', async () => {
   const z = new Zustandsspeicher();
-  const s = z.lege({ sprache: 'fr' });
-  assert.equal(z.hole(s).sprache, 'fr');
-  assert.equal(z.hole(s), null, 'ein zweiter Rueckweg mit demselben state darf nichts finden');
+  const s = await z.lege({ sprache: 'fr' });
+  assert.equal((await z.hole(s)).sprache, 'fr');
+  assert.equal(await z.hole(s), null, 'ein zweiter Rueckweg mit demselben state darf nichts finden');
+  assert.equal(await zeilenZahl(z.ablage), 0, 'die Zeile ist beim Einloesen geloescht');
 });
 
-test('state laeuft nach zehn Minuten ab', () => {
+test('state laeuft nach zehn Minuten ab — und die Zeile wird dabei verworfen', async () => {
   let jetzt = 1_000_000;
   const z = new Zustandsspeicher({ uhr: () => jetzt });
-  const s = z.lege({ sprache: 'de' });
+  const s = await z.lege({ sprache: 'de' });
   jetzt += 10 * 60 * 1000 + 1;
-  assert.equal(z.hole(s), null);
+  assert.equal(await z.hole(s), null);
+  assert.equal(await zeilenZahl(z.ablage), 0);
 });
 
-test('state: erfundene und leere Werte finden nichts', () => {
+test('state: genau an der Grenze gilt er noch', async () => {
+  let jetzt = 1_000_000;
+  const z = new Zustandsspeicher({ uhr: () => jetzt });
+  const s = await z.lege({ sprache: 'de' });
+  jetzt += 10 * 60 * 1000;
+  assert.equal((await z.hole(s)).sprache, 'de');
+});
+
+test('state: erfundene und leere Werte finden nichts', async () => {
   const z = new Zustandsspeicher();
-  assert.equal(z.hole('ausgedacht'), null);
-  assert.equal(z.hole(''), null);
-  assert.equal(z.hole(null), null);
-  assert.equal(z.hole({ toString: () => 'x' }), null);
+  assert.equal(await z.hole('ausgedacht'), null);
+  assert.equal(await z.hole(''), null);
+  assert.equal(await z.hole(null), null);
+  assert.equal(await z.hole({ toString: () => 'x' }), null);
+  assert.equal(await z.hole('x'.repeat(5000)), null);
 });
 
-test('state: die Obergrenze wirft die aeltesten hinaus, nicht die neuesten', () => {
-  const z = new Zustandsspeicher({ hoechstzahl: 3 });
-  const a = z.lege({ n: 1 });
-  z.lege({ n: 2 });
-  z.lege({ n: 3 });
-  const d = z.lege({ n: 4 });
-  assert.equal(z.groesse, 3);
-  assert.equal(z.hole(a), null, 'der aelteste ist gefallen');
-  assert.equal(z.hole(d).n, 4, 'der neueste lebt');
+test('ZWEI REPLIKEN: Anfang auf A, Rueckweg auf B gelingt (432hz-radio#43)', async () => {
+  const ablage = speicherImArbeitsspeicher();
+  const a = new Zustandsspeicher({ ablage });
+  const b = new Zustandsspeicher({ ablage });
+  const s = await a.lege({ anbieter: 'google', sprache: 'ja', verifizierer: 'v', nonce: 'n' });
+  const eintrag = await b.hole(s);
+  assert.equal(eintrag?.sprache, 'ja');
+  assert.equal(eintrag.verifizierer, 'v');
+  assert.equal(await a.hole(s), null, 'und danach auch auf A nicht mehr');
+});
+
+test('ZWEI REPLIKEN: doppeltes Einloesen im selben Augenblick gelingt genau einmal', async () => {
+  /*
+    Beide Repliken LESEN, bevor eine von beiden loescht — genau der Wettlauf,
+    den ein unbedingtes Loeschen verloere: Dann bekaemen beide den Eintrag.
+    Die Bremse haelt jedes `hole` an, bis beide gelesen haben.
+  */
+  const ablage = speicherImArbeitsspeicher();
+  let gelesen = 0;
+  let weiter;
+  const beideGelesen = new Promise((f) => { weiter = f; });
+  const gebremst = {
+    ...ablage,
+    async hole(...args) {
+      const zeile = await ablage.hole(...args);
+      if (++gelesen === 2) weiter();
+      await beideGelesen;
+      return zeile;
+    },
+  };
+  const a = new Zustandsspeicher({ ablage: gebremst });
+  const b = new Zustandsspeicher({ ablage: gebremst });
+  const s = await new Zustandsspeicher({ ablage }).lege({ sprache: 'de' });
+
+  const ergebnisse = await Promise.all([a.hole(s), b.hole(s)]);
+  assert.equal(gelesen, 2, 'beide haben die Zeile gesehen');
+  assert.equal(ergebnisse.filter(Boolean).length, 1, 'aber nur einer bekommt den Eintrag');
+});
+
+test('ZWEI REPLIKEN: Abgelaufenes scheitert auch auf der anderen Replik', async () => {
+  const ablage = speicherImArbeitsspeicher();
+  let jetzt = 5_000_000;
+  const a = new Zustandsspeicher({ ablage, uhr: () => jetzt });
+  const b = new Zustandsspeicher({ ablage, uhr: () => jetzt });
+  const s = await a.lege({ sprache: 'de' });
+  jetzt += STATE_LEBENSDAUER_MS + 1;
+  assert.equal(await b.hole(s), null);
+});
+
+test('state: in der Tabelle steht nichts, woraus sich der state oder ein Geheimnis lesen liesse', async () => {
+  const z = new Zustandsspeicher();
+  const geheim = { verifizierer: 'VERIFIZIERER-' + 'x'.repeat(30), nonce: 'NONCE-1234567', verknuepfeMit: 'kontoABC', sprache: 'ar' };
+  const s = await z.lege(geheim);
+  const [zeile] = await alleZeilen(z.ablage);
+  const text = JSON.stringify(zeile);
+
+  for (const wert of [s, geheim.verifizierer, geheim.nonce, geheim.verknuepfeMit, '"ar"']) {
+    assert.ok(!text.includes(wert), `${wert} steht im Klartext in der Tabelle`);
+  }
+  // Der Zeilenschluessel ist der SHA-256 des state, sonst nichts.
+  assert.equal(zeile.rowKey, crypto.createHash('sha256').update(s).digest('hex'));
+  assert.equal(zeile.partitionKey, 'fremd');
+  assert.equal(typeof zeile.ablauf, 'number');
+});
+
+test('state: eine veraenderte Zeile wird nicht geglaubt', async () => {
+  const z = new Zustandsspeicher();
+  const s = await z.lege({ sprache: 'de', verknuepfeMit: 'konto1' });
+  const [zeile] = await alleZeilen(z.ablage);
+  const roh = Buffer.from(zeile.daten, 'base64url');
+  roh[roh.length - 1] ^= 1;
+  const { etag: _e, ...ohne } = zeile;
+  await z.ablage.setze(TABELLE_ANMELDEZUSTAND, { ...ohne, daten: roh.toString('base64url') });
+  assert.equal(await z.hole(s), null);
+});
+
+test('state: ein Passkey-Vorgang laesst sich nicht als OAuth-state einloesen', async () => {
+  const ablage = speicherImArbeitsspeicher();
+  const fremd = new Zustandsspeicher({ ablage, bereich: 'fremd' });
+  const passkey = new Zustandsspeicher({ ablage, bereich: 'passkey' });
+  const v = await passkey.lege({ art: 'anmelden', herausforderung: 'h' });
+  assert.equal(await fremd.hole(v), null);
+  assert.equal((await passkey.hole(v)).herausforderung, 'h', 'der Fehlversuch hat ihn nicht verbraucht');
+});
+
+test('state: faellt der Tabellenspeicher aus, scheitert die Anmeldung geschlossen', async () => {
+  const ablage = speicherImArbeitsspeicher();
+  const z = new Zustandsspeicher({ ablage });
+  const s = await z.lege({ sprache: 'de' });
+  ablage.stoere(new Error('weg'));
+  await assert.rejects(() => z.lege({ sprache: 'de' }),
+    (f) => f instanceof FremdFehler && f.status === 503 && f.code === 'anmeldezustand_nicht_erreichbar');
+  await assert.rejects(() => z.hole(s),
+    (f) => f instanceof FremdFehler && f.status === 503 && f.code === 'anmeldezustand_nicht_erreichbar');
+  ablage.stoere(null);
+  assert.equal((await z.hole(s)).sprache, 'de', 'der Ausfall hat den Eintrag nicht verbraucht');
+});
+
+test('state: der Raeumdurchgang nimmt Abgelaufenes und laesst Gueltiges liegen', async () => {
+  const ablage = speicherImArbeitsspeicher();
+  let jetzt = 9_000_000;
+  const z = new Zustandsspeicher({ ablage, uhr: () => jetzt });
+  const passkey = new Zustandsspeicher({ ablage, bereich: 'passkey', lebensdauerMs: 5 * 60 * 1000, uhr: () => jetzt });
+  await z.lege({ n: 1 });
+  await passkey.lege({ n: 2 });
+  jetzt += 6 * 60 * 1000;
+  const jung = await z.lege({ n: 3 });
+  assert.equal(await raeumeAbgelaufeneAuf(ablage, TABELLE_ANMELDEZUSTAND, jetzt), 1, 'nur der Passkey-Vorgang ist schon alt');
+  jetzt += 5 * 60 * 1000;
+  assert.equal(await raeumeAbgelaufeneAuf(ablage, TABELLE_ANMELDEZUSTAND, jetzt), 1);
+  assert.equal(await zeilenZahl(ablage), 1);
+  assert.equal((await z.hole(jung)).n, 3);
 });
 
 test('saubereSprache laesst nur die sieben Sprachen durch', () => {
@@ -855,9 +992,11 @@ test('Apple: ein vollstaendiger Rueckweg legt ein Konto an und setzt ein Plaetzc
   const state = ziel.searchParams.get('state');
   assert.equal(Buffer.from(state, 'base64url').length, 32, 'state sind 32 Zufallsbytes');
 
-  // Die nonce kennen wir nur ueber den Speicher — die Attrappe muss sie ins
-  // Token schreiben, sonst schlaegt die Pruefung zu Recht fehl.
-  zaehler.nonce = zustand.eintraege.get(state).nonce;
+  // Die nonce faehrt in der Umleitung zum Anbieter mit — die Attrappe muss
+  // sie ins Token schreiben, sonst schlaegt die Pruefung zu Recht fehl. Aus
+  // dem Speicher laesst sie sich nicht mehr lesen: Dort liegt sie
+  // verschluesselt (siehe Zustandsspeicher).
+  zaehler.nonce = ziel.searchParams.get('nonce');
 
   const zurueck = apple.routen.find((r) => r.pfad === '/api/apple/zurueck');
   const rumpf = new URLSearchParams({
@@ -901,7 +1040,7 @@ test('Apple schickt denselben state ein zweites Mal — der zweite prallt ab', a
   const r1 = fakeAntwort();
   await start.behandler(fakeAnfrage({ url: '/api/apple/start' }), r1, { url: new URL('https://iyambae.fm/api/apple/start') });
   const state = new URL(r1.ort).searchParams.get('state');
-  zaehler.nonce = zustand.eintraege.get(state).nonce;
+  zaehler.nonce = new URL(r1.ort).searchParams.get('nonce');
 
   const zurueck = apple.routen.find((r) => r.pfad === '/api/apple/zurueck');
   const baue = () => fakeAnfrage({
@@ -941,7 +1080,7 @@ test('ANGRIFF: das ungezeichnete user-Feld kann keine fremde Adresse unterschieb
   const r1 = fakeAntwort();
   await start.behandler(fakeAnfrage({ url: '/api/apple/start' }), r1, { url: new URL('https://iyambae.fm/api/apple/start') });
   const state = new URL(r1.ort).searchParams.get('state');
-  zaehler.nonce = zustand.eintraege.get(state).nonce;
+  zaehler.nonce = new URL(r1.ort).searchParams.get('nonce');
 
   const zurueck = apple.routen.find((r) => r.pfad === '/api/apple/zurueck');
   const r2 = fakeAntwort();
@@ -987,16 +1126,15 @@ test('Apple: falscher Inhaltstyp am Rueckweg wird abgewiesen', async () => {
 //  Google
 // ════════════════════════════════════════════════════════════════════
 
-function googleAufbau({ sub = 'g-sub-1', email = 'g@example.org', emailVerified = true, sitzungKonto = null, frisch = true } = {}) {
-  const rsa = rsaPaar();
-  const speicher = fakeSpeicher();
+function googleAufbau({
+  sub = 'g-sub-1', email = 'g@example.org', emailVerified = true, sitzungKonto = null, frisch = true,
+  zustand = new Zustandsspeicher(), speicher = fakeSpeicher(), rsa = rsaPaar(), zaehler = { tausch: 0, nonce: null, letzterRumpf: null },
+} = {}) {
   const sitzung = fakeSitzung(sitzungKonto, { frisch });
   const protokoll = fakeProtokoll();
-  const zustand = new Zustandsspeicher();
   const holerJwks = jwksHoler([jwkVon(rsa.publicKey, 'g-k1', 'RS256')]);
   const jwks = new JwksSpeicher({ holer: holerJwks });
   const einst = { ...EINST, google: { kennung: AUD, geheimnis: 'geheim' } };
-  const zaehler = { tausch: 0, nonce: null, letzterRumpf: null };
 
   const holer = async (adresse, optionen) => {
     if (adresse === 'https://oauth2.googleapis.com/token') {
@@ -1014,8 +1152,58 @@ function googleAufbau({ sub = 'g-sub-1', email = 'g@example.org', emailVerified 
   };
 
   const google = erzeugeGoogle({ speicher, sitzung, protokoll, einst, zustand, jwks, holer });
-  return { google, speicher, sitzung, protokoll, zustand, zaehler };
+  return { google, speicher, sitzung, protokoll, zustand, zaehler, rsa };
 }
+
+test('ZWEI REPLIKEN (Google): Start auf A, Rueckweg auf B meldet an (432hz-radio#43)', async () => {
+  /*
+    Zwei Dienstinstanzen, ein Kontospeicher, eine Zustandstabelle — so wie
+    drei Repliken in Container Apps ohne Sitzungsbindung. Vorher lag der
+    state im Arbeitsspeicher von A, und B antwortete `state_unbekannt`.
+  */
+  const ablage = speicherImArbeitsspeicher();
+  const a = googleAufbau({ zustand: new Zustandsspeicher({ ablage }) });
+  const b = googleAufbau({ zustand: new Zustandsspeicher({ ablage }), speicher: a.speicher, rsa: a.rsa, zaehler: a.zaehler });
+
+  const start = a.google.routen.find((r) => r.pfad === '/api/google/start');
+  const r1 = fakeAntwort();
+  await start.behandler(fakeAnfrage({ url: '/api/google/start?sprache=fr' }), r1, {
+    url: new URL('https://iyambae.fm/api/google/start?sprache=fr'),
+  });
+  const state = new URL(r1.ort).searchParams.get('state');
+  a.zaehler.nonce = new URL(r1.ort).searchParams.get('nonce');
+
+  const adresse = `/api/google/zurueck?code=abc&state=${encodeURIComponent(state)}`;
+  const zurueck = b.google.routen.find((r) => r.pfad === '/api/google/zurueck');
+  const r2 = fakeAntwort();
+  await zurueck.behandler(fakeAnfrage({ url: adresse, headers: { cookie: bindungAus(r1) } }), r2, { url: new URL('https://iyambae.fm' + adresse) });
+
+  assert.equal(r2.status, 302);
+  assert.equal(r2.ort, '/fr/?anmeldung=neu', 'die Sprache kam ueber die Tabelle von A nach B');
+  assert.ok(r2.plaetzchen);
+  assert.ok(!b.protokoll.zeilen.some((z) => z.ergebnis === 'state_unbekannt'));
+
+  // Und derselbe Rueckweg noch einmal, jetzt auf A: verbraucht.
+  const r3 = fakeAntwort();
+  const zurueckA = a.google.routen.find((r) => r.pfad === '/api/google/zurueck');
+  await zurueckA.behandler(fakeAnfrage({ url: adresse, headers: { cookie: bindungAus(r1) } }), r3, { url: new URL('https://iyambae.fm' + adresse) });
+  assert.equal(r3.ort, '/?anmeldung=fehler&grund=abgelaufen');
+  assert.equal(r3.plaetzchen, null);
+  assert.equal(a.zaehler.tausch, 1, 'der Code wurde kein zweites Mal getauscht');
+});
+
+test('Google: faellt die Zustandstabelle aus, geht der Start nicht zum Anbieter', async () => {
+  const ablage = speicherImArbeitsspeicher();
+  const { google } = googleAufbau({ zustand: new Zustandsspeicher({ ablage }) });
+  ablage.stoere(new Error('weg'));
+  const start = google.routen.find((r) => r.pfad === '/api/google/start');
+  const r = fakeAntwort();
+  await assert.rejects(
+    () => start.behandler(fakeAnfrage({ url: '/api/google/start' }), r, { url: new URL('https://iyambae.fm/api/google/start') }),
+    (f) => f.code === 'anmeldezustand_nicht_erreichbar' && f.status === 503,
+  );
+  assert.equal(r.ort ?? null, null, 'keine Umleitung zu Google mit einem state, den es nirgends gibt');
+});
 
 test('Google: der Start fordert nur openid, email und profile', async () => {
   const { google } = googleAufbau();
@@ -1044,7 +1232,7 @@ test('Google: der Rueckweg tauscht mit code_verifier und meldet an', async () =>
   });
   const state = new URL(r1.ort).searchParams.get('state');
   const abgleichGesendet = new URL(r1.ort).searchParams.get('code_challenge');
-  zaehler.nonce = zustand.eintraege.get(state).nonce;
+  zaehler.nonce = new URL(r1.ort).searchParams.get('nonce');
 
   const zurueck = google.routen.find((r) => r.pfad === '/api/google/zurueck');
   const r2 = fakeAntwort();
@@ -1073,7 +1261,7 @@ test('Google: ein Abbruch fuehrt zurueck, ohne Konto und ohne Plaetzchen', async
     url: new URL('https://iyambae.fm/api/google/start?sprache=it'),
   });
   const state = new URL(r1.ort).searchParams.get('state');
-  assert.ok(zustand.eintraege.has(state));
+  assert.equal(await zeilenZahl(zustand.ablage), 1, 'der Vorgang liegt in der Tabelle');
 
   const zurueck = google.routen.find((r) => r.pfad === '/api/google/zurueck');
   const r2 = fakeAntwort();
@@ -1159,7 +1347,7 @@ test('ANGRIFF (Anmelde-CSRF): ein fremder Rueckweg im Browser des Opfers meldet 
     url: new URL('https://iyambae.fm/api/google/start'),
   });
   const state = new URL(angreifer.ort).searchParams.get('state');
-  zaehler.nonce = zustand.eintraege.get(state).nonce;
+  zaehler.nonce = new URL(angreifer.ort).searchParams.get('nonce');
 
   // Derselbe Rueckweg, aber im Browser des OPFERS — ohne die Bindung.
   const zurueck = google.routen.find((r) => r.pfad === '/api/google/zurueck');
@@ -1181,7 +1369,7 @@ test('ANGRIFF (Anmelde-CSRF): auch bei Apple, wo der Ursprungsschutz fehlt', asy
   const r1 = fakeAntwort();
   await start.behandler(fakeAnfrage({ url: '/api/apple/start' }), r1, { url: new URL('https://iyambae.fm/api/apple/start') });
   const state = new URL(r1.ort).searchParams.get('state');
-  zaehler.nonce = zustand.eintraege.get(state).nonce;
+  zaehler.nonce = new URL(r1.ort).searchParams.get('nonce');
 
   const zurueck = apple.routen.find((r) => r.pfad === '/api/apple/zurueck');
   const r2 = fakeAntwort();
@@ -1207,7 +1395,7 @@ test('Bindung: ein GEFAELSCHTES Bindungsplaetzchen hilft auch nicht', async () =
   const r1 = fakeAntwort();
   await start.behandler(fakeAnfrage({ url: '/api/google/start' }), r1, { url: new URL('https://iyambae.fm/api/google/start') });
   const state = new URL(r1.ort).searchParams.get('state');
-  zaehler.nonce = zustand.eintraege.get(state).nonce;
+  zaehler.nonce = new URL(r1.ort).searchParams.get('nonce');
 
   const zurueck = google.routen.find((r) => r.pfad === '/api/google/zurueck');
   const r2 = fakeAntwort();
@@ -1240,7 +1428,7 @@ test('Bindung: nach erfolgreicher Anmeldung wird sie weggeraeumt', async () => {
   const r1 = fakeAntwort();
   await start.behandler(fakeAnfrage({ url: '/api/google/start' }), r1, { url: new URL('https://iyambae.fm/api/google/start') });
   const state = new URL(r1.ort).searchParams.get('state');
-  zaehler.nonce = zustand.eintraege.get(state).nonce;
+  zaehler.nonce = new URL(r1.ort).searchParams.get('nonce');
 
   const zurueck = google.routen.find((r) => r.pfad === '/api/google/zurueck');
   const r2 = fakeAntwort();
@@ -1338,11 +1526,15 @@ function fakeWebauthn(ueber = {}) {
   });
 }
 
-function passkeyAufbau({ kontoId = 'konto1', webauthn = fakeWebauthn(), zaehlerStreng = false, frisch = true, sitzung: eigeneSitzung = null } = {}) {
-  const speicher = fakeSpeicher();
+function passkeyAufbau({ kontoId = 'konto1', webauthn = fakeWebauthn(), zaehlerStreng = false, frisch = true, sitzung: eigeneSitzung = null, speicher: eigenerSpeicher = null, ablage = null } = {}) {
+  const speicher = eigenerSpeicher ?? fakeSpeicher();
   const sitzung = eigeneSitzung ?? fakeSitzung(kontoId, { frisch });
   const protokoll = fakeProtokoll();
-  const passkey = erzeugePasskey({ speicher, sitzung, protokoll, einst: EINST, webauthn, zaehlerStreng });
+  // Mit `ablage` teilen sich zwei Aufbauten eine Zustandstabelle — zwei Repliken.
+  const vorgaenge = ablage
+    ? new Zustandsspeicher({ ablage, bereich: 'passkey', lebensdauerMs: VORGANG_LEBENSDAUER_MS })
+    : undefined;
+  const passkey = erzeugePasskey({ speicher, sitzung, protokoll, einst: EINST, webauthn, zaehlerStreng, vorgaenge });
   const route = (methode, pfad) => passkey.routen.find((r) => r.methode === methode && String(r.pfad) === String(pfad));
   return { passkey, speicher, sitzung, protokoll, webauthn, route };
 }
@@ -1396,17 +1588,16 @@ test('Passkey anlegen: RP-ID ist die registrierbare Domain, beide Urspruenge gel
 });
 
 test('Passkey anlegen: ein fremder Vorgang kann nicht abgeschlossen werden', async () => {
-  const { passkey } = passkeyAufbau({ kontoId: 'konto1' });
+  // Zwei Aufbauten ueber EINER Zustandstabelle: Der Vorgang ist auch dort
+  // bekannt, wo jetzt jemand anderes in der Sitzung sitzt.
+  const ablage = speicherImArbeitsspeicher();
+  const { passkey } = passkeyAufbau({ kontoId: 'konto1', ablage });
   const start = passkey.routen.find((r) => r.pfad === '/api/passkey/anlegen/start');
   const r1 = fakeAntwort();
   await start.behandler(fakeAnfrage({ method: 'POST', url: '/api/passkey/anlegen/start', headers: URSPRUNG }), r1, {});
 
   // Derselbe Vorgang, aber jetzt sitzt jemand anderes in der Sitzung.
-  const zweiter = passkeyAufbau({ kontoId: 'konto2' });
-  zweiter.passkey._intern.vorgaenge.eintraege.set(
-    r1.json.vorgang,
-    { art: 'anlegen', kontoId: 'konto1', herausforderung: 'x', angelegt: Date.now() },
-  );
+  const zweiter = passkeyAufbau({ kontoId: 'konto2', ablage });
   const fertig = zweiter.passkey.routen.find((r) => r.pfad === '/api/passkey/anlegen/fertig');
   await assert.rejects(
     () => fertig.behandler(
@@ -1462,8 +1653,8 @@ test('Passkey anmelden: unbekannter Schluessel gibt 401 ohne Auskunft', async ()
   assert.equal(r2.plaetzchen, null);
 });
 
-async function anmeldeAufbau({ zaehler = 2, webauthn = fakeWebauthn(), zaehlerStreng = false } = {}) {
-  const aufbau = passkeyAufbau({ kontoId: null, webauthn, zaehlerStreng });
+async function anmeldeAufbau({ zaehler = 2, webauthn = fakeWebauthn(), zaehlerStreng = false, ablage = null } = {}) {
+  const aufbau = passkeyAufbau({ kontoId: null, webauthn, zaehlerStreng, ablage });
   await aufbau.speicher.legeKontoAn({
     kennungen: [{
       art: 'passkey',
@@ -1489,6 +1680,63 @@ async function meldeAn(aufbau, { vorgang, antwort = { id: 'schluessel-1' } } = {
   );
   return r;
 }
+
+test('ZWEI REPLIKEN (Passkey): anmelden/start auf A, anmelden/fertig auf B gelingt', async () => {
+  const ablage = speicherImArbeitsspeicher();
+  const a = await anmeldeAufbau({ ablage });
+  const b = passkeyAufbau({ kontoId: null, ablage, speicher: a.speicher, webauthn: a.webauthn });
+  const r = await meldeAn(b, { vorgang: a.vorgang });
+  assert.equal(r.status, 200);
+  assert.equal(r.json.kontoId, 'konto1');
+
+  // Doppelt eingeloest — auf der anderen Replik — scheitert.
+  await assert.rejects(
+    () => meldeAn(a),
+    (f) => f instanceof FremdFehler && f.code === 'vorgang_unbekannt',
+  );
+});
+
+test('Passkey: ein abgelaufener Vorgang scheitert', async () => {
+  let jetzt = 50_000_000;
+  const ablage = speicherImArbeitsspeicher();
+  const vorgaenge = new Zustandsspeicher({ ablage, bereich: 'passkey', lebensdauerMs: VORGANG_LEBENSDAUER_MS, uhr: () => jetzt });
+  const v = await vorgaenge.lege({ art: 'anmelden', herausforderung: 'h' });
+  jetzt += VORGANG_LEBENSDAUER_MS + 1;
+  const b = passkeyAufbau({ kontoId: null, ablage });
+  await assert.rejects(
+    () => meldeAn(b, { vorgang: v }),
+    (f) => f instanceof FremdFehler && f.code === 'vorgang_unbekannt',
+  );
+});
+
+test('server.mjs legt den Zwischenstand in die Tabelle, nicht in den Prozess', async () => {
+  /*
+    Zwei Fremdanmeldungen so gebaut, wie `starte` es tut, ueber EINEM
+    Speicher. Was die eine anlegt, findet die andere — und die Zeile liegt
+    in `anmeldezustand`, nicht in `konten`.
+  */
+  const speicher = speicherImArbeitsspeicher();
+  const webauthn = fakeWebauthn();
+  const a = await baueFremdanmeldung(speicher, { webauthn });
+  const b = await baueFremdanmeldung(speicher, { webauthn });
+
+  const startA = a.routen.find((r) => r.pfad === '/api/passkey/anmelden/start');
+  const r1 = fakeAntwort();
+  await startA.behandler(fakeAnfrage({ method: 'POST', url: '/api/passkey/anmelden/start', headers: URSPRUNG }), r1, {});
+  assert.equal(await zeilenZahl(speicher), 1);
+  assert.equal((await alleZeilen(speicher))[0].partitionKey, 'passkey');
+
+  // Auf B ist der Vorgang bekannt; der Schluessel nicht — also 401 und
+  // NICHT `vorgang_unbekannt`.
+  const fertigB = b.routen.find((r) => r.pfad === '/api/passkey/anmelden/fertig');
+  const r2 = fakeAntwort();
+  await fertigB.behandler(fakeAnfrage({
+    method: 'POST', url: '/api/passkey/anmelden/fertig', headers: URSPRUNG,
+    rumpf: JSON.stringify({ vorgang: r1.json.vorgang, antwort: { id: 'kenne-ich-nicht' } }),
+  }), r2, {});
+  assert.equal(r2.status, 401);
+  assert.equal(await zeilenZahl(speicher), 0, 'eingeloest ist eingeloest, auch beim Fehlschlag');
+});
 
 test('Passkey anmelden ohne Benutzernamen: gelingt und setzt ein Plaetzchen', async () => {
   const aufbau = await anmeldeAufbau({ zaehler: 2 });
@@ -1869,7 +2117,7 @@ for (const anbieter of ['google', 'apple']) {
     assert.equal(r.status, 302);
     assert.equal(r.ort, '/fr/?anmeldung=frisch');
     assert.ok(aufbau.protokoll.zeilen.some((z) => z.art === 'fremd_start' && z.ergebnis === 'nicht_frisch'));
-    assert.equal(aufbau.zustand.eintraege.size, 0, 'kein state angelegt');
+    assert.equal(await zeilenZahl(aufbau.zustand.ablage), 0, 'kein state angelegt');
   });
 
   test(`${anbieter}: Verknuepfen aus einer frischen Sitzung geht zum Anbieter`, async () => {

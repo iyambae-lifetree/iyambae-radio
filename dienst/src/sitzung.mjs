@@ -55,7 +55,9 @@
 */
 
 import { randomBytes, createHash } from 'node:crypto';
-import { mitEtag, SpeicherFehler, TABELLE_KONTEN } from './speicher.mjs';
+import {
+    mitEtag, raeumeAbgelaufeneAuf, SpeicherFehler, TABELLE_ANMELDEZUSTAND, TABELLE_KONTEN,
+} from './speicher.mjs';
 import { gleichOhneZeitverrat } from './passwort.mjs';
 import { protokolliere } from './protokoll.mjs';
 import { merkeAnmeldung, pruefeInaktiveKonten } from './inaktiv.mjs';
@@ -365,6 +367,22 @@ export function stosseAufraeumenAn(speicher, jetzt = Date.now(), { versender, se
                 art: 'aufraeumen', ergebnis: 'fehler',
                 grund: fehler instanceof SpeicherFehler ? fehler.art : 'unbekannt',
                 anzahl, dauer: Date.now() - start,
+            });
+        }
+
+        /*
+          Angefangene und nie beendete Anmeldungen bei Google, Apple oder mit
+          Passkey (432hz-radio#43). Im selben Durchgang statt mit eigener Uhr,
+          und mit eigenem Fehlerzweig: Klemmt die eine Tabelle, soll die
+          andere trotzdem drankommen.
+        */
+        try {
+            const weg = await raeumeAbgelaufeneAuf(speicher, TABELLE_ANMELDEZUSTAND, jetzt);
+            protokolliere({ art: 'aufraeumen.anmeldezustand', ergebnis: 'ok', anzahl: weg });
+        } catch (fehler) {
+            protokolliere({
+                art: 'aufraeumen.anmeldezustand', ergebnis: 'fehler',
+                grund: fehler instanceof SpeicherFehler ? fehler.art : 'unbekannt',
             });
         }
 

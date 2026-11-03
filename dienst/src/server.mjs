@@ -448,6 +448,9 @@ export async function baueFremdanmeldung(speicher, zusatz = {}) {
     return erzeugeFremdanmeldung({
         speicher: speicherSchnittstelle(speicher),
         sitzung: sitzungSchnittstelle(speicher),
+        // Der Zwischenstand der Anmeldung liegt in der Tabelle, damit jede
+        // Replik den Rueckweg annehmen kann (432hz-radio#43).
+        ablage: speicher,
         protokoll: {
             /*
               Zwei Argumente werden zu einem Objekt, und `kontoId` heisst in

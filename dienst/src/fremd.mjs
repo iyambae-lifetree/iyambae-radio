@@ -18,6 +18,7 @@
 */
 
 import crypto from 'node:crypto';
+import { SpeicherFehler, TABELLE_ANMELDEZUSTAND, speicherImArbeitsspeicher } from './speicher.mjs';
 import { liesUrspruenge } from './urspruenge.mjs';
 
 // ── Sprachen ────────────────────────────────────────────────────────
@@ -102,64 +103,184 @@ export const STATE_LEBENSDAUER_MS = 10 * 60 * 1000;
   zweiter Rueckweg mit demselben state findet nichts mehr. Das ist zugleich der
   Schutz gegen das Wiedereinspielen eines mitgeschnittenen Rueckwegs.
 
-  Im Arbeitsspeicher und nicht in der Tabelle: Ein state lebt zehn Minuten. Ein
-  Neustart des Containers macht angefangene Anmeldungen ungueltig — der Nutzer
-  klickt noch einmal. Das ist der guenstigere Fehler als eine Tabellenzeile je
-  Anmeldeversuch, die dann auch wieder weggeraeumt werden muesste.
+  ── Warum in der Tabelle und nicht im Arbeitsspeicher ───────────────
 
-  ZU WISSEN, BEVOR JEMAND HOCHSKALIERT: Bei mehr als einer Replik muss der
-  Rueckweg dieselbe Replik treffen wie der Start, sonst ist der state dort
-  unbekannt. main.bicep faehrt heute eine Replik. Wer das aendert, braucht
-  entweder klebende Sitzungen (Container Apps: `affinity: sticky`) oder diesen
-  Speicher in der Tabelle. Steht so auch in FREMDANMELDUNG.md.
+  Bis 432hz-radio#43 lag das hier in einer Map im Prozess. main.bicep erlaubt
+  aber bis zu drei Repliken ohne Sitzungsbindung, und Container Apps verteilt
+  die Anfragen frei. Begann eine Anmeldung auf Replik A und kam der Rueckweg
+  von Google auf Replik B an, war der state dort unbekannt — die Anmeldung
+  scheiterte scheinbar zufaellig, und zwar genau dann, wenn viel los war.
+
+  Deshalb liegt der Zwischenstand jetzt in der Tabelle `anmeldezustand`, die
+  alle Repliken sehen. Die Alternativen standen in main.bicep: klebende
+  Sitzungen setzen JEDEM Besucher ein Plaetzchen (eine Frage an § 25 TDDDG),
+  eine einzige Replik deckelt das Radio wegen der Anmeldung. Der Preis hier
+  ist eine Tabellenzeile je Anmeldeversuch und zwei Zugriffe mehr — einer
+  beim Start, zwei beim Rueckweg.
+
+  ── Die Zeile ────────────────────────────────────────────────────────
+
+      PartitionKey  der Bereich: 'fremd' (Google, Apple) oder 'passkey'
+      RowKey        SHA-256 des state, hexadezimal
+      ablauf        Millisekunden, im Klartext — der Raeumdurchgang filtert
+                    danach, ohne etwas entschluesseln zu koennen
+      daten         AES-256-GCM, Schluessel aus dem state abgeleitet
+
+  Der Hash als Zeilenschluessel REICHT, und zwar ohne Salz und ohne
+  langsames Verfahren: Der state sind 32 Zufallsbytes, da gibt es nichts
+  durchzuprobieren. Bei einem Passwort oder einer Adresse waere das anders —
+  deren Abdruck laesst sich raten, ein Abdruck von 2^256 Moeglichkeiten
+  nicht. Dieselbe Ueberlegung wie bei den Sitzungen in sitzung.mjs.
+
+  Verschluesselt wird, weil sich der Klartext vermeiden laesst. Der
+  PKCE-verifier ist genau das Geheimnis, das „den Server nie verlassen" soll
+  (siehe `erzeugePkce`); laege er offen in der Tabelle, haette ihn jeder mit
+  Lesezugriff — und den haben nach main.bicep die Verwalter auf alle Tabellen.
+  Der Schluessel wird aus dem state abgeleitet, den die Tabelle selbst nie
+  sieht. Wer nur die Tabelle liest, hat damit nichts; wer nur den Rueckweg
+  mitschneidet (state und Code), hat den verifier nicht. Er braeuchte beides.
+  Einen eigenen Schluessel im Tresor braucht es dafuer nicht — es gaebe
+  nichts zu wechseln und nichts zu verlieren.
+
+  `ablauf` geht als Zusatzangabe in die Verschluesselung ein. Wer die Zeile
+  aendern kann, kann die Frist deshalb nicht verlaengern: Die Pruefsumme
+  passt dann nicht mehr, und die Zeile gilt als nicht da.
+
+  ── Einmal einloesen, auch auf zwei Repliken ────────────────────────
+
+  `hole` liest die Zeile und loescht sie dann BEDINGT, mit dem ETag aus dem
+  Lesen. Lesen zwei Repliken dieselbe Zeile im selben Augenblick, gelingt
+  das Loeschen nur einer; die andere bekommt von Table Storage 412 bzw. 404,
+  speicher.mjs macht daraus `konflikt`, und hier wird daraus „nicht da".
+  Erst NACH dem gelungenen Loeschen wird etwas herausgegeben. Ein
+  unbedingtes Loeschen haette beide gewinnen lassen.
+
+  Ein Rest bleibt, und er scheitert in die sichere Richtung: Kommt die
+  Antwort auf das Loeschen nicht an, wiederholt speicher.mjs, sieht 404 und
+  meldet `konflikt` — dann ist der Eintrag weg, ohne dass ihn jemand bekam.
+  Der Mensch klickt noch einmal.
+
+  ── Abgelaufenes und Ausfaelle ───────────────────────────────────────
+
+  Abgelaufenes wird beim Zugriff geloescht und verworfen. Was nie
+  eingeloest wird — jemand bricht bei Google ab und schliesst das Fenster —,
+  nimmt der 24-Stunden-Durchgang in sitzung.mjs mit. Kein eigener Timer:
+  Der kostete die Leerlaufabrechnung.
+
+  Faellt der Tabellenspeicher aus, scheitert die Anmeldung GESCHLOSSEN: 503,
+  kein state ohne Zeile, keine Anmeldung ohne Einloesen. Eine Rueckfalloption
+  in den Arbeitsspeicher gibt es mit Absicht nicht; sie braechte genau den
+  Fehler zurueck, um den es hier geht, nur seltener und schwerer zu finden.
+
+  Ohne `ablage` nimmt der Speicher einen eigenen im Arbeitsspeicher — das
+  ist fuer Tests, wie `speicherImArbeitsspeicher` selbst. server.mjs reicht
+  den echten herein (`baueFremdanmeldung`), und ein Test prueft genau das.
 */
+const ZUSTAND_HOECHSTLAENGE = 256;
+
+function zustandsAbdruck(schluessel) {
+  return crypto.createHash('sha256').update(schluessel, 'utf8').digest('hex');
+}
+
+function zustandsSchluessel(schluessel, bereich) {
+  return Buffer.from(crypto.hkdfSync('sha256', Buffer.from(schluessel, 'utf8'), Buffer.alloc(0),
+    `iyambae anmeldezustand ${bereich}`, 32));
+}
+
+function zusatzangabe(bereich, zeilenschluessel, ablauf) {
+  return Buffer.from(`${bereich}\u0000${zeilenschluessel}\u0000${ablauf}`, 'utf8');
+}
+
+function nichtErreichbar(fehler) {
+  if (fehler instanceof SpeicherFehler) {
+    return new FremdFehler('anmeldezustand_nicht_erreichbar', 503, { ursache: fehler.art });
+  }
+  return fehler;
+}
+
 export class Zustandsspeicher {
-  constructor({ lebensdauerMs = STATE_LEBENSDAUER_MS, hoechstzahl = 20000, uhr = Date.now } = {}) {
+  constructor({
+    ablage = speicherImArbeitsspeicher(),
+    bereich = 'fremd',
+    lebensdauerMs = STATE_LEBENSDAUER_MS,
+    uhr = Date.now,
+  } = {}) {
+    this.ablage = ablage;
+    this.bereich = bereich;
     this.lebensdauerMs = lebensdauerMs;
-    this.hoechstzahl = hoechstzahl;
     this.uhr = uhr;
-    this.eintraege = new Map();
   }
 
-  lege(daten) {
-    this.raeumeAuf();
-    /*
-      Obergrenze, damit ein Angreifer den Arbeitsspeicher nicht mit
-      Anmeldestarts vollaeuft — der Container hat 0,5 GiB, und die teilt er
-      sich mit nginx. Map behaelt die Einfuegereihenfolge, der aelteste Eintrag
-      steht vorn und faellt zuerst.
-    */
-    while (this.eintraege.size >= this.hoechstzahl) {
-      const aeltester = this.eintraege.keys().next();
-      if (aeltester.done) break;
-      this.eintraege.delete(aeltester.value);
-    }
+  async lege(daten) {
     const schluessel = b64u(zufallBytes(32));
-    this.eintraege.set(schluessel, { ...daten, angelegt: this.uhr() });
+    const angelegt = this.uhr();
+    const ablauf = angelegt + this.lebensdauerMs;
+    const rowKey = zustandsAbdruck(schluessel);
+
+    const iv = zufallBytes(12);
+    const chiffre = crypto.createCipheriv('aes-256-gcm', zustandsSchluessel(schluessel, this.bereich), iv);
+    chiffre.setAAD(zusatzangabe(this.bereich, rowKey, ablauf));
+    const inhalt = Buffer.concat([
+      chiffre.update(JSON.stringify({ ...daten, angelegt }), 'utf8'),
+      chiffre.final(),
+    ]);
+
+    try {
+      // `*`: anlegen, nie ueberschreiben. Bei 2^256 Moeglichkeiten kollidiert
+      // nichts — aber wenn doch, soll es laut scheitern statt still ersetzen.
+      await this.ablage.setze(TABELLE_ANMELDEZUSTAND, {
+        partitionKey: this.bereich,
+        rowKey,
+        ablauf,
+        daten: b64u(Buffer.concat([iv, chiffre.getAuthTag(), inhalt])),
+      }, { etag: '*' });
+    } catch (fehler) {
+      throw nichtErreichbar(fehler);
+    }
     return schluessel;
   }
 
-  // Einmal gueltig: Wer liest, verbraucht.
-  hole(schluessel) {
+  // Einmal gueltig: Wer liest, verbraucht — und nur einer kann verbrauchen.
+  async hole(schluessel) {
     if (typeof schluessel !== 'string' || schluessel.length === 0) return null;
-    const eintrag = this.eintraege.get(schluessel);
-    if (!eintrag) return null;
-    this.eintraege.delete(schluessel);
-    if (this.uhr() - eintrag.angelegt > this.lebensdauerMs) return null;
-    return eintrag;
-  }
+    if (schluessel.length > ZUSTAND_HOECHSTLAENGE) return null;
+    const rowKey = zustandsAbdruck(schluessel);
 
-  raeumeAuf() {
-    const grenze = this.uhr() - this.lebensdauerMs;
-    for (const [schluessel, eintrag] of this.eintraege) {
-      // Einfuegereihenfolge: Sobald einer jung genug ist, sind es alle danach auch.
-      if (eintrag.angelegt >= grenze) break;
-      this.eintraege.delete(schluessel);
+    let zeile;
+    try {
+      zeile = await this.ablage.hole(TABELLE_ANMELDEZUSTAND, this.bereich, rowKey);
+    } catch (fehler) {
+      if (fehler?.art === 'nicht_gefunden') return null;
+      throw nichtErreichbar(fehler);
     }
+
+    try {
+      await this.ablage.loesche(TABELLE_ANMELDEZUSTAND, this.bereich, rowKey, { etag: zeile.etag });
+    } catch (fehler) {
+      // Jemand anders war schneller — auf dieser oder einer anderen Replik.
+      if (fehler?.art === 'konflikt' || fehler?.art === 'nicht_gefunden') return null;
+      throw nichtErreichbar(fehler);
+    }
+
+    // Erst NACH dem Loeschen: So ist auch Abgelaufenes beim Zugriff weg.
+    if (!(zeile.ablauf >= this.uhr())) return null;
+    return this.entschluessele(schluessel, rowKey, zeile);
   }
 
-  get groesse() {
-    return this.eintraege.size;
+  entschluessele(schluessel, rowKey, zeile) {
+    try {
+      const roh = ausB64u(zeile.daten);
+      if (roh.length < 12 + 16) return null;
+      const entziffer = crypto.createDecipheriv('aes-256-gcm', zustandsSchluessel(schluessel, this.bereich), roh.subarray(0, 12));
+      entziffer.setAAD(zusatzangabe(this.bereich, rowKey, zeile.ablauf));
+      entziffer.setAuthTag(roh.subarray(12, 28));
+      const text = Buffer.concat([entziffer.update(roh.subarray(28)), entziffer.final()]).toString('utf8');
+      return JSON.parse(text);
+    } catch {
+      // Veraendert, abgeschnitten oder mit anderem Schluessel geschrieben:
+      // nicht da. Ein halber Glaube an eine Zeile waere schlechter als keiner.
+      return null;
+    }
   }
 }
 
@@ -988,13 +1109,20 @@ export function rueckkehrZiel(sprache, felder = {}) {
       const fremd = await erzeugeFremdanmeldung({ speicher, sitzung, protokoll });
       // im Anfragebehandler, VOR der eigenen Wegwahl:
       if (await fremd.behandle(anfrage, antwort)) return;
+
+  `ablage` ist der rohe Tabellenspeicher aus speicher.mjs — nicht die
+  Methodenschnittstelle in `speicher` —, denn der Zwischenstand der Anmeldung
+  liegt in einer eigenen Tabelle, die keine Kontomethode kennt. Ohne `ablage`
+  bekommt jeder Speicher seinen eigenen im Arbeitsspeicher; das taugt fuer
+  Tests und fuer genau eine Replik, sonst fuer nichts (432hz-radio#43).
 */
 export async function erzeugeFremdanmeldung({
   speicher,
   sitzung,
   protokoll,
   umgebung = process.env,
-  zustand = new Zustandsspeicher(),
+  ablage = undefined,
+  zustand = new Zustandsspeicher({ ablage, bereich: 'fremd' }),
   jwks = new JwksSpeicher(),
   webauthn = null,
   holer = fetch,
@@ -1005,12 +1133,13 @@ export async function erzeugeFremdanmeldung({
 
   const { erzeugeGoogle } = await import('./google.mjs');
   const { erzeugeApple } = await import('./apple.mjs');
-  const { erzeugePasskey } = await import('./passkey.mjs');
+  const { erzeugePasskey, VORGANG_LEBENSDAUER_MS } = await import('./passkey.mjs');
 
+  const vorgaenge = new Zustandsspeicher({ ablage, bereich: 'passkey', lebensdauerMs: VORGANG_LEBENSDAUER_MS });
   const teile = {
     google: erzeugeGoogle(gemeinsam),
     apple: erzeugeApple(gemeinsam),
-    passkey: erzeugePasskey({ ...gemeinsam, webauthn, zaehlerStreng: einst.zaehlerStreng }),
+    passkey: erzeugePasskey({ ...gemeinsam, vorgaenge, webauthn, zaehlerStreng: einst.zaehlerStreng }),
   };
   const routen = [...teile.google.routen, ...teile.apple.routen, ...teile.passkey.routen];
 

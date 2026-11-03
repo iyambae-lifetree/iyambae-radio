@@ -98,7 +98,7 @@ export function erzeugeGoogle({ speicher, sitzung, protokoll, einst, zustand, jw
     const nonce = zufallText(16);
     // Bindet den Vorgang an DIESEN Browser. Begruendung bei `erzeugeBindung`.
     const bindung = erzeugeBindung();
-    const state = zustand.lege({
+    const state = await zustand.lege({
       anbieter: 'google',
       sprache,
       verifizierer: pkce.verifizierer,
@@ -136,7 +136,7 @@ export function erzeugeGoogle({ speicher, sitzung, protokoll, einst, zustand, jw
   async function zurueck(anfrage, antwort, { url }) {
     pruefeEinrichtung();
 
-    const eintrag = zustand.hole(url.searchParams.get('state'));
+    const eintrag = await zustand.hole(url.searchParams.get('state'));
     /*
       Kein state gefunden: abgelaufen, schon verbraucht, erfunden — der
       Unterschied ist von aussen nicht sichtbar und soll es auch nicht sein.
