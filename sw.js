@@ -203,7 +203,9 @@
 // Die neue Nummer raeumt, was frueher so hineingeraten ist, z. B. /gesund
 // und /.well-known/*. sw.js, lib/sw-regel.mjs. (Im Zweig hiess das v74,
 // die Nummer war beim Zusammenfuehren schon vergeben.)
-const SW_VERSION = 'iyambae-v89';
+// v90: `?anmeldung=bitte` oeffnet das Anmeldefenster — der Link aus der
+// Warnmail vor der Loeschung eines inaktiven Kontos (432hz-radio#49). app.js.
+const SW_VERSION = 'iyambae-v90';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

@@ -97,6 +97,26 @@ const TEXTE = {
                 + 'anderen Adresse angemeldet.\n\n'
                 + 'Wenn nicht, müssen Sie nichts tun.\n\nIYAMBAE FM',
         },
+        /*
+          Die Warnung vor der Loeschung wegen Inaktivitaet (inaktiv.mjs).
+          Im Du, anders als die drei darueber: Der Satz ist so entschieden
+          (Micha, 03.11.2026), und die Datenschutzerklaerung, auf die er sich
+          stuetzt, duzt ebenfalls. Keine Zahl fuer die Frist im Text — sie
+          ist einstellbar, und eine Mail, die „zwei Jahre" sagt, waehrend
+          INAKTIV_TAGE etwas anderes meint, waere eine falsche Auskunft.
+        */
+        inaktiv: {
+            betreff: (datum) => 'Dein Konto bei IYAMBAE FM wird am ' + datum + ' gelöscht',
+            text: (datum, verweis) =>
+                'Mit deinem Konto bei IYAMBAE FM hat sich lange niemand mehr angemeldet.\n\n'
+                + 'Dein Konto wird am ' + datum + ' gelöscht, wenn du dich bis dahin nicht '
+                + 'anmeldest. Gelöscht wird alles: Merkliste, Verlauf und deine Anmeldewege.\n\n'
+                + 'Wenn du es behalten willst, melde dich einfach an — damit beginnt die '
+                + 'Frist von vorn:\n\n    ' + verweis + '\n\n'
+                + 'Wenn du es nicht mehr brauchst, musst du nichts tun.\n\n'
+                + 'Fragen? Antworte nicht auf diese Nachricht — sie wird nicht gelesen. '
+                + 'Schreib an hallo@iyambae.fm.\n\nIYAMBAE FM',
+        },
     },
     en: {
         code: {
@@ -124,8 +144,59 @@ const TEXTE = {
                 + 'If that was you, you may have signed up with a different address.\n\n'
                 + 'If it was not, there is nothing you need to do.\n\nIYAMBAE FM',
         },
+        inaktiv: {
+            betreff: (datum) => 'Your IYAMBAE FM account will be deleted on ' + datum,
+            text: (datum, verweis) =>
+                'Nobody has signed in to your IYAMBAE FM account for a long time.\n\n'
+                + 'Your account will be deleted on ' + datum + ' unless you sign in before '
+                + 'then. Everything goes: your saved stations, your history and your '
+                + 'sign-in methods.\n\n'
+                + 'If you want to keep it, just sign in — that starts the period again:\n\n    '
+                + verweis + '\n\n'
+                + 'If you no longer need it, there is nothing you need to do.\n\n'
+                + 'Questions? Do not reply to this message. Write to hallo@iyambae.fm.\n\n'
+                + 'IYAMBAE FM',
+        },
     },
 };
+
+/*
+  Der Tag in der Warnmail, ausgeschrieben: „3. November 2028" liest sich
+  eindeutig, „03.11.2028" liest ein Amerikaner als dritten Maerz. UTC, weil
+  `am` ein reines Datum ist — in einer oertlichen Zeitzone westlich von
+  Greenwich wuerde daraus der Vortag.
+*/
+const DATUMSFORM = { de: 'de-DE', en: 'en-GB' };
+function schreibeTag(iso, sprache) {
+    return new Intl.DateTimeFormat(DATUMSFORM[sprache], {
+        day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+    }).format(new Date(iso));
+}
+
+/*
+  Die Warnmail kennt die Sprache meist nicht: Das Konto merkt sich keine, und
+  sie geht aus dem taeglichen Durchgang, nicht aus einer Anfrage mit
+  Seitensprache. Dann kommt sie zweisprachig — Deutsch zuerst, weil die
+  Seite deutsch beginnt. Eine Warnung vor einer Loeschung, die jemand nicht
+  lesen kann, waere keine. `Object.hasOwn` aus demselben Grund wie bei
+  `texte()` darunter.
+*/
+function inaktivInhalt(auftrag) {
+    const eine = (sprache) => {
+        const datum = schreibeTag(auftrag.am, sprache);
+        return {
+            subject: TEXTE[sprache].inaktiv.betreff(datum),
+            plainText: TEXTE[sprache].inaktiv.text(datum, auftrag.verweis),
+        };
+    };
+    if (Object.hasOwn(TEXTE, auftrag.sprache)) return eine(auftrag.sprache);
+    const de = eine('de');
+    const en = eine('en');
+    return {
+        subject: de.subject + ' / ' + en.subject,
+        plainText: de.plainText + '\n\n— English below —\n\n' + en.plainText,
+    };
+}
 
 /*
   Die Bestaetigung fuer Mikeschs Schnurrpost — in ALLEN sieben Sprachen,
@@ -269,7 +340,9 @@ export function erzeugeVersender({ endpunkt, absender, jetzt = Date.now, versend
           hat, und das ist eine Auskunft, die ihm zusteht.
         */
         const brief = RUNDBRIEF[auftrag.sprache] ?? RUNDBRIEF.en;
-        const inhalt = auftrag.art === 'rundbrief'
+        const inhalt = auftrag.art === 'inaktiv'
+            ? inaktivInhalt(auftrag)
+            : auftrag.art === 'rundbrief'
             ? { subject: brief.betreff, plainText: brief.text(auftrag.verweis, auftrag.stunden) }
             : auftrag.art === 'code'
             ? { subject: t.code.betreff(auftrag.code), plainText: t.code.text(auftrag.code, auftrag.minuten) }
