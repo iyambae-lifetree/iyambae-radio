@@ -35,13 +35,19 @@ import {
 // Browser zeigt sofort einen Dialog, da vergehen keine zehn Minuten.
 export const VORGANG_LEBENSDAUER_MS = 5 * 60 * 1000;
 
+/*
+  `vorgaenge` liegt in derselben Tabelle wie der OAuth-state, aber in einer
+  eigenen Partition 'passkey' — ein Vorgang laesst sich so nie als state
+  einloesen und umgekehrt. Begruendung der Tabelle beim `Zustandsspeicher`
+  in fremd.mjs; `erzeugeFremdanmeldung` reicht die echte Ablage herein.
+*/
 export function erzeugePasskey({
   speicher,
   sitzung,
   protokoll,
   einst,
   webauthn = null,
-  vorgaenge = new Zustandsspeicher({ lebensdauerMs: VORGANG_LEBENSDAUER_MS }),
+  vorgaenge = new Zustandsspeicher({ bereich: 'passkey', lebensdauerMs: VORGANG_LEBENSDAUER_MS }),
   zaehlerStreng = false,
 }) {
   let geladen = null;
@@ -128,7 +134,7 @@ export function erzeugePasskey({
       beim Abschluss behaupten, die Herausforderung sei eine andere gewesen,
       und die ganze Pruefung waere ein Selbstgespraech.
     */
-    const vorgang = vorgaenge.lege({ art: 'anlegen', kontoId, herausforderung: optionen.challenge });
+    const vorgang = await vorgaenge.lege({ art: 'anlegen', kontoId, herausforderung: optionen.challenge });
 
     protokoll?.schreib?.('passkey_anlegen_start', { kontoId, ergebnis: 'ok' });
     jsonAntwort(antwort, 200, { optionen, vorgang });
@@ -139,7 +145,7 @@ export function erzeugePasskey({
     const kontoId = await verlangeFrischeSitzung(sitzung, anfrage);
 
     const rumpf = await lesJson(anfrage);
-    const eintrag = vorgaenge.hole(rumpf.vorgang);
+    const eintrag = await vorgaenge.hole(rumpf.vorgang);
     if (!eintrag || eintrag.art !== 'anlegen') throw new FremdFehler('vorgang_unbekannt', 400);
     /*
       Der Vorgang muss demselben Konto gehoeren wie die jetzige Sitzung. Ohne
@@ -241,14 +247,14 @@ export function erzeugePasskey({
       userVerification: nutzerpruefung,
     });
 
-    const vorgang = vorgaenge.lege({ art: 'anmelden', herausforderung: optionen.challenge });
+    const vorgang = await vorgaenge.lege({ art: 'anmelden', herausforderung: optionen.challenge });
     jsonAntwort(antwort, 200, { optionen, vorgang });
   }
 
   async function anmeldenFertig(anfrage, antwort) {
     pruefeUrsprung(anfrage, einst.urspruenge);
     const rumpf = await lesJson(anfrage);
-    const eintrag = vorgaenge.hole(rumpf.vorgang);
+    const eintrag = await vorgaenge.hole(rumpf.vorgang);
     if (!eintrag || eintrag.art !== 'anmelden') throw new FremdFehler('vorgang_unbekannt', 400);
 
     const antwortDaten = rumpf.antwort;

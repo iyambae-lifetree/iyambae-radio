@@ -605,6 +605,24 @@ resource tabelleRundbrief 'Microsoft.Storage/storageAccounts/tableServices/table
 }
 
 /*
+  Der Zwischenstand einer angefangenen Anmeldung bei Google, Apple oder mit
+  Passkey: state, nonce, PKCE-Verifier, WebAuthn-Herausforderung
+  (432hz-radio#43). Er lag vorher im Arbeitsspeicher des Dienstes und war
+  damit nur der Replik bekannt, auf der die Anmeldung begann — siehe den
+  Kommentar am `scale`-Block unten.
+
+  Eigene Tabelle und nicht `konten`: Eine Zeile hier gehört noch zu keinem
+  Konto und lebt höchstens zehn Minuten. Zeilenschlüssel ist der SHA-256 des
+  state, der Inhalt ist mit einem aus dem state abgeleiteten Schlüssel
+  verschlüsselt — wer die Tabelle liest, liest darin nichts. Einzelheiten
+  beim `Zustandsspeicher` in `dienst/src/fremd.mjs`.
+*/
+resource tabelleAnmeldezustand 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
+  parent: tabellendienst
+  name: 'anmeldezustand'
+}
+
+/*
   ZWEITE TABELLE, und sie ist unvermeidlich.
 
   Beim Anmelden kennt der Server die kontoId noch nicht, sondern nur die
@@ -1157,6 +1175,8 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
   dependsOn: [
     tabelleKonten
     tabelleVerweise
+    // Ohne sie scheitert jeder Start bei Google, Apple und Passkey mit 503.
+    tabelleAnmeldezustand
     dienstDarfSchreiben
     dienstDarfSenden
     // Auch bedingt aufgefuehrt: Ist mitZusammenfassung falsch, wird die
@@ -1333,35 +1353,24 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
         }
       ], kontoContainer)
       /*
-        HIER STEHT ETWAS UNGELÖSTES, und es wird bewusst NICHT hier gelöst.
+        Bis zu drei Repliken, OHNE Sitzungsbindung — und das geht seit
+        432hz-radio#43 auch für die Anmeldung über Google, Apple und Passkey.
 
-        `state`, `nonce`, der PKCE-Verifier und die WebAuthn-Herausforderungen
-        liegen im ARBEITSSPEICHER des Anmeldedienstes (siehe Abschnitt 7.1 in
-        dienst/FREMDANMELDUNG.md). Bei mehr als einer Replik muss der Rückweg
-        von Google oder Apple dieselbe Replik treffen wie der Start — sonst
-        scheitert ein Teil der Anmeldungen scheinbar zufällig.
+        Vorher lagen `state`, `nonce`, der PKCE-Verifier und die
+        WebAuthn-Herausforderungen im Arbeitsspeicher des Anmeldedienstes.
+        Begann eine Anmeldung auf Replik A und kam der Rückweg auf Replik B
+        an, scheiterte sie scheinbar zufällig — genau dann, wenn die Regel
+        unten ab 50 gleichzeitigen Anfragen hochskaliert hatte.
 
-        `hoechstExemplare` steht auf 3, und die Regel unten skaliert ab 50
-        gleichzeitigen Anfragen. Sobald also viel los ist, kann genau das
-        passieren. FREMDANMELDUNG.md geht an dieser Stelle noch davon aus,
-        main.bicep fahre eine Replik — das stimmt seit der Obergrenze 3 nicht
-        mehr.
+        Jetzt liegt der Zwischenstand in der Tabelle `anmeldezustand` (oben),
+        die alle Repliken sehen. Die beiden anderen Wege bleiben verworfen:
+        `affinity: sticky` setzte JEDEM Besucher ein Plätzchen, auch dem, der
+        nie ein Konto anlegt — eine Frage an § 25 TDDDG für eine Seite, die
+        heute ohne Einwilligung auskommt. Und `hoechstExemplare` auf 1
+        deckelte das Radio wegen der Anmeldung.
 
-        Drei Wege, und keiner gehört in diese Änderung:
-
-        1. `affinity: sticky` am Ingress. Wirkt sofort, setzt aber JEDEM
-           Besucher ein Plätzchen — auch dem, der nie ein Konto anlegt. Für
-           eine Seite, die heute ohne Einwilligung auskommt, weil sie nichts
-           auf dem Endgerät ablegt, ist das keine Kleinigkeit, sondern eine
-           Frage an § 25 TDDDG.
-        2. Den Vorgangsspeicher in die Tabelle `konten` legen. Sauber, kostet
-           eine Zeile je Anmeldeversuch und ist Arbeit am Dienst.
-        3. `hoechstExemplare` auf 1. Billig, aber es deckelt das Radio wegen
-           der Anmeldung.
-
-        Bis das entschieden ist, bleibt die Skalierung, wie sie war. Mail-,
-        Passwort- und Codeanmeldung sind davon nicht betroffen — sie halten
-        nichts im Arbeitsspeicher.
+        Was noch je Replik zählt, ist die Anfragedrosselung — siehe
+        dienst/README.md.
       */
       scale: {
         minReplicas: mindestExemplare

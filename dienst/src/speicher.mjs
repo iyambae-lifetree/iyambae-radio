@@ -78,6 +78,19 @@ export const TABELLE_STIMMUNG = 'stimmung';
 export const TABELLE_RUNDBRIEF = 'rundbrief';
 
 /*
+  Die siebte: der Zwischenstand einer angefangenen Anmeldung bei Google,
+  Apple oder mit Passkey (432hz-radio#43). Begruendung und Zeilenform in
+  `Zustandsspeicher`, fremd.mjs.
+
+  Nicht in `konten`, obwohl es um Anmeldung geht: Eine Zeile hier gehoert
+  noch zu KEINEM Konto — beim ersten Anmelden gibt es keins —, und sie lebt
+  Minuten statt Jahre. In `konten` braeuchte sie eine Partition, und die
+  einzige, die es vor dem Anmelden gibt, waere eine erfundene. Eine eigene
+  Tabelle kann auch nie mit einer Kontozeile zusammen gelesen werden.
+*/
+export const TABELLE_ANMELDEZUSTAND = 'anmeldezustand';
+
+/*
   Fehler, bei denen ein zweiter Versuch Sinn ergibt: Table Storage drosselt
   (503 ServerBusy), die Verbindung bricht weg, oder die Anfrage laeuft in
   ihre Zeitgrenze. Alles andere — 401, 403, 404, ein kaputter Schluessel —
@@ -401,6 +414,39 @@ export async function mitEtag(speicher, tabelle, pk, rk, verschmelze, vorgabe = 
         }
     }
     throw new SpeicherFehler('konflikt');
+}
+
+/**
+ * Loescht in `tabelle` jede Zeile, deren Spalte `ablauf` (Millisekunden)
+ * vor `jetzt` liegt. Fuer Tabellen, deren Zeilen von selbst verfallen und
+ * deren Besitzer nicht wiederkommt, um aufzuraeumen.
+ *
+ * Wie beim Sitzungsdurchgang in sitzung.mjs filtert der Tabellendienst,
+ * nicht der Dienst: Es kommen nur die abgelaufenen Zeilen ueber die
+ * Leitung. `.0` aus demselben Grund wie dort — Zeitstempel in Millisekunden
+ * liegen als Edm.Double in der Tabelle, und ein ganzzahliges Literal waere
+ * ein anderer Typ, den Table Storage nicht vergleicht, sondern ablehnt.
+ *
+ * Zeile fuer Zeile und unbedingt, NICHT als Stapel. Ein Stapel scheitert
+ * als Ganzes, sobald eine einzige Zeile darin schon weg ist — und genau das
+ * kommt hier vor: Wer einen abgelaufenen Eintrag vorlegt, loescht ihn im
+ * selben Zug (siehe `Zustandsspeicher.hole`), womoeglich zwischen dem Lesen
+ * dieser Liste und dem Loeschen. `loesche` ohne ETag nimmt „schon weg" als
+ * erledigt. Es sind wenige Zeilen: nur die Anmeldungen, die jemand
+ * angefangen und nie zu Ende gebracht hat.
+ */
+export async function raeumeAbgelaufeneAuf(speicher, tabelle, jetzt = Date.now()) {
+    const weg = [];
+    const zeilen = speicher.listeAlle(tabelle,
+        (zeile) => typeof zeile.ablauf === 'number' && zeile.ablauf < jetzt,
+        'ablauf lt ' + Math.floor(jetzt) + '.0');
+    // Erst sammeln, dann loeschen: Dann wird nie unter einer Abfrage
+    // geloescht, die noch seitenweise weiterliest.
+    for await (const zeile of zeilen) weg.push([zeile.partitionKey, zeile.rowKey]);
+    for (const [pk, rk] of weg) {
+        await speicher.loesche(tabelle, pk, rk);
+    }
+    return weg.length;
 }
 
 // ── Konten, Kennungen, Merkliste ────────────────────────────────────

@@ -577,13 +577,10 @@ Steht dort `start` mit `grund: azure`, ist alles richtig.
 Diese Punkte sind **nicht** Teil der Konsolen-Arbeit und stehen hier nur,
 damit sie nicht verschwinden.
 
-- **Mehr als eine Replik.** `state`, `nonce`, PKCE-Verifier und die
-  WebAuthn-Herausforderungen liegen im Arbeitsspeicher. `hoechstExemplare`
-  steht auf 3, die Skalierungsregel greift ab 50 gleichzeitigen Anfragen — dann
-  kann der Rückweg von Google oder Apple eine andere Replik treffen als der
-  Start, und die Anmeldung scheitert scheinbar zufällig. Die drei möglichen
-  Wege stehen als Kommentar im `scale`-Block von `infra/main.bicep`. Mail-,
-  Code- und Passwortanmeldung sind nicht betroffen.
+- ~~**Mehr als eine Replik.**~~ Erledigt mit 432hz-radio#43: `state`,
+  `nonce`, PKCE-Verifier und die WebAuthn-Herausforderungen liegen in der
+  Tabelle `anmeldezustand`, die `infra/main.bicep` anlegt. Jede Replik nimmt
+  den Rückweg an. Begründung in `dienst/FREMDANMELDUNG.md`, Abschnitt 7.1.
 - **Content-Security-Policy.** In `deploy/nginx.conf` steht heute keine. Mit
   einer Anmeldung gehört eine hin, sonst kann ein eingeschleustes Skript den
   Anmeldezustand mitlesen.

@@ -69,7 +69,7 @@ curl -i -X POST localhost:8081/api/anmelden/code \
 npx azurite-table --location ./.azurite --silent &
 node -e "const {TableServiceClient}=require('@azure/data-tables');
   const c=TableServiceClient.fromConnectionString('UseDevelopmentStorage=true',{allowInsecureConnection:true});
-  Promise.all([c.createTable('konten'),c.createTable('verweise')]).catch(()=>{})"
+  Promise.all([c.createTable('konten'),c.createTable('verweise'),c.createTable('anmeldezustand')]).catch(()=>{})"
 AZURITE=1 MAIL_ART=konsole PLAETZCHEN_UNSICHER=1 npm start
 ```
 
