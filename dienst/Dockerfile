@@ -22,7 +22,7 @@
 # Wer das Grundabbild wechselt, prueft danach, ob argon2 wirklich laedt:
 # ein fehlendes Binaerpaket faellt erst beim ersten Passwort auf.
 # Per Digest gepinnt, wie im Dockerfile der Seite (432hz-radio#47).
-FROM node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402 AS abhaengigkeiten
+FROM node:26-alpine@sha256:c6ad9e9c1d80f6eb607c26b4b0a132ff7a2344fad1c78ea3baa2a7d4c8de6d94 AS abhaengigkeiten
 WORKDIR /bau
 
 # Nur die beiden Dateien, die den Abhaengigkeitsbaum beschreiben — nicht der
@@ -42,7 +42,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund
 
 # ── Stufe 2: laufen lassen ──────────────────────────────────────────
-FROM node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+FROM node:26-alpine@sha256:c6ad9e9c1d80f6eb607c26b4b0a132ff7a2344fad1c78ea3baa2a7d4c8de6d94
 
 # `production` schaltet in Bibliotheken die Entwicklungspfade ab und ist die
 # Vorgabe, gegen die geprueft wurde.
