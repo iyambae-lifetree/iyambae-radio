@@ -2,9 +2,11 @@
   Der Anmeldedienst — HTTP, Weiche, Fehlerbehandlung.
 
   Er laeuft als zweiter Container NEBEN nginx in derselben Replik und hoert
-  auf 127.0.0.1:8081. Von aussen kommt nichts direkt an ihn heran; nginx
-  reicht /api/ weiter (siehe den Block „NOCH ZU TUN" in
-  infra/konto.bicep.entwurf).
+  auf Port 8081 — gebunden an 0.0.0.0, nicht an 127.0.0.1: Die Lebensprobe
+  von Container Apps (main.bicep, `httpGet` auf 8081) kommt von ausserhalb
+  des Containers und faende ihn sonst nicht. Von aussen kommt trotzdem
+  nichts direkt an ihn heran, denn der Ingress fuehrt nur auf 8080 (nginx),
+  und nginx reicht /api/ an 127.0.0.1:8081 weiter.
 
   Kein Framework. node:http kann alles, was hier gebraucht wird, und jede
   Abhaengigkeit an dieser Stelle waere eine, die man bei jeder
@@ -45,7 +47,7 @@ import {
     legeKontoAn, verknuepfeKennung, leseKennungen, loescheKennung,
 } from './speicher.mjs';
 import {
-    pruefeSitzung, erzeugeSitzung, widerrufe, widerrufeAlle,
+    pruefeSitzung, erzeugeSitzung, widerrufe, widerrufeAlle, istFrisch,
     baueSitzungsPlaetzchen, baueLoeschPlaetzchen, liesPlaetzchen,
     stosseAufraeumenAn, raeumeKonto,
 } from './sitzung.mjs';
@@ -207,9 +209,9 @@ export function erzeugeDrossel({ hoechstensSchluessel = 20_000, uhr = Date.now }
   frei erfindet — die Begrenzung waere eine Zierde. Der letzte Eintrag ist
   der, den die Plattform selbst geschrieben hat.
 
-  ACHTUNG, OFFENER PUNKT: deploy/nginx.conf nimmt in der Karte `$besucher`
-  den ERSTEN Eintrag. Fuer das Protokoll ist das eine Ungenauigkeit, hier
-  waere es ein Loch. Steht im README.
+  deploy/nginx.conf nimmt seit dem 21.08.2026 ebenfalls den LETZTEN
+  Eintrag (Karte `$adresse_echt`). Vorher nahm es den ersten — fuer das
+  Protokoll eine Ungenauigkeit, hier waere es ein Loch gewesen.
 */
 export function netzVon(kopfzeile) {
     const teile = String(kopfzeile ?? '').split(',').map((s) => s.trim()).filter(Boolean);
@@ -247,8 +249,8 @@ async function liesKoerper(anfrage) {
               Aufhoeren zu lesen, aber NICHT die Verbindung wegwerfen.
               nginx begrenzt mit client_max_body_size schon auf 32k; der
               Dienst darf sich trotzdem nicht darauf verlassen, denn er
-              hoert auf 127.0.0.1 und wer je im selben Netzwerknamensraum
-              steht, kommt an nginx vorbei.
+              hoert auf 8081 und wer je im selben Netzwerknamensraum steht
+              (oder die Lebensprobe), kommt an nginx vorbei.
 
               GEMESSEN, und es war der Unterschied zwischen einer Antwort
               und keiner: Mit `anfrage.destroy()` an dieser Stelle bekam der
@@ -361,26 +363,39 @@ export function speicherSchnittstelle(speicher) {
     };
 }
 
+/*
+  Die Sitzung, wie fremd.mjs sie sieht. Aus demselben Grund eine eigene
+  Funktion wie `speicherSchnittstelle`: Ein Test soll genau das pruefen, was
+  der Betrieb benutzt — vor allem `frisch`, denn fehlt es, gilt in fremd.mjs
+  jede Sitzung als alt, und Passkeys und Verknuepfungen gingen nie mehr.
+*/
+export function sitzungSchnittstelle(speicher) {
+    return {
+        async erzeuge(kontoId) {
+            const { wert } = await erzeugeSitzung(speicher, kontoId);
+            /*
+              Ein fertiger Set-Cookie-Kopf, kein blosser Wert:
+              `plaetzchenKopf` in fremd.mjs erkennt ihn am Semikolon und
+              uebernimmt ihn unveraendert. So gelten fuer die
+              Fremdanmeldung dieselben Plaetzchenregeln wie fuer den
+              Einmalcode — auch PLAETZCHEN_UNSICHER=1.
+            */
+            return { plaetzchen: baueSitzungsPlaetzchen(wert), ablauf: null };
+        },
+        async pruefe(anfrage) {
+            const stand = await pruefeSitzung(speicher, liesPlaetzchen(anfrage.headers.cookie));
+            return stand?.kontoId ?? null;
+        },
+        async frisch(anfrage) {
+            return istFrisch(await pruefeSitzung(speicher, liesPlaetzchen(anfrage.headers.cookie)));
+        },
+    };
+}
+
 export async function baueFremdanmeldung(speicher, zusatz = {}) {
     return erzeugeFremdanmeldung({
         speicher: speicherSchnittstelle(speicher),
-        sitzung: {
-            async erzeuge(kontoId) {
-                const { wert } = await erzeugeSitzung(speicher, kontoId);
-                /*
-                  Ein fertiger Set-Cookie-Kopf, kein blosser Wert:
-                  `plaetzchenKopf` in fremd.mjs erkennt ihn am Semikolon und
-                  uebernimmt ihn unveraendert. So gelten fuer die
-                  Fremdanmeldung dieselben Plaetzchenregeln wie fuer den
-                  Einmalcode — auch PLAETZCHEN_UNSICHER=1.
-                */
-                return { plaetzchen: baueSitzungsPlaetzchen(wert), ablauf: null };
-            },
-            async pruefe(anfrage) {
-                const stand = await pruefeSitzung(speicher, liesPlaetzchen(anfrage.headers.cookie));
-                return stand?.kontoId ?? null;
-            },
-        },
+        sitzung: sitzungSchnittstelle(speicher),
         protokoll: {
             /*
               Zwei Argumente werden zu einem Objekt, und `kontoId` heisst in
@@ -402,7 +417,7 @@ export async function baueFremdanmeldung(speicher, zusatz = {}) {
   Ohne sie sind diese Wege ein kostenloser Hebel gegen Google und Apple:
   Jeder Start ist eine Anfrage, die wir dort verursachen, ohne dass jemand
   angemeldet sein muss. konto.bicep.entwurf zieht in nginx dieselbe Grenze
-  ein zweites Mal; hier steht sie, weil der Dienst auf 127.0.0.1 hoert und
+  ein zweites Mal; hier steht sie, weil der Dienst auf 8081 hoert und
   wer im selben Namensraum steht, an nginx vorbeikommt.
 
   Die Zahlen sind KEINE neuen. Ein Anbieterstart ist eine Anmeldung, nur bei
@@ -480,12 +495,61 @@ export function baueDienst({
         return sitzung;
     }
 
-    function drossle(achsen) {
+    /*
+      Fuer die Wege, mit denen ein Fremder am offenen Geraet den Besitzer
+      aussperren oder sich eine Hintertuer bauen koennte (432hz-radio#40):
+      Die Sitzung muss jung sein, sonst 403. 403 und nicht 401 — angemeldet
+      IST man ja; die Seite soll „melde dich kurz neu an" sagen, nicht
+      „du bist abgemeldet". `art` landet im Protokoll, damit man sieht, wie
+      oft das jemanden trifft.
+    */
+    async function verlangeFrischeSitzung(anfrage, art) {
+        const sitzung = await verlangeSitzung(anfrage);
+        if (!istFrisch(sitzung)) {
+            protokolliere({ art, ergebnis: 'abgelehnt', konto: sitzung.kontoId, grund: 'nicht_frisch' });
+            throw new HttpFehler(403, 'frische_anmeldung_noetig');
+        }
+        return sitzung;
+    }
+
+    function drossle(achsen, kontoId) {
         const ergebnis = drossel.pruefe(achsen);
         if (!ergebnis.ok) {
-            protokolliere({ art: 'drossel', ergebnis: 'gedrosselt', achse: ergebnis.achse });
+            protokolliere({ art: 'drossel', ergebnis: 'gedrosselt', achse: ergebnis.achse, konto: kontoId });
             throw new HttpFehler(429, 'zu_viele_versuche', { 'Retry-After': String(ergebnis.sekunden) });
         }
+    }
+
+    /*
+      Drossel fuer die ANGEMELDETEN Wege, je Konto (432hz-radio#41).
+
+      Ein Konto kostet nur einen Mailcode. Ohne diese Grenze belegte ein
+      einziges mit parallelem `passwort/setzen` die vier Argon2-Plaetze —
+      und die Passwortanmeldung aller anderen antwortete 503. Die Abgleiche
+      und die Ausfuhr kosten je Anfrage Zugriffe auf den Tabellendienst.
+
+      Die Achse ist das Konto, nicht das Netz: Wer angemeldet ist, ist
+      bekannt, und eine Grenze je Netz traefe alle hinter demselben
+      Anschluss. Die Zahlen liegen weit ueber dem, was ein Mensch oder die
+      eigene Seite braucht (der Browser gleicht beim Start und nach
+      Aenderungen ab, nicht im Sekundentakt).
+
+      Gezaehlt wird NACH `verlangeSitzung` — ohne Sitzung gibt es keine
+      Kennung, und eine Anfrage ohne Sitzung kostet nichts ausser der
+      Sitzungspruefung — und VOR jeder Speicher- oder Argon2-Arbeit.
+    */
+    const KONTODROSSEL = {
+        // 10 und nicht 5: Auch abgelehnte Passwoerter (zu kurz, geleakt)
+        // zaehlen, und wer zweimal daneben liegt, soll nicht warten muessen.
+        setzen:  ['pwset', 10, 10 * 60_000],
+        platten: ['abgl-platten', 60, 60_000],
+        verlauf: ['abgl-verlauf', 60, 60_000],
+        ausfuhr: ['ausfuhr', 5, 60 * 60_000],
+    };
+
+    function drossleKonto(weg, kontoId) {
+        const [kuerzel, erlaubt, fenster] = KONTODROSSEL[weg];
+        drossle([['konto', kuerzel + ':' + kontoId, erlaubt, fenster]], kontoId);
     }
 
     /**
@@ -661,7 +725,14 @@ export function baueDienst({
         },
 
         'POST /api/passwort/setzen': async ({ anfrage, koerper }) => {
-            const sitzung = await verlangeSitzung(anfrage);
+            /*
+              Frisch, weil dieser Weg weder das alte Passwort noch einen Code
+              verlangt — und weil er alle ANDEREN Sitzungen beendet. Aus
+              einer alten Sitzung heraus waere das der Weg, den Besitzer
+              auszusperren (432hz-radio#40).
+            */
+            const sitzung = await verlangeFrischeSitzung(anfrage, 'passwort.gesetzt');
+            drossleKonto('setzen', sitzung.kontoId);
             const kennung = await holeOderNichts(speicher, TABELLE_KONTEN, sitzung.kontoId, 'kennung:mail');
 
             const gepr = await pruefeNeuesPasswort(koerper.passwort, { adresse: kennung?.adresse });
@@ -723,7 +794,16 @@ export function baueDienst({
                 versender.reiheEin({
                     art: kontoId ? 'marke' : 'unbekannt',
                     an: adresse,
-                    verweis: SEITE + '/passwort-neu?marke=' + encodeURIComponent(marke),
+                    /*
+                      Die Marke im FRAGMENT, nicht in der Query. Ein
+                      Fragment schickt der Browser nie zum Server, also
+                      auch nie als Referrer der Nachladeanfragen ins
+                      nginx-Protokoll — wer dort liest, saehe sonst 60
+                      Minuten lang uebernehmbare Konten (432hz-radio#42).
+                      Die Seite liest `location.hash` und loest per POST
+                      an /api/passwort/neu ein.
+                    */
+                    verweis: SEITE + '/passwort-neu#marke=' + encodeURIComponent(marke),
                     minuten: Math.round(MARKE_GUELTIG_MS / 60_000),
                     sprache: koerper.sprache,
                 });
@@ -816,6 +896,10 @@ export function baueDienst({
                     bestaetigt: Boolean(kennung?.bestaetigtAm),
                     hatPasswort: Boolean(kennung?.passwortHash),
                     angelegt: konto?.angelegt ?? null,
+                    // Ob Passwort setzen, Passkey anlegen, Verknuepfen und
+                    // Loeschen gerade gehen. So kann die Seite VOR dem
+                    // Ausfuellen um eine neue Anmeldung bitten.
+                    frisch: istFrisch(sitzung),
                 },
             };
         },
@@ -833,6 +917,7 @@ export function baueDienst({
 
         'POST /api/platten/abgleich': async ({ anfrage, koerper }) => {
             const sitzung = await verlangeSitzung(anfrage);
+            drossleKonto('platten', sitzung.kontoId);
             const jetzt = Date.now();
             const eingehend = saeubereEintraege(koerper.eintraege);
             const ergebnis = await gleicheAb(sitzung.kontoId, 'platten', eingehend, verschmelzePlatten, jetzt);
@@ -859,6 +944,7 @@ export function baueDienst({
 
         'POST /api/verlauf/abgleich': async ({ anfrage, koerper }) => {
             const sitzung = await verlangeSitzung(anfrage);
+            drossleKonto('verlauf', sitzung.kontoId);
             const jetzt = Date.now();
             const eingehend = saeubereVerlauf(koerper.eintraege);
             const ergebnis = await gleicheAb(sitzung.kontoId, 'verlauf', eingehend, verschmelzeVerlauf, jetzt);
@@ -889,6 +975,7 @@ export function baueDienst({
         */
         'GET /api/konto/ausfuhr': async ({ anfrage }) => {
             const sitzung = await verlangeSitzung(anfrage);
+            drossleKonto('ausfuhr', sitzung.kontoId);
             const geheim = new Set(['abdruck', 'passwortHash', 'etag', 'timestamp']);
             const zeilen = [];
             for await (const zeile of speicher.liste(TABELLE_KONTEN, sitzung.kontoId)) {
@@ -918,7 +1005,8 @@ export function baueDienst({
         },
 
         'DELETE /api/konto': async ({ anfrage, koerper }) => {
-            const sitzung = await verlangeSitzung(anfrage);
+            // Frisch: Loeschen laesst sich nicht zuruecknehmen (432hz-radio#40).
+            const sitzung = await verlangeFrischeSitzung(anfrage, 'konto.geloescht');
             /*
               Die Bestaetigung ist keine Zierde. Ein DELETE ohne Rumpf kann
               aus einem falsch geratenen Wiederholungsversuch kommen, aus

@@ -48,11 +48,10 @@ on:
   # werden muss, ohne dass sich etwas geaendert hat.
   workflow_dispatch:
 
-# Fuer OIDC noetig. `contents: read` steht ausdruecklich da, damit das Token
-# nicht mehr darf als lesen.
-permissions:
-  id-token: write
-  contents: read
+# Auf Ablaufebene: nichts. Die Rechte stehen beim einen Job, der sie
+# braucht (432hz-radio#47) — ein kuenftiger zweiter Job bekommt so nicht
+# stillschweigend ein OIDC-Token mit.
+permissions: {}
 
 # Zwei Auslieferungen gleichzeitig wuerden sich um dieselbe Ueberarbeitung
 # streiten. Der zweite Lauf wartet; ein dritter loest den zweiten ab, weil
@@ -85,16 +84,32 @@ jobs:
     # Auslieferung blockieren, die danach kommt.
     timeout-minutes: 10
 
+    # Fuer OIDC noetig. `contents: read` steht ausdruecklich da, damit das
+    # Token nicht mehr darf als lesen.
+    permissions:
+      id-token: write
+      contents: read
+
+    # AKTIONEN AUF COMMIT GEPINNT, nicht auf `@v4`. Ein Etikett laesst sich
+    # verschieben; wer eine dieser Aktionen kapert, bekaeme sonst ein Token
+    # mit Contributor-Rechten auf die Gruppe `iyambae` (432hz-radio#47).
+    # Dependabot (.github/dependabot.yml) schlaegt neue Fassungen vor.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           # Volle Geschichte: Weiter unten wird gegen die Marke verglichen,
           # die gerade live steht. Mit einer flachen Kopie kennt git diese
           # Kennung nicht.
           fetch-depth: 0
 
+      # Die Probe „die Oberfläche erfindet keine Endpunkte" vergleicht mit
+      # dienst/src/. Im Bau fehlt dienst/ (.dockerignore), dort wird sie
+      # übersprungen — hier liegt das ganze Repository vor (432hz-radio#45).
+      - name: Konto-Probe gegen dienst/
+        run: node Scripts/pruefe-konto.mjs
+
       - name: Anmelden
-        uses: azure/login@v2
+        uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2.3.1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}

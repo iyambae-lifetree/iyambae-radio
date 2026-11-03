@@ -146,7 +146,9 @@ und Weiche werden also mitgeprueft und nicht nachgebaut.
 | `CODE_GUELTIG_MINUTEN` | `10` | Einmalcode |
 | `CODE_VERSUCHE` | `5` | danach ist der Code verbrannt |
 | `MARKE_GUELTIG_MINUTEN` | `60` | Passwortlink |
-| `SITZUNGSDAUER_TAGE` | `365` | Plaetzchen und Tabellenzeile |
+| `SITZUNGSDAUER_TAGE` | `365` | Hoechstdauer: Plaetzchen und Tabellenzeile |
+| `LEERLAUF_TAGE` | `90` | gleitend: so lange ohne Besuch, dann abgemeldet (#40) |
+| `FRISCH_MINUTEN` | `10` | nach der Anmeldung offen: Passwort setzen, Passkey anlegen, Verknuepfen, Konto loeschen (#40) |
 | `MAIL_JE_MINUTE` / `MAIL_JE_STUNDE` | `25` / `90` | unter Microsofts 30/100 |
 | `MAIL_WARTESCHLANGE` | `500` | danach faellt die aelteste Mail weg |
 | `HIBP_ZEITGRENZE_MS` | `1500` | Leak-Abgleich; laeuft er ab, wird durchgelassen |
@@ -608,22 +610,13 @@ Anmeldedienstes auch das Radio weg.
 
 ## Was offen bleibt
 
-- **Die Tabelle `umfrage` ist in `infra/main.bicep` noch nicht angelegt.**
-  Ohne sie antwortet `POST /api/umfrage` gegen Azure mit 503. Der Eintrag
-  gehoert neben `tabelleKonten` und `tabelleVerweise`, gleiche Bauart, Name
-  `umfrage` — fremde Datei, hier nicht angefasst.
-- **`apps.iyambae.fm` reicht `/api/` gar nicht weiter.** Der Serverblock in
-  `deploy/nginx.conf` hat nur `location /`, und dessen `try_files` faellt auf
-  `index.html` zurueck. `POST /api/umfrage` bekaeme von dort **200 mit einer
-  HTML-Seite** — die Umfrage prueft nur `antwort.ok`, zeigte also „Danke" und
-  wuerfe die Antwort weg. Das ist schlimmer als ein Fehler, weil es niemand
-  merkt. Der Block gehoert kopiert wie bei `iyambae.fm`; fremde Datei, hier
-  nicht angefasst.
-- **`ERLAUBTE_URSPRUENGE` enthaelt `https://apps.iyambae.fm` nicht.** Sobald
-  der Block oben steht, wird jeder POST von dort mit 403 `herkunft_fremd`
-  abgewiesen. Die Variable gehoert um diesen Ursprung erweitert. Sie ist
-  zugleich Grundlage des Passwortlinks; der erste Eintrag muss
-  `https://iyambae.fm` bleiben.
+- ~~Die Tabelle `umfrage` ist in `infra/main.bicep` noch nicht angelegt~~ —
+  **erledigt** (`tabelleUmfrage`).
+- ~~`apps.iyambae.fm` reicht `/api/` gar nicht weiter~~ — **erledigt**: Der
+  Serverblock hat einen eigenen `location /api/` (`deploy/nginx.conf`).
+- ~~`ERLAUBTE_URSPRUENGE` enthaelt `https://apps.iyambae.fm` nicht~~ —
+  **erledigt** (`infra/main.bicep`, `erlaubteUrspruenge`). Der erste Eintrag
+  bleibt `https://iyambae.fm`, er ist Grundlage des Passwortlinks.
 - **Die Umfrageantworten werden nie wieder weggeraeumt.** Es gibt keine Frist
   und keinen Durchgang. Weil die Zeilen niemandem zuzuordnen sind, verlangt
   auch niemand eine Loeschung — wer sie trotzdem will, loescht ganze

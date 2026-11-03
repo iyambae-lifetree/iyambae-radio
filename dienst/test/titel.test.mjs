@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 
 import {
     liesIcyTitel, saeubereTitel, erzeugeTitel,
+    istOeffentlicheAdresse, zielIstOeffentlich,
     ALTER_MS, ALTER_BEOBACHTET_MS, JE_ZUG, REIHUM, METAINT_HOECHSTENS,
+    SPRUENGE_HOECHSTENS,
 } from '../src/titel.mjs';
 
 /*
@@ -56,28 +58,31 @@ function stromMit(titel, { intervall = 64, stueckeln = false, metaint = null } =
     });
 }
 
+/** Erfundenes Netz, also kein Ziel, das man auflösen könnte. */
+const OHNE_ZIELPRUEFUNG = async () => true;
+
 // ── Der Leser ───────────────────────────────────────────────────────
 
 test('liest den Titel aus dem ersten Block', async () => {
-    const { titel } = await liesIcyTitel('x', { holeStrom: stromMit('Maali - Someday') });
+    const { titel } = await liesIcyTitel('x', { pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: stromMit('Maali - Someday') });
     assert.equal(titel, 'Maali - Someday');
 });
 
 test('liest ihn auch, wenn er ueber mehrere Haeppchen kommt', async () => {
     // Der Fall aus dem Betrieb: Ein Strom liefert nicht 16 KB am Stueck.
     const { titel } = await liesIcyTitel('x', {
-        holeStrom: stromMit('Charmaine Lee - HGT', { stueckeln: true }) });
+        pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: stromMit('Charmaine Lee - HGT', { stueckeln: true }) });
     assert.equal(titel, 'Charmaine Lee - HGT');
 });
 
 test('Laengenbyte 0 heisst: keine Auskunft, kein Fehler', async () => {
-    const { titel } = await liesIcyTitel('x', { holeStrom: stromMit(null) });
+    const { titel } = await liesIcyTitel('x', { pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: stromMit(null) });
     assert.equal(titel, null);
 });
 
 test('ohne icy-metaint kommt nichts heraus', async () => {
     const { titel } = await liesIcyTitel('x', {
-        holeStrom: async () => ({ ok: true, headers: { get: () => null }, body: {} }) });
+        pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: async () => ({ ok: true, headers: { get: () => null }, body: {} }) });
     assert.equal(titel, null);
 });
 
@@ -88,13 +93,13 @@ test('ein unsinnig grosses icy-metaint wird abgelehnt', async () => {
       auch nur ein Byte Metadaten kommt.
     */
     const { titel } = await liesIcyTitel('x', {
-        holeStrom: stromMit('egal', { metaint: METAINT_HOECHSTENS + 1 }) });
+        pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: stromMit('egal', { metaint: METAINT_HOECHSTENS + 1 }) });
     assert.equal(titel, null);
 });
 
 test('ein Fehler beim Holen ist kein Ereignis, sondern kein Titel', async () => {
     const { titel } = await liesIcyTitel('x', {
-        holeStrom: async () => { throw new Error('ECONNREFUSED'); } });
+        pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: async () => { throw new Error('ECONNREFUSED'); } });
     assert.equal(titel, null);
 });
 
@@ -102,7 +107,7 @@ test('ein Titel mit Apostroph darin geht nicht verloren', async () => {
     // StreamTitle='Rock 'n' Roll'; — der Abschluss ist das Anfuehrungszeichen
     // VOR dem Semikolon, nicht das erste beste.
     const { titel } = await liesIcyTitel('x', {
-        holeStrom: stromMit("Rock 'n' Roll", { intervall: 96 }) });
+        pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: stromMit("Rock 'n' Roll", { intervall: 96 }) });
     assert.equal(titel, "Rock 'n' Roll");
 });
 
@@ -234,7 +239,7 @@ function bau({ sender, titel = {}, beobachtet = null, uhr = { t: 1_000_000 } }) 
             holeSenderliste: async () => sender,
             holeBeobachtete: async () => beobachtet,
             jetzt: () => uhr.t,
-            holeStrom: async (url) => {
+            pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: async (url) => {
                 angefragt.push(url);
                 return stromMit(titel[url] ?? null)();
             },
@@ -394,7 +399,7 @@ test('hole() wartet nicht auf fremde Server', async () => {
     let aufgeloest = null;
     const laden = erzeugeTitel({
         holeSenderliste: async () => [{ id: 'a', stream: 'sa' }],
-        holeStrom: () => new Promise((r) => { aufgeloest = r; }),
+        pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: () => new Promise((r) => { aufgeloest = r; }),
         jetzt: () => 1_000_000,
     });
     // Kein await: Die Antwort muss SOFORT da sein, auch wenn der Nachschub
@@ -421,7 +426,7 @@ test('faellt die Senderliste aus, bleibt der alte Stand stehen', async () => {
             if (kaputt) throw new Error('DNS');
             return [{ id: 'a', stream: 'sa' }];
         },
-        holeStrom: stromMit('Echter Titel'),
+        pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: stromMit('Echter Titel'),
         jetzt: () => uhr.t,
     });
     await laden.fuelle();
@@ -451,7 +456,7 @@ test('ohne Einrichtung steht der Weg nicht offen, sondern gar nicht da', async (
 test('eingerichtet liefert er den Stand — ohne Schluessel, fuer alle gleich', async () => {
     const laden = erzeugeTitel({
         holeSenderliste: async () => [{ id: 'a', stream: 'sa' }],
-        holeStrom: stromMit('Maali - Someday'),
+        pruefeZiel: OHNE_ZIELPRUEFUNG, holeStrom: stromMit('Maali - Someday'),
         jetzt: () => 1_000_000,
     });
     await laden.fuelle();
@@ -522,4 +527,86 @@ test('ueber mehrere Zuege kommt jeder Sender einmal dran', async () => {
     for (let i = 0; i < 8; i += 1) { await laden.fuelle(); uhr.t += 1; }
     const erreicht = new Set(angefragt);
     assert.equal(erreicht.size, 12, 'keiner bleibt liegen: ' + [...erreicht].join(','));
+});
+
+
+// ── Weiterleitungen und Ziele (432hz-radio#46, Punkt 3) ─────────────
+
+test('innere Adressen sind kein Ziel, oeffentliche schon', () => {
+    for (const ip of ['127.0.0.1', '10.1.2.3', '172.16.0.1', '192.168.1.1',
+        '169.254.169.254', '100.64.0.1', '0.0.0.0', '224.0.0.1', '255.255.255.255',
+        '::1', '::', 'fe80::1', 'fd00::1', '::ffff:127.0.0.1', '::ffff:7f00:1', 'ff02::1',
+        'kein-ip']) {
+        assert.equal(istOeffentlicheAdresse(ip), false, ip);
+    }
+    for (const ip of ['93.184.216.34', '1.1.1.1', '172.32.0.1', '2606:4700::1111']) {
+        assert.equal(istOeffentlicheAdresse(ip), true, ip);
+    }
+});
+
+test('ein Name, der auch nur EINE innere Adresse liefert, ist kein Ziel', async () => {
+    const loeseAuf = async (name) => ({
+        gemischt: [{ address: '93.184.216.34' }, { address: '10.0.0.5' }],
+        draussen: [{ address: '93.184.216.34' }],
+    }[name] ?? []);
+
+    assert.equal(await zielIstOeffentlich('https://gemischt/strom', { loeseAuf }), false);
+    assert.equal(await zielIstOeffentlich('https://draussen/strom', { loeseAuf }), true);
+    assert.equal(await zielIstOeffentlich('https://unbekannt/strom', { loeseAuf }), false);
+    assert.equal(await zielIstOeffentlich('http://127.0.0.1:8081/api/leben', { loeseAuf }), false);
+    assert.equal(await zielIstOeffentlich('http://[::1]/', { loeseAuf }), false);
+    assert.equal(await zielIstOeffentlich('file:///etc/passwd', { loeseAuf }), false);
+    assert.equal(await zielIstOeffentlich('kein url', { loeseAuf }), false);
+});
+
+function weiterleitung(wohin) {
+    return { ok: false, status: 302, headers: { get: (n) => (n.toLowerCase() === 'location' ? wohin : null) } };
+}
+
+test('eine Weiterleitung nach innen wird nicht verfolgt', async () => {
+    const angefragt = [];
+    const { titel } = await liesIcyTitel('https://sender.example/strom', {
+        holeStrom: async (url, optionen) => {
+            angefragt.push(url);
+            assert.equal(optionen.redirect, 'manual');
+            return weiterleitung('http://169.254.169.254/latest/meta-data/');
+        },
+        pruefeZiel: async (url) => !url.includes('169.254'),
+    });
+    assert.equal(titel, null);
+    assert.deepEqual(angefragt, ['https://sender.example/strom']);
+});
+
+test('eine Weiterleitung nach draussen wird verfolgt, auch relativ', async () => {
+    const strom = stromMit('Maali - Someday');
+    const { titel } = await liesIcyTitel('https://sender.example/a', {
+        holeStrom: async (url) => (url.endsWith('/a') ? weiterleitung('/b') : strom()),
+        pruefeZiel: async () => true,
+    });
+    assert.equal(titel, 'Maali - Someday');
+});
+
+test('ohne ausdrueckliches Abschalten prueft auch ein ersetztes holeStrom das Ziel', async () => {
+    let angefragt = false;
+    const { titel } = await liesIcyTitel('http://127.0.0.1:8081/api/leben', {
+        holeStrom: async () => { angefragt = true; return stromMit('egal')(); },
+    });
+    assert.equal(titel, null);
+    assert.equal(angefragt, false);
+});
+
+test('die Plattformadresse von Azure und eingebettete IPv4 ueber 6to4 sind kein Ziel', () => {
+    for (const ip of ['168.63.129.16', '2002:c0a8:0101::1', '2001:0:4136:e378::1']) {
+        assert.equal(istOeffentlicheAdresse(ip), false, ip);
+    }
+});
+
+test('mehr Spruenge als erlaubt: kein Titel, keine weitere Anfrage', async () => {
+    let anfragen = 0;
+    const { titel } = await liesIcyTitel('https://sender.example/0', {
+        holeStrom: async () => { anfragen++; return weiterleitung('https://sender.example/' + anfragen); },
+        pruefeZiel: async () => true,
+    });
+    assert.equal(titel, null);
+    assert.equal(anfragen, SPRUENGE_HOECHSTENS + 1);
 });

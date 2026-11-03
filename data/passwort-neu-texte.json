@@ -1,0 +1,319 @@
+{
+  "_zweck": "Die Saetze der Seite /<sprache>/passwort-neu/ (Vorlage passwort-neu.html, Erzeuger Scripts/baue-passwort-neu.py, Programmcode assets/passwort-neu.mjs). Jeder Satz in allen sieben Sprachen; fehlt einer, bricht der Bau ab.",
+  "_platzhalter": "{mindestens}, {fehlt}, {hoechstens} kommen aus dem Grund des Dienstes (dienst/src/passwort.mjs), {sekunden} aus Retry-After, {gruende} sind die uebersetzten Gruende hintereinander.",
+  "titel": {
+    "de": "Neues Passwort · IYAMBAE FM",
+    "en": "New password · IYAMBAE FM",
+    "fr": "Nouveau mot de passe · IYAMBAE FM",
+    "es": "Nueva contraseña · IYAMBAE FM",
+    "it": "Nuova password · IYAMBAE FM",
+    "ja": "新しいパスワード · IYAMBAE FM",
+    "ar": "كلمة مرور جديدة · IYAMBAE FM"
+  },
+  "beschreibung": {
+    "de": "Ein neues Passwort für dein Konto bei IYAMBAE FM festlegen.",
+    "en": "Set a new password for your IYAMBAE FM account.",
+    "fr": "Choisir un nouveau mot de passe pour ton compte IYAMBAE FM.",
+    "es": "Elige una nueva contraseña para tu cuenta de IYAMBAE FM.",
+    "it": "Scegli una nuova password per il tuo account IYAMBAE FM.",
+    "ja": "IYAMBAE FM のアカウントに新しいパスワードを設定します。",
+    "ar": "عيّن كلمة مرور جديدة لحسابك في IYAMBAE FM."
+  },
+  "augenbraue": {
+    "de": "Dein Konto",
+    "en": "Your account",
+    "fr": "Ton compte",
+    "es": "Tu cuenta",
+    "it": "Il tuo account",
+    "ja": "あなたのアカウント",
+    "ar": "حسابك"
+  },
+  "ueberschrift": {
+    "de": "Neues Passwort",
+    "en": "New password",
+    "fr": "Nouveau mot de passe",
+    "es": "Nueva contraseña",
+    "it": "Nuova password",
+    "ja": "新しいパスワード",
+    "ar": "كلمة مرور جديدة"
+  },
+  "vorwort": {
+    "de": "Wähle ein neues Passwort. Danach bist du auf allen Geräten abgemeldet und meldest dich mit dem neuen wieder an.",
+    "en": "Choose a new password. You will then be signed out on all your devices and can sign in again with the new one.",
+    "fr": "Choisis un nouveau mot de passe. Tu seras ensuite déconnecté sur tous tes appareils et pourras te reconnecter avec le nouveau.",
+    "es": "Elige una nueva contraseña. Después se cerrará tu sesión en todos tus dispositivos y podrás volver a entrar con la nueva.",
+    "it": "Scegli una nuova password. Dopo verrai disconnesso su tutti i tuoi dispositivi e potrai accedere di nuovo con quella nuova.",
+    "ja": "新しいパスワードを決めてください。設定すると、すべての端末でいったんログアウトし、新しいパスワードでログインし直せます。",
+    "ar": "اختر كلمة مرور جديدة. بعدها يُسجَّل خروجك من كل أجهزتك، وتدخل من جديد بالكلمة الجديدة."
+  },
+  "feld": {
+    "de": "Neues Passwort",
+    "en": "New password",
+    "fr": "Nouveau mot de passe",
+    "es": "Nueva contraseña",
+    "it": "Nuova password",
+    "ja": "新しいパスワード",
+    "ar": "كلمة المرور الجديدة"
+  },
+  "regel": {
+    "de": "Mindestens 15 Zeichen. Ein ganzer Satz ist leichter zu merken als ein kurzes Wort mit Sonderzeichen.",
+    "en": "At least 15 characters. A whole sentence is easier to remember than a short word with symbols.",
+    "fr": "Au moins 15 caractères. Une phrase entière se retient plus facilement qu'un mot court plein de symboles.",
+    "es": "Al menos 15 caracteres. Una frase entera se recuerda mejor que una palabra corta con símbolos.",
+    "it": "Almeno 15 caratteri. Una frase intera si ricorda meglio di una parola corta piena di simboli.",
+    "ja": "15文字以上。記号まじりの短い単語より、ひとつの文のほうが覚えやすく安全です。",
+    "ar": "15 حرفًا على الأقل. جملة كاملة أسهل للحفظ من كلمة قصيرة مليئة بالرموز."
+  },
+  "zeigen": {
+    "de": "Passwort zeigen",
+    "en": "Show password",
+    "fr": "Afficher le mot de passe",
+    "es": "Mostrar contraseña",
+    "it": "Mostra password",
+    "ja": "パスワードを表示",
+    "ar": "إظهار كلمة المرور"
+  },
+  "einmal": {
+    "de": "Der Link aus der Mail gilt für genau einen Versuch. Wird das Passwort abgelehnt, brauchst du einen neuen Link.",
+    "en": "The link from the email works for exactly one attempt. If the password is rejected, you will need a new link.",
+    "fr": "Le lien de l'e-mail ne vaut que pour un seul essai. Si le mot de passe est refusé, il te faudra un nouveau lien.",
+    "es": "El enlace del correo sirve para un solo intento. Si se rechaza la contraseña, necesitarás un enlace nuevo.",
+    "it": "Il link della mail vale per un solo tentativo. Se la password viene rifiutata, ti servirà un nuovo link.",
+    "ja": "メールのリンクで試せるのは一度だけです。パスワードが受け付けられなかった場合は、新しいリンクが必要になります。",
+    "ar": "رابط البريد صالح لمحاولة واحدة فقط. إذا رُفضت كلمة المرور، ستحتاج إلى رابط جديد."
+  },
+  "senden": {
+    "de": "Passwort speichern",
+    "en": "Save password",
+    "fr": "Enregistrer le mot de passe",
+    "es": "Guardar contraseña",
+    "it": "Salva password",
+    "ja": "パスワードを保存",
+    "ar": "حفظ كلمة المرور"
+  },
+  "sendet": {
+    "de": "Wird gespeichert …",
+    "en": "Saving …",
+    "fr": "Enregistrement …",
+    "es": "Guardando …",
+    "it": "Salvataggio …",
+    "ja": "保存しています…",
+    "ar": "جارٍ الحفظ …"
+  },
+  "ok.titel": {
+    "de": "Passwort gespeichert",
+    "en": "Password saved",
+    "fr": "Mot de passe enregistré",
+    "es": "Contraseña guardada",
+    "it": "Password salvata",
+    "ja": "パスワードを保存しました",
+    "ar": "حُفظت كلمة المرور"
+  },
+  "ok.text": {
+    "de": "Dein neues Passwort gilt ab sofort. Zur Sicherheit bist du jetzt überall abgemeldet. Im Radio meldest du dich über „Anmelden“ mit E-Mail-Adresse und neuem Passwort wieder an.",
+    "en": "Your new password works from now on. For safety you are now signed out everywhere. In the radio, use “Sign in” with your email address and the new password.",
+    "fr": "Ton nouveau mot de passe est valable dès maintenant. Par sécurité, tu es déconnecté partout. Dans la radio, reconnecte-toi via « Se connecter » avec ton adresse e-mail et le nouveau mot de passe.",
+    "es": "Tu nueva contraseña ya es válida. Por seguridad, se ha cerrado tu sesión en todas partes. En la radio, vuelve a entrar con «Iniciar sesión», tu correo y la nueva contraseña.",
+    "it": "La tua nuova password vale da subito. Per sicurezza sei stato disconnesso ovunque. Nella radio accedi di nuovo con «Accedi», il tuo indirizzo email e la nuova password.",
+    "ja": "新しいパスワードはすぐに使えます。安全のため、すべての端末でログアウトしました。ラジオの「ログイン」から、メールアドレスと新しいパスワードでログインしてください。",
+    "ar": "كلمة مرورك الجديدة صالحة من الآن. للأمان سُجّل خروجك من كل مكان. في الراديو ادخل من جديد عبر «تسجيل الدخول» ببريدك الإلكتروني وكلمة المرور الجديدة."
+  },
+  "ok.knopf": {
+    "de": "Zum Radio",
+    "en": "To the radio",
+    "fr": "Vers la radio",
+    "es": "Ir a la radio",
+    "it": "Alla radio",
+    "ja": "ラジオへ",
+    "ar": "إلى الراديو"
+  },
+  "fehlt": {
+    "de": "Diese Seite öffnest du über den Link in der Mail „Passwort vergessen“. Hier ist kein Link angekommen. Fordere unten einen an.",
+    "en": "You open this page with the link in the “Forgot password” email. No link arrived here. Request one below.",
+    "fr": "Cette page s'ouvre avec le lien de l'e-mail « Mot de passe oublié ». Aucun lien n'est arrivé ici. Demandes-en un ci-dessous.",
+    "es": "Esta página se abre con el enlace del correo «Olvidé mi contraseña». Aquí no ha llegado ningún enlace. Pide uno abajo.",
+    "it": "Questa pagina si apre con il link della mail «Password dimenticata». Qui non è arrivato nessun link. Richiedine uno qui sotto.",
+    "ja": "このページは「パスワードを忘れた」メールのリンクから開きます。リンクが届いていません。下で新しく申し込んでください。",
+    "ar": "تُفتح هذه الصفحة عبر الرابط في رسالة «نسيت كلمة المرور». لم يصل أي رابط إلى هنا. اطلب رابطًا من الأسفل."
+  },
+  "abgelehnt": {
+    "de": "Dieses Passwort wurde nicht angenommen. {gruende}",
+    "en": "This password was not accepted. {gruende}",
+    "fr": "Ce mot de passe n'a pas été accepté. {gruende}",
+    "es": "Esta contraseña no se ha aceptado. {gruende}",
+    "it": "Questa password non è stata accettata. {gruende}",
+    "ja": "このパスワードは受け付けられませんでした。{gruende}",
+    "ar": "لم تُقبل كلمة المرور هذه. {gruende}"
+  },
+  "verbraucht": {
+    "de": "Der Link ist damit verbraucht. Fordere unten einen neuen an.",
+    "en": "The link has now been used up. Request a new one below.",
+    "fr": "Le lien est donc épuisé. Demandes-en un nouveau ci-dessous.",
+    "es": "El enlace ya se ha gastado. Pide uno nuevo abajo.",
+    "it": "Il link è quindi esaurito. Richiedine uno nuovo qui sotto.",
+    "ja": "このリンクはもう使えません。下で新しいリンクを申し込んでください。",
+    "ar": "لم يعد الرابط صالحًا. اطلب رابطًا جديدًا من الأسفل."
+  },
+  "ungueltig": {
+    "de": "Dieser Link gilt nicht mehr — er wurde schon benutzt oder ist unvollständig. Fordere unten einen neuen an.",
+    "en": "This link is no longer valid — it has already been used or is incomplete. Request a new one below.",
+    "fr": "Ce lien n'est plus valable — il a déjà servi ou il est incomplet. Demandes-en un nouveau ci-dessous.",
+    "es": "Este enlace ya no es válido: ya se ha usado o está incompleto. Pide uno nuevo abajo.",
+    "it": "Questo link non è più valido: è già stato usato o è incompleto. Richiedine uno nuovo qui sotto.",
+    "ja": "このリンクは使えません。すでに使われたか、途中で切れています。下で新しいリンクを申し込んでください。",
+    "ar": "هذا الرابط لم يعد صالحًا، فقد استُخدم من قبل أو وصل ناقصًا. اطلب رابطًا جديدًا من الأسفل."
+  },
+  "abgelaufen": {
+    "de": "Dieser Link ist abgelaufen. Fordere unten einen neuen an.",
+    "en": "This link has expired. Request a new one below.",
+    "fr": "Ce lien a expiré. Demandes-en un nouveau ci-dessous.",
+    "es": "Este enlace ha caducado. Pide uno nuevo abajo.",
+    "it": "Questo link è scaduto. Richiedine uno nuovo qui sotto.",
+    "ja": "このリンクは期限切れです。下で新しいリンクを申し込んでください。",
+    "ar": "انتهت صلاحية هذا الرابط. اطلب رابطًا جديدًا من الأسفل."
+  },
+  "gedrosselt": {
+    "de": "Gerade kamen zu viele Versuche. Warte {sekunden} Sekunden und versuche es dann noch einmal.",
+    "en": "Too many attempts just now. Wait {sekunden} seconds, then try again.",
+    "fr": "Trop d'essais à l'instant. Attends {sekunden} secondes, puis réessaie.",
+    "es": "Demasiados intentos ahora mismo. Espera {sekunden} segundos y vuelve a intentarlo.",
+    "it": "Troppi tentativi in questo momento. Aspetta {sekunden} secondi e riprova.",
+    "ja": "試行が多すぎます。{sekunden}秒待ってから、もう一度お試しください。",
+    "ar": "محاولات كثيرة جدًا الآن. انتظر {sekunden} ثانية ثم حاول مرة أخرى."
+  },
+  "netz": {
+    "de": "Der Anmeldedienst antwortet gerade nicht. Versuch es gleich noch einmal; klappt es dann nicht, fordere einen neuen Link an.",
+    "en": "The sign-in service is not answering right now. Try again in a moment; if that fails, request a new link.",
+    "fr": "Le service de connexion ne répond pas pour l'instant. Réessaie dans un moment ; si ça ne marche pas, demande un nouveau lien.",
+    "es": "El servicio de acceso no responde ahora mismo. Inténtalo de nuevo en un momento; si no funciona, pide un enlace nuevo.",
+    "it": "Il servizio di accesso al momento non risponde. Riprova tra poco; se non funziona, richiedi un nuovo link.",
+    "ja": "ログインの受け付けが応答していません。少し待ってからもう一度お試しください。それでもだめなら、新しいリンクを申し込んでください。",
+    "ar": "خدمة الدخول لا تستجيب الآن. حاول مرة أخرى بعد قليل، وإن لم ينجح ذلك فاطلب رابطًا جديدًا."
+  },
+  "link.titel": {
+    "de": "Neuen Link anfordern",
+    "en": "Request a new link",
+    "fr": "Demander un nouveau lien",
+    "es": "Pedir un enlace nuevo",
+    "it": "Richiedi un nuovo link",
+    "ja": "新しいリンクを申し込む",
+    "ar": "طلب رابط جديد"
+  },
+  "link.feld": {
+    "de": "E-Mail-Adresse",
+    "en": "Email address",
+    "fr": "Adresse e-mail",
+    "es": "Correo electrónico",
+    "it": "Indirizzo email",
+    "ja": "メールアドレス",
+    "ar": "البريد الإلكتروني"
+  },
+  "link.platzhalter": {
+    "de": "du@beispiel.de",
+    "en": "you@example.com",
+    "fr": "toi@exemple.fr",
+    "es": "tu@ejemplo.es",
+    "it": "tu@esempio.it",
+    "ja": "you@example.com",
+    "ar": "you@example.com"
+  },
+  "link.senden": {
+    "de": "Link schicken",
+    "en": "Send link",
+    "fr": "Envoyer le lien",
+    "es": "Enviar enlace",
+    "it": "Invia link",
+    "ja": "リンクを送る",
+    "ar": "إرسال الرابط"
+  },
+  "link.ohneMail": {
+    "de": "Trage zuerst deine E-Mail-Adresse ein.",
+    "en": "Enter your email address first.",
+    "fr": "Indique d'abord ton adresse e-mail.",
+    "es": "Escribe primero tu correo electrónico.",
+    "it": "Inserisci prima il tuo indirizzo email.",
+    "ja": "先にメールアドレスを入力してください。",
+    "ar": "أدخل بريدك الإلكتروني أولًا."
+  },
+  "link.ok": {
+    "de": "Wenn es zu dieser Adresse ein Konto gibt, liegt dort gleich eine neue Mail. Wie lange der Link gilt, steht darin.",
+    "en": "If there is an account for this address, a new email will arrive shortly. It says how long the link is valid.",
+    "fr": "S'il existe un compte pour cette adresse, un nouvel e-mail y arrivera sous peu. Il indique combien de temps le lien reste valable.",
+    "es": "Si hay una cuenta con esta dirección, en breve llegará un correo nuevo. En él se indica cuánto tiempo vale el enlace.",
+    "it": "Se esiste un account per questo indirizzo, a breve arriverà una nuova mail. Lì è indicato per quanto tempo vale il link.",
+    "ja": "このアドレスのアカウントがあれば、まもなく新しいメールが届きます。リンクの有効期限はメールに書いてあります。",
+    "ar": "إن كان لهذا العنوان حساب، فستصله رسالة جديدة بعد قليل، وفيها مدة صلاحية الرابط."
+  },
+  "grund.leer": {
+    "de": "Das Feld ist leer.",
+    "en": "The field is empty.",
+    "fr": "Le champ est vide.",
+    "es": "El campo está vacío.",
+    "it": "Il campo è vuoto.",
+    "ja": "入力欄が空です。",
+    "ar": "الحقل فارغ."
+  },
+  "grund.zu_kurz": {
+    "de": "Es fehlen noch {fehlt} Zeichen — mindestens {mindestens} braucht es.",
+    "en": "It still needs {fehlt} more characters — at least {mindestens}.",
+    "fr": "Il manque encore {fehlt} caractères — il en faut au moins {mindestens}.",
+    "es": "Faltan {fehlt} caracteres: se necesitan al menos {mindestens}.",
+    "it": "Mancano ancora {fehlt} caratteri: ne servono almeno {mindestens}.",
+    "ja": "あと{fehlt}文字必要です（{mindestens}文字以上）。",
+    "ar": "ينقصها {fehlt} حرفًا، والمطلوب {mindestens} على الأقل."
+  },
+  "grund.zu_lang": {
+    "de": "Es darf höchstens {hoechstens} Zeichen lang sein.",
+    "en": "It may be at most {hoechstens} characters long.",
+    "fr": "Il peut compter au plus {hoechstens} caractères.",
+    "es": "Puede tener como máximo {hoechstens} caracteres.",
+    "it": "Può avere al massimo {hoechstens} caratteri.",
+    "ja": "{hoechstens}文字までにしてください。",
+    "ar": "يجب ألا تزيد على {hoechstens} حرفًا."
+  },
+  "grund.nur_wiederholung": {
+    "de": "Es besteht nur aus einem einzigen, wiederholten Zeichen.",
+    "en": "It consists of a single character repeated.",
+    "fr": "Il ne se compose que d'un seul caractère répété.",
+    "es": "Consiste en un solo carácter repetido.",
+    "it": "È composta da un unico carattere ripetuto.",
+    "ja": "同じ文字をくり返しているだけです。",
+    "ar": "تتكون من حرف واحد مكرَّر."
+  },
+  "grund.nur_fortlaufend": {
+    "de": "Es ist nur eine fortlaufende Reihe wie „abcdef“ oder „123456“.",
+    "en": "It is just a running sequence like “abcdef” or “123456”.",
+    "fr": "Ce n'est qu'une suite comme « abcdef » ou « 123456 ».",
+    "es": "Es solo una secuencia como «abcdef» o «123456».",
+    "it": "È solo una sequenza come «abcdef» o «123456».",
+    "ja": "「abcdef」や「123456」のような連続した並びになっています。",
+    "ar": "هي مجرد سلسلة متتالية مثل «abcdef» أو «123456»."
+  },
+  "grund.enthaelt_adresse": {
+    "de": "Es enthält deine E-Mail-Adresse.",
+    "en": "It contains your email address.",
+    "fr": "Il contient ton adresse e-mail.",
+    "es": "Contiene tu correo electrónico.",
+    "it": "Contiene il tuo indirizzo email.",
+    "ja": "メールアドレスが含まれています。",
+    "ar": "تحتوي على بريدك الإلكتروني."
+  },
+  "grund.bekannt_geleakt": {
+    "de": "Es steht in Listen gestohlener Passwörter, mit denen Angreifer Konten durchprobieren.",
+    "en": "It appears in lists of stolen passwords that attackers use to try accounts.",
+    "fr": "Il figure dans des listes de mots de passe volés que les attaquants essaient sur les comptes.",
+    "es": "Aparece en listas de contraseñas robadas que los atacantes prueban en las cuentas.",
+    "it": "Compare in elenchi di password rubate che gli aggressori provano sugli account.",
+    "ja": "流出したパスワードの一覧に載っており、不正ログインに使われています。",
+    "ar": "إنها موجودة في قوائم كلمات مرور مسروقة يجرّبها المهاجمون على الحسابات."
+  },
+  "grund.sonst": {
+    "de": "Es erfüllt die Regeln nicht.",
+    "en": "It does not meet the rules.",
+    "fr": "Il ne respecte pas les règles.",
+    "es": "No cumple las reglas.",
+    "it": "Non rispetta le regole.",
+    "ja": "条件を満たしていません。",
+    "ar": "لا تستوفي الشروط."
+  }
+}

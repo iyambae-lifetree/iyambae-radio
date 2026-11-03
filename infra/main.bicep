@@ -14,8 +14,10 @@
   Bewusst auf Kosten getrimmt:
   - Consumption-Profil, keine dedizierten Knoten
   - minReplicas 0, der Container schläft bei Stille ein
-  - Image aus der GitHub Container Registry, öffentlich — spart eine
-    Azure Container Registry (ACR Basic wären ~4,50 €/Monat für nichts)
+  - Abbild aus der Azure Container Registry, gebaut dort per `az acr build`
+    (.github/workflows/ausliefern.yml). Der frühere Weg über die GitHub
+    Container Registry ist seit August 2026 tot: Das Token trug kein
+    `write:packages`.
   - Log Analytics mit 30 Tagen Aufbewahrung; die ersten 5 GB Aufnahme je
     Monat sind frei und für eine Seite dieser Größe reichlich
 

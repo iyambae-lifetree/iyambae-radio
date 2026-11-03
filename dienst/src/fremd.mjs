@@ -174,6 +174,36 @@ export class FremdFehler extends Error {
   }
 }
 
+/*
+  Frische Anmeldung (432hz-radio#40).
+
+  Passkey anlegen und Anbieter verknuepfen bauen einen ZWEITEN Schluessel ins
+  Konto — einen, der auch einen spaeteren Passwortwechsel des Besitzers
+  ueberlebt. Wer kurz an ein offenes Geraet kommt, soll das nicht koennen.
+  Deshalb genuegt hier keine Sitzung, sie muss jung sein (FRISCH_MS in
+  sitzung.mjs).
+
+  `sitzung.frisch` fehlt in einer Schnittstelle? Dann gilt sie als nicht
+  frisch. Ein vergessener Methodenname darf die Tuer nicht oeffnen.
+
+  Gibt `{ kontoId, frisch }` zurueck und wirft nur bei fehlender Sitzung —
+  was bei „nicht frisch" geschieht, entscheidet der Aufrufer: Ein JSON-Weg
+  antwortet 403, ein Navigationsweg leitet auf die Seite zurueck.
+*/
+export async function pruefeFrischeSitzung(sitzung, anfrage) {
+  const kontoId = await sitzung.pruefe(anfrage);
+  if (!kontoId) throw new FremdFehler('nicht_angemeldet', 401);
+  const frisch = typeof sitzung.frisch === 'function' && (await sitzung.frisch(anfrage)) === true;
+  return { kontoId, frisch };
+}
+
+/** Wie `pruefeFrischeSitzung`, aber „nicht frisch" ist 403. Fuer die JSON-Wege. */
+export async function verlangeFrischeSitzung(sitzung, anfrage) {
+  const { kontoId, frisch } = await pruefeFrischeSitzung(sitzung, anfrage);
+  if (!frisch) throw new FremdFehler('frische_anmeldung_noetig', 403);
+  return kontoId;
+}
+
 // ── JWKS: Schluessel des Anbieters holen und behalten ───────────────
 
 export class JwksSpeicher {
