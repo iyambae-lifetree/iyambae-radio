@@ -37,13 +37,25 @@ on:
     # Aenderungen, die das Abbild nicht beruehren, loesen keinen Bau aus.
     # OFFEN.md oder ein README zu aendern soll nicht drei Minuten Rechenzeit
     # und eine neue Ueberarbeitung kosten.
-    paths-ignore:
-      - '**/*.md'
-      - '.gitignore'
+    #
+    # `paths` mit Ausnahmen statt `paths-ignore`, weil drei .md-Dateien eben
+    # DOCH im Abbild landen: baue-recht.py macht aus docs/recht/impressum.md,
+    # datenschutz.md und verarbeitungsverzeichnis.md die Seiten unter /recht/.
+    # Mit dem pauschalen '**/*.md' ging eine reine Aenderung am Rechtstext nie
+    # von selbst live — gemerkt am 03.11.2026, als iyambae-radio#29 (90 Tage
+    # Leerlauf) zusammengefuehrt war und die Seite weiter das Alte sagte.
+    # Reihenfolge zaehlt: Das letzte passende Muster gewinnt.
+    paths:
+      - '**'
+      - '!**/*.md'
+      - '!.gitignore'
       # Auch das Werkzeug selbst. Diese Datei zu aendern soll die Seite nicht
       # neu bauen — was hier steht, landet ohnehin in keinem Abbild. Erprobt
       # wird die Aenderung beim naechsten Push, der wirklich etwas ausliefert.
-      - '.github/**'
+      - '!.github/**'
+      - 'docs/recht/impressum.md'
+      - 'docs/recht/datenschutz.md'
+      - 'docs/recht/verarbeitungsverzeichnis.md'
   # Von Hand ausloesbar — fuer den Fall, dass eine Auslieferung wiederholt
   # werden muss, ohne dass sich etwas geaendert hat.
   workflow_dispatch:

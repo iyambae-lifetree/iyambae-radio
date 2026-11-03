@@ -33,12 +33,18 @@
   ist ohnehin fast abgelaufen, und der Mensch hat es laengst noch einmal
   versucht. Die neueste Anforderung ist die, auf die gerade jemand schaut.
   Verworfen wird mit einer Protokollzeile, damit es nicht still passiert.
+
+  Dass sie voll wird, soll trotzdem nicht vorkommen (432hz-radio#46, Punkt
+  4). Zwei Dinge halten sie seither klein: Die mailenden Wege im Dienst
+  teilen sich eine globale Grenze, die der Versandrate hier entspricht
+  (server.mjs, `MAILACHSE`). Und eine Mail, die schon wartet, wird nicht
+  ein zweites Mal eingereiht, siehe `reiheEin`.
 */
 
 import { protokolliere } from './protokoll.mjs';
 
-const JE_MINUTE = Number(process.env.MAIL_JE_MINUTE ?? 25);
-const JE_STUNDE = Number(process.env.MAIL_JE_STUNDE ?? 90);
+export const JE_MINUTE = Number(process.env.MAIL_JE_MINUTE ?? 25);
+export const JE_STUNDE = Number(process.env.MAIL_JE_STUNDE ?? 90);
 const SCHLANGE_MAX = Number(process.env.MAIL_WARTESCHLANGE ?? 500);
 
 /*
@@ -71,7 +77,9 @@ const TEXTE = {
             betreff: (code) => code + ' — Ihr Anmeldecode für IYAMBAE FM',
             text: (code, minuten) =>
                 'Ihr Anmeldecode lautet:\n\n    ' + code + '\n\n'
-                + 'Er gilt ' + minuten + ' Minuten und nur einmal.\n\n'
+                // Ein erneut gesendeter Code hat nur noch seine Restzeit, und
+                // die kann eine Minute sein (432hz-radio#46, Punkt 4).
+                + 'Er gilt ' + (minuten === 1 ? 'eine Minute' : minuten + ' Minuten') + ' und nur einmal.\n\n'
                 + 'Wenn Sie sich nicht anmelden wollten, können Sie diese Nachricht '
                 + 'ignorieren. Der Code allein genügt niemandem, der Ihr Postfach '
                 + 'nicht lesen kann.\n\n'
@@ -97,13 +105,34 @@ const TEXTE = {
                 + 'anderen Adresse angemeldet.\n\n'
                 + 'Wenn nicht, müssen Sie nichts tun.\n\nIYAMBAE FM',
         },
+        /*
+          Die Warnung vor der Loeschung wegen Inaktivitaet (inaktiv.mjs).
+          Im Du, anders als die drei darueber: Der Satz ist so entschieden
+          (Micha, 03.11.2026), und die Datenschutzerklaerung, auf die er sich
+          stuetzt, duzt ebenfalls. Keine Zahl fuer die Frist im Text — sie
+          ist einstellbar, und eine Mail, die „zwei Jahre" sagt, waehrend
+          INAKTIV_TAGE etwas anderes meint, waere eine falsche Auskunft.
+        */
+        inaktiv: {
+            betreff: (datum) => 'Dein Konto bei IYAMBAE FM wird am ' + datum + ' gelöscht',
+            text: (datum, verweis) =>
+                'Mit deinem Konto bei IYAMBAE FM hat sich lange niemand mehr angemeldet.\n\n'
+                + 'Dein Konto wird am ' + datum + ' gelöscht, wenn du dich bis dahin nicht '
+                + 'anmeldest. Gelöscht wird alles: Merkliste, Verlauf und deine Anmeldewege.\n\n'
+                + 'Wenn du es behalten willst, melde dich einfach an — damit beginnt die '
+                + 'Frist von vorn:\n\n    ' + verweis + '\n\n'
+                + 'Wenn du es nicht mehr brauchst, musst du nichts tun.\n\n'
+                + 'Fragen? Antworte nicht auf diese Nachricht — sie wird nicht gelesen. '
+                + 'Schreib an hallo@iyambae.fm.\n\nIYAMBAE FM',
+        },
     },
     en: {
         code: {
             betreff: (code) => code + ' — your IYAMBAE FM sign-in code',
             text: (code, minuten) =>
                 'Your sign-in code is:\n\n    ' + code + '\n\n'
-                + 'It is valid for ' + minuten + ' minutes and can be used once.\n\n'
+                + 'It is valid for ' + minuten + (minuten === 1 ? ' minute' : ' minutes')
+                + ' and can be used once.\n\n'
                 + 'If you did not try to sign in, you can ignore this message.\n\n'
                 + 'Questions? Do not reply to this message. Write to hallo@iyambae.fm.\n\n'
                 + 'IYAMBAE FM',
@@ -124,8 +153,59 @@ const TEXTE = {
                 + 'If that was you, you may have signed up with a different address.\n\n'
                 + 'If it was not, there is nothing you need to do.\n\nIYAMBAE FM',
         },
+        inaktiv: {
+            betreff: (datum) => 'Your IYAMBAE FM account will be deleted on ' + datum,
+            text: (datum, verweis) =>
+                'Nobody has signed in to your IYAMBAE FM account for a long time.\n\n'
+                + 'Your account will be deleted on ' + datum + ' unless you sign in before '
+                + 'then. Everything goes: your saved stations, your history and your '
+                + 'sign-in methods.\n\n'
+                + 'If you want to keep it, just sign in — that starts the period again:\n\n    '
+                + verweis + '\n\n'
+                + 'If you no longer need it, there is nothing you need to do.\n\n'
+                + 'Questions? Do not reply to this message. Write to hallo@iyambae.fm.\n\n'
+                + 'IYAMBAE FM',
+        },
     },
 };
+
+/*
+  Der Tag in der Warnmail, ausgeschrieben: „3. November 2028" liest sich
+  eindeutig, „03.11.2028" liest ein Amerikaner als dritten Maerz. UTC, weil
+  `am` ein reines Datum ist — in einer oertlichen Zeitzone westlich von
+  Greenwich wuerde daraus der Vortag.
+*/
+const DATUMSFORM = { de: 'de-DE', en: 'en-GB' };
+function schreibeTag(iso, sprache) {
+    return new Intl.DateTimeFormat(DATUMSFORM[sprache], {
+        day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+    }).format(new Date(iso));
+}
+
+/*
+  Die Warnmail kennt die Sprache meist nicht: Das Konto merkt sich keine, und
+  sie geht aus dem taeglichen Durchgang, nicht aus einer Anfrage mit
+  Seitensprache. Dann kommt sie zweisprachig — Deutsch zuerst, weil die
+  Seite deutsch beginnt. Eine Warnung vor einer Loeschung, die jemand nicht
+  lesen kann, waere keine. `Object.hasOwn` aus demselben Grund wie bei
+  `texte()` darunter.
+*/
+function inaktivInhalt(auftrag) {
+    const eine = (sprache) => {
+        const datum = schreibeTag(auftrag.am, sprache);
+        return {
+            subject: TEXTE[sprache].inaktiv.betreff(datum),
+            plainText: TEXTE[sprache].inaktiv.text(datum, auftrag.verweis),
+        };
+    };
+    if (Object.hasOwn(TEXTE, auftrag.sprache)) return eine(auftrag.sprache);
+    const de = eine('de');
+    const en = eine('en');
+    return {
+        subject: de.subject + ' / ' + en.subject,
+        plainText: de.plainText + '\n\n— English below —\n\n' + en.plainText,
+    };
+}
 
 /*
   Die Bestaetigung fuer Mikeschs Schnurrpost — in ALLEN sieben Sprachen,
@@ -215,6 +295,16 @@ function texte(sprache) {
 
 // ── Der Versender ───────────────────────────────────────────────────
 
+/*
+  Wann zwei Mails „dieselbe" sind. `marke` und `unbekannt` sind beide die
+  Antwort auf „Passwort vergessen" — welche es wird, haengt nur daran, ob es
+  das Konto gerade gibt. Entsteht es zwischen zwei Anforderungen, soll die
+  neuere hinausgehen, nicht beide.
+*/
+function gruppeVon(auftrag) {
+    return auftrag.art === 'unbekannt' ? 'marke' : auftrag.art;
+}
+
 /**
  * @param {object} o
  * @param {string} [o.endpunkt]  ACS-Endpunkt; fehlt er, wird auf die Konsole
@@ -269,7 +359,9 @@ export function erzeugeVersender({ endpunkt, absender, jetzt = Date.now, versend
           hat, und das ist eine Auskunft, die ihm zusteht.
         */
         const brief = RUNDBRIEF[auftrag.sprache] ?? RUNDBRIEF.en;
-        const inhalt = auftrag.art === 'rundbrief'
+        const inhalt = auftrag.art === 'inaktiv'
+            ? inaktivInhalt(auftrag)
+            : auftrag.art === 'rundbrief'
             ? { subject: brief.betreff, plainText: brief.text(auftrag.verweis, auftrag.stunden) }
             : auftrag.art === 'code'
             ? { subject: t.code.betreff(auftrag.code), plainText: t.code.text(auftrag.code, auftrag.minuten) }
@@ -406,6 +498,29 @@ export function erzeugeVersender({ endpunkt, absender, jetzt = Date.now, versend
          * Mailversand gerade geht.
          */
         reiheEin(auftrag) {
+            /*
+              Je Adresse und Art hoechstens EINE wartende Mail
+              (432hz-radio#46, Punkt 4). Wartet schon eine, nimmt die neue
+              ihren Platz ein: Sie ist die neuere und traegt den Code oder
+              die Marke, die jetzt gilt — beim Passwortlink ist die alte
+              Marke ja schon ueberschrieben. Der Platz in der Schlange
+              bleibt der alte, damit Nachfragen nicht nach hinten ruecken.
+
+              Ohne das fuellte ein Fremder, der fuer eine Adresse im
+              Sekundentakt anfordert, die Schlange mit Mails, die alle
+              dasselbe sagen, und schoebe die der anderen hinaus.
+
+              Was gerade versendet wird, liegt nicht mehr in der Schlange
+              und zaehlt nicht mit. Die neue Mail geht dann hinterher.
+            */
+            const art = gruppeVon(auftrag);
+            const wartend = schlange.findIndex((a) => a.an === auftrag.an && gruppeVon(a) === art);
+            if (wartend >= 0) {
+                schlange[wartend] = auftrag;
+                protokolliere({ art: 'mail.entdoppelt', ergebnis: 'ok', grund: auftrag.art, wartend: schlange.length });
+                return true;
+            }
+
             if (schlange.length >= SCHLANGE_MAX) {
                 schlange.shift();
                 protokolliere({ art: 'mail.verworfen', ergebnis: 'fehler', wartend: schlange.length });

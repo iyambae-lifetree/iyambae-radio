@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { speicherImArbeitsspeicher, TABELLE_KONTEN } from '../src/speicher.mjs';
 import {
     erzeugeCode, legeCodeAn, pruefeCode, abdruckVonCode,
-    legeMarkeAn, loeseMarkeEin, GUELTIG_MS, HOECHSTENS_VERSUCHE,
+    legeMarkeAn, loeseMarkeEin, GUELTIG_MS, HOECHSTENS_VERSUCHE, vergissOffeneCodes,
 } from '../src/einmalcode.mjs';
 
 const KONTO = 'a'.repeat(32);
@@ -86,8 +86,15 @@ test('Unsinn zaehlt nicht gegen die fuenf Versuche', async () => {
 });
 
 test('ein neuer Code macht den alten ungueltig', async () => {
+    /*
+      Solange der Dienst den offenen Code kennt, schickt er ihn erneut
+      (432hz-radio#46, Punkt 4). Neu angelegt wird erst, wenn er ihn
+      vergessen hat, etwa nach einem Neustart. Dann gilt weiter: hoechstens
+      EIN gueltiger Code je Zweck.
+    */
     const speicher = speicherImArbeitsspeicher();
     const { code: alt } = await legeCodeAn(speicher, KONTO);
+    vergissOffeneCodes();
     const { code: neu } = await legeCodeAn(speicher, KONTO);
 
     if (alt !== neu) {

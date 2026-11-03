@@ -51,9 +51,10 @@ import {
     baueSitzungsPlaetzchen, baueLoeschPlaetzchen, liesPlaetzchen,
     stosseAufraeumenAn, raeumeKonto,
 } from './sitzung.mjs';
-import { legeCodeAn, pruefeCode, legeMarkeAn, loeseMarkeEin, GUELTIG_MS, MARKE_GUELTIG_MS } from './einmalcode.mjs';
+import { legeCodeAn, pruefeCode, legeMarkeAn, loeseMarkeEin, MARKE_GUELTIG_MS } from './einmalcode.mjs';
 import { pruefe as pruefePasswort, hashe, pruefeNeuesPasswort, bereiteVor, UeberlastFehler } from './passwort.mjs';
-import { erzeugeVersender } from './mail.mjs';
+import { erzeugeVersender, JE_MINUTE as MAIL_JE_MINUTE } from './mail.mjs';
+import { liesUrspruenge, RUECKMELDEWEGE } from './urspruenge.mjs';
 import {
     saeubereEintraege, verschmelzePlatten, nurDrin, raeumeGrabsteine, beschneide,
     saeubereVerlauf, verschmelzeVerlauf,
@@ -78,9 +79,9 @@ import {
 const PORT = Number(process.env.PORT ?? 8081);
 const HOECHSTER_KOERPER = Number(process.env.HOECHSTER_KOERPER ?? 32 * 1024);
 const GRABSTEIN_TAGE = Number(process.env.GRABSTEIN_TAGE ?? 90);
-const ERLAUBTE_URSPRUENGE = String(process.env.ERLAUBTE_URSPRUENGE ?? 'https://iyambae.fm,https://www.iyambae.fm')
-    .split(',').map((s) => s.trim()).filter(Boolean);
-const SEITE = ERLAUBTE_URSPRUENGE[0] ?? 'https://iyambae.fm';
+// Zwei Listen, je nach Weg. Warum, steht in urspruenge.mjs (432hz-radio#46).
+const URSPRUENGE = liesUrspruenge();
+const SEITE = URSPRUENGE.konto[0] ?? 'https://iyambae.fm';
 
 const schlaf = (ms) => new Promise((f) => setTimeout(f, ms));
 
@@ -199,6 +200,28 @@ export function erzeugeDrossel({ hoechstensSchluessel = 20_000, uhr = Date.now }
 }
 
 /*
+  Die globale Achse aller Wege, die eine Mail ausloesen (432hz-radio#46,
+  Punkt 4): /api/anmelden, /api/passwort/vergessen, /api/rundbrief/anmelden.
+
+  Bis hierher hatte jeder Weg seine eigene, und /api/anmelden allein liess
+  200 je Minute durch. Der Versand schafft 25 (mail.mjs, MAIL_JE_MINUTE).
+  Was darueber kam, stand in der Warteschlange, und war die voll, flogen
+  die AELTESTEN Mails hinaus — die, auf die schon jemand wartete. Und
+  niemand sah es, denn diese Wege antworten immer 204.
+
+  Jetzt ein gemeinsamer Eimer mit der Rate des Versands. Wer darueber
+  liegt, bekommt 429 mit Retry-After und kann es gleich noch einmal
+  versuchen, statt auf eine Mail zu warten, die nie kommt. Die Grenze gilt
+  je Replik, wie alle Zaehler hier (siehe oben).
+
+  EHRLICH DAZUGESAGT: Der Versand kennt auch eine Stundengrenze (90).
+  Die bildet diese Achse nicht ab, entschieden war die Minutengrenze. Ein
+  Ansturm, der laenger als eine Stunde anhaelt, fuellt die Schlange also
+  weiterhin — nur zwoelfmal langsamer als vorher.
+*/
+const MAILACHSE = ['global', 'mail:*', MAIL_JE_MINUTE, 60_000];
+
+/*
   Die volle Adresse des Besuchers wird NIE gespeichert — auch nicht in einem
   Drosselzaehler, denn ein Zaehler ist ein Speicher.
 
@@ -239,7 +262,31 @@ class HttpFehler extends Error {
     }
 }
 
+/*
+  Nur application/json (432hz-radio#46, Punkt 5).
+
+  text/plain, application/x-www-form-urlencoded und multipart/form-data
+  sind „einfache" Inhaltstypen: Eine fremde Seite darf damit ohne
+  Vorabanfrage hierher posten, ein Formular sogar ohne eine Zeile Skript.
+  Der Rumpf war trotzdem JSON und wurde gelesen — die Herkunftspruefung war
+  damit die EINZIGE Reihe. Mit application/json als Pflicht muss der
+  Browser vorher fragen, und auf eine Vorabanfrage antwortet dieser Dienst
+  nicht mit Erlaubnis.
+
+  Verlangt wird der Kopf bei JEDER veraendernden Anfrage, auch ohne Rumpf.
+  Eine Ausnahme fuer leere Rumpfe waere genau die Luecke: Ein leeres
+  Formular an /api/abmelden braucht keinen Inhalt, um etwas zu tun.
+
+  Die Seite schickt den Kopf ueberall mit; Scripts/test/inhaltstyp.test.mjs
+  haelt das beim Bau fest. fremd.mjs (`lesJson`) verlangt dasselbe schon.
+*/
+function pruefeInhaltstyp(anfrage) {
+    const art = String(anfrage.headers['content-type'] ?? '').split(';')[0].trim().toLowerCase();
+    if (art !== 'application/json') throw new HttpFehler(415, 'falscher_inhaltstyp');
+}
+
 async function liesKoerper(anfrage) {
+    pruefeInhaltstyp(anfrage);
     let laenge = 0;
     const stuecke = [];
     for await (const stueck of anfrage) {
@@ -323,12 +370,17 @@ function antworte(res, status, koerper, kopf = {}) {
   POST. Wer ihn nicht schickt, ist kein Browser — und dieser Dienst hat
   keine anderen Nutzer. Wer doch welche braucht (ein Skript, ein Test),
   setzt HERKUNFT_LOCKER=1 und weiss, was er tut.
+
+  Welche Liste gilt, haengt am Weg (432hz-radio#46, Punkt 5): Die drei
+  Rueckmeldewege nehmen auch apps.iyambae.fm, alle anderen nur iyambae.fm
+  und www. Die Begruendung steht in urspruenge.mjs.
 */
-function pruefeHerkunft(anfrage) {
+function pruefeHerkunft(anfrage, schluessel, urspruenge = URSPRUENGE) {
     if (process.env.HERKUNFT_LOCKER === '1') return;
     const herkunft = anfrage.headers.origin;
     if (!herkunft) throw new HttpFehler(403, 'herkunft_fehlt');
-    if (!ERLAUBTE_URSPRUENGE.includes(herkunft)) throw new HttpFehler(403, 'herkunft_fremd');
+    const erlaubt = RUECKMELDEWEGE.has(schluessel) ? urspruenge.rueckmeldung : urspruenge.konto;
+    if (!erlaubt.includes(herkunft)) throw new HttpFehler(403, 'herkunft_fremd');
 }
 
 // ── Das Zwischenstueck zur Fremdanmeldung ───────────────────────────
@@ -422,7 +474,9 @@ export async function baueFremdanmeldung(speicher, zusatz = {}) {
 
   Die Zahlen sind KEINE neuen. Ein Anbieterstart ist eine Anmeldung, nur bei
   jemand anderem, und bekommt die Werte von /api/anmelden (20 je Netz, 200
-  global). Ein Passkey-Lauf prueft einen Nachweis: je Netz die 40 von
+  global). Dort ist die globale Achse seit 432hz-radio#46 die des
+  Mailversands (25 je Minute); ein Anbieterstart schickt keine Mail und
+  behaelt die 200. Ein Passkey-Lauf prueft einen Nachweis: je Netz die 40 von
   /api/anmelden/passwort, global aber die 300 von /api/anmelden/code und
   nicht dessen 120 — die 120 stehen dort fuer die Argon2-Schranke, und eine
   Signaturpruefung kostet nichts dergleichen.
@@ -465,6 +519,8 @@ function fremdDrossel(schluessel, netz) {
 export function baueDienst({
     speicher, versender, drossel = erzeugeDrossel(), fremd = null, zahlen = null,
     titel = null, mikesch = null,
+    // Fuer Tests, die mit der Umgebung aus main.bicep pruefen wollen.
+    urspruenge = URSPRUENGE,
 } = {}) {
 
     /*
@@ -618,15 +674,23 @@ export function baueDienst({
             drossle([
                 ['adresse', 'anm:' + adressSchluessel(adresse), 5, 10 * 60_000],
                 ['netz', 'anm:' + netz, 20, 10 * 60_000],
-                ['global', 'anm:*', 200, 60_000],
+                MAILACHSE,
             ]);
 
             if (echt) {
                 const partition = kennungAbdruck('mail', adresse);
-                const { code } = await legeCodeAn(speicher, partition, 'anmeldung');
+                /*
+                  Ist noch ein Code offen, kommt DERSELBE zurueck, mit seiner
+                  Restzeit (einmalcode.mjs, 432hz-radio#46). Die Mail nennt
+                  die Restzeit, aufgerundet — abgerundet stuende bei
+                  fuenfzig Sekunden „0 Minuten" darin. Eine Mail geht in
+                  beiden Faellen hinaus, sonst waere das Ausbleiben einer
+                  Mail eine Auskunft.
+                */
+                const { code, ablauf } = await legeCodeAn(speicher, partition, 'anmeldung');
                 versender.reiheEin({
                     art: 'code', an: adresse, code,
-                    minuten: Math.round(GUELTIG_MS / 60_000),
+                    minuten: Math.max(1, Math.ceil((ablauf - Date.now()) / 60_000)),
                     sprache: koerper.sprache,
                 });
             }
@@ -784,7 +848,7 @@ export function baueDienst({
             drossle([
                 ['adresse', 'verg:' + adressSchluessel(adresse), 3, 30 * 60_000],
                 ['netz', 'verg:' + netz, 10, 30 * 60_000],
-                ['global', 'verg:*', 60, 60_000],
+                MAILACHSE,
             ]);
 
             if (echt) {
@@ -1521,6 +1585,8 @@ export function baueDienst({
                 ['netz', 'post:' + netz, 5, 30 * 60_000],
                 ...(anmeldung ? [['adresse', 'post:' + adressSchluessel(anmeldung.mail), 3, 24 * 3_600_000]] : []),
                 ['global', 'post:*', 60, 10 * 60_000],
+                // Nur wer eine Mail ausloesen kann, zaehlt im Mail-Eimer.
+                ...(anmeldung ? [MAILACHSE] : []),
             ]);
             if (!anmeldung) {
                 protokolliere({ art: 'rundbrief', ergebnis: 'abgelehnt', grund: 'nichts_erkannt' });
@@ -1602,7 +1668,7 @@ export function baueDienst({
                 antwort.setHeader('X-Content-Type-Options', 'nosniff');
                 antwort.setHeader('Referrer-Policy', 'no-referrer');
                 if (await fremd.behandle(anfrage, antwort)) {
-                    stosseAufraeumenAn(speicher);
+                    stosseAufraeumenAn(speicher, Date.now(), { versender, seite: SEITE });
                     return;
                 }
             }
@@ -1617,7 +1683,7 @@ export function baueDienst({
                 return;
             }
 
-            if (anfrage.method !== 'GET') pruefeHerkunft(anfrage);
+            if (anfrage.method !== 'GET') pruefeHerkunft(anfrage, schluessel, urspruenge);
             const koerper = anfrage.method === 'GET' ? {} : await liesKoerper(anfrage);
 
             const ergebnis = await behandler({ anfrage, koerper, netz, start, pfad });
@@ -1626,9 +1692,10 @@ export function baueDienst({
             /*
               Das Aufraeumen ganz am Ende, NACH der Antwort. Es haengt an
               einer echten Anfrage und nicht an einem Timer — und die Anfrage
-              wartet nicht darauf.
+              wartet nicht darauf. Der Versender geht mit, weil derselbe
+              Durchgang inaktive Konten warnt und loescht (inaktiv.mjs).
             */
-            stosseAufraeumenAn(speicher);
+            stosseAufraeumenAn(speicher, Date.now(), { versender, seite: SEITE });
 
         } catch (fehler) {
             behandleFehler(fehler, antwort, { anfrage, start });
