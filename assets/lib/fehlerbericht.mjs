@@ -64,8 +64,16 @@ async function sende(bericht) {
     try {
         await fetch(ZIEL, {
             method: 'POST',
-            // Kein Content-Type: Der loeste einen Vorabflug aus, und der
-            // brächte hier nichts als eine zweite Anfrage.
+            /*
+             Mit Content-Type, wie jeder veraendernde Aufruf der Seite
+             (432hz-radio#46, Punkt 5; Scripts/test/inhaltstyp.test.mjs).
+             Hier stand bis dahin, der Kopf loese einen Vorabflug aus. Das
+             gilt nur zwischen zwei Ursprüngen; ZIEL ist ein Pfad auf
+             derselben Adresse, und dort fragt der Browser nicht vorher.
+             nginx schreibt den Rumpf unter /fehler nur ins Protokoll und
+             sieht sich den Kopf nicht an.
+            */
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bericht),
             keepalive: true,          // überlebt das Schließen des Fensters
         });

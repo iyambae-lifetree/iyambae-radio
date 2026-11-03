@@ -141,8 +141,22 @@ param mailDomaene string = 'mail.iyambae.fm'
 @description('Wo die Kommunikationsdaten ruhen. Nach dem Anlegen nicht mehr änderbar.')
 param datenOrt string = 'Germany'
 
-@description('Erlaubte Ursprünge für den Anmeldedienst. Grundlage der Herkunftsprüfung UND des Passwortlinks.')
-param erlaubteUrspruenge string = 'https://iyambae.fm,https://www.iyambae.fm,https://apps.iyambae.fm'
+/*
+  Zwei Listen seit 432hz-radio#46 (Punkt 5). apps.iyambae.fm stand bis dahin
+  in der ersten und durfte damit jeden Weg des Dienstes rufen, auch „Konto
+  löschen". Die Seite dort braucht nur die Umfrage und die beiden
+  Messwerkzeuge.
+
+  Der Dienst zieht APPS_URSPRUENGE von ERLAUBTE_URSPRUENGE ab, bevor er die
+  Kontowege prüft (dienst/src/urspruenge.mjs). Ein Stand, in dem apps noch in
+  der ersten Liste steht — so läuft es, bis diese Vorlage das nächste Mal von
+  Hand ausgerollt wird —, ist deshalb kein Loch.
+*/
+@description('Ursprünge für alle Wege des Anmeldedienstes. Grundlage der Herkunftsprüfung UND des Passwortlinks; der erste ist die Adresse im Link.')
+param erlaubteUrspruenge string = 'https://iyambae.fm,https://www.iyambae.fm'
+
+@description('Ursprünge, die NUR /api/umfrage, /api/hoertest und /api/stimmung rufen dürfen.')
+param appsUrspruenge string = 'https://apps.iyambae.fm'
 
 /*
   Die RP-ID für Passkeys MUSS die registrierbare Domain sein, nicht der
@@ -1057,6 +1071,7 @@ var kontoUmgebung = concat([
   { name: 'ACS_ENDPUNKT', value: 'https://${kommunikation.properties.hostName}' }
   { name: 'ABSENDER', value: 'konto@${mailDomaene}' }
   { name: 'ERLAUBTE_URSPRUENGE', value: erlaubteUrspruenge }
+  { name: 'APPS_URSPRUENGE', value: appsUrspruenge }
   { name: 'WEBAUTHN_RP_ID', value: passkeyDomain }
   { name: 'WEBAUTHN_RP_NAME', value: 'IYAMBAE FM' }
   { name: 'GRABSTEIN_TAGE', value: string(grabsteinTage) }
