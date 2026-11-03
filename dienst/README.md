@@ -146,7 +146,9 @@ und Weiche werden also mitgeprueft und nicht nachgebaut.
 | `CODE_GUELTIG_MINUTEN` | `10` | Einmalcode |
 | `CODE_VERSUCHE` | `5` | danach ist der Code verbrannt |
 | `MARKE_GUELTIG_MINUTEN` | `60` | Passwortlink |
-| `SITZUNGSDAUER_TAGE` | `365` | Plaetzchen und Tabellenzeile |
+| `SITZUNGSDAUER_TAGE` | `365` | Hoechstdauer: Plaetzchen und Tabellenzeile |
+| `LEERLAUF_TAGE` | `90` | gleitend: so lange ohne Besuch, dann abgemeldet (#40) |
+| `FRISCH_MINUTEN` | `10` | nach der Anmeldung offen: Passwort setzen, Passkey anlegen, Verknuepfen, Konto loeschen (#40) |
 | `MAIL_JE_MINUTE` / `MAIL_JE_STUNDE` | `25` / `90` | unter Microsofts 30/100 |
 | `MAIL_WARTESCHLANGE` | `500` | danach faellt die aelteste Mail weg |
 | `HIBP_ZEITGRENZE_MS` | `1500` | Leak-Abgleich; laeuft er ab, wird durchgelassen |

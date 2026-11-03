@@ -57,7 +57,53 @@ import { gleichOhneZeitverrat } from './passwort.mjs';
 import { protokolliere } from './protokoll.mjs';
 
 export const PLAETZCHEN = 'hz_sitzung';
-export const SITZUNGSDAUER_MS = Number(process.env.SITZUNGSDAUER_TAGE ?? 365) * 24 * 60 * 60 * 1000;
+
+/*
+  ── Drei Fristen, und wem sie gehoeren (432hz-radio#40) ─────────────
+
+  HOECHSTDAUER (SITZUNGSDAUER_TAGE, 365): So lange lebt das Plaetzchen im
+  Browser, und ueber `angelegt + SITZUNGSDAUER_MS` hinaus schiebt sich auch
+  der Ablauf in der Tabelle nie. Wer jeden Tag hoert, meldet sich einmal im
+  Jahr neu an.
+
+  LEERLAUF (LEERLAUF_TAGE, 90): das gleitende Fenster. Wer so lange nicht
+  vorbeikommt, ist abgemeldet. Vorher galt ein Jahr ab Anmeldung, egal ob
+  dazwischen jemand kam — ein altes Plaetzchen auf einem verkauften Geraet
+  war ein Jahr lang ein Schluessel. 90 ist das obere Ende des Rahmens aus
+  #40 (30–90) und damit die zurueckhaltendste Wahl fuer die Hoerer. DAS IST
+  EINE ENTSCHEIDUNG, die Saemi-Ra oder Micha gehoert: Wer seltener als alle
+  drei Monate hoert, muss sich danach neu anmelden.
+
+  FRISCH (FRISCH_MINUTEN, 10): wie lange nach einer Anmeldung die Wege
+  offen stehen, die einem Fremden eine Hintertuer bauen wuerden — Passwort
+  setzen, Passkey anlegen, Anbieter verknuepfen, Konto loeschen. Gemessen
+  ab `angelegt`, denn eine Sitzung entsteht nur durch eine Anmeldung;
+  Weiterbenutzen macht sie nicht frisch.
+
+  Das Gleiten kostet keinen zusaetzlichen Schreibvorgang: Es haengt am
+  taeglichen Nachtragen von `zuletzt`, das es schon gab.
+*/
+const TAG_MS = 24 * 60 * 60 * 1000;
+export const SITZUNGSDAUER_MS = Number(process.env.SITZUNGSDAUER_TAGE ?? 365) * TAG_MS;
+export const LEERLAUF_MS = Math.min(Number(process.env.LEERLAUF_TAGE ?? 90) * TAG_MS, SITZUNGSDAUER_MS);
+export const FRISCH_MS = Number(process.env.FRISCH_MINUTEN ?? 10) * 60_000;
+
+/** Der Ablauf nach einem Besuch um `jetzt`: gleitend, aber nie ueber die Hoechstdauer. */
+function ablaufNach(angelegt, jetzt) {
+    return Math.min(angelegt + SITZUNGSDAUER_MS, jetzt + LEERLAUF_MS);
+}
+
+/**
+ * Ist die Sitzung jung genug fuer eine sensible Aenderung?
+ * `stand` ist, was `pruefeSitzung` zurueckgibt; `null` ist nie frisch.
+ */
+export function istFrisch(stand, jetzt = Date.now()) {
+    if (!stand || !Number.isFinite(stand.angemeldetAm)) return false;
+    const alter = jetzt - stand.angemeldetAm;
+    // Eine Anmeldung aus der Zukunft ist eine verstellte Uhr oder eine
+    // verfaelschte Zeile, keine frische Sitzung.
+    return alter >= 0 && alter <= FRISCH_MS;
+}
 
 const ZEILE = (abdruck) => 'sitzung:' + abdruck;
 
@@ -124,7 +170,7 @@ export async function erzeugeSitzung(speicher, kontoId, jetzt = Date.now()) {
         rowKey: ZEILE(abdruck),
         abdruck,
         angelegt: jetzt,
-        ablauf: jetzt + SITZUNGSDAUER_MS,
+        ablauf: ablaufNach(jetzt, jetzt),
         // Nur das Datum, nicht die Uhrzeit. Ein Zeitstempel auf die Sekunde
         // waere ein Bewegungsprofil; ein Datum reicht, um eine tote Sitzung
         // zu erkennen.
@@ -172,14 +218,25 @@ export async function pruefeSitzung(speicher, plaetzchenWert, jetzt = Date.now()
     */
     if (!gleichOhneZeitverrat(zeile.abdruck, abdruck)) return null;
 
-    if (!(zeile.ablauf > jetzt)) {
+    /*
+      Zwei Pruefungen auf Ablauf. Die erste ist der Normalfall. Die zweite
+      faengt die Zeilen von vor #40: Sie tragen einen festen Ablauf ein Jahr
+      nach der Anmeldung, und ohne diese Zeile gaelte fuer sie der Leerlauf
+      erst nach ihrem ersten Besuch. `zuletzt` ist nur ein Datum, deshalb
+      ein Tag Spielraum — gemessen wird ab dem Ende des letzten Besuchstags.
+    */
+    const zuletztMs = Date.parse(zeile.zuletzt ?? '');
+    const leerlaufVorbei = Number.isFinite(zuletztMs) && zuletztMs + TAG_MS + LEERLAUF_MS <= jetzt;
+    if (!(zeile.ablauf > jetzt) || leerlaufVorbei) {
         await speicher.loesche(TABELLE_KONTEN, kontoId, ZEILE(abdruck)).catch(() => {});
         protokolliere({ art: 'sitzung.abgelaufen', konto: kontoId, ergebnis: 'abgelehnt' });
         return null;
     }
 
     // Nur schreiben, wenn sich der Tag geaendert hat: sonst ein Schreibvorgang
-    // je Anfrage, und das ist Geld und Personenbezug fuer nichts.
+    // je Anfrage, und das ist Geld und Personenbezug fuer nichts. Derselbe
+    // Schreibvorgang schiebt das gleitende Fenster weiter — einmal am Tag
+    // genuegt, der Leerlauf zaehlt in Tagen.
     const heute = tagVon(jetzt);
     if (zeile.zuletzt !== heute) {
         // Ohne If-Match, absichtlich: Zwei Anfragen desselben Menschen am
@@ -187,10 +244,15 @@ export async function pruefeSitzung(speicher, plaetzchenWert, jetzt = Date.now()
         // gewinnen. Und ohne `await` — wer eine Seite aufruft, soll nicht
         // auf einen Buchhaltungseintrag warten.
         const { etag: _weg, ...ohneEtag } = zeile;
-        speicher.setze(TABELLE_KONTEN, { ...ohneEtag, zuletzt: heute }).catch(() => {});
+        speicher.setze(TABELLE_KONTEN, {
+            ...ohneEtag, zuletzt: heute,
+            // Ohne `angelegt` gibt es keine Hoechstdauer, an der man
+            // messen koennte — dann wird nicht verlaengert.
+            ablauf: Number.isFinite(zeile.angelegt) ? ablaufNach(zeile.angelegt, jetzt) : zeile.ablauf,
+        }).catch(() => {});
     }
 
-    return { kontoId, abdruck };
+    return { kontoId, abdruck, angemeldetAm: zeile.angelegt };
 }
 
 export async function widerrufe(speicher, kontoId, abdruck) {

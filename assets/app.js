@@ -2415,7 +2415,7 @@ class App {
    Was der Rueckweg von Google mitbringt.
 
    fremd.mjs schickt den Browser auf `/<sprache>/?anmeldung=ok|neu|fehler|
-   abgebrochen` zurueck (rueckkehrZiel()). Der Parameter wird gelesen, gezeigt
+   abgebrochen|frisch` zurueck (rueckkehrZiel()). Der Parameter wird gelesen, gezeigt
    und dann aus der Adresszeile entfernt — aus demselben Grund wie bei
    folgeAdressZiel(): Ein Neuladen zeigte sonst wieder dieselbe Meldung, und
    ein weitergegebener Link truege eine Nachricht, die dem Empfaenger nichts
@@ -2432,6 +2432,9 @@ class App {
       neu:         ['konto.zurueck.neu', 'info'],
       fehler:      ['konto.zurueck.fehler', 'fehler'],
       abgebrochen: ['konto.zurueck.abgebrochen', 'info'],
+      // Verknuepfen aus einer alten Sitzung (432hz-radio#40): fremd.mjs
+      // schickt zurueck statt zum Anbieter. Kein Fehler des Menschen.
+      frisch:      ['konto.zurueck.frisch', 'info'],
     };
     const treffer = saetze[stand];
     if (treffer) this.ui.meldung(t(treffer[0]), treffer[1]);

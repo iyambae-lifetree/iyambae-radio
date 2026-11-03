@@ -195,7 +195,10 @@
 // v86: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
 // app.js, mikesch.css, lib/mikesch.mjs, drei Bilder, alle sieben Kataloge.
 // (v83 war sein Platzhalter, solange er offen lag.)
-const SW_VERSION = 'iyambae-v87';
+// v88: Rückweg „frische Anmeldung nötig“ (432hz-radio#40) zeigt eine Meldung.
+// app.js, die sieben Sprachen. (Im Zweig hiess das v73, die Nummer war beim
+// Zusammenfuehren schon vergeben.)
+const SW_VERSION = 'iyambae-v88';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
