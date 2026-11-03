@@ -42,6 +42,7 @@ COPY . .
 # den keine Auslieferung laufen laesst, ist kein Test.
 RUN python3 Scripts/baue-sprachen.py \
  && python3 Scripts/baue-regale.py \
+ && python3 Scripts/baue-neu-im-laden.py \
  && python3 Scripts/baue-passwort-neu.py \
  && python3 Scripts/pruefe-uebersetzungen.py \
  && python3 Scripts/baue-recht.py \

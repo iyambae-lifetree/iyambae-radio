@@ -160,7 +160,42 @@
 // v72: „Ganz lesen“ — das Kärtchen auf der Hülle hatte sechs Zeilen und war
 // bei 1024 px nie ganz zu sehen; jetzt öffnet es in voller Länge, ohne
 // einzuschalten (wie in Sonarium). app.js, styles.css, die sieben Sprachen.
-const SW_VERSION = 'iyambae-v72';
+// v73: Tuner-Versprechen eingeschränkt (misst nur bei gehaltenen Tönen). lang/*.json, apps.
+// v74: ByteFM und Shoot em Up Radio raus — beide haben die CORS-Freigabe
+// abgelehnt (15.10.), samt Texten und Logos. sender.json, sender-texte.*.json.
+// v75: Einschlaf-Timer in der Spielerleiste; Name überall IYAMBAE FM. app.js,
+// schlummer.mjs, styles.css, die sieben Sprachen, index.html, Manifeste.
+// v76: „Diesen Sender unterstützen“ auf Kärtchen und im Fenster, der leise
+// Tuner-Hinweis nach zwanzig Minuten in 432 Hz, der Feed „Neu im Laden“ im
+// Fuß. app.js, unterstuetzen.mjs, tunerhinweis.mjs, sender.json, die Sprachen.
+// v77: SomaFM raus, alle 23 Kanäle samt Texten und Logos — die Bedingungen
+// (Stand 04.09.2026) verbieten Einbetten und Verändern ohne schriftliche
+// Erlaubnis, und Erlaubnisse für fremde Seiten gibt SomaFM nicht. sender.json,
+// sender-texte.*.json.
+// v78: 25 neue Sender als Ersatz für SomaFM, ByteFM und Shoot em Up Radio,
+// jeder mit CORS über die ganze Kette und ohne Verbot in den Bedingungen.
+// sender.json, sender-texte.*.json, sechs Logos.
+// v79: Ella Radio Bebop raus, samt Texten und Logo — das Impressum erlaubt
+// das Einfügen der Ströme in fremde Angebote nur mit schriftlichem
+// Einverständnis. sender.json, sender-texte.*.json.
+// v80: Fußtext zum Tuner berichtigt — beim ersten Mal verbindet ein Klick die
+// App, erst danach erkennt die Seite sie von selbst. lang/*.json, index.html.
+// v81: AAC-Sender nicht mehr als „MP3“ ausgewiesen; die Einstellungen nennen
+// vollständig, was auf dem Gerät liegt und was gemessen wird. app.js, lang/*.json,
+// index.html. (v80 ist der Fußtext-PR; die Zählung bleibt so auch bei
+// anderer Merge-Reihenfolge eindeutig.)
+// v82: Kleinste Lesegroesse 12 px, Leisetext heller; auf dem Handy eine
+// Kopfzeile statt zwei und eine niedrigere Leiste unten. styles.css.
+// (v80/v81 sind die beiden Text-PRs.)
+// v84: Der Laden bei Tag — eine helle Fassung, die der Systemeinstellung
+// folgt; dunkel bleibt unverändert. (v80 bis v83 sind in offenen Zweigen
+// vergeben.) styles.css.
+// v85: Sprungmarke ohne left:-9999px — auf /ar/ machte sie die Seite
+// 10.374 px breit und schob sie beim Laden seitlich weg. styles.css.
+// v86: Kater Mikesch — Kopf, Gespraech und Schnurrpost. index.html,
+// app.js, mikesch.css, lib/mikesch.mjs, drei Bilder, alle sieben Kataloge.
+// (v83 war sein Platzhalter, solange er offen lag.)
+const SW_VERSION = 'iyambae-v87';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
@@ -233,6 +268,7 @@ const SHELL_FILES = [
       dem gezeichneten Plattenspieler, den sie ueberzogen haben.
     */
     '/assets/styles.css',
+    '/assets/mikesch.css',
     '/assets/schrift/schriften.css',
     // Die SIL OFL verlangt, dass der Lizenztext die Schriften begleitet.
     '/assets/schrift/LIZENZEN.txt',
@@ -247,6 +283,13 @@ const SHELL_FILES = [
     '/assets/lib/titel.mjs',
     '/assets/lib/wochentipp.mjs',
     '/assets/lib/senderbild.mjs',
+    '/assets/lib/unterstuetzen.mjs',
+    '/assets/lib/tunerhinweis.mjs',
+    '/assets/lib/mikesch.mjs',
+    '/assets/bild/mikesch/kopf.webp',
+    '/assets/bild/mikesch/ohr.webp',
+    '/assets/bild/mikesch/lider.webp',
+    '/assets/lib/schlummer.mjs',
     // lib/hls.light.min.mjs steht BEWUSST NICHT hier: app.js laedt es erst
     // beim ersten HLS-Sender nach, und ohne Netz gibt es keinen Stream.
     '/assets/lib/symbole.mjs',
