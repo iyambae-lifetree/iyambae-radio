@@ -108,6 +108,8 @@ zwingt dazu, einmal aufzuschreiben, was man eigentlich tut.
 | V11 | Reichweitenmessung (sechs Ereignisarten) | **neu am 21.08.2026** | Art. 6 I f |
 | V12 | Gesprächsassistent Kater Mikesch | **neu am 24.10.2026** | Art. 6 I f |
 | V13 | Rundbrief „Mikeschs Schnurrpost" | **neu am 24.10.2026** | Art. 6 I a; § 7 II UWG |
+| V14 | Ergebnisse des Blindtests (`/hoertest/`) | aktiv seit 01.09.2026, **nachgetragen am 03.11.2026** | Art. 6 I f |
+| V15 | Ergebnisse des Messwerkzeugs (`/stimmung/`) | aktiv seit 01.09.2026, **nachgetragen am 03.11.2026** | Art. 6 I f |
 
 ---
 
@@ -407,6 +409,46 @@ eine Meldung geraten könnte. Wer das Modul ändert, sollte das wissen.
 
 ---
 
+## V14 — Ergebnisse des Blindtests *(aktiv seit 01.09.2026, nachgetragen am 03.11.2026)*
+
+Gebaut in 432hz-radio#21. Bis zum 03.11.2026 fehlte der Eintrag hier; nachgetragen auf Hinweis in 432hz-radio#27.
+
+| Feld | Inhalt |
+|---|---|
+| **Bezeichnung** | Ablage des Ergebnisses einer abgeschlossenen Runde des Blindtests „Merkst du's?" auf apps.iyambae.fm/hoertest/ |
+| **Zweck** | Auswerten, wie oft im Blindtest 432 Hz von 440 Hz unterschieden wird — auch wenn es gegen uns ausfällt; Prüfen, ob die Reihenfolge der Knöpfe das Ergebnis verzerrt (`wahl_a`) |
+| **Rechtsgrundlage** | Art. 6 Abs. 1 lit. f DSGVO, soweit überhaupt Personenbezug besteht. Nach unserer Einschätzung ist eine einzelne Zeile keiner Person zuzuordnen (siehe „Nicht erhoben"); geführt wird der Eintrag, damit nachvollziehbar ist, was gespeichert wird |
+| **Kategorien betroffener Personen** | Besucher, die eine Runde des Blindtests beenden |
+| **Kategorien von Daten** | Runde; Zahl der Treffer (0–5); wie oft der erste Knopf gewählt wurde; Seitensprache; Tag der Abgabe (UTC). Jede Runde ist eine eigene Zeile mit zufälliger Kennung, ohne Verbindung zu anderen Zeilen |
+| **Nicht erhoben** | IP-Adresse (nur flüchtig für die Drossel im Arbeitsspeicher, wie bei `/api/umfrage`); Cookies; Konto; Kennung, die zwei Runden derselben Person verbinden könnte; Uhrzeit |
+| **Empfänger** | Microsoft Ireland Operations Limited (Table Storage; Auftragsverarbeiterin). Veröffentlicht werden höchstens Summen |
+| **Drittlandübermittlung** | wie V1 |
+| **Löschfrist** | **[Offen: Derzeit gibt es keine automatische Löschung, die Zeilen bleiben unbegrenzt. Ausgewertet werden höchstens die letzten 365 Tage (`AUSWERTUNG_TAGE_HOECHSTENS`). Eine Frist festlegen und das Wegräumen ganzer Tagespartitionen bauen.]** |
+| **TOM** | Erlaubnisliste im Dienst — nichts außer den genannten Feldern wird angenommen; Drosselung je Netz; nur `application/json`; Tag statt Uhrzeit und Zufallskennung statt Zähler, damit keine Abfolge erkennbar ist |
+| **Fundstellen** | `dienst/src/rueckmeldung.mjs` (`saeubereHoertest`, `legeHoertestAb`), `dienst/src/server.mjs` (`POST /api/hoertest`), Tabelle `hoertest` |
+
+---
+
+## V15 — Ergebnisse des Messwerkzeugs *(aktiv seit 01.09.2026, nachgetragen am 03.11.2026)*
+
+Gebaut in 432hz-radio#21, nachgetragen wie V14.
+
+| Feld | Inhalt |
+|---|---|
+| **Bezeichnung** | Ablage einer gelungenen Messung des Kammertons einer Aufnahme auf apps.iyambae.fm/stimmung/. Die Messung selbst geschieht im Browser, die Tondatei verlässt das Gerät nicht |
+| **Zweck** | Auswerten, wie sich die gemessenen Kammertöne verteilen |
+| **Rechtsgrundlage** | wie V14 |
+| **Kategorien betroffener Personen** | Besucher, die eine Aufnahme messen |
+| **Kategorien von Daten** | gemessener Kammerton (eine Nachkommastelle, 380–500 Hz); Sicherheit der Messung (zwei Nachkommastellen); ob dem Besucher eine Zahl gezeigt wurde; Länge des ausgewerteten Ausschnitts in fünf Stufen; Zahl der Kanäle; Dateiendung aus einer festen Liste; Seitensprache; Tag (UTC). Jede Messung ist eine eigene Zeile mit zufälliger Kennung |
+| **Nicht erhoben** | die Tondatei und alles aus ihr außer den genannten Werten; Dateiname; Dateilänge; IP-Adresse (nur flüchtig für die Drossel); Cookies; Konto; Uhrzeit |
+| **Empfänger** | wie V14 |
+| **Drittlandübermittlung** | wie V1 |
+| **Löschfrist** | **[Offen, wie V14.]** |
+| **TOM** | wie V14; dazu gerundete Werte, damit eine Zeile sich nicht durch übergenaue Zahlen von allen anderen unterscheidet |
+| **Fundstellen** | `dienst/src/rueckmeldung.mjs` (`saeubereStimmung`, `legeStimmungAb`), `dienst/src/server.mjs` (`POST /api/stimmung`), Tabelle `stimmung` |
+
+---
+
 ## Kapitel V und der Sitz in einem Drittland
 
 Dieser Abschnitt ist neu und gehört an eine Stelle, an der man ihn nicht
@@ -547,6 +589,7 @@ hinzukommt.
 | 21.08.2026 | **V11 nachgezogen, zweite Runde.** Adressfeld aus `log_format messung` entfernt — die Zeile hat jetzt `art`, `zeit`, `ereignis`. Kein serverseitiges Sprachfeld mehr (`$sprache` hätte `$cookie_hz_sprache` gelesen); das Kürzel kommt aus dem Pfad. Trefferzahl der Achse „gemerkte" entfällt. Drei bis dahin tote Ereignisarten (`suche`, `sprache`, `installiert`) sind verdrahtet und hier aufgenommen. Der Posten „Erkennbare Restfrage" ist erledigt und durch die Begründung ersetzt |
 | 21.08.2026 | **V1: Bereitschaftsprüfung von `/` auf `/gesund` verlegt und aus der Protokollierung genommen.** Zuvor rund 26 000 nicht von Menschen stammende Zeilen am Tag. V2 um einen Hinweis zur Aussagekraft der Zahlen ergänzt |
 | 24.10.2026 | **V12 und V13 neu** — Kater Mikesch und Mikeschs Schnurrpost; Anthropic PBC als Auftragsverarbeiter aufgenommen |
+| 03.11.2026 | **V14 und V15 nachgetragen** — Blindtest und Messwerkzeug, in Betrieb seit 01.09.2026 (432hz-radio#21), bis dahin hier vergessen. Löschfrist für beide noch offen |
 
 **Stand: 21.08.2026 · Nächste Durchsicht: [Datum eintragen, spätestens in einem
 Jahr] · Geführt von: [Name] · Beim Vertreter nach Art. 27 hinterlegt am:
