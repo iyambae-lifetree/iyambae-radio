@@ -85,9 +85,13 @@ function fakeSpeicher() {
   };
 }
 
-function fakeSitzung(kontoId = null) {
+function fakeSitzung(kontoId = null, { frisch = true } = {}) {
   return {
     erzeugt: [],
+    // Frisch angemeldet, solange ein Test nichts anderes sagt (432hz-radio#40).
+    async frisch() {
+      return kontoId !== null && frisch;
+    },
     async erzeuge(id) {
       this.erzeugt.push(id);
       return { plaetzchen: `sitzung-${id}`, ablauf: new Date(Date.now() + 86_400_000) };
@@ -794,10 +798,10 @@ test('Apple: der Rueckweg ist POST, nicht GET', () => {
   Ein vollstaendiger Apple-Rueckweg mit echten Schluesseln: Start, Codetausch,
   Tokenpruefung, Kontoanlage — und dann derselbe state ein zweites Mal.
 */
-async function appleAufbau({ email = 'apple@example.org', emailGeprueft = 'true', sub = 'apple-sub-1' } = {}) {
+async function appleAufbau({ email = 'apple@example.org', emailGeprueft = 'true', sub = 'apple-sub-1', sitzungKonto = null, frisch = true } = {}) {
   const rsa = rsaPaar();
   const speicher = fakeSpeicher();
-  const sitzung = fakeSitzung();
+  const sitzung = fakeSitzung(sitzungKonto, { frisch });
   const protokoll = fakeProtokoll();
   const zustand = new Zustandsspeicher();
   const holerJwks = jwksHoler([jwkVon(rsa.publicKey, 'apple-k1', 'RS256')]);
@@ -983,10 +987,10 @@ test('Apple: falscher Inhaltstyp am Rueckweg wird abgewiesen', async () => {
 //  Google
 // ════════════════════════════════════════════════════════════════════
 
-function googleAufbau({ sub = 'g-sub-1', email = 'g@example.org', emailVerified = true, sitzungKonto = null } = {}) {
+function googleAufbau({ sub = 'g-sub-1', email = 'g@example.org', emailVerified = true, sitzungKonto = null, frisch = true } = {}) {
   const rsa = rsaPaar();
   const speicher = fakeSpeicher();
-  const sitzung = fakeSitzung(sitzungKonto);
+  const sitzung = fakeSitzung(sitzungKonto, { frisch });
   const protokoll = fakeProtokoll();
   const zustand = new Zustandsspeicher();
   const holerJwks = jwksHoler([jwkVon(rsa.publicKey, 'g-k1', 'RS256')]);
@@ -1334,9 +1338,9 @@ function fakeWebauthn(ueber = {}) {
   });
 }
 
-function passkeyAufbau({ kontoId = 'konto1', webauthn = fakeWebauthn(), zaehlerStreng = false } = {}) {
+function passkeyAufbau({ kontoId = 'konto1', webauthn = fakeWebauthn(), zaehlerStreng = false, frisch = true, sitzung: eigeneSitzung = null } = {}) {
   const speicher = fakeSpeicher();
-  const sitzung = fakeSitzung(kontoId);
+  const sitzung = eigeneSitzung ?? fakeSitzung(kontoId, { frisch });
   const protokoll = fakeProtokoll();
   const passkey = erzeugePasskey({ speicher, sitzung, protokoll, einst: EINST, webauthn, zaehlerStreng });
   const route = (methode, pfad) => passkey.routen.find((r) => r.methode === methode && String(r.pfad) === String(pfad));
@@ -1845,4 +1849,68 @@ test('leseUmgebung: sinnvolle Vorgaben, Zeilenumbrueche im .p8 werden zurueckgeb
   const streng = leseUmgebung({ PASSKEY_ZAEHLER_STRENG: '1', OEFFENTLICHE_ADRESSE: 'https://test.example/' });
   assert.equal(streng.zaehlerStreng, true);
   assert.equal(streng.basis, 'https://test.example', 'kein Schraegstrich am Ende');
+});
+
+// ── Frische Anmeldung (432hz-radio#40) ─────────────────────────────
+
+for (const anbieter of ['google', 'apple']) {
+  test(`${anbieter}: Verknuepfen aus einer alten Sitzung fuehrt zurueck auf die Seite, nicht zum Anbieter`, async () => {
+    const aufbau = anbieter === 'google'
+      ? googleAufbau({ sitzungKonto: 'konto1', frisch: false })
+      : await appleAufbau({ sitzungKonto: 'konto1', frisch: false });
+    const teil = aufbau[anbieter];
+    const start = teil.routen.find((r) => r.pfad === `/api/${anbieter}/start`);
+    const r = fakeAntwort();
+    const adresse = `/api/${anbieter}/start?verknuepfen=1&sprache=fr`;
+    await start.behandler(fakeAnfrage({ url: adresse }), r, { url: new URL('https://iyambae.fm' + adresse) });
+
+    // Eine Umleitung und kein JSON: Der Start ist eine Navigation, eine
+    // 403 mit Rumpf saehe der Mensch als rohen Text.
+    assert.equal(r.status, 302);
+    assert.equal(r.ort, '/fr/?anmeldung=frisch');
+    assert.ok(aufbau.protokoll.zeilen.some((z) => z.art === 'fremd_start' && z.ergebnis === 'nicht_frisch'));
+    assert.equal(aufbau.zustand.eintraege.size, 0, 'kein state angelegt');
+  });
+
+  test(`${anbieter}: Verknuepfen aus einer frischen Sitzung geht zum Anbieter`, async () => {
+    const aufbau = anbieter === 'google'
+      ? googleAufbau({ sitzungKonto: 'konto1' })
+      : await appleAufbau({ sitzungKonto: 'konto1' });
+    const start = aufbau[anbieter].routen.find((r) => r.pfad === `/api/${anbieter}/start`);
+    const r = fakeAntwort();
+    const adresse = `/api/${anbieter}/start?verknuepfen=1`;
+    await start.behandler(fakeAnfrage({ url: adresse }), r, { url: new URL('https://iyambae.fm' + adresse) });
+    assert.equal(r.status, 302);
+    assert.ok(r.ort.startsWith('https://'), 'zum Anbieter: ' + r.ort);
+  });
+}
+
+test('Google: Anmelden OHNE verknuepfen braucht keine frische Sitzung', async () => {
+  const { google } = googleAufbau({ sitzungKonto: 'konto1', frisch: false });
+  const start = google.routen.find((r) => r.pfad === '/api/google/start');
+  const r = fakeAntwort();
+  await start.behandler(fakeAnfrage({ url: '/api/google/start' }), r, { url: new URL('https://iyambae.fm/api/google/start') });
+  assert.ok(r.ort.startsWith('https://accounts.google.com/'));
+});
+
+test('Passkey anlegen aus einer alten Sitzung: 403, Anfang wie Abschluss', async () => {
+  const { passkey } = passkeyAufbau({ frisch: false });
+  for (const pfad of ['/api/passkey/anlegen/start', '/api/passkey/anlegen/fertig']) {
+    const route = passkey.routen.find((r) => r.pfad === pfad);
+    await assert.rejects(
+      () => route.behandler(fakeAnfrage({ method: 'POST', url: pfad, headers: URSPRUNG, rumpf: '{}' }), fakeAntwort(), {}),
+      (f) => f.code === 'frische_anmeldung_noetig' && f.status === 403,
+      pfad,
+    );
+  }
+});
+
+test('eine Sitzungsschnittstelle ohne `frisch` gilt als nicht frisch — scheitert geschlossen', async () => {
+  const sitzung = { async pruefe() { return 'konto1'; }, async erzeuge() { return {}; } };
+  const { passkey } = passkeyAufbau({ sitzung });
+  const route = passkey.routen.find((r) => r.pfad === '/api/passkey/anlegen/start');
+  await assert.rejects(
+    () => route.behandler(fakeAnfrage({ method: 'POST', url: '/api/passkey/anlegen/start', headers: URSPRUNG }), fakeAntwort(), {}),
+    (f) => f.code === 'frische_anmeldung_noetig',
+  );
 });

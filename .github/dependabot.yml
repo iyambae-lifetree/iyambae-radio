@@ -1,0 +1,17 @@
+# Haelt die gepinnten Aktionen und Basisabbilder aktuell (432hz-radio#47).
+#
+# Gepinnt heisst: Nichts aendert sich, ohne dass jemand es zusammenfuehrt.
+# Dependabot schlaegt die neue Fassung als Pull Request vor; ausgeliefert
+# wird sie erst, wenn Micha ihn auf main holt.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directories:
+      - /
+      - /dienst
+    schedule:
+      interval: weekly

@@ -150,7 +150,14 @@ const VOR_DER_PRUEFUNG_HOECHSTENS = 4_000;
   fragt niemand danach.
 */
 const SIEHT_AUS_WIE_ADRESSE = /[^\s@]+@[^\s@]+\.[^\s@]+/g;
-const SIEHT_AUS_WIE_GEHEIMNIS = /(?=\S{20,})(?=\S*[0-9])(?=\S*[A-Za-z])\S{20,}/g;
+/*
+  Frueher das Muster /(?=\S{20,})(?=\S*[0-9])(?=\S*[A-Za-z])\S{20,}/g —
+  dieselbe Regel, aber mit Lookaheads, die auf langen Woertern quadratisch
+  liefen (432hz-radio#46, Punkt 2). Jetzt je Wort und linear.
+*/
+function siehtAusWieGeheimnis(wort) {
+    return wort.length >= 20 && /[0-9]/.test(wort) && /[A-Za-z]/.test(wort);
+}
 const STEUERZEICHEN = /[\u0000-\u001F\u007F]/g;
 
 export function saeubereFreitext(wert) {
@@ -158,8 +165,33 @@ export function saeubereFreitext(wert) {
 
     let text = wert.slice(0, VOR_DER_PRUEFUNG_HOECHSTENS);
     text = text.replace(STEUERZEICHEN, ' ');
-    text = text.replace(SIEHT_AUS_WIE_ADRESSE, '<entfernt:adresse>');
-    text = text.replace(SIEHT_AUS_WIE_GEHEIMNIS, '<entfernt:geheimnis>');
+    /*
+      Wort fuer Wort, nicht ueber den ganzen Text. Beide Muster beginnen mit
+      `[^\s@]+` bzw. `\S{20,}` und probierten auf einer langen Zeichenkette
+      ohne Leerraum von JEDER Stelle aus bis zum Ende — quadratisch, auf
+      4000 Zeichen ueber 100 ms, in denen der einzige Event-Loop auch keine
+      Anmeldung bediente (432hz-radio#46, Punkt 2). Je Wort ist es dasselbe
+      Ergebnis: Beide Muster enthalten keinen Leerraum, koennen also nie
+      ueber eine Wortgrenze reichen.
+
+      Ein Wort mit @, das laenger ist als jede zulaessige Adresse (254),
+      faellt ganz. Erst so bleibt auch der Fall „2000 a, ein @, 2000 b"
+      linear, und ein solches Wort ist in einem Vorschlagssatz kein Wort.
+    */
+    text = text.replace(/\S+/g, (wort) => {
+        if (wort.includes('@')) {
+            if (wort.length > 254) return '<entfernt:adresse>';
+            wort = wort.replace(SIEHT_AUS_WIE_ADRESSE, '<entfernt:adresse>');
+        }
+        /*
+          Was das Geheimnis-Muster sagt, ohne es laufen zu lassen: Es
+          trifft ein Wort genau dann, wenn das GANZE Wort mindestens 20
+          Zeichen hat und Ziffer und Buchstabe enthaelt — trifft es nicht
+          am Wortanfang, trifft es auch spaeter nicht. Die drei Pruefungen
+          hier sind linear; die Lookaheads des Musters waren es nicht.
+        */
+        return siehtAusWieGeheimnis(wort) ? '<entfernt:geheimnis>' : wort;
+    });
     /*
       Erst JETZT die Klammern weg. Andersherum haetten die beiden
       Ersatztexte oben ihre eigenen Klammern wieder verloren, und im

@@ -79,6 +79,23 @@ test('/api/passwort/vergessen antwortet fuer bekannt und unbekannt gleich', asyn
     }
 });
 
+test('die Marke steht im Fragment des Verweises, nie in der Query', async () => {
+    // Befund 432hz-radio#42: Eine Query landet ueber den Referrer der
+    // Nachladeanfragen im nginx-Protokoll. Ein Fragment geht nie zum Server.
+    const p = fangeProtokoll();
+    const d = await starteTestdienst({ drossel: OHNE_DROSSEL });
+    try {
+        await d.rufe('POST', '/api/passwort/vergessen', { mail: 'niemals@example.org' });
+        const verweis = d.mails.at(-1).verweis;
+
+        assert.match(verweis, /\/passwort-neu#marke=/);
+        assert.ok(!verweis.includes('?'), 'keine Query im Verweis: ' + verweis);
+    } finally {
+        await d.schliesse();
+        p.zurueck();
+    }
+});
+
 test('eine echte Marke ohne Konto endet in 410, nicht in einem Konto', async () => {
     const p = fangeProtokoll();
     const d = await starteTestdienst({ drossel: OHNE_DROSSEL });
