@@ -11,6 +11,7 @@
 
 import http from 'node:http';
 import { baueDienst, baueFremdanmeldung, erzeugeDrossel } from '../src/server.mjs';
+import { liesUrspruenge } from '../src/urspruenge.mjs';
 import { speicherImArbeitsspeicher } from '../src/speicher.mjs';
 import { bereiteVor } from '../src/passwort.mjs';
 import { lenkeAusgabe } from '../src/protokoll.mjs';
@@ -29,7 +30,7 @@ export function fangeProtokoll() {
  * Startet den Dienst auf einem freien Port.
  * @returns Werkzeug zum Rufen, plus `speicher`, `mails` und `schliesse`.
  */
-export async function starteTestdienst({ drossel, fremd, zahlen, titel, mikesch } = {}) {
+export async function starteTestdienst({ drossel, fremd, zahlen, titel, mikesch, umgebung } = {}) {
     await bereiteVor();
     vergissAufraeumen();
 
@@ -56,7 +57,7 @@ export async function starteTestdienst({ drossel, fremd, zahlen, titel, mikesch 
     const server = http.createServer(baueDienst({
         speicher, versender,
         drossel: drossel ?? erzeugeDrossel(),
-        fremd: fremd ?? await baueFremdanmeldung(speicher),
+        fremd: fremd ?? await baueFremdanmeldung(speicher, umgebung ? { umgebung } : {}),
         zahlen: zahlen ?? null,
         // Wie `zahlen`: ohne Angabe null, damit jeder andere Test
         // beilaeufig mitprueft, dass der Weg ohne Einrichtung nicht
@@ -64,6 +65,12 @@ export async function starteTestdienst({ drossel, fremd, zahlen, titel, mikesch 
         titel: titel ?? null,
         // Ebenso: ohne Angabe kein Kater, wie im Betrieb ohne Schluessel.
         mikesch: mikesch ?? null,
+        /*
+          `umgebung` ersetzt process.env fuer die Urspruenge, im Dienst
+          und in der Fremdanmeldung gleichermassen. Ohne Angabe gelten
+          die Vorgaben, wie im Betrieb ohne ERLAUBTE_URSPRUENGE.
+        */
+        ...(umgebung ? { urspruenge: liesUrspruenge(umgebung) } : {}),
     }));
     await new Promise((f) => server.listen(0, '127.0.0.1', f));
     const basis = 'http://127.0.0.1:' + server.address().port;
@@ -71,8 +78,17 @@ export async function starteTestdienst({ drossel, fremd, zahlen, titel, mikesch 
     let plaetzchen = null;
 
     async function rufe(verfahren, pfad, koerper, extra = {}) {
-        const kopf = { Origin: HERKUNFT, ...extra.kopf };
-        if (koerper !== undefined) kopf['Content-Type'] = 'application/json';
+        /*
+          Jede veraendernde Anfrage traegt application/json, auch ohne
+          Rumpf — genau wie die Seite (432hz-radio#46, Punkt 5). Ein Test,
+          der einen anderen Inhaltstyp braucht, setzt ihn in `extra.kopf`;
+          der steht deshalb zuletzt.
+        */
+        const kopf = { Origin: HERKUNFT };
+        if (koerper !== undefined || (verfahren !== 'GET' && verfahren !== 'HEAD')) {
+            kopf['Content-Type'] = 'application/json';
+        }
+        Object.assign(kopf, extra.kopf);
         if (plaetzchen && extra.ohnePlaetzchen !== true) kopf.Cookie = plaetzchen;
 
         const begonnen = process.hrtime.bigint();
