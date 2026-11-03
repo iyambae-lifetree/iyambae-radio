@@ -14,8 +14,10 @@
   Bewusst auf Kosten getrimmt:
   - Consumption-Profil, keine dedizierten Knoten
   - minReplicas 0, der Container schläft bei Stille ein
-  - Image aus der GitHub Container Registry, öffentlich — spart eine
-    Azure Container Registry (ACR Basic wären ~4,50 €/Monat für nichts)
+  - Abbild aus der Azure Container Registry, gebaut dort per `az acr build`
+    (.github/workflows/ausliefern.yml). Der frühere Weg über die GitHub
+    Container Registry ist seit August 2026 tot: Das Token trug kein
+    `write:packages`.
   - Log Analytics mit 30 Tagen Aufbewahrung; die ersten 5 GB Aufnahme je
     Monat sind frei und für eine Seite dieser Größe reichlich
 
@@ -213,6 +215,16 @@ param mitApple bool = false
 */
 @description('Liegt der gemeinsame Schlüssel für /api/zusammenfassung im Tresor?')
 param mitZusammenfassung bool = false
+
+/*
+  Kater Mikesch — POST /api/mikesch.
+
+  Dasselbe Muster: Erst wenn `anthropic-schluessel` im Tresor liegt, wird er
+  gebunden. Ohne ihn antwortet der Weg „schläft" (503), das Radio läuft
+  unberührt weiter.
+*/
+@description('Liegt der Claude-Schlüssel (anthropic-schluessel) im Tresor?')
+param mitMikesch bool = false
 
 /*
   NICHT VORBELEGT, und das ist eine bewusst OFFENE Entscheidung.
@@ -580,6 +592,16 @@ resource tabelleHoertest 'Microsoft.Storage/storageAccounts/tableServices/tables
 resource tabelleStimmung 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
   parent: tabellendienst
   name: 'stimmung'
+}
+
+/*
+  Schnurrpost, Mikeschs Rundbrief. Eigene Tabelle aus demselben Grund wie die
+  Umfrage: Sie gehört zu keinem Konto. Eine Zeile je Adresse, Schlüssel ist
+  ein Hash der Adresse (`dienst/src/rundbrief.mjs`).
+*/
+resource tabelleRundbrief 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
+  parent: tabellendienst
+  name: 'rundbrief'
 }
 
 /*
@@ -1078,6 +1100,8 @@ var kontoUmgebung = concat([
   */
   { name: 'LOG_ARBEITSBEREICH', value: protokolle.properties.customerId }
   { name: 'ZUSAMMENFASSUNG_SCHLUESSEL', secretRef: 'zusammenfassung-schluessel' }
+], !mitMikesch ? [] : [
+  { name: 'ANTHROPIC_API_KEY', secretRef: 'anthropic-schluessel' }
 ])
 
 var kontoSondierungen = bereitschaftKonto ? [
@@ -1272,6 +1296,12 @@ resource seite 'Microsoft.App/containerApps@2024-03-01' = {
         {
           name: 'zusammenfassung-schluessel'
           keyVaultUrl: '${tresor.properties.vaultUri}secrets/zusammenfassung-schluessel'
+          identity: dienstIdentitaet.id
+        }
+      ], !mitMikesch ? [] : [
+        {
+          name: 'anthropic-schluessel'
+          keyVaultUrl: '${tresor.properties.vaultUri}secrets/anthropic-schluessel'
           identity: dienstIdentitaet.id
         }
       ])
