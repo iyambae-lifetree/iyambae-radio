@@ -1,5 +1,5 @@
 {
-  "fassung": "iyambae-v90",
+  "fassung": "iyambae-v91",
   "dateien": {
     "/ar/": "0c24f401081920b7",
     "/ar/manifest.webmanifest": "b38a789b8f8feeee",
@@ -16,9 +16,9 @@
     "/assets/lang/ja.json": "53ca0d1d7d77baa8",
     "/assets/lib/achsen.mjs": "dead19bd2020f9cd",
     "/assets/lib/aktualisierung.mjs": "860260f520eabcd4",
-    "/assets/lib/fehlerbericht.mjs": "2c406f0323640135",
+    "/assets/lib/fehlerbericht.mjs": "2c3c3fc22085792e",
     "/assets/lib/gewichtung.mjs": "413a51b6d92397bc",
-    "/assets/lib/konto.mjs": "0fbbb2af1a6f2e18",
+    "/assets/lib/konto.mjs": "84ea99bd080c30ab",
     "/assets/lib/messung.mjs": "f5cd6c45bc9349ca",
     "/assets/lib/mikesch.mjs": "f7caeffd0981adf1",
     "/assets/lib/myretuner.mjs": "8854b649cf8e349c",

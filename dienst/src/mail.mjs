@@ -33,12 +33,18 @@
   ist ohnehin fast abgelaufen, und der Mensch hat es laengst noch einmal
   versucht. Die neueste Anforderung ist die, auf die gerade jemand schaut.
   Verworfen wird mit einer Protokollzeile, damit es nicht still passiert.
+
+  Dass sie voll wird, soll trotzdem nicht vorkommen (432hz-radio#46, Punkt
+  4). Zwei Dinge halten sie seither klein: Die mailenden Wege im Dienst
+  teilen sich eine globale Grenze, die der Versandrate hier entspricht
+  (server.mjs, `MAILACHSE`). Und eine Mail, die schon wartet, wird nicht
+  ein zweites Mal eingereiht, siehe `reiheEin`.
 */
 
 import { protokolliere } from './protokoll.mjs';
 
-const JE_MINUTE = Number(process.env.MAIL_JE_MINUTE ?? 25);
-const JE_STUNDE = Number(process.env.MAIL_JE_STUNDE ?? 90);
+export const JE_MINUTE = Number(process.env.MAIL_JE_MINUTE ?? 25);
+export const JE_STUNDE = Number(process.env.MAIL_JE_STUNDE ?? 90);
 const SCHLANGE_MAX = Number(process.env.MAIL_WARTESCHLANGE ?? 500);
 
 /*
@@ -71,7 +77,9 @@ const TEXTE = {
             betreff: (code) => code + ' — Ihr Anmeldecode für IYAMBAE FM',
             text: (code, minuten) =>
                 'Ihr Anmeldecode lautet:\n\n    ' + code + '\n\n'
-                + 'Er gilt ' + minuten + ' Minuten und nur einmal.\n\n'
+                // Ein erneut gesendeter Code hat nur noch seine Restzeit, und
+                // die kann eine Minute sein (432hz-radio#46, Punkt 4).
+                + 'Er gilt ' + (minuten === 1 ? 'eine Minute' : minuten + ' Minuten') + ' und nur einmal.\n\n'
                 + 'Wenn Sie sich nicht anmelden wollten, können Sie diese Nachricht '
                 + 'ignorieren. Der Code allein genügt niemandem, der Ihr Postfach '
                 + 'nicht lesen kann.\n\n'
@@ -123,7 +131,8 @@ const TEXTE = {
             betreff: (code) => code + ' — your IYAMBAE FM sign-in code',
             text: (code, minuten) =>
                 'Your sign-in code is:\n\n    ' + code + '\n\n'
-                + 'It is valid for ' + minuten + ' minutes and can be used once.\n\n'
+                + 'It is valid for ' + minuten + (minuten === 1 ? ' minute' : ' minutes')
+                + ' and can be used once.\n\n'
                 + 'If you did not try to sign in, you can ignore this message.\n\n'
                 + 'Questions? Do not reply to this message. Write to hallo@iyambae.fm.\n\n'
                 + 'IYAMBAE FM',
@@ -285,6 +294,16 @@ function texte(sprache) {
 }
 
 // ── Der Versender ───────────────────────────────────────────────────
+
+/*
+  Wann zwei Mails „dieselbe" sind. `marke` und `unbekannt` sind beide die
+  Antwort auf „Passwort vergessen" — welche es wird, haengt nur daran, ob es
+  das Konto gerade gibt. Entsteht es zwischen zwei Anforderungen, soll die
+  neuere hinausgehen, nicht beide.
+*/
+function gruppeVon(auftrag) {
+    return auftrag.art === 'unbekannt' ? 'marke' : auftrag.art;
+}
 
 /**
  * @param {object} o
@@ -479,6 +498,29 @@ export function erzeugeVersender({ endpunkt, absender, jetzt = Date.now, versend
          * Mailversand gerade geht.
          */
         reiheEin(auftrag) {
+            /*
+              Je Adresse und Art hoechstens EINE wartende Mail
+              (432hz-radio#46, Punkt 4). Wartet schon eine, nimmt die neue
+              ihren Platz ein: Sie ist die neuere und traegt den Code oder
+              die Marke, die jetzt gilt — beim Passwortlink ist die alte
+              Marke ja schon ueberschrieben. Der Platz in der Schlange
+              bleibt der alte, damit Nachfragen nicht nach hinten ruecken.
+
+              Ohne das fuellte ein Fremder, der fuer eine Adresse im
+              Sekundentakt anfordert, die Schlange mit Mails, die alle
+              dasselbe sagen, und schoebe die der anderen hinaus.
+
+              Was gerade versendet wird, liegt nicht mehr in der Schlange
+              und zaehlt nicht mit. Die neue Mail geht dann hinterher.
+            */
+            const art = gruppeVon(auftrag);
+            const wartend = schlange.findIndex((a) => a.an === auftrag.an && gruppeVon(a) === art);
+            if (wartend >= 0) {
+                schlange[wartend] = auftrag;
+                protokolliere({ art: 'mail.entdoppelt', ergebnis: 'ok', grund: auftrag.art, wartend: schlange.length });
+                return true;
+            }
+
             if (schlange.length >= SCHLANGE_MAX) {
                 schlange.shift();
                 protokolliere({ art: 'mail.verworfen', ergebnis: 'fehler', wartend: schlange.length });
