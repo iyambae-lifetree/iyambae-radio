@@ -689,7 +689,7 @@ def jsonld(kuerzel, texte, pfad="", programm="tuner", fassung="0.0.0",
     waere irrefuehrende Werbung, und eine Wirkungsaussage in strukturierten
     Daten waere dieselbe Aussage wie im Fliesstext, nur maschinenlesbar.
 
-    isAccessibleForFree und ein Offer mit price "0": Die Testausgabe kostet
+    isAccessibleForFree und ein Offer mit price "0": Die Gratisfassung kostet
     nichts, und das soll auch die Maschine wissen, damit niemand einen Preis
     dazuerfindet.
     """
@@ -989,8 +989,8 @@ SEITENNAME = {
 
 SEITENSATZ = {
     "": "Der IYAMBAE Tuner: stimmt den Systemton des Rechners auf 432 Hz, "
-        "ohne eine Datei umzuwandeln. Testausgabe zum Ausprobieren kostenlos, "
-        "die fertige Fassung einmalig 29 Euro. "
+        "ohne eine Datei umzuwandeln. Fuer macOS gratis und ohne Ablauf "
+        "(432 und 440 Hz); verkauft wird noch nichts. "
         "Dazu 14 Fragen und Antworten zum Kammerton.",
     "spotify/": "Warum Spotify sich nicht umstimmen laesst und was stattdessen "
                 "geht — gemessen, nicht behauptet.",
@@ -1036,8 +1036,8 @@ def erzeuge_llms(fassung):
         "# IYAMBAE Tuner",
         "",
         "> Werkzeuge und Erklaerungen zum Kammerton. Der Tuner stimmt den "
-        f"Systemton eines Rechners auf 432 Hz um (Testausgabe {fassung}, "
-        "macOS, zum Testen kostenlos, fertig einmalig 29 Euro); dazu gehoeren ein Blindtest, ein Stimmungsmesser "
+        f"Systemton eines Rechners auf 432 Hz um (macOS {fassung}, gratis "
+        "und ohne Ablauf, 432 und 440 Hz; verkauft wird noch nichts); dazu gehoeren ein Blindtest, ein Stimmungsmesser "
         "und mehrere Erklaerseiten.",
         "",
         "Betreiber: IYAMBAE. Wir versprechen keine Wirkung von 432 Hz und "

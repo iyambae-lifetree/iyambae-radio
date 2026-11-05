@@ -5,10 +5,12 @@
   "_datei_null": "heisst: Die Fassung existiert und laeuft, ist aber nicht zum Laden da. Nicht dasselbe wie 'gibt es nicht'.",
   "tuner": {
     "macos": {
-      "fassung": "0.29.0",
+      "fassung": "0.32.0",
       "reife": "erprobung",
-      "datei": null,
-      "_warum_null": "Seit dem 26.10.2026. Die oeffentliche Testfassung 0.29.0 laeuft am 31.10.2026 ab und wird bewusst nicht verlaengert. Wer einzeln fragt, bekommt eine Fassung persoenlich; oeffentlich kommt der Tuner spaeter wieder. Die Nummer bleibt fuer das JSON-LD stehen."
+      "datei": "IYAMBAE-Tuner-Gratis-0.32.0.dmg",
+      "sha256": "711054a9e3e250373d9d7ac072c6b1e836e0173c486f6278f005699786c54c2d",
+      "mindest_macos": "14.4",
+      "_stufe": "Gratisfassung ohne Ablauf: 432 und 440 Hz, Qualitaet Ausgewogen. Seit 06.11.2026 auf der Seite, Saemi-Ras Zustimmung vom 05.11.2026. Vom 26.10. bis dahin ohne Datei (Testfassung 0.29.0 lief am 31.10. aus). Kein Preis, kein Kaufknopf, bis Gewerbe und Impressum stehen."
     },
     "linux": {
       "fassung": "0.3.0",
