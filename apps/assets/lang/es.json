@@ -95,7 +95,7 @@
   "karte.deins": "tu sistema",
   "karte.mac.wofuer": "14.4 o posterior",
   "karte.mac.was": "La app en sí: barra de menús, toma el sonido del sistema y lo sustituye. La primera vez que la enciendes, macOS pide permiso para «grabar el audio del sistema».",
-  "karte.mac.punkt": "<strong>¿Un punto naranja en la barra de menús?</strong> macOS lo muestra mientras el Tuner lee el sonido del sistema para reafinarlo. No usa el micrófono, y no se graba ni se guarda nada.",
+  "karte.mac.punkt": "<strong>¿Un punto morado en la barra de menús?</strong> macOS lo muestra mientras el Tuner lee el sonido del sistema para reafinarlo. No usa el micrófono, y no se graba ni se guarda nada.",
   "karte.mac.pause": "<strong>Gratis y sin caducidad:</strong> 432 y 440 Hz con la calidad «Balanced», con una precisión de pocos cents — unos ±4 cents por encima de 200 Hz, hasta 13 cents en los graves. Más afinaciones y calidades más finas están previstas para una versión ampliada que aún no existe.",
   "karte.mac.laden": "Descargar Tuner",
   "karte.conv.laden": "Descargar Converter",
