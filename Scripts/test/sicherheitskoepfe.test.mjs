@@ -237,6 +237,37 @@ test('die Tuner-Adresse in der Richtlinie ist die aus myretuner.mjs', () => {
   assert.ok(richtlinie(RADIO).get('connect-src').includes(new URL(anschluss).origin));
 });
 
+// ── /api/titel ohne Zugriffsprotokoll (432hz-radio#59) ──────────────
+
+/** Die Anweisungen eines location-Blocks als vergleichbare Zeilen. */
+function zeilen(liste) {
+  return liste.map((a) => [a.name, ...a.arg].join(' ')
+    + (a.kinder ? ` { ${zeilen(a.kinder).join('; ')} }` : ''));
+}
+
+test('/api/titel ist auf beiden Hostnamen derselbe Weg wie /api/, nur ohne Protokoll', () => {
+  /*
+   Ein exakter location-Block erbt nichts vom Praefix /api/. Fehlte darin
+   eine Zeile — X-Forwarded-For, die Fehlerweiche, das include —, liefe
+   /api/titel still anders als der Rest. Deshalb: Menge gegen Menge.
+   Die includes sind hier schon aufgeloest, die Koepfe also mitverglichen.
+  */
+  for (const server of SERVER) {
+    const wo = hostVon(server);
+    const loc = (...arg) => server.kinder.find((a) => a.name === 'location'
+      && a.arg.join(' ') === arg.join(' '));
+    const api = loc('/api/');
+    const titel = loc('=', '/api/titel');
+    assert.ok(api, `${wo}: kein location /api/`);
+    assert.ok(titel, `${wo}: kein location = /api/titel`);
+    assert.ok(titel.kinder.some((a) => a.name === 'access_log' && a.arg[0] === 'off'),
+      `${wo}: /api/titel schreibt noch ins Zugriffsprotokoll`);
+    const ohneProtokoll = titel.kinder.filter((a) => a.name !== 'access_log');
+    assert.deepEqual(zeilen(ohneProtokoll).sort(), zeilen(api.kinder).sort(),
+      `${wo}: /api/titel weicht von /api/ ab`);
+  }
+});
+
 // ── Inline-Skripte ──────────────────────────────────────────────────
 
 const SKRIPT = /<script(\s[^>]*)?>([\s\S]*?)<\/script\s*>/gi;

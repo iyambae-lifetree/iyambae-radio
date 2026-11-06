@@ -39,6 +39,18 @@
 
 const TAKT_MS = 20000;
 let laufend = null;
+// Der Versuch der laufenden Runde — fuer den Lauscher auf visibilitychange.
+let aktuellerVersuch = null;
+
+const verborgen = () =>
+  typeof document !== 'undefined' && document.visibilityState === 'hidden';
+
+// Unter Node (Scripts/test/) gibt es kein document.
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (!verborgen() && aktuellerVersuch) aktuellerVersuch();
+  });
+}
 let leitung = null;
 // Zaehlt jeden Start hoch. Ein Versuch, der noch aus der vorigen Runde
 // laeuft, wenn der Sender laengst gewechselt hat, darf weder melden noch
@@ -145,16 +157,41 @@ async function hole(adresse, wandle) {
 // ── Das Anschlagbrett ─────────────────────────────────────────────
 
 const DIENST = '/api/titel';
-const STAND_GILT_MS = 15000;
+/*
+ Das Brett wird hoechstens einmal je Minute gefragt — bei einem Takt von
+ 20 s also jedes dritte Mal. Bis 06.11.2026 stand hier 15 s, also bei
+ jedem Takt.
+
+ WARUM ES NICHTS KOSTET: Der Dienst liest einen Sender ohnehin erst nach
+ 25 s (gehoert) bzw. 90 s (sonst) neu (dienst/src/titel.mjs). Ein Abruf
+ alle 20 s brachte meistens denselben Stand wie der vorige.
+
+ WARUM ES ZAEHLT: Jeder Abruf ist eine Anfrage an iyambae.fm, je Zuhoerer.
+ Sie haelt den Container wach und stand bis dahin als Zeile in Log
+ Analytics (432hz-radio#59). Die fremden Haeuser oben werden weiter im
+ 20-s-Takt gefragt; dort ist der Titel immer jetzt.
+
+ 50 und nicht 60: Gemessen wird ab dem Beginn des vorigen Abrufs, der Takt
+ schwankt um einige Millisekunden. Mit 60 fiele ein Abruf, der nur knapp
+ zu frueh dran ist, auf den vierten Takt, also 80 s.
+*/
+const STAND_GILT_MS = 50000;
 let stand = null;      // { zeit, titel } — fuer alle Sender derselbe
 let dienstDa = null;   // null = noch nicht gefragt
+let gefragt = 0;       // Beginn des letzten Abrufs, gelungen oder nicht
 
 /*
- Holt den gemeinsamen Stand, hoechstens alle 15 s. Ein Abruf bringt die
- Titel aller Sender mit — der naechste Sender kostet dann nichts mehr.
+ Holt den gemeinsamen Stand, hoechstens einmal in STAND_GILT_MS. Ein Abruf
+ bringt die Titel aller Sender mit — der naechste Sender kostet dann
+ nichts mehr.
+
+ Die Sperre gilt AUCH nach einem Fehlschlag. Vorher wurde nur ein
+ gelungener Stand wiederverwendet: Schlief der Dienst (503), fragte jeder
+ Takt erneut — und weckte ihn damit alle 20 s, je Zuhoerer.
 */
 async function holeStand() {
-  if (stand && Date.now() - stand.zeit < STAND_GILT_MS) return stand.titel;
+  if (Date.now() - gefragt < STAND_GILT_MS) return dienstDa ? (stand?.titel ?? null) : null;
+  gefragt = Date.now();
   try {
     const a = await fetch(DIENST, { signal: AbortSignal.timeout(6000) });
     if (!a.ok) { dienstDa = false; return null; }
@@ -308,6 +345,15 @@ export function beobachteTitel(sender, melde) {
 
   const versuch = async () => {
     /*
+     Nur, solange jemand hinsieht. Der Titel steht ausschliesslich auf der
+     Seite (heroTitel, barTitel); der Sperrbildschirm zeigt den Sendernamen
+     aus _setzeMediaSession, nicht diesen Titel. Ein verborgener Tab fragte
+     sonst weiter, stundenlang, fuer niemanden. Kommt der Tab zurueck,
+     fragt der Lauscher unten sofort nach. Ein ausgelassener Takt zaehlt
+     nicht als Schweigen des fremden Hauses.
+    */
+    if (verborgen()) return;
+    /*
      ZUERST DAS HAUS SELBST, DANN DAS BRETT — und diese Reihenfolge ist
      die Umkehrung dessen, womit ich angefangen habe.
 
@@ -355,6 +401,8 @@ export function beobachteTitel(sender, melde) {
     if (dienstDa === false && leerFremd >= FREMD_VERSUCHE) haltAn();
   };
 
+  aktuellerVersuch = versuch;
+
   const zeno = /stream\.zeno\.fm\/([a-z0-9]+)/i.exec(sender.stream);
   if (zeno && typeof EventSource === 'function'
       && ueberLeitung(zeno[1], sender.name, melde)) {
@@ -370,6 +418,7 @@ export function beobachteTitel(sender, melde) {
 
 export function haltAn() {
   runde++;
+  aktuellerVersuch = null;
   if (laufend) clearInterval(laufend);
   laufend = null;
   if (leitung) leitung.close();
