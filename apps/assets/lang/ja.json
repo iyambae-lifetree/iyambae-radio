@@ -95,6 +95,7 @@
   "karte.deins": "お使いのシステム",
   "karte.mac.wofuer": "14.4 以降",
   "karte.mac.was": "アプリ本体です。メニューバーに常駐し、システム音声を受け取って置き換えます。初めて有効にするとき、macOS が「システムオーディオの録音」の許可を求めます。",
+  "karte.mac.punkt": "<strong>メニューバーにオレンジ色の点が出たら？</strong>Tuner がシステムの音を読み取って調律し直しているあいだ、macOS が表示するものです。マイクは使っておらず、録音も保存もしていません。",
   "karte.mac.pause": "<strong>無料、期限なし：</strong>品質「Balanced」で 432 Hz と 440 Hz。精度は数セント以内です — 200 Hz より上でおよそ ±4 セント、低音では最大 13 セント。ほかの調律とより精密な品質は、まだ存在しない拡張版で予定しています。",
   "karte.mac.laden": "Tuner をダウンロード",
   "karte.conv.laden": "Converter をダウンロード",

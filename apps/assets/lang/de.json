@@ -95,6 +95,7 @@
   "karte.deins": "dein System",
   "karte.mac.wofuer": "14.4 oder neuer",
   "karte.mac.was": "Die App selbst: Menüleiste, greift den Systemton ab und ersetzt ihn.\n        Beim ersten Einschalten fragt macOS nach „Systemaudio aufnehmen“.",
+  "karte.mac.punkt": "<strong>Ein oranger Punkt in der Menüleiste?</strong> Den zeigt macOS, solange der Tuner den Systemton liest, um ihn umzustimmen. Das Mikrofon nutzt er nicht, und aufgezeichnet oder gespeichert wird nichts.",
   "karte.mac.pause": "<strong>Gratis und ohne Ablauf:</strong> 432 und 440 Hz in der Qualität „Ausgewogen“, auf wenige Cent genau — oberhalb von 200 Hz etwa ±4 Cent, im Bass bis 13 Cent. Weitere Stimmungen und genauere Qualitäten sind für eine erweiterte Fassung geplant, die es noch nicht gibt.",
   "karte.conv.laden": "Converter laden",
   "holen.pruefsumme": "SHA-256 nachrechnen",

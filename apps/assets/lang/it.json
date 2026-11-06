@@ -95,6 +95,7 @@
   "karte.deins": "il tuo sistema",
   "karte.mac.wofuer": "14.4 o più recente",
   "karte.mac.was": "L'app vera e propria: barra dei menu, preleva l'audio di sistema e lo sostituisce. Alla prima accensione macOS chiede il permesso di «registrare l'audio di sistema».",
+  "karte.mac.punkt": "<strong>Un punto arancione nella barra dei menu?</strong> macOS lo mostra mentre il Tuner legge l’audio di sistema per riaccordarlo. Non usa il microfono, e nulla viene registrato o salvato.",
   "karte.mac.pause": "<strong>Gratis e senza scadenza:</strong> 432 e 440 Hz con la qualità «Balanced», precisi entro pochi cent — circa ±4 cent sopra i 200 Hz, fino a 13 cent nei bassi. Altre intonazioni e qualità più fini sono previste per una versione estesa che ancora non esiste.",
   "karte.mac.laden": "Scarica Tuner",
   "karte.conv.laden": "Scarica Converter",

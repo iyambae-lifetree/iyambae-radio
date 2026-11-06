@@ -95,6 +95,7 @@
   "karte.deins": "ton système",
   "karte.mac.wofuer": "14.4 ou plus récent",
   "karte.mac.was": "L'application elle-même : barre de menus, elle capte le son du système et le remplace. Au premier démarrage, macOS demande l'autorisation « enregistrer l'audio du système ».",
+  "karte.mac.punkt": "<strong>Un point orange dans la barre des menus ?</strong> macOS l’affiche tant que le Tuner lit le son du système pour le réaccorder. Il n’utilise pas le micro, et rien n’est enregistré ni conservé.",
   "karte.mac.pause": "<strong>Gratuit, sans expiration :</strong> 432 et 440 Hz avec la qualité « Balanced », précis à quelques cents près — environ ±4 cents au-dessus de 200 Hz, jusqu’à 13 cents dans les graves. D’autres accords et des qualités plus fines sont prévus pour une version étendue qui n’existe pas encore.",
   "karte.mac.laden": "Télécharger le Tuner",
   "karte.conv.laden": "Télécharger le Converter",
