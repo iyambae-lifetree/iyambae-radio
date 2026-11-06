@@ -95,7 +95,7 @@
   "karte.deins": "your system",
   "karte.mac.wofuer": "14.4 or newer",
   "karte.mac.was": "The app itself: menu bar, takes the system audio and replaces it. The first time you switch it on, macOS asks for “record system audio”.",
-  "karte.mac.punkt": "<strong>An orange dot in the menu bar?</strong> macOS shows it while the Tuner reads the system audio in order to retune it. It does not use the microphone, and nothing is recorded or saved.",
+  "karte.mac.punkt": "<strong>A purple dot in the menu bar?</strong> macOS shows it while the Tuner reads the system audio in order to retune it. It does not use the microphone, and nothing is recorded or saved.",
   "karte.mac.pause": "<strong>Free, with no expiry:</strong> 432 and 440 Hz at the “Balanced” quality, accurate to within a few cents — about ±4 cents above 200 Hz, up to 13 cents in the bass. More tunings and finer qualities are planned for an extended version that does not exist yet.",
   "karte.mac.laden": "Download Tuner",
   "karte.conv.laden": "Download Converter",
