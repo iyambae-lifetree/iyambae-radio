@@ -189,9 +189,19 @@ let gefragt = 0;       // Beginn des letzten Abrufs, gelungen oder nicht
  gelungener Stand wiederverwendet: Schlief der Dienst (503), fragte jeder
  Takt erneut — und weckte ihn damit alle 20 s, je Zuhoerer.
 */
-async function holeStand() {
-  if (Date.now() - gefragt < STAND_GILT_MS) return dienstDa ? (stand?.titel ?? null) : null;
+let unterwegs = null;   // der laufende Abruf, falls einer laeuft
+
+function holeStand() {
+  // Wer waehrend eines laufenden Abrufs fragt (Senderwechsel), wartet auf
+  // ihn, statt ein leeres Ergebnis zu bekommen.
+  if (unterwegs) return unterwegs;
+  if (Date.now() - gefragt < STAND_GILT_MS) return Promise.resolve(dienstDa ? (stand?.titel ?? null) : null);
   gefragt = Date.now();
+  unterwegs = frageBrett().finally(() => { unterwegs = null; });
+  return unterwegs;
+}
+
+async function frageBrett() {
   try {
     const a = await fetch(DIENST, { signal: AbortSignal.timeout(6000) });
     if (!a.ok) { dienstDa = false; return null; }
