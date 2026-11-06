@@ -24,6 +24,9 @@ WAS GEPRUEFT WIRD
      Zwei Zeilen waeren eine Einladung, die falsche zu nehmen; keine Zeile
      nimmt dem Besucher die Moeglichkeit nachzurechnen.
   3. In PRUEFSUMMEN.txt steht keine Zeile fuer etwas, das niemand anbietet.
+     Ausnahme: Dateien, die bewusst NICHT auf dieser Seite stehen, sondern
+     per Einladung verteilt werden (AUSSERHALB_DER_SEITE). Sie zeigt das
+     Skript mit „!“ an, statt sie zu bemaengeln.
   4. Fuer macOS: die verlinkte Fassung ist die neueste veroeffentlichte.
 
 WAS NICHT GEPRUEFT WIRD, UND WARUM
@@ -58,6 +61,12 @@ WURZEL = pathlib.Path(__file__).resolve().parent.parent
 SEITE = WURZEL / "apps" / "index.html"
 HAUS = "https://apps.iyambae.fm"
 REPO = "iyambae-lifetree/MyRetuner"
+
+# Angebote, die nicht ueber diese Seite laufen. Die Sonarium-Testfassung geht
+# per Einladung an die leise Testrunde (Vault: „IYAMBAE Sonarium – Kickstarter
+# – Leise Testrunde (Einladung)“); `apps/.github/workflows/speicher.yml` haelt
+# sie deshalb im Speicher und in PRUEFSUMMEN.txt.
+AUSSERHALB_DER_SEITE = re.compile(r"IYAMBAE-Sonarium-Testfassung-\d+(\.\d+)*\.dmg")
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -160,7 +169,12 @@ def main():
         else:
             melde("✘", f"{name} — {len(zeilen)} Zeilen, eine davon ist falsch")
     for name in summen:
-        if name not in dateien:
+        if name in dateien:
+            continue
+        if AUSSERHALB_DER_SEITE.fullmatch(name):
+            melde("!", f"{name} — wird ausserhalb dieser Seite angeboten "
+                       "(Einladung), Zeile ist gewollt")
+        else:
             melde("✘", f"{name} — Pruefsumme fuer etwas, das niemand anbietet")
 
     if gruendlich:
