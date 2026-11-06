@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title data-text="seite.titel">IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln</title>
-<meta name="description" data-inhalt="seite.beschreibung" content="Tuner für macOS, Windows und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<meta name="description" data-inhalt="seite.beschreibung" content="Tuner für macOS, Windows und Linux. Stimmt den gesamten Systemton in Echtzeit auf 432 Hz um, ohne Tempoänderung und ohne Konvertieren — für macOS gratis und ohne Ablauf. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
 <meta name="theme-color" content="#0A0908">
 
 <!-- Vorschau in Foren und Boten. Der Anlass ist unmittelbar: Wer diese
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="IYAMBAE Tuner">
 <meta property="og:title" data-inhalt="seite.titel" content="IYAMBAE Tuner — Spotify in 432 Hz, ohne eine Datei umzuwandeln">
-<meta property="og:description" data-inhalt="seite.beschreibung" content="Tuner für macOS, Windows und Linux. Stimmt den gesamten Systemton in Echtzeit um — 432 Hz, historische Kammertöne oder ein frei gewählter Wert, ohne Tempoänderung und ohne Konvertieren. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
+<meta property="og:description" data-inhalt="seite.beschreibung" content="Tuner für macOS, Windows und Linux. Stimmt den gesamten Systemton in Echtzeit auf 432 Hz um, ohne Tempoänderung und ohne Konvertieren — für macOS gratis und ohne Ablauf. Wir versprechen keine Wirkung. Wir geben dir einen Regler.">
 <meta property="og:url" content="https://apps.iyambae.fm/de/">
 <meta property="og:locale" content="de">
 <meta name="twitter:card" content="summary">
@@ -1640,20 +1640,19 @@ code {
              Faellt sie aus, stehen drei gleichberechtigte Knoepfe da statt
              eines Ersatztextes. -->
         <div class="plattformen">
-          <!-- Der Mac-Tuner, seit dem 26.10.2026 ohne Datei.
+          <!-- Der Mac-Tuner, vom 26.10. bis 06.11.2026 ohne Datei.
 
-               Die oeffentliche Testfassung 0.29.0 traegt einen eingebauten
-               Stichtag, den 31.10.2026, und wird bewusst nicht
-               verlaengert: Wer einzeln fragt, bekommt eine
-               Fassung; oeffentlich kommt der Tuner spaeter wieder. Nach dem
-               Stichtag haette diese Kachel eine App verteilt, die sich beim
-               ersten Start abschaltet. Deshalb gedaempft und mit dem Weg zu
-               uns statt zur Datei — die Adresse ist die von /mitmachen/.
-               Die DMG selbst beantwortet nginx mit 410. -->
-          <a class="plattform plattform--wartet" data-fuer="mac" href="mailto:info@iyambae.fm">
+               Die oeffentliche Testfassung 0.29.0 lief am 31.10.2026 ab und
+               wurde bewusst nicht verlaengert; so lange stand hier ein
+               gedaempfter Weg zu uns. Jetzt die Gratisfassung 0.32.0: 432
+               und 440 Hz, Qualitaet „Ausgewogen“, ohne Ablauf. Kein Preis,
+               kein Kaufknopf — verkauft wird erst mit Gewerbe und Impressum.
+               Sāmi-Ra hat dem am 05.11.2026 zugestimmt. -->
+          <a class="plattform" data-fuer="mac" href="/herunterladen/IYAMBAE-Tuner-Gratis-0.32.0.dmg">
             <img class="plattform__zeichen" src="assets/plattform-mac.svg" alt="" width="24" height="24">
-            <span class="plattform__tat" data-text="auf.mac.tat">Tuner für macOS: Testphase vorbei</span>
-            <span class="plattform__zusatz" data-text="auf.mac.zusatz">Kommt bald wieder · ausprobieren? Schreib uns</span>
+            <span class="plattform__reife" data-reife="mac"></span>
+            <span class="plattform__tat" data-text="auf.mac.tat">Tuner für macOS laden</span>
+            <span class="plattform__zusatz" data-text="auf.mac.zusatz">DMG · 2,1 MB · ab macOS 14.4 · gratis, ohne Ablauf · 432 und 440 Hz</span>
           </a>
           <!-- Der Converter, seit dem 13.09.2026 auf der Ladeseite.
 
@@ -1873,7 +1872,7 @@ code {
 <details class="rahmen teil teil--linie klappe" id="holen">
   <summary class="klappe__griff">
     <div class="eng">
-      <p class="eyebrow" data-text="holen.eyebrow">Testausgabe · kostenlos · kein Konto · Windows 0.3.0 · Linux 0.3.0 · macOS bald wieder</p>
+      <p class="eyebrow" data-text="holen.eyebrow">kostenlos · kein Konto · macOS 0.32.0 · Windows 0.3.0 · Linux 0.3.0</p>
       <h2 class="kopf--holen" data-html="holen.titel">Hol es dir. <em>Dann drei Schritte.</em></h2>
       <h2 class="kopf--mobil" data-html="holen.titel.mobil">Am Telefon geht es <em>nicht</em>. Hier steht, warum.</h2>
     </div>
@@ -1893,13 +1892,21 @@ code {
         Die App selbst: Menüleiste, greift den Systemton ab und ersetzt ihn.
         Beim ersten Einschalten fragt macOS nach „Systemaudio aufnehmen“.
       </p>
+      <!-- Seit 06.11.2026: Ein Tester fragte nach dem orangen Punkt neben der
+           Uhr. Der Tuner liest den Systemton ueber einen Core-Audio-Abgriff
+           (NSAudioCaptureUsageDescription); eine Mikrofonfreigabe
+           (NSMicrophoneUsageDescription) hat er nicht. -->
+      <p class="karte__was" data-html="karte.mac.punkt">
+        <strong>Ein oranger Punkt in der Menüleiste?</strong> Den zeigt macOS, solange der Tuner den Systemton liest, um ihn umzustimmen. Das Mikrofon nutzt er nicht, und aufgezeichnet oder gespeichert wird nichts.
+      </p>
       <p class="karte__was" data-html="karte.mac.pause">
-        <strong>Die Testphase des Tuners ist vorbei.</strong> Er kommt bald
-        wieder. Wer ihn jetzt ausprobieren möchte, schreibt uns:
-        <a href="mailto:info@iyambae.fm">info@iyambae.fm</a>.
+        <strong>Gratis und ohne Ablauf:</strong> 432 und 440 Hz in der Qualität „Ausgewogen“, auf wenige Cent genau — oberhalb von 200 Hz etwa ±4 Cent, im Bass bis 13 Cent. Weitere Stimmungen und genauere Qualitäten sind für eine erweiterte Fassung geplant, die es noch nicht gibt.
       </p>
       <div class="karte__fuellen"></div>
       <div class="karte__tat">
+        <a class="laden" href="/herunterladen/IYAMBAE-Tuner-Gratis-0.32.0.dmg">
+          <span data-text="karte.mac.laden">Tuner laden</span><span class="laden__groesse">2,1 MB</span>
+        </a>
         <a class="laden" href="/herunterladen/IYAMBAE-Converter-0.34.13.dmg">
           <span data-text="karte.conv.laden">Converter laden</span><span class="laden__groesse">3,0 MB</span>
         </a>
@@ -1997,9 +2004,7 @@ code {
     <div class="pruefung">
       <h3 data-text="pruefung.titel">Bevor du sie startest</h3>
       <p data-html="pruefung.1">
-        Gebaut und geprüft — <strong>88 Tests, 436 Zusicherungen, null Fehler</strong>
-        auf macOS 26 —, aber von einem Menschen noch nicht im Alltag benutzt. Das
-        ist der ehrliche Stand einer Testausgabe.
+        Die macOS-Fassung 0.32.0 ist signiert, von Apple notarisiert und im Betrieb nachgemessen — <strong>mit Chrome, YouTube und Safari, ohne Aussetzer</strong>. Im Alltag vieler Menschen hat sie sich noch nicht bewährt. Das ist der ehrliche Stand.
       </p>
       <p data-html="pruefung.2">
         Die Datei trägt ihre SHA-256-Summe. Rechne sie nach, statt uns zu
@@ -2526,15 +2531,10 @@ code {
         <summary data-text="frage.preis.titel">Was kostet es?</summary>
         <div class="antwort">
           <p data-text="frage.preis.1">
-            Diese Testausgabe kostet nichts. Sie verlangt kein Konto, keine
-            E-Mail-Adresse und keine Zahlungsdaten — du lädst eine Datei, und das
-            war es.
+            Die Gratisfassung des Tuners für macOS kostet nichts und läuft nicht ab. Sie verlangt kein Konto, keine E-Mail-Adresse und keine Zahlungsdaten — du lädst eine Datei, und das war es.
           </p>
           <p data-text="frage.preis.2">
-            Für die fertigen Fassungen stehen die Preise fest, jeweils einmalig
-            und ohne Abo: der Tuner 29 €, der Converter 38 €, beide zusammen
-            55 €. Der Verkauf hier ist geplant — bis dahin bleibt die Testausgabe
-            kostenlos.
+            Eine erweiterte Fassung mit weiteren Stimmungen und genaueren Qualitäten ist geplant. Verkauft wird hier noch nichts, und einen Preis nennen wir erst, wenn es so weit ist.
           </p>
         </div>
       </details>
@@ -2625,8 +2625,8 @@ code {
     </div>
 
     <p data-html="wege.schluss">
-      Tuner und Converter sind da, die Webseite auch. Nach der Testphase
-      bieten wir die Software zu einem fairen Preis an. <strong>Es wird Zeit,
+      Tuner und Converter sind da, die Webseite auch. Den Tuner für macOS
+      gibt es gratis und ohne Ablauf. <strong>Es wird Zeit,
       dass jeder die Freiheit hat, Musik in der Stimmung zu hören, die er selbst
       gewählt hat.</strong> Wenn das im Alltag schon nicht geht — Telefonklingeln,
       Türglocken, Kirchenglocken, Sirenen, Kaufhausmusik —, dann wenigstens an den
