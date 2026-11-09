@@ -43,6 +43,8 @@
   "auf.linux.tat": "تنزيل Tuner لنظام Linux",
   "auf.linux.zusatz": "DEB · 1.7 ميغابايت · Debian 13 مع PipeWire · إصدار مبكر",
   "auf.mobil.zusatz": "على الهاتف لا يُسلّم أيّ تطبيق صوتَ ⁦Spotify⁩ أو ⁦Netflix⁩ إلى غيره.",
+  "auf.mobil.teilen": "أرسل الرابط إلى حاسوبك",
+  "auf.mobil.kopiert": "نُسخ الرابط — الصقه على الحاسوب.",
   "messen.eyebrow": "وموسيقاك أنت؟",
   "messen.text": "اسحب ملفّاً إلى النافذة واعرف على أيّ دوزنة يقف فعلاً. <strong>مجّاناً وبلا حساب</strong> — والملفّ لا يغادر جهازك، إذ يجري الحساب داخل متصفّحك.",
   "messen.knopf": "قِس الدوزنة",

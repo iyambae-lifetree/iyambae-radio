@@ -43,6 +43,8 @@
   "auf.linux.tat": "Télécharger le Tuner pour Linux",
   "auf.linux.zusatz": "DEB · 1,7 Mo · Debian 13 avec PipeWire · version précoce",
   "auf.mobil.zusatz": "Sur un téléphone, aucune application ne livre le son de Spotify ou de Netflix.",
+  "auf.mobil.teilen": "Envoyer le lien à l’ordinateur",
+  "auf.mobil.kopiert": "Lien copié — à coller sur l’ordinateur.",
   "messen.eyebrow": "Et ta propre musique ?",
   "messen.text": "Dépose un fichier dans la fenêtre et découvre sur quel diapason il repose vraiment. <strong>Gratuit, sans compte</strong> — et le fichier ne quitte pas ta machine, le calcul se fait dans ton navigateur.",
   "messen.knopf": "Mesurer le diapason",
