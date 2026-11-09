@@ -43,6 +43,8 @@
   "auf.linux.tat": "Linux 版 Tuner をダウンロード",
   "auf.linux.zusatz": "DEB · 1.7 MB · Debian 13 + PipeWire · 初期版",
   "auf.mobil.zusatz": "スマートフォンでは、Spotify や Netflix の音を外へ渡すアプリはありません。",
+  "auf.mobil.teilen": "リンクをパソコンへ送る",
+  "auf.mobil.kopiert": "リンクをコピーしました。パソコンで貼り付けてください。",
   "messen.eyebrow": "では、あなたの音楽は？",
   "messen.text": "ファイルを窓にドラッグすれば、それが本当はどの基準ピッチに乗っているか分かります。<strong>無料、アカウント不要</strong> — 計算はブラウザの中で行われ、ファイルは機械から出ません。",
   "messen.knopf": "ピッチを測る",

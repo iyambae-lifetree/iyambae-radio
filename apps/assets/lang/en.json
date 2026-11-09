@@ -43,6 +43,8 @@
   "auf.linux.tat": "Download Tuner for Linux",
   "auf.linux.zusatz": "DEB · 1.7 MB · Debian 13 with PipeWire · early version",
   "auf.mobil.zusatz": "On a phone, no app hands out the sound of Spotify or Netflix.",
+  "auf.mobil.teilen": "Send the link to your computer",
+  "auf.mobil.kopiert": "Link copied — paste it on your computer.",
   "messen.eyebrow": "And your own music?",
   "messen.text": "Drop a file into the window and find out what concert pitch it really sits on. <strong>Free, no account</strong> — and the file never leaves your machine, the maths runs in your browser.",
   "messen.knopf": "Measure the pitch",
