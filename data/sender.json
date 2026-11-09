@@ -317,32 +317,6 @@
       "sprache": "de"
     },
     {
-      "id": "rinse-uk",
-      "name": "Rinse FM",
-      "betreiber": "Rinse FM",
-      "ort": "London",
-      "land": "GB",
-      "regal": "grenzgaenger",
-      "etiketten": [
-        "live-dj",
-        "mensch-am-mikro"
-      ],
-      "stream": "https://admin.stream.rinse.fm/proxy/rinse_uk/stream",
-      "homepage": "https://rinse.fm",
-      "kaertchen": "Begann 1994 als Piratensender in einem Londoner Hochhaus und war die Geburtsstätte von Grime und UK Garage, bevor es 2010 eine offizielle Lizenz gab. Die Sendungen klingen bis heute, als würde jemand illegal von einem Dach senden.",
-      "codec": "aac",
-      "bitrate": 128,
-      "samplerate": 44100,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": false,
-      "logo": "assets/logos/rinse-uk.webp",
-      "logoQuelle": "apple-touch-icon",
-      "kanal": "Rinse FM",
-      "sprache": "en"
-    },
-    {
       "id": "rinse-france",
       "name": "Rinse France",
       "betreiber": "Rinse FM",
@@ -366,60 +340,6 @@
       "sprache": "fr",
       "logo": "assets/logos/rinse-france.webp",
       "logoQuelle": "apple-touch-icon"
-    },
-    {
-      "id": "kool-fm",
-      "name": "Kool FM",
-      "betreiber": "Rinse FM",
-      "ort": "London",
-      "land": "GB",
-      "regal": "grenzgaenger",
-      "etiketten": [
-        "live-dj",
-        "mensch-am-mikro"
-      ],
-      "stream": "https://admin.stream.rinse.fm/proxy/kool/stream",
-      "homepage": "https://rinse.fm/kool",
-      "kaertchen": "Der älteste noch sendende Jungle-Piratensender der Welt, seit 1991 auf Sendung und seit 2022 unter dem Dach von Rinse. Wer wissen will, wie sich Jungle anhört, wenn ihn Leute auflegen, die dabei waren, hört hier.",
-      "codec": "aac",
-      "bitrate": 128,
-      "samplerate": 44100,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": false,
-      "logo": "assets/logos/kool-fm.webp",
-      "logoQuelle": "apple-touch-icon",
-      "kanal": "Kool FM",
-      "sprache": "en"
-    },
-    {
-      "id": "wfmu",
-      "name": "WFMU",
-      "betreiber": "WFMU",
-      "ort": "Jersey City",
-      "land": "US",
-      "regal": "grenzgaenger",
-      "etiketten": [
-        "community",
-        "mensch-am-mikro",
-        "ohne-werbung"
-      ],
-      "stream": "https://stream0.wfmu.org/freeform-extrahigh-primary.aac",
-      "homepage": "https://wfmu.org",
-      "unterstuetzen": "https://pledge.wfmu.org/donate",
-      "kaertchen": "Der dienstälteste Freeform-Sender der USA, seit 1958 hörerfinanziert und ohne jede Musikredaktion — jeder Moderator spielt, was er will. Legendär für Sendungen, in denen auf Free Jazz eine Werbeplatte von 1962 folgt.",
-      "codec": "aac",
-      "bitrate": 256,
-      "samplerate": 44100,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": false,
-      "logo": "assets/logos/wfmu.webp",
-      "logoQuelle": "icon",
-      "kanal": "WFMU",
-      "sprache": "en"
     },
     {
       "id": "yammat-fm",
@@ -1185,52 +1105,6 @@
       "kanal": "Nature Radio Sleep"
     },
     {
-      "id": "adroit-jazz",
-      "name": "Adroit Jazz Underground",
-      "betreiber": "WALM Radio",
-      "ort": "New York",
-      "land": "US",
-      "regal": "jazz",
-      "etiketten": [
-        "ohne-werbung",
-        "mensch-am-mikro"
-      ],
-      "stream": "https://icecast.walmradio.com:8443/jazz",
-      "homepage": "https://walmradio.com",
-      "kaertchen": "Ein New Yorker Sender, der Jazz von originalen Schellack- und Vinylplatten abspielt, samt Knistern und allem. Man hört tatsächlich die Platte, nicht die remasterte Wiederveröffentlichung — ein Unterschied, den man nach zwei Titeln nicht mehr missen will.",
-      "codec": "mp3",
-      "bitrate": 253,
-      "samplerate": 48000,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": false,
-      "kanal": "Adroit Jazz Underground",
-      "sprache": "en"
-    },
-    {
-      "id": "classic-vinyl",
-      "name": "Classic Vinyl HD",
-      "betreiber": "WALM Radio",
-      "ort": "New York",
-      "land": "US",
-      "regal": "jazz",
-      "etiketten": [
-        "ohne-werbung"
-      ],
-      "stream": "https://icecast.walmradio.com:8443/classic",
-      "homepage": "https://walmradio.com",
-      "kaertchen": "Der Schwesterkanal von Adroit Jazz, mit Aufnahmen aus den zwanziger bis fünfziger Jahren, ebenfalls direkt von der Platte. Radio als Archivbesuch — hier laufen Stücke, die seit siebzig Jahren niemand digitalisiert hat.",
-      "codec": "mp3",
-      "bitrate": 281,
-      "samplerate": 48000,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": false,
-      "kanal": "Classic Vinyl HD"
-    },
-    {
       "id": "jazz24",
       "name": "Jazz24",
       "betreiber": "KNKX",
@@ -1355,59 +1229,6 @@
       "seit": "2026-08-21",
       "cors": true,
       "kanal": "BOX Japan City Pop"
-    },
-    {
-      "id": "listen-moe-jpop",
-      "name": "Listen.moe J-Pop",
-      "betreiber": "Listen.moe",
-      "ort": "Tokio",
-      "land": "JP",
-      "regal": "japan",
-      "etiketten": [
-        "community",
-        "ohne-werbung",
-        "lossless"
-      ],
-      "stream": "https://listen.moe/stream",
-      "homepage": "https://listen.moe",
-      "unterstuetzen": "https://listen.moe/donate",
-      "kaertchen": "Ein von Freiwilligen betriebener Sender für japanischen Pop, der im Opus-Format mit 256 kbit/s sendet — klanglich das Beste, was in diesem Genre zu holen ist. Die Titelliste wird von der Hörergemeinde gepflegt, nicht von einer Redaktion.",
-      "codec": "opus",
-      "bitrate": 192,
-      "samplerate": 48000,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": false,
-      "logo": "assets/logos/listen-moe-jpop.webp",
-      "logoQuelle": "apple-touch-icon",
-      "kanal": "J-Pop"
-    },
-    {
-      "id": "listen-moe-kpop",
-      "name": "Listen.moe K-Pop",
-      "betreiber": "Listen.moe",
-      "ort": "Seoul",
-      "land": "KR",
-      "regal": "japan",
-      "etiketten": [
-        "community",
-        "ohne-werbung"
-      ],
-      "stream": "https://listen.moe/kpop/stream",
-      "homepage": "https://listen.moe",
-      "unterstuetzen": "https://listen.moe/donate",
-      "kaertchen": "Der koreanische Schwesterkanal, technisch identisch aufgesetzt und ebenfalls von der Gemeinde kuratiert. Steht hier, weil die Grenze zwischen J-Pop und K-Pop musikalisch längst durchlässig geworden ist.",
-      "codec": "opus",
-      "bitrate": 192,
-      "samplerate": 48000,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": false,
-      "logo": "assets/logos/listen-moe-kpop.webp",
-      "logoQuelle": "apple-touch-icon",
-      "kanal": "K-Pop"
     },
     {
       "id": "r-a-d-io",
@@ -1680,28 +1501,6 @@
       "sprache": "es"
     },
     {
-      "id": "colombia-salsadura",
-      "name": "Colombia Salsa Dura",
-      "betreiber": "Tikast",
-      "ort": "Cali",
-      "land": "CO",
-      "regal": "barrio",
-      "etiketten": [
-        "ohne-werbung"
-      ],
-      "stream": "https://play10.tikast.com/proxy/colsalsadura?mp=/stream",
-      "homepage": "https://tikast.com",
-      "kaertchen": "Salsa dura ist die harte, schnelle Spielart aus den Siebzigern — Fania-Sound, Bläsersätze, keine Balladen. Gesendet aus Cali, der Stadt, die Salsa zur Volkskunst gemacht hat, obwohl sie nicht aus Kolumbien stammt.",
-      "codec": "aac",
-      "bitrate": 64,
-      "samplerate": 44100,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": false,
-      "kanal": "Colombia Salsa Dura"
-    },
-    {
       "id": "cumbias-inmortales",
       "name": "Cumbias Inmortales",
       "betreiber": "Retroland Digital",
@@ -1767,28 +1566,6 @@
       "seit": "2026-08-21",
       "cors": true,
       "kanal": "Caracas Salsa Brava"
-    },
-    {
-      "id": "cumbia-90s",
-      "name": "Radio Cumbia 90s",
-      "betreiber": "Emite Radio",
-      "ort": "La Paz",
-      "land": "BO",
-      "regal": "barrio",
-      "etiketten": [
-        "ohne-werbung"
-      ],
-      "stream": "https://emiteradio.com/proxy/cumbia90s?mp=/stream",
-      "homepage": "https://emiteradio.com",
-      "kaertchen": "Bolivianische und andine Cumbia der Neunziger, mit Synthesizern und Drumcomputern statt Bläsern. Eine ganz eigene Abzweigung des Genres, die klingt, als hätte jemand Volksmusik durch ein Heimstudio geschickt.",
-      "codec": "mp3",
-      "bitrate": 128,
-      "samplerate": 44100,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": false,
-      "kanal": "Radio Cumbia 90s"
     },
     {
       "id": "panamericana-salsa",
@@ -1891,32 +1668,6 @@
       "cors": true,
       "kanal": "Radio Méga",
       "sprache": "fr"
-    },
-    {
-      "id": "ancient-fm",
-      "name": "Ancient FM",
-      "betreiber": "Ancient FM",
-      "ort": "Toronto",
-      "land": "CA",
-      "regal": "fundstuecke",
-      "etiketten": [
-        "ohne-werbung",
-        "nur-instrumental"
-      ],
-      "stream": "https://mediaserv73.live-streams.nl:18058/stream",
-      "homepage": "https://www.ancientfm.com",
-      "unterstuetzen": "https://www.ancientfm.com/#donate",
-      "kaertchen": "Ausschließlich Musik des Mittelalters und der Renaissance, gespielt auf historischen Instrumenten. Ein Sender, den sich niemand ausdenken würde, und der genau deshalb existiert — seit über fünfzehn Jahren.",
-      "codec": "mp3",
-      "bitrate": 128,
-      "samplerate": 44100,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "cors": false,
-      "kanal": "Ancient FM",
-      "logo": "assets/logos/ancient-fm.webp",
-      "logoQuelle": "direkt"
     },
     {
       "id": "nhyira-fm",
@@ -2369,33 +2120,6 @@
       "logoQuelle": "icon",
       "kanal": "TSF Jazz",
       "sprache": "fr"
-    },
-    {
-      "id": "concertzender-jazz",
-      "name": "Concertzender Jazz",
-      "betreiber": "Concertzender",
-      "ort": "Utrecht",
-      "land": "NL",
-      "regal": "jazz",
-      "etiketten": [
-        "ohne-werbung",
-        "community",
-        "mensch-am-mikro"
-      ],
-      "stream": "https://streams.greenhost.nl:8006/jazz",
-      "homepage": "https://www.concertzender.nl",
-      "kaertchen": "Der niederländische Concertzender wird von Freiwilligen gemacht und finanziert sich ohne Werbung. Der Jazzkanal ist entsprechend eigensinnig: Sendungen, die einer Idee folgen statt einer Playlist, oft eine Stunde lang zu einem einzigen Musiker.",
-      "codec": "mp3",
-      "bitrate": 256,
-      "samplerate": 48000,
-      "status": "ok",
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-22",
-      "cors": false,
-      "logo": "assets/logos/concertzender-jazz.webp",
-      "logoQuelle": "apple-touch-icon",
-      "kanal": "Concertzender Jazz",
-      "sprache": "nl"
     },
     {
       "id": "radio-swiss-jazz",
@@ -3561,29 +3285,6 @@
       "geprueft_am": "2026-10-11",
       "seit": "2026-08-21",
       "kanal": "Early Music"
-    },
-    {
-      "id": "walm2-opus",
-      "name": "WALM 2 HD",
-      "betreiber": "WALM Radio",
-      "ort": "New York",
-      "land": "US",
-      "regal": "klassik",
-      "etiketten": [
-        "ohne-werbung",
-        "lossless"
-      ],
-      "stream": "https://icecast.walmradio.com:8443/walm2_opus",
-      "homepage": "https://walmradio.com",
-      "kaertchen": "Klassik von originalen Schellackplatten, gesendet in Opus mit 192 kbit/s. Dieselben Leute, die im Jazzregal Adroit Jazz betreiben — man hört die Platte, nicht die remasterte Wiederveröffentlichung.",
-      "status": "ok",
-      "codec": "opus",
-      "bitrate": 192,
-      "samplerate": 48000,
-      "cors": false,
-      "geprueft_am": "2026-10-11",
-      "seit": "2026-08-21",
-      "kanal": "WALM 2 HD"
     },
     {
       "id": "fine-music-radio",
