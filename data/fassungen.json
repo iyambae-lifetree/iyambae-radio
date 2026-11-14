@@ -25,9 +25,12 @@
   },
   "converter": {
     "macos": {
-      "fassung": "0.34.13",
+      "fassung": "0.35.0",
       "reife": "erprobung",
-      "datei": "IYAMBAE-Converter-0.34.13.dmg"
+      "datei": "IYAMBAE-Converter-Gratis-0.35.0.dmg",
+      "sha256": "f94c10fef51319e21d28a812de4e409f392a05dd45d1ab1eb5e11e39d5977515",
+      "mindest_macos": "14.4",
+      "_stufe": "Gratisfassung ohne Ablauf: umstimmen auf 432 Hz, zehn Dateien je Lauf; die ersten 14 Tage alles frei. Seit 14.11.2026 auf der Seite, Saemi-Ras Zustimmung vom 14.11.2026. Kein Preis, kein Kaufknopf, bis Gewerbe und Impressum stehen."
     }
   }
 }
