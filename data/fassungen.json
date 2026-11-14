@@ -5,12 +5,12 @@
   "_datei_null": "heisst: Die Fassung existiert und laeuft, ist aber nicht zum Laden da. Nicht dasselbe wie 'gibt es nicht'.",
   "tuner": {
     "macos": {
-      "fassung": "0.33.0",
+      "fassung": "0.34.0",
       "reife": "erprobung",
-      "datei": "IYAMBAE-Tuner-Gratis-0.33.0.dmg",
-      "sha256": "506e03336f9e32f08261115dc8bd1ca92dcc7abf7b30af526f2ea02b611fa3a5",
+      "datei": "IYAMBAE-Tuner-Gratis-0.34.0.dmg",
+      "sha256": "be249865468f47dd051d17ccd9397c81bf273db1db53514adee65a101f0b38c4",
       "mindest_macos": "14.4",
-      "_stufe": "Gratisfassung ohne Ablauf: die ersten 14 Tage je Installation alles, danach 432 und 440 Hz, Qualitaet Ausgewogen (seit 0.33.0, 14.11.2026, Saemi-Ras Zustimmung vom selben Tag). Seit 06.11.2026 auf der Seite, Saemi-Ras Zustimmung vom 05.11.2026. Vom 26.10. bis dahin ohne Datei (Testfassung 0.29.0 lief am 31.10. aus). Kein Preis, kein Kaufknopf, bis Gewerbe und Impressum stehen."
+      "_stufe": "Gratisfassung ohne Ablauf: die ersten 14 Tage je Installation alles, danach 432 Hz 15 Minuten je Tag und 440 Hz ohne Grenze, Qualitaet Ausgewogen (14 Tage seit 0.33.0, 15 Minuten seit 0.34.0, beide 14.11.2026, Saemi-Ras Zustimmung vom selben Tag). Seit 06.11.2026 auf der Seite, Saemi-Ras Zustimmung vom 05.11.2026. Vom 26.10. bis dahin ohne Datei (Testfassung 0.29.0 lief am 31.10. aus). Kein Preis, kein Kaufknopf, bis Gewerbe und Impressum stehen."
     },
     "linux": {
       "fassung": "0.3.0",
