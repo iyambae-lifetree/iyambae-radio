@@ -175,12 +175,14 @@ def main():
             if not datei:
                 print(f"  · {programm:<9} {name:<8} nichts zum Laden ({wie['reife']})")
                 continue
-            adresse = f"https://apps.iyambae.fm/herunterladen/{datei}"
-            code, _ = hole(adresse)
-            zeichen = "✔" if code == 200 else "✘"
-            print(f"  {zeichen} {programm:<9} {name:<8} {wie['fassung']:<9} {code}  {datei}")
-            if code != 200:
-                beanstandet.append(f"{adresse} → HTTP {code} — angeboten, aber nicht da")
+            # Linux bietet seit 0.6.0 zwei Pakete an (datei_rpm).
+            for d in [datei] + ([wie["datei_rpm"]] if wie.get("datei_rpm") else []):
+                adresse = f"https://apps.iyambae.fm/herunterladen/{d}"
+                code, _ = hole(adresse)
+                zeichen = "✔" if code == 200 else "✘"
+                print(f"  {zeichen} {programm:<9} {name:<8} {wie['fassung']:<9} {code}  {d}")
+                if code != 200:
+                    beanstandet.append(f"{adresse} → HTTP {code} — angeboten, aber nicht da")
 
     print("\n══ Ungelistete Seiten ══")
     for adresse in UNGELISTET:

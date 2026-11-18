@@ -69,6 +69,17 @@
     os = '';
   }
   if (os) document.documentElement.setAttribute('data-os', os);
+  /* Linux zerfaellt in zwei Paketfamilien: .deb (Ubuntu, Zorin, Mint,
+     Debian) und .rpm (Fedora, openSUSE). Firefox nennt die Distribution
+     oft in der Kennung, Chrome nie. Erkannt heisst hier nur: Das .rpm
+     rueckt nach vorn. Beide Knoepfe stehen immer da (seit Linux 0.6.0). */
+  try {
+    if (os === 'linux'
+        && /Fedora|openSUSE|SUSE|Red ?Hat|CentOS|Rocky|AlmaLinux|Mageia|Nobara|Bazzite/i
+             .test(navigator.userAgent || '')) {
+      document.documentElement.setAttribute('data-linux', 'rpm');
+    }
+  } catch (e) { /* bleibt beim .deb vorn */ }
 })();
 </script>
 
@@ -1525,6 +1536,20 @@ html[data-os="mac"] .plattform--neben[data-fuer="mac"] {
 }
 html[data-os="mac"] .plattform--neben[data-fuer="mac"] .plattform__zeichen { color: var(--leise); }
 .plattform--neben .plattform__tat { color: var(--leise); }
+/* Linux: das .deb vorn, das .rpm daneben — ausser die Kennung des
+   Browsers nennt eine rpm-Distribution, dann umgekehrt. */
+html[data-os="linux"] .plattform--neben[data-fuer="linux"] {
+  border-color: var(--kante-hell); background: transparent; order: 1;
+}
+html[data-os="linux"] .plattform--neben[data-fuer="linux"] .plattform__zeichen { color: var(--leise); }
+html[data-linux="rpm"] .plattform--neben[data-paket="rpm"] {
+  border-color: var(--akzent); background: var(--kante); order: -1;
+}
+html[data-linux="rpm"] .plattform--neben[data-paket="rpm"] .plattform__zeichen { color: var(--akzent-hell); }
+html[data-linux="rpm"] .plattform--neben[data-paket="rpm"] .plattform__tat { color: inherit; }
+html[data-linux="rpm"] .plattform[data-paket="deb"] {
+  border-color: var(--kante-hell); background: transparent; order: 1;
+}
 
 /* Telefon: zuerst sagen, dass es hier nicht geht, und einen Weg zum
    Rechner anbieten. Die Kacheln bleiben, aber klein — vorher kamen
@@ -1771,18 +1796,30 @@ html[data-os="mobil"] .plattform__zusatz { display: none; }
 
                Das Reifewort bleibt „frueh" (data/fassungen.json), und die
                Unterzeile sagt ehrlich, was der Besucher gleich erlebt:
-               SmartScreen auf Windows, apt auf einem nackten Debian. -->
+               SmartScreen auf Windows. Den apt-Schritt auf einem nackten
+               Debian gibt es seit Linux 0.6.0 nicht mehr. -->
           <a class="plattform" data-fuer="win" href="/herunterladen/IYAMBAE-Tuner-0.3.0-Setup.exe">
             <img class="plattform__zeichen" src="assets/plattform-win.svg" alt="" width="24" height="24">
             <span class="plattform__reife" data-reife="win"></span>
             <span class="plattform__tat" data-text="auf.win.tat">Tuner für Windows laden</span>
             <span class="plattform__zusatz" data-text="auf.win.zusatz">EXE · 69,8 MB · Windows 11 · frühe Fassung, noch nicht signiert</span>
           </a>
-          <a class="plattform" data-fuer="linux" href="/herunterladen/iyambae-tuner_0.5.3-1_amd64.deb">
+          <!-- Seit Linux 0.6.0 (Sāmi-Ra: jeder mit Linux soll ihn einrichten
+               koennen) zwei Pakete: Das .deb bringt die Laufzeit der
+               Bedienkarte selbst mit und laeuft damit auch auf einem nackten
+               Debian; das .rpm ist derselbe Inhalt fuer Fedora und openSUSE.
+               Welches vorn steht, entscheidet das Skript oben — beide sind
+               immer erreichbar. -->
+          <a class="plattform" data-fuer="linux" data-paket="deb" href="/herunterladen/iyambae-tuner_0.6.0-1_amd64.deb">
             <img class="plattform__zeichen" src="assets/plattform-linux.svg" alt="" width="24" height="24">
             <span class="plattform__reife" data-reife="linux"></span>
             <span class="plattform__tat" data-text="auf.linux.tat">Tuner für Linux laden</span>
-            <span class="plattform__zusatz" data-text="auf.linux.zusatz">DEB · 8,2 MB · Debian 13 mit PipeWire · frühe Fassung</span>
+            <span class="plattform__zusatz" data-text="auf.linux.zusatz">DEB · 31,7 MB · Ubuntu, Zorin, Mint, Debian · frühe Fassung</span>
+          </a>
+          <a class="plattform plattform--neben" data-fuer="linux" data-paket="rpm" href="/herunterladen/iyambae-tuner-0.6.0-1.x86_64.rpm">
+            <img class="plattform__zeichen" src="assets/plattform-linux.svg" alt="" width="24" height="24">
+            <span class="plattform__tat" data-text="auf.linux.rpm.tat">Tuner für Fedora und openSUSE laden</span>
+            <span class="plattform__zusatz" data-text="auf.linux.rpm.zusatz">RPM · 43,0 MB · Fedora, openSUSE · frühe Fassung</span>
           </a>
         </div>
 
@@ -1969,7 +2006,7 @@ html[data-os="mobil"] .plattform__zusatz { display: none; }
 <details class="rahmen teil teil--linie klappe" id="holen" open>
   <summary class="klappe__griff">
     <div class="eng">
-      <p class="eyebrow" data-text="holen.eyebrow">kostenlos · kein Konto · macOS 0.34.0 · Windows 0.3.0 · Linux 0.5.3</p>
+      <p class="eyebrow" data-text="holen.eyebrow">kostenlos · kein Konto · macOS 0.34.0 · Windows 0.3.0 · Linux 0.6.0</p>
       <h2 class="kopf--holen" data-html="holen.titel">Hol es dir. <em>Dann drei Schritte.</em></h2>
       <h2 class="kopf--mobil" data-html="holen.titel.mobil">Am Telefon geht es <em>nicht</em>. Hier steht, warum.</h2>
     </div>
@@ -2020,7 +2057,7 @@ html[data-os="mobil"] .plattform__zusatz { display: none; }
       <span class="karte__deins fuer fuer--linux" data-text="karte.deins">dein System</span>
       <div class="karte__kopf">
         <span class="karte__name">Linux</span>
-        <span class="karte__wofuer" data-text="karte.linux.wofuer">Debian 13 · PipeWire ab 0.3.60</span>
+        <span class="karte__wofuer" data-text="karte.linux.wofuer">Ubuntu · Zorin · Mint · Debian · Fedora · openSUSE</span>
       </div>
       <p class="karte__was" data-html="karte.linux.was1">
         Symbol in der Leiste: Stimmungen unter Namen, Ein und Aus, Ausgabegerät,
@@ -2028,14 +2065,18 @@ html[data-os="mobil"] .plattform__zusatz { display: none; }
         Filterkette. <strong>Frühe Fassung.</strong>
       </p>
       <p class="karte__was" data-html="karte.linux.was2">
-        Auf manchen Systemen genügt ein Doppelklick, auf einem nackten Debian
-        braucht es <code>sudo apt install ./iyambae-tuner_0.5.3-1_amd64.deb</code>.
-        Unter GNOME will das Symbol die AppIndicator-Erweiterung.
+        Laden und doppelklicken, das Paket bringt alles mit. Das .deb ist für
+        Ubuntu, Zorin, Mint und Debian, das .rpm für Fedora und openSUSE.
+        Nötig ist PipeWire, Standard seit etwa 2022. Unter GNOME will das
+        Symbol die AppIndicator-Erweiterung.
       </p>
       <div class="karte__fuellen"></div>
       <div class="karte__tat">
-        <a class="laden" href="/herunterladen/iyambae-tuner_0.5.3-1_amd64.deb">
-          <span data-text="karte.mac.laden">Tuner laden</span><span class="laden__groesse">8,2 MB</span>
+        <a class="laden" href="/herunterladen/iyambae-tuner_0.6.0-1_amd64.deb">
+          <span data-text="karte.linux.laden.deb">.deb laden</span><span class="laden__groesse">31,7 MB</span>
+        </a>
+        <a class="laden" href="/herunterladen/iyambae-tuner-0.6.0-1.x86_64.rpm">
+          <span data-text="karte.linux.laden.rpm">.rpm laden</span><span class="laden__groesse">43,0 MB</span>
         </a>
         <a class="laden laden--leise" href="/herunterladen/PRUEFSUMMEN.txt">
           <span data-text="holen.pruefsumme">SHA-256 nachrechnen</span><span class="laden__groesse">↓</span>
@@ -2529,7 +2570,8 @@ html[data-os="mobil"] .plattform__zusatz { display: none; }
             <strong>Linux mit PipeWire ab 0.3.60</strong> — Symbol in der
             Leiste: Stimmungen unter Namen, Ein und Aus, Wahl der Engine,
             Ausgabegerät, Start beim Anmelden. Darunter arbeitet ein
-            LADSPA-Plugin in der Filterkette. Gebaut für Debian 13.
+            LADSPA-Plugin in der Filterkette. Als .deb für Ubuntu, Zorin,
+            Mint und Debian, als .rpm für Fedora und openSUSE.
           </p>
           <p data-text="frage.systeme.2">
             Unter GNOME braucht das Leistensymbol einmalig die
