@@ -1226,6 +1226,21 @@ def pruefe_ladeverweis(quellen):
             gut = False
         elif wdatei:
             print(f"  ✔ {name}: Verweis und fassungen.json nennen dieselbe Datei: {wdatei}")
+    # Seit Linux 0.6.0 ein zweites Paket fuer Fedora und openSUSE, mit
+    # eigenem Feld in fassungen.json. Dieselbe Pruefung, sonst laeuft das
+    # .rpm still eine Fassung hinter dem .deb her.
+    rdatei = lade_fassungen()["tuner"]["linux"].get("datei_rpm")
+    rverweise = set(re.findall(r"/herunterladen/(iyambae-tuner-[^\"]+\.rpm)", quelle))
+    if rdatei and rverweise != {rdatei}:
+        print(f"  ✘ linux (.rpm): Vorlage verlinkt {sorted(rverweise) or 'nichts'}, "
+              f"fassungen.json nennt {rdatei}")
+        gut = False
+    elif not rdatei and rverweise:
+        print(f"  ✘ linux (.rpm): Vorlage verlinkt {sorted(rverweise)}, "
+              f"fassungen.json nennt kein datei_rpm")
+        gut = False
+    elif rdatei:
+        print(f"  ✔ linux (.rpm): Verweis und fassungen.json nennen dieselbe Datei: {rdatei}")
     return gut
 
 
