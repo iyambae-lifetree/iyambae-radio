@@ -92,10 +92,17 @@ test('saeubere entfernt einen fuehrenden Strich aus leerem Kuenstlerfeld', () =>
 */
 
 async function laufenLassen({ brettAntwortet, brettHatTitelAb = 99, runden = 8,
-                              fremdSagtWas = () => null }) {
+                              fremdSagtWas = () => null, uhr = false, dokument = null }) {
   const echteFetch = globalThis.fetch;
   const echtesSetInterval = globalThis.setInterval;
   const echtesClearInterval = globalThis.clearInterval;
+  const echtesJetzt = Date.now;
+  const hatteDokument = 'document' in globalThis;
+  const echtesDokument = globalThis.document;
+  // `uhr`: Jeder Takt rueckt die Uhr um 20 s vor, wie im Browser.
+  let jetzt = 1_800_000_000_000;
+  if (uhr) Date.now = () => jetzt;
+  if (dokument) globalThis.document = dokument;
 
   let zug = 0;
   const anfragen = { brett: 0, fremd: 0 };
@@ -135,8 +142,11 @@ async function laufenLassen({ brettAntwortet, brettHatTitelAb = 99, runden = 8,
       { id: 'pruef', name: 'Pruefsender', stream: 'https://pruef.example/live' },
       (x) => gemeldet.push(x)
     );
+    // Den ersten Versuch (ohne Takt) erst ausreden lassen.
+    for (let i = 0; i < 5; i++) await new Promise((r) => setImmediate(r));
     for (zug = 0; zug < runden; zug++) {
       if (!tick) break;
+      jetzt += 20_000;
       await tick();
       // Der Zwischenspeicher des Bretts gilt 15 s — hier vorspulen.
       await new Promise((r) => setImmediate(r));
@@ -144,6 +154,9 @@ async function laufenLassen({ brettAntwortet, brettHatTitelAb = 99, runden = 8,
     return { anfragen, gemeldet, laeuftNoch: !!tick, zuege: zug };
   } finally {
     haltAn();
+    Date.now = echtesJetzt;
+    if (hatteDokument) globalThis.document = echtesDokument;
+    else delete globalThis.document;
     globalThis.fetch = echteFetch;
     globalThis.setInterval = echtesSetInterval;
     globalThis.clearInterval = echtesClearInterval;
@@ -186,4 +199,72 @@ test('ein Haus, das zwischendurch schweigt, wird nicht dauerhaft aufgegeben', as
   });
   assert.ok(gemeldet.length >= 5,
     `Es haetten sechs Titel kommen muessen, gekommen sind ${gemeldet.length}: ${JSON.stringify(gemeldet)}`);
+});
+
+// ── Sparsam fragen (432hz-radio#59) ──────────────────────────────────
+
+test('das Brett wird hoechstens einmal je Minute gefragt, nicht bei jedem Takt', async () => {
+  /*
+   Jeder Abruf ist eine Anfrage je Zuhoerer an iyambae.fm — sie haelt den
+   Container wach und stand im Zugriffsprotokoll. Bis 06.11.2026 ging bei
+   jedem 20-s-Takt eine hinaus.
+
+   Start bei 0 s, dann neun Takte bis 180 s: gefragt bei 0, 60, 120, 180.
+  */
+  const { anfragen, zuege } = await laufenLassen({ brettAntwortet: true, runden: 9, uhr: true });
+  assert.equal(zuege, 9);
+  assert.equal(anfragen.brett, 4, `Brett ${anfragen.brett}-mal gefragt, erwartet 4`);
+  // Die fremden Haeuser bleiben beim 20-s-Takt; sie schweigen hier und
+  // werden nach drei leeren Durchgaengen in Ruhe gelassen — wie bisher.
+  assert.ok(anfragen.fremd > 0);
+});
+
+test('auch ein schlafender Dienst wird nicht bei jedem Takt geweckt', async () => {
+  // Vorher wurde nur ein GELUNGENER Stand wiederverwendet: Bei 503 fragte
+  // jeder Takt neu und weckte den Container alle 20 s.
+  const { anfragen } = await laufenLassen({ brettAntwortet: false, runden: 2, uhr: true });
+  assert.equal(anfragen.brett, 1, `Brett ${anfragen.brett}-mal gefragt, erwartet 1`);
+});
+
+test('ein verborgener Tab fragt nichts', async () => {
+  let lauscher = null;
+  const dokument = {
+    visibilityState: 'hidden',
+    addEventListener: (art, fn) => { if (art === 'visibilitychange') lauscher = fn; },
+  };
+  const { anfragen, laeuftNoch } =
+    await laufenLassen({ brettAntwortet: true, runden: 6, uhr: true, dokument });
+  assert.equal(anfragen.brett + anfragen.fremd, 0,
+    `Verborgen gefragt: ${JSON.stringify(anfragen)}`);
+  // Ein ausgelassener Takt ist kein Schweigen: Die Abfrage laeuft weiter.
+  assert.equal(laeuftNoch, true);
+  assert.equal(typeof lauscher, 'function', 'kein Lauscher auf visibilitychange');
+});
+
+test('der Lauscher fragt beim Sichtbarwerden sofort nach', async () => {
+  let lauscher = null;
+  const dokument = {
+    visibilityState: 'hidden',
+    addEventListener: (art, fn) => { if (art === 'visibilitychange') lauscher = fn; },
+  };
+  const echteFetch = globalThis.fetch;
+  const hatteDokument = 'document' in globalThis;
+  globalThis.document = dokument;
+  let gefragt = 0;
+  globalThis.fetch = async () => { gefragt++; return { ok: false, status: 503, json: async () => ({}) }; };
+  const { beobachteTitel, haltAn } =
+    await import(`../../assets/lib/titel.mjs?lauf=${Math.random()}`);
+  try {
+    beobachteTitel({ id: 'pruef', name: 'Pruefsender', stream: 'https://pruef.example/live' }, () => {});
+    await new Promise((r) => setImmediate(r));
+    assert.equal(gefragt, 0, 'verborgen darf nichts hinausgehen');
+    dokument.visibilityState = 'visible';
+    lauscher();
+    for (let i = 0; i < 5; i++) await new Promise((r) => setImmediate(r));
+    assert.ok(gefragt > 0, 'beim Sichtbarwerden wurde nicht gefragt');
+  } finally {
+    haltAn();
+    globalThis.fetch = echteFetch;
+    if (!hatteDokument) delete globalThis.document;
+  }
 });

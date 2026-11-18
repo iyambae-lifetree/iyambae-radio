@@ -1675,10 +1675,15 @@ export function baueDienst({
                   und nach aussen geht ohnehin nur alle 90 s je Sender eine
                   Anfrage. Genau das war der Zweck.
 
-                  Wer den HTTP-Zwischenspeicher wirklich will, braucht einen
-                  eigenen `location = /api/titel`-Block in nginx — dort erbt
-                  add_header nicht mehr. Bis dahin gilt fuer /api/ eine Regel
-                  und keine Ausnahme, die jemand kennen muesste.
+                  Seit 06.11.2026 gibt es einen eigenen `location =
+                  /api/titel`-Block in nginx (432hz-radio#59) — aber nur, um
+                  diese Abrufe aus dem Zugriffsprotokoll zu nehmen. Er setzt
+                  dasselbe `no-store` wie /api/. Wer den HTTP-Zwischenspeicher
+                  wirklich will, aendert es dort; dann wirkt auch ein Kopf von
+                  hier, weil nginx keinen eigenen mehr anhaengt.
+
+                  Und protokolliert wird hier je Abruf nichts: `art: 'titel'`
+                  schreibt der Nachschub in titel.mjs, einmal je Zug.
                 */
                 koerper: stand,
             };
