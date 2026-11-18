@@ -1931,7 +1931,7 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 .fuss__kanal a { color: var(--text-leise); text-decoration: none; }
 .fuss__kanal a:hover,
 .fuss__kanal a:focus-visible { color: var(--gold); text-decoration: underline; }
-.fuss__rss { margin-inline-start: 1rem; }
+.fuss__rss, .fuss__kofi { margin-inline-start: 1rem; }
 
 .fuss__recht {
     display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
