@@ -33,6 +33,13 @@
       "sha256": "a25aa9042daa76d426561ddfad30bfa6fe5c7359413c9f85450e6ea5c86a74d1",
       "mindest_macos": "14.4",
       "_stufe": "Gratisfassung: die ersten 14 Tage alles, danach drei Gratistage mit je 3 Dateien auf 432 Hz, ab Tag 18 nur Pro; messen bleibt frei. 0.36.0 seit 14.11.2026 auf der Seite, Saemi-Ras Zustimmung vom 14.11.2026. Kein Preis, kein Kaufknopf, bis Gewerbe und Impressum stehen."
+    },
+    "linux": {
+      "fassung": "0.1.0",
+      "reife": "frueh",
+      "datei": "iyambae-converter_0.1.0-1_amd64.deb",
+      "datei_rpm": "iyambae-converter-0.1.0-1.x86_64.rpm",
+      "_stufe": "Kostenlos ohne Grenzen, wie alles auf Linux. Seit 18.11.2026 auf der Seite, Saemi-Ras Zustimmung vom selben Tag. Kann FLAC, WAV, AIFF und MP3; ALAC/M4A, Einsortieren und Wiedergabelisten noch nicht. Lizenzbedingungen: /linux/lizenz.html (auch fuer den Tuner, Flathub verlangt die Adresse)."
     }
   }
 }

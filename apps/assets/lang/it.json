@@ -743,6 +743,10 @@
   "dsc.kopf.tuner": "Al Tuner",
   "auf.linux.rpm.tat": "Scarica il Tuner per Fedora e openSUSE",
   "auf.linux.rpm.zusatz": "RPM · 43,0 MB · Fedora, openSUSE · versione iniziale",
+  "auf.linux.conv.tat": "Scarica Converter per Linux",
+  "auf.linux.conv.zusatz": "DEB · 45,2 MB · gratis · riaccorda i file musicali in modo permanente · versione iniziale",
   "karte.linux.laden.deb": "Scarica .deb",
+  "karte.linux.conv.deb": "Converter in .deb",
+  "karte.linux.conv.rpm": "Converter in .rpm",
   "karte.linux.laden.rpm": "Scarica .rpm"
 }

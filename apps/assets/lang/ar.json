@@ -743,6 +743,10 @@
   "dsc.kopf.tuner": "إلى الـ Tuner",
   "auf.linux.rpm.tat": "تنزيل Tuner لـ Fedora وopenSUSE",
   "auf.linux.rpm.zusatz": "RPM · 43.0 ميغابايت · Fedora وopenSUSE · إصدار مبكر",
+  "auf.linux.conv.tat": "تنزيل ⁦Converter⁩ لـ ⁦Linux⁩",
+  "auf.linux.conv.zusatz": "DEB · 45.2 ميغابايت · مجاني · يعيد ضبط ملفات الموسيقى بشكل دائم · إصدار مبكر",
   "karte.linux.laden.deb": "تنزيل ⁦.deb⁩",
+  "karte.linux.conv.deb": "⁦Converter⁩ بصيغة ⁦.deb⁩",
+  "karte.linux.conv.rpm": "⁦Converter⁩ بصيغة ⁦.rpm⁩",
   "karte.linux.laden.rpm": "تنزيل ⁦.rpm⁩"
 }
