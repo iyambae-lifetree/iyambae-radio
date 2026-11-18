@@ -10,7 +10,7 @@
 # Basisabbilder per Digest, nicht nur per Etikett (432hz-radio#47): Ein
 # Etikett zeigt morgen auf etwas anderes, ein Digest nie. Neue Fassungen
 # schlaegt Dependabot vor (.github/dependabot.yml).
-FROM python:3.12-alpine@sha256:1b668429b3511ab407d8e00648891631b0b1a4d7e15e3ca70f38ab5b91ad4ab4 AS erzeuger
+FROM python:3.15-alpine@sha256:20a82dbc2783112ddb91d1534603f802d222a3e63e593cd002eb2ac534e70211 AS erzeuger
 WORKDIR /bau
 # node für die drei Prüfungen, die Modulcode tatsächlich AUSFÜHREN statt ihn
 # zu lesen: die Erlaubnisliste der Messung, die Reihenfolge im Regal
