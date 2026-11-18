@@ -208,10 +208,13 @@
 // lib/konto.mjs, lib/fehlerbericht.mjs.
 // v91: `?anmeldung=bitte` oeffnet das Anmeldefenster — der Link aus der
 // Warnmail vor der Loeschung eines inaktiven Kontos (432hz-radio#49). app.js.
-// v92: Das Anschlagbrett /api/titel hoechstens einmal je Minute fragen, auch
+// v92: CORS-Frist 9.11. abgelaufen — 12 Sender ohne Freigabe raus (Rinse FM,
+// Kool FM, WFMU, LISTEN.moe J-Pop/K-Pop, WALM ×3, Colombia Salsa Dura,
+// Radio Cumbia 90s, Ancient FM, Concertzender Jazz). sender.json, sender-texte.*.json, Logos.
+// v93: Das Anschlagbrett /api/titel hoechstens einmal je Minute fragen, auch
 // nach einem Fehlschlag, und gar nicht, solange der Tab verborgen ist
 // (432hz-radio#59). lib/titel.mjs.
-const SW_VERSION = 'iyambae-v92';
+const SW_VERSION = 'iyambae-v93';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 

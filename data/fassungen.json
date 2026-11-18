@@ -5,12 +5,12 @@
   "_datei_null": "heisst: Die Fassung existiert und laeuft, ist aber nicht zum Laden da. Nicht dasselbe wie 'gibt es nicht'.",
   "tuner": {
     "macos": {
-      "fassung": "0.32.0",
+      "fassung": "0.34.0",
       "reife": "erprobung",
-      "datei": "IYAMBAE-Tuner-Gratis-0.32.0.dmg",
-      "sha256": "711054a9e3e250373d9d7ac072c6b1e836e0173c486f6278f005699786c54c2d",
+      "datei": "IYAMBAE-Tuner-Gratis-0.34.0.dmg",
+      "sha256": "be249865468f47dd051d17ccd9397c81bf273db1db53514adee65a101f0b38c4",
       "mindest_macos": "14.4",
-      "_stufe": "Gratisfassung ohne Ablauf: 432 und 440 Hz, Qualitaet Ausgewogen. Seit 06.11.2026 auf der Seite, Saemi-Ras Zustimmung vom 05.11.2026. Vom 26.10. bis dahin ohne Datei (Testfassung 0.29.0 lief am 31.10. aus). Kein Preis, kein Kaufknopf, bis Gewerbe und Impressum stehen."
+      "_stufe": "Gratisfassung ohne Ablauf: die ersten 14 Tage je Installation alles, danach 432 Hz 15 Minuten je Tag und 440 Hz ohne Grenze, Qualitaet Ausgewogen (14 Tage seit 0.33.0, 15 Minuten seit 0.34.0, beide 14.11.2026, Saemi-Ras Zustimmung vom selben Tag). Seit 06.11.2026 auf der Seite, Saemi-Ras Zustimmung vom 05.11.2026. Vom 26.10. bis dahin ohne Datei (Testfassung 0.29.0 lief am 31.10. aus). Kein Preis, kein Kaufknopf, bis Gewerbe und Impressum stehen."
     },
     "linux": {
       "fassung": "0.3.0",
@@ -25,9 +25,12 @@
   },
   "converter": {
     "macos": {
-      "fassung": "0.34.13",
+      "fassung": "0.36.0",
       "reife": "erprobung",
-      "datei": "IYAMBAE-Converter-0.34.13.dmg"
+      "datei": "IYAMBAE-Converter-Gratis-0.36.0.dmg",
+      "sha256": "a25aa9042daa76d426561ddfad30bfa6fe5c7359413c9f85450e6ea5c86a74d1",
+      "mindest_macos": "14.4",
+      "_stufe": "Gratisfassung: die ersten 14 Tage alles, danach drei Gratistage mit je 3 Dateien auf 432 Hz, ab Tag 18 nur Pro; messen bleibt frei. 0.36.0 seit 14.11.2026 auf der Seite, Saemi-Ras Zustimmung vom 14.11.2026. Kein Preis, kein Kaufknopf, bis Gewerbe und Impressum stehen."
     }
   }
 }
