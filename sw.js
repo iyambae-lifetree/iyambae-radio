@@ -214,7 +214,7 @@
 // v93: Das Anschlagbrett /api/titel hoechstens einmal je Minute fragen, auch
 // nach einem Fehlschlag, und gar nicht, solange der Tab verborgen ist
 // (432hz-radio#59). lib/titel.mjs.
-// v94: „Den Laden unterstützen (Ko-fi)“ im Fuß, ein schlichter Link ohne
+// v94: „Den Laden unterstützen (Ko-fi)“ im Fuß und im Menü, ein schlichter Link ohne
 // Widget. index.html, styles.css, die sieben Sprachen.
 const SW_VERSION = 'iyambae-v94';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
