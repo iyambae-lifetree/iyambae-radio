@@ -13,10 +13,10 @@
       "_stufe": "Gratisfassung ohne Ablauf: die ersten 14 Tage je Installation alles, danach 432 Hz 15 Minuten je Tag und 440 Hz ohne Grenze, Qualitaet Ausgewogen (14 Tage seit 0.33.0, 15 Minuten seit 0.34.0, beide 14.11.2026, Saemi-Ras Zustimmung vom selben Tag). Seit 06.11.2026 auf der Seite, Saemi-Ras Zustimmung vom 05.11.2026. Vom 26.10. bis dahin ohne Datei (Testfassung 0.29.0 lief am 31.10. aus). Kein Preis, kein Kaufknopf, bis Gewerbe und Impressum stehen."
     },
     "linux": {
-      "fassung": "0.6.0",
+      "fassung": "0.6.1",
       "reife": "frueh",
-      "datei": "iyambae-tuner_0.6.0-1_amd64.deb",
-      "datei_rpm": "iyambae-tuner-0.6.0-1.x86_64.rpm",
+      "datei": "iyambae-tuner_0.6.1-1_amd64.deb",
+      "datei_rpm": "iyambae-tuner-0.6.1-1.x86_64.rpm",
       "_pakete": "Seit 0.6.0 zwei Pakete aus demselben Dateibaum: .deb fuer Ubuntu, Zorin, Mint und Debian, .rpm fuer Fedora und openSUSE. Die Bedienkarte bringt ihre .NET-Laufzeit selbst mit; bis 0.5.3 liess sich das .deb auf einem nackten Debian 13 nicht einrichten. Saemi-Ra am 18.11.2026: jeder mit Linux soll den Tuner einrichten koennen, ohne technische Zusatzschritte."
     },
     "windows": {
