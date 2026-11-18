@@ -13,9 +13,9 @@
       "_stufe": "Gratisfassung ohne Ablauf: die ersten 14 Tage je Installation alles, danach 432 Hz 15 Minuten je Tag und 440 Hz ohne Grenze, Qualitaet Ausgewogen (14 Tage seit 0.33.0, 15 Minuten seit 0.34.0, beide 14.11.2026, Saemi-Ras Zustimmung vom selben Tag). Seit 06.11.2026 auf der Seite, Saemi-Ras Zustimmung vom 05.11.2026. Vom 26.10. bis dahin ohne Datei (Testfassung 0.29.0 lief am 31.10. aus). Kein Preis, kein Kaufknopf, bis Gewerbe und Impressum stehen."
     },
     "linux": {
-      "fassung": "0.3.0",
+      "fassung": "0.5.3",
       "reife": "frueh",
-      "datei": "iyambae-tuner_0.3.0-1_amd64.deb"
+      "datei": "iyambae-tuner_0.5.3-1_amd64.deb"
     },
     "windows": {
       "fassung": "0.3.0",
