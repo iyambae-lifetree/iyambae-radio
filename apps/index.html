@@ -1029,6 +1029,10 @@ html[data-os="win"]   .karte--win   { order: -1; }
 }
 .weg p { margin: 0; }
 .weg p + p { opacity: .82; font-size: .94rem; }
+.weg.preis { grid-template-columns: 1fr; }
+.preis .preis__betrag { opacity: 1; font-size: 1.05rem; color: var(--text); }
+.preis .preis__betrag strong { font-family: var(--anzeige); font-size: 1.7rem; font-weight: 400; color: var(--akzent-hell); }
+.preis__aktion { color: var(--text); }
 @media (max-width: 560px) {
   .weg { grid-template-columns: 1fr; }
   .weg__zeichen { grid-row: auto; }
@@ -2169,6 +2173,57 @@ html[data-os="mobil"] .plattform__zusatz { display: none; }
         <span>PRUEFSUMMEN.txt</span><span class="laden__groesse">↓</span>
       </a>
     </div>
+  </div>
+</details>
+
+<!-- ══ 4b · Sonarium — Preise (ENTWURF) ═══════════════════════════
+     Preise entschieden von Sāmi-Ra am 19.11.2026. Noch nicht zu kaufen:
+     Es fehlt das Verkäuferkonto bei Paddle (432hz-radio#63), dazu AGB,
+     Widerrufsbelehrung und ein gültiges Impressum. Dieser Abschnitt geht
+     erst live, wenn das steht und Sāmi-Ra Ja gesagt hat.
+
+     Black Friday 2026 (Komplett 89 € statt 149 €) ist unten als Kommentar
+     vorbereitet und wird nur eingeschaltet, wenn der Verkauf rechtzeitig
+     steht. Die Aktion wird jedes Jahr neu entschieden. -->
+<details class="rahmen teil teil--linie klappe" id="sonarium" open>
+  <summary class="klappe__griff">
+    <div class="eng">
+      <p class="eyebrow" data-text="sonarium.eyebrow">Sonarium · macOS · Linux · bald</p>
+      <h2 data-html="sonarium.titel">Deine Musiksammlung. <em>In der Stimmung, die du wählst.</em></h2>
+    </div>
+  </summary>
+  <div class="eng">
+    <p data-text="sonarium.vorwort">
+      Sonarium ist der Player der Familie: deine Bibliothek, Hörbücher und
+      Klangreisen an einem Ort, umgestimmt mit demselben Kern wie der Tuner,
+      und auf Wunsch über einen eigenen Klangweg, bitgenau in der Rate der Datei.
+    </p>
+
+    <!-- Black Friday 2026 — nur einschalten, wenn der Verkauf bis dahin steht.
+    <p class="preis__aktion" data-html="sonarium.aktion"><strong>Black Friday:</strong> Sonarium Komplett für 89 € statt 149 €, bis 30. November 2026.</p>
+    -->
+
+    <div class="wege preise">
+      <section class="weg preis">
+        <h3 data-html="sonarium.komplett.titel"><b>1</b> Sonarium Komplett</h3>
+        <p class="preis__betrag" data-html="sonarium.komplett.preis"><strong>149 €</strong> einmalig</p>
+        <p data-text="sonarium.komplett.was">Einmal kaufen, für immer behalten. Der Tuner und der Converter sind dabei, ebenfalls für immer.</p>
+      </section>
+
+      <section class="weg preis">
+        <h3 data-html="sonarium.abo.titel"><b>2</b> Sonarium im Abo</h3>
+        <p class="preis__betrag" data-html="sonarium.abo.preis"><strong>6,99 €</strong> im Monat oder <strong>69 €</strong> im Jahr</p>
+        <p data-text="sonarium.abo.was">Nur Sonarium, jederzeit kündbar. Tuner und Converter lassen sich dazubuchen, je 1,99 € im Monat oder 19 € im Jahr, oder einzeln kaufen.</p>
+      </section>
+
+      <section class="weg preis">
+        <h3 data-html="sonarium.linux.titel"><b>3</b> Unter Linux</h3>
+        <p class="preis__betrag" data-html="sonarium.linux.preis"><strong>kostenlos</strong>, mit allen Funktionen</p>
+        <p data-text="sonarium.linux.was">Bezahlt wird nur der Klangweg, zu denselben Preisen wie am Mac. Der Schlüssel dafür kommt per E-Mail und wird ohne Netz geprüft.</p>
+      </section>
+    </div>
+
+    <p data-html="sonarium.stand">Noch ist Sonarium nicht zu kaufen. Sobald es losgeht, steht der Knopf hier. Alle Preise sind Endpreise.</p>
   </div>
 </details>
 
