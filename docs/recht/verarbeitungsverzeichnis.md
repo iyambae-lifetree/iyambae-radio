@@ -103,14 +103,15 @@ zwingt dazu, einmal aufzuschreiben, was man eigentlich tut.
 | V6 | Speicherung auf dem Endgerät | aktiv | § 25 II Nr. 2 TDDDG; Art. 6 I f |
 | V7 | Abfrage der örtlichen IYAMBAE-Tuner-Schnittstelle | aktiv | Art. 6 I a; § 25 I TDDDG |
 | V8 | Kontaktaufnahme und Betroffenenanfragen | aktiv | Art. 6 I c, f |
-| V9 | Benutzerkonten | **geplant** | Art. 6 I b |
-| V10 | Versand von Transaktionsmails | **geplant** | Art. 6 I b |
+| V9 | Benutzerkonten | aktiv seit 23.08.2026 | Art. 6 I b |
+| V10 | Versand von Transaktionsmails | aktiv seit 23.08.2026 | Art. 6 I b |
 | V11 | Reichweitenmessung (sechs Ereignisarten) | **neu am 21.08.2026** | Art. 6 I f |
 | V12 | Gesprächsassistent Kater Mikesch | **neu am 24.10.2026** | Art. 6 I f |
 | V13 | Rundbrief „Mikeschs Schnurrpost" | **neu am 24.10.2026** | Art. 6 I a; § 7 II UWG |
 | V14 | Ergebnisse des Blindtests (`/hoertest/`) | aktiv seit 01.09.2026, **nachgetragen am 03.11.2026** | Art. 6 I f |
 | V15 | Ergebnisse des Messwerkzeugs (`/stimmung/`) | aktiv seit 01.09.2026, **nachgetragen am 03.11.2026** | Art. 6 I f |
 | V16 | Mess-Abzeichen für Creator | **neu am 03.11.2026** | Art. 6 I b; § 25 II Nr. 2 TDDDG |
+| V17 | Antworten der Umfrage (apps.iyambae.fm) | aktiv seit 01.09.2026, **nachgetragen am 18.11.2026** | Art. 6 I f |
 
 ---
 
@@ -273,7 +274,7 @@ gehören mit ins Repository und ins Abbild — siehe HINWEISE.md.
 
 ---
 
-## V9 — Benutzerkonten *(geplant, noch nicht in Betrieb)*
+## V9 — Benutzerkonten *(in Betrieb seit 23.08.2026)*
 
 | Feld | Inhalt |
 |---|---|
@@ -284,14 +285,14 @@ gehören mit ins Repository und ins Abbild — siehe HINWEISE.md.
 | **Kategorien personenbezogener Daten** | Kontokennung; E-Mail-Adresse (Klartext in der Kontotabelle, als SHA-256-Abdruck in der Zuordnungstabelle); Passwort **ausschließlich als Hash**; Anbieterkennung (`sub`) bei Google-/Apple-Anmeldung; öffentlicher Passkey-Schlüssel nebst Zähler und Flags; Merkliste; Hörverlauf (Zähler je Sender, zuletzt Gehörtes); Anlagedatum, Datum des letzten Besuchs und der letzten Anmeldung, bei inaktiven Konten der angekündigte Löschtag (**nur Datum, keine Uhrzeit**); Sitzungen und Einmalcodes **nur als SHA-256-Abdruck** mit Ablaufdatum |
 | **Empfänger** | Microsoft Ireland Operations Limited (Azure Table Storage, Auftragsverarbeiterin); bei sozialer Anmeldung: Google Ireland Limited / Google LLC bzw. Apple Inc. / Apple Distribution International; lesender Zugriff der benannten Personen |
 | **Drittlandübermittlung** | Speicherung: nein — Germany West Central, `Standard_LRS` (drei Kopien in **einem** Rechenzentrum, bewusst keine geografische Spiegelung). Bei Google-/Apple-Anmeldung: USA, gestützt auf den Angemessenheitsbeschluss vom 10.07.2023, soweit der Anbieter zertifiziert ist — **vor Livegang zu prüfen** |
-| **Löschfristen** | Sitzungen und Einmalcodes: mit Ablauf des Ablaufdatums, durchgesetzt beim nächsten Zugriff und zusätzlich durch einen Räumdurchgang alle 24 Stunden. Konto: bis zur Löschung durch den Nutzer (`DELETE /api/konto`, entfernt Merkliste, Verlauf, Sitzungen, Kennungen und den Eintrag in der Zuordnungstabelle in einem Vorgang). Inaktive Konten: **zwei Jahre nach der letzten Anmeldung** (`INAKTIV_TAGE`, 730), mit Warnmail an die Kontoadresse **vier Wochen vorher** (`INAKTIV_WARNUNG_TAGE`, 28); eine Anmeldung setzt die Frist neu. Geprüft im selben 24-Stunden-Durchgang, gelöscht auf demselben Weg wie `DELETE /api/konto` (`dienst/src/inaktiv.mjs`). Bestandskonten ohne Anmeldedatum: Frist ab Anlage, frühestens ab 03.11.2026. Grabsteine gelöschter Einträge: Parameter `grabsteinTage`, Vorgabe 90 Tage — **Wirkung noch zu klären** |
+| **Löschfristen** | Sitzungen und Einmalcodes: mit Ablauf des Ablaufdatums, durchgesetzt beim nächsten Zugriff und zusätzlich durch einen Räumdurchgang alle 24 Stunden. Konto: bis zur Löschung durch den Nutzer (`DELETE /api/konto`, entfernt Merkliste, Verlauf, Sitzungen, Kennungen und den Eintrag in der Zuordnungstabelle in einem Vorgang). Inaktive Konten: **zwei Jahre nach der letzten Anmeldung** (`INAKTIV_TAGE`, 730), mit Warnmail an die Kontoadresse **vier Wochen vorher** (`INAKTIV_WARNUNG_TAGE`, 28); eine Anmeldung setzt die Frist neu. Geprüft im selben 24-Stunden-Durchgang, gelöscht auf demselben Weg wie `DELETE /api/konto` (`dienst/src/inaktiv.mjs`). Bestandskonten ohne Anmeldedatum: Frist ab Anlage, frühestens ab 03.11.2026. Grabsteine gelöschter Merklisteneinträge (Senderkennung, Zeitpunkte von Merken und Entfernen; nötig, damit ein entfernter Sender nicht vom nächsten Gerät zurückkommt): 90 Tage nach dem Entfernen (`GRABSTEIN_TAGE`), weggeräumt beim nächsten Abgleich (`raeumeGrabsteine` in `dienst/src/abgleich.mjs`); mit dem Konto sofort |
 | **TOM** | Kontozugangsschlüssel des Speicherkontos abgeschaltet (`allowSharedKeyAccess: false`) — Zugriff ausschließlich über verwaltete Identität, es existiert keine Verbindungszeichenfolge, die abfließen könnte; TLS mindestens 1.2, ausschließlich HTTPS; kein öffentlicher Blobzugriff, keine mandantenübergreifende Replikation; Rollentrennung: die Anwendung schreibt, die Verwalter lesen nur; alle Daten eines Kontos in einer Partition, damit die Löschung nach Art. 17 DSGVO vollständig und in einem Vorgang gelingt; Sitzungsgeheimnisse nur als Abdruck gespeichert; Anmeldedrosselung 5 Versuche je Minute und Adresse; `no-store` für alle `/api/`-Antworten; Service Worker speichert `/api/`-Antworten nicht zwischen |
-| **Vor Inbetriebnahme offen** | Content-Security-Policy fehlt (im Quelltext vermerkt); ACS-Rollenkennung nicht belegt; Grabsteine (siehe oben); **Zugriffskonzept innerhalb der Gesellschaft (HINWEISE.md, Punkt 10)** |
+| **Noch offen** | Content-Security-Policy fehlt (im Quelltext vermerkt, 432hz-radio#44); ACS-Rollenkennung nicht belegt; **Zugriffskonzept innerhalb der Gesellschaft (HINWEISE.md, Punkt 10)** |
 | **Fundstellen** | `infra/konto.bicep.entwurf` |
 
 ---
 
-## V10 — Versand von Transaktionsmails *(geplant, noch nicht in Betrieb)*
+## V10 — Versand von Transaktionsmails *(in Betrieb seit 23.08.2026)*
 
 | Feld | Inhalt |
 |---|---|
@@ -302,7 +303,7 @@ gehören mit ins Repository und ins Abbild — siehe HINWEISE.md.
 | **Kategorien personenbezogener Daten** | E-Mail-Adresse; Zeitpunkt; Zustellstatus; Inhalt der Nachricht (Einmalcode bzw. Bestätigungslink) |
 | **Empfänger** | Microsoft Ireland Operations Limited (Azure Communication Services, Auftragsverarbeiterin); der E-Mail-Anbieter des Empfängers |
 | **Drittlandübermittlung** | Datenhaltung auf die Geografie „Germany" eingestellt (`dataLocation: 'Germany'`). **Einschränkung, die dokumentiert gehört:** Microsoft sagt für ruhende Daten den Verbleib in der Geografie zu, behält sich aber Übertragung und Verarbeitung in anderen Geografien vor. Die Zusage betrifft die Ruhelage, nicht jeden Verarbeitungsschritt |
-| **Löschfrist** | Zustellprotokolle nach Vorgabe des Dienstes; im eigenen Bestand entsteht keine Kopie der Nachricht. **[Aufbewahrungsdauer der ACS-Zustellprotokolle vor Livegang nachschlagen und hier eintragen.]** |
+| **Löschfrist** | Im eigenen Bestand entsteht keine Kopie der Nachricht. ACS verarbeitet den Inhalt nach Microsofts Angabe in Echtzeit und hält ihn nicht vor; Zustellprotokolle landen nur in Azure Monitor Logs, wenn man sie dorthin leitet — für `acs-iyambae` ist **keine** Diagnoseeinstellung angelegt (`infra/main.bicep`), es entsteht also kein Zustellprotokoll im eigenen Bestand. Microsoft hält Empfängeradressen, die hart abgewiesen wurden, zur Missbrauchsabwehr vorübergehend fest; eine Dauer nennt Microsoft nicht. Quelle: learn.microsoft.com, „Region availability and data residency for Azure Communication Services", Abschnitt Email (abgerufen 18.11.2026) |
 | **TOM** | Öffnungs- und Klickverfolgung abgeschaltet (`userEngagementTracking: 'Disabled'`) — keine Zählpixel, keine umgeschriebenen Verweise; eigene Absenderdomäne `mail.iyambae.fm` mit SPF und DKIM, getrennt vom Apex, damit ein harter SPF-Eintrag nicht die übrige Post der Domain sperrt; Zugriff über verwaltete Identität statt Verbindungszeichenfolge (**abhängig davon, dass die ACS-Rollenkennung nachgetragen wird** — sonst Rückfall auf ein Geheimnis, dessen Rotation dann zu regeln ist) |
 | **Fundstellen** | `infra/konto.bicep.entwurf` |
 
@@ -386,7 +387,7 @@ eine Meldung geraten könnte. Wer das Modul ändert, sollte das wissen.
 | **Nicht erhoben** | IP-Adresse (geht nicht an Anthropic und nicht ins Protokoll); Cookies; Inhalte des örtlichen Speichers; der Gesprächstext im eigenen Protokoll |
 | **Empfänger** | Anthropic PBC, USA (Auftragsverarbeiter); Microsoft wie V1 für den Betrieb des Dienstes |
 | **Drittlandübermittlung** | USA, an Anthropic. Garantie: EU-Standardvertragsklauseln (Modul 2) im Data Processing Addendum, das Teil der kommerziellen Bedingungen von Anthropic ist |
-| **Löschfrist** | Im eigenen Bestand entsteht keine Kopie des Gesprächs. Protokollzeilen (nur Zählwerte) 30 Tage wie V1. Bei Anthropic nach dessen Bedingungen befristet, kein Training. **[Konkrete Aufbewahrungsfrist der API-Daten bei Anthropic nachschlagen und hier eintragen.]** |
+| **Löschfrist** | Im eigenen Bestand entsteht keine Kopie des Gesprächs. Protokollzeilen (nur Zählwerte) 30 Tage wie V1. Bei Anthropic: Eingaben und Ausgaben werden **binnen 30 Tagen** gelöscht; bei einem gemeldeten Verstoß gegen die Nutzungsrichtlinien bis zu zwei Jahre (Einstufungswerte bis zu sieben Jahre). Kein Training mit API-Daten. Quelle: privacy.claude.com, „How long do you store my organization's data?" (abgerufen 18.11.2026) |
 | **TOM** | Schlüssel nur im Dienst, als Geheimnis im Key Vault, nie im Browser oder Repository; Gesprächslänge begrenzt; Drosselung je Netz (gekürzte, gehashte Adresse, nur im Arbeitsspeicher, 10 Minuten) und global; Tagesgrenze (`MIKESCH_JE_TAG`); monatliches Ausgabenlimit im Anthropic-Konto; Protokoll nur mit Zählwerten |
 | **Fundstellen** | `dienst/src/mikesch.mjs`, `dienst/src/server.mjs` (`POST /api/mikesch`), `assets/lib/mikesch.mjs`, `docs/mikesch-assistent.md` |
 
@@ -424,7 +425,7 @@ Gebaut in 432hz-radio#21. Bis zum 03.11.2026 fehlte der Eintrag hier; nachgetrag
 | **Nicht erhoben** | IP-Adresse (nur flüchtig für die Drossel im Arbeitsspeicher, wie bei `/api/umfrage`); Cookies; Konto; Kennung, die zwei Runden derselben Person verbinden könnte; Uhrzeit |
 | **Empfänger** | Microsoft Ireland Operations Limited (Table Storage; Auftragsverarbeiterin). Veröffentlicht werden höchstens Summen |
 | **Drittlandübermittlung** | wie V1 |
-| **Löschfrist** | **[Offen: Derzeit gibt es keine automatische Löschung, die Zeilen bleiben unbegrenzt. Ausgewertet werden höchstens die letzten 365 Tage (`AUSWERTUNG_TAGE_HOECHSTENS`). Eine Frist festlegen und das Wegräumen ganzer Tagespartitionen bauen.]** |
+| **Löschfrist** | **365 Tage** ab dem Tag der Abgabe (`RUECKMELDUNG_TAGE`, gleich `AUSWERTUNG_TAGE_HOECHSTENS`). Der Dienst räumt höchstens einmal je 24 Stunden alle Zeilen aus Tagespartitionen vor der Grenze weg (`raeumeAlteTageAuf` in `dienst/src/speicher.mjs`, seit 18.11.2026; bis dahin blieben die Zeilen unbegrenzt) |
 | **TOM** | Erlaubnisliste im Dienst — nichts außer den genannten Feldern wird angenommen; Drosselung je Netz; nur `application/json`; Tag statt Uhrzeit und Zufallskennung statt Zähler, damit keine Abfolge erkennbar ist |
 | **Fundstellen** | `dienst/src/rueckmeldung.mjs` (`saeubereHoertest`, `legeHoertestAb`), `dienst/src/server.mjs` (`POST /api/hoertest`), Tabelle `hoertest` |
 
@@ -444,7 +445,7 @@ Gebaut in 432hz-radio#21, nachgetragen wie V14.
 | **Nicht erhoben** | die Tondatei und alles aus ihr außer den genannten Werten; Dateiname; Dateilänge; IP-Adresse (nur flüchtig für die Drossel); Cookies; Konto; Uhrzeit |
 | **Empfänger** | wie V14 |
 | **Drittlandübermittlung** | wie V1 |
-| **Löschfrist** | **[Offen, wie V14.]** |
+| **Löschfrist** | wie V14: 365 Tage |
 | **TOM** | wie V14; dazu gerundete Werte, damit eine Zeile sich nicht durch übergenaue Zahlen von allen anderen unterscheidet |
 | **Fundstellen** | `dienst/src/rueckmeldung.mjs` (`saeubereStimmung`, `legeStimmungAb`), `dienst/src/server.mjs` (`POST /api/stimmung`), Tabelle `stimmung` |
 
@@ -465,6 +466,27 @@ Gebaut in 432hz-radio#21, nachgetragen wie V14.
 | **Löschfrist** | **zwei Jahre ab Erstellung.** Danach antworten Seite und Bild mit „abgelaufen" (410); die Zeile wird beim nächsten Abruf oder im täglichen Durchgang des Dienstes gelöscht. Jederzeit vorher durch die betroffene Person mit dem Löschschlüssel, der nur einmal angezeigt und nur als Hash gespeichert wird. Zwischenspeicher halten Seite und Bild höchstens fünf Minuten |
 | **TOM** | Erlaubnisliste mit Wertebereichen (Kammerton 380–500 Hz, Sicherheit ab 0,35, Länge 1 s bis 24 h, SHA-256 genau 64 Hexzeichen); nur `application/json` und nur aus erlaubter Herkunft; Drosselung je Netz und global; eigene Tabelle `abzeichen`, getrennt von den anonymen Tabellen; Protokoll ohne Kennung, ohne Befund, ohne Adresse; scharfe Content-Security-Policy auf Seite und Bild, kein Skript im Bild; Seite mit `noindex` |
 | **Fundstellen** | `dienst/src/abzeichen.mjs`, `dienst/src/server.mjs` (`POST`/`DELETE /api/messung`, `GET /messung/…`), `apps/assets/lib/abzeichen.mjs`, `apps/stimmung.html`, `deploy/nginx.conf`, `infra/main.bicep`, `docs/superpowers/specs/2026-11-03-mess-abzeichen.md` |
+
+---
+
+## V17 — Antworten der Umfrage *(aktiv seit 01.09.2026, nachgetragen am 18.11.2026)*
+
+Bis zum 18.11.2026 nur in V14 als Vergleich erwähnt, aber ohne eigenen Eintrag.
+
+| Feld | Inhalt |
+|---|---|
+| **Bezeichnung** | Ablage einer Antwort auf die Umfrage auf der Startseite von apps.iyambae.fm |
+| **Zweck** | Herausfinden, wie Besucher heute umstimmen, was ihnen fehlt und was sie für ein Werkzeug einmal ausgegeben haben — Grundlage für Ausbau und Preis der Werkzeuge |
+| **Rechtsgrundlage** | wie V14 |
+| **Kategorien betroffener Personen** | Besucher, die die Umfrage abschicken |
+| **Kategorien von Daten** | Antworten auf vier Auswahlfragen (`heute`, `fehlt`, `bezahlt`, `sprache`), jeweils nur aus einer geschlossenen Werteliste; freiwilliger Freitext `vorschlag` (höchstens 600 Zeichen), vor dem Speichern um Mailadressen, lange Zeichenfolgen mit Ziffern, spitze Klammern und Steuerzeichen bereinigt; Tag (UTC) als Partition; zufällige Zeilenkennung |
+| **Nicht erhoben** | IP-Adresse (nur flüchtig für die Drossel); Cookies; Konto; Uhrzeit; Kennung, die zwei Abgaben verbinden könnte |
+| **Besonderheit** | Der Freitext kann trotz der Bereinigung etwas enthalten, das eine Person erkennbar macht (etwa einen Namen). Die Datenschutzerklärung bittet ausdrücklich darum, das nicht zu tun; die Auswertung gibt den Freitext nicht aus, sondern zählt ihn nur |
+| **Empfänger** | wie V14 |
+| **Drittlandübermittlung** | wie V1 |
+| **Löschfrist** | wie V14: 365 Tage |
+| **TOM** | wie V14; Erlaubnisliste für Feldnamen **und** Werte; Freitext hart auf 4 000 Zeichen gekappt, bevor er geprüft wird |
+| **Fundstellen** | `dienst/src/umfrage.mjs` (`saeubereAbgabe`, `saeubereFreitext`, `legeAbgabeAb`), `dienst/src/server.mjs` (`POST /api/umfrage`), `apps/index.html`, Tabelle `umfrage` |
 
 ---
 
@@ -610,7 +632,8 @@ hinzukommt.
 | 24.10.2026 | **V12 und V13 neu** — Kater Mikesch und Mikeschs Schnurrpost; Anthropic PBC als Auftragsverarbeiter aufgenommen |
 | 03.11.2026 | **V14 und V15 nachgetragen** — Blindtest und Messwerkzeug, in Betrieb seit 01.09.2026 (432hz-radio#21), bis dahin hier vergessen. Löschfrist für beide noch offen |
 | 03.11.2026 | **V16 neu** — Mess-Abzeichen für Creator (432hz-radio#27). Nummer nach Michas Einschätzung vom 01.10.2026 ursprünglich V12; V12 bis V15 waren inzwischen vergeben bzw. vorgesehen |
+| 18.11.2026 | **V17 nachgetragen** — Umfrage auf apps.iyambae.fm, in Betrieb seit 01.09.2026. Löschfrist für V14, V15 und V17 auf 365 Tage festgelegt und im Dienst gebaut. V9 und V10 als in Betrieb geführt; Grabsteine in V9 beschrieben; Aufbewahrung bei ACS (V10) und Anthropic (V12) mit Quelle eingetragen |
 
-**Stand: 21.08.2026 · Nächste Durchsicht: [Datum eintragen, spätestens in einem
+**Stand: 18.11.2026 · Nächste Durchsicht: [Datum eintragen, spätestens in einem
 Jahr] · Geführt von: [Name] · Beim Vertreter nach Art. 27 hinterlegt am:
 [Datum]**

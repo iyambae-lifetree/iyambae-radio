@@ -442,3 +442,24 @@ test('Fällt eine Tabelle aus, bleibt der Rest der Antwort stehen', async (t) =>
     assert.equal(antwort.daten.hoerer, 7, 'die Zahlen aus der anderen Quelle stehen trotzdem da');
     assert.ok(antwort.daten.hoertest.je_runde, 'und die andere Tabelle auch');
 });
+
+// ── Frist ───────────────────────────────────────────────────────────
+
+test('Ergebnisse aelter als die Frist werden weggeraeumt, juengere bleiben', async () => {
+    const { speicherImArbeitsspeicher, raeumeAlteTageAuf, TABELLE_HOERTEST: T } =
+        await import('../src/speicher.mjs');
+    const speicher = speicherImArbeitsspeicher();
+    const jetzt = Date.UTC(2027, 10, 18);
+    // 366, 365 und 364 Tage zurueck: Nur der erste liegt vor der Grenze.
+    for (const tage of [366, 365, 364]) {
+        const tag = new Date(jetzt - tage * 86_400_000).toISOString().slice(0, 10);
+        await speicher.setze(T, { partitionKey: tag, rowKey: 'r' + tage, treffer: 3 });
+    }
+    assert.equal(await raeumeAlteTageAuf(speicher, T, 365, jetzt), 1);
+    const uebrig = [];
+    for await (const z of speicher.listeAlle(T)) uebrig.push(z.rowKey);
+    assert.deepEqual(uebrig.sort(), ['r364', 'r365']);
+    // Ohne gueltige Frist wird nichts geloescht.
+    assert.equal(await raeumeAlteTageAuf(speicher, T, 0, jetzt), 0);
+    assert.equal(await raeumeAlteTageAuf(speicher, T, NaN, jetzt), 0);
+});

@@ -1,6 +1,6 @@
 # Impressum
 
-> **Entwurf, Stand 21.08.2026 — zweite Fassung.** Die erste ging von einer deutschen Privatperson als Betreiber aus. Das war falsch. Betreiberin ist eine Gesellschaft in den USA mit einem EU-Vertreter auf Malta, und das ändert mehr als die Anschrift. **Bevor irgendetwas davon live geht, muss Micha bestätigen, dass iyambae.fm wirklich unter dieser Gesellschaft laufen soll** — die Angaben stammen aus dem Impressum einer Treppenlift-Vermittlung. Das und die übrigen offenen Punkte stehen in [HINWEISE.md](HINWEISE.md).
+> **Entwurf, Stand 18.11.2026.** Micha hat am 27.10. (PR #22) und am 03.11. (432hz-radio#19) bestätigt: Betreiberin von iyambae.fm ist die Infosys Consulting LLC, vertreten durch ihr Management, ohne Personennamen. Offen sind noch die Kontaktwege (heute die der Treppenlift-Vermittlung), die Frage, ob in Sheridan Geschäftsräume liegen, und ob es eine Niederlassung in der EU gibt. Siehe [HINWEISE.md](HINWEISE.md), Kasten oben.
 
 ---
 

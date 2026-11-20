@@ -459,6 +459,38 @@ export async function raeumeAbgelaufeneAuf(speicher, tabelle, jetzt = Date.now()
     return weg.length;
 }
 
+/**
+ * Zeilen wegraeumen, deren Partition ein Tag vor der Frist ist.
+ *
+ * Fuer die drei Tabellen, deren Partitionsschluessel der Tag der Abgabe ist
+ * (`umfrage`, `hoertest`, `stimmung`, siehe `tagVon` in umfrage.mjs und
+ * rueckmeldung.mjs). Bis zum 18.11.2026 blieben diese Zeilen unbegrenzt
+ * liegen; die Datenschutzerklaerung nennt seither eine Frist, und diese
+ * Funktion ist die Stelle, an der sie gehalten wird.
+ *
+ * Der Vergleich ist ein Zeichenkettenvergleich, und das ist richtig so:
+ * 'JJJJ-MM-TT' sortiert als Text genau wie als Datum. Die Grenze ist ein
+ * eigener, aus einer Zahl gebauter Wert und nie Eingabe von aussen.
+ *
+ * Erst sammeln, dann einzeln loeschen — aus demselben Grund wie bei
+ * `raeumeAbgelaufeneAuf` oben.
+ *
+ * @returns {number} wie viele Zeilen weg sind
+ */
+export async function raeumeAlteTageAuf(speicher, tabelle, tage, jetzt = Date.now()) {
+    if (!(Number.isFinite(tage) && tage > 0)) return 0;
+    const grenze = new Date(jetzt - tage * 86_400_000).toISOString().slice(0, 10);
+    const weg = [];
+    const zeilen = speicher.listeAlle(tabelle,
+        (zeile) => typeof zeile.partitionKey === 'string' && zeile.partitionKey < grenze,
+        "PartitionKey lt '" + grenze + "'");
+    for await (const zeile of zeilen) weg.push([zeile.partitionKey, zeile.rowKey]);
+    for (const [pk, rk] of weg) {
+        await speicher.loesche(tabelle, pk, rk);
+    }
+    return weg.length;
+}
+
 // ── Konten, Kennungen, Merkliste ────────────────────────────────────
 
 /*
