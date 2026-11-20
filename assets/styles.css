@@ -1927,11 +1927,13 @@ body.spielt .karte.ist-aktiv .karte__ikon--aus { display: block; }
 /* Der Telegram-Kanal im Fuss. Zurueckhaltend wie „powered by", aber
    anklickbar — er ist ein Angebot, keine Rechtsauskunft, und steht
    deshalb NICHT in der Rechtsleiste darunter. */
-.fuss__kanal { margin-top: 0.35rem; font-family: var(--mono); font-size: 0.75rem; }
+.fuss__kanal {
+    display: flex; flex-wrap: wrap; column-gap: 1rem; row-gap: 0.35rem;
+    margin-top: 0.35rem; font-family: var(--mono); font-size: 0.75rem;
+}
 .fuss__kanal a { color: var(--text-leise); text-decoration: none; }
 .fuss__kanal a:hover,
 .fuss__kanal a:focus-visible { color: var(--gold); text-decoration: underline; }
-.fuss__rss, .fuss__kofi { margin-inline-start: 1rem; }
 
 .fuss__recht {
     display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
