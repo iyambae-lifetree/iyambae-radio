@@ -42,6 +42,7 @@ import { protokolliere, protokolliereFehler } from './protokoll.mjs';
 import {
     erzeugeSpeicher, mitEtag, holeOderNichts, SpeicherFehler,
     TABELLE_KONTEN, TABELLE_VERWEISE,
+    TABELLE_UMFRAGE, TABELLE_HOERTEST, TABELLE_STIMMUNG, raeumeAlteTageAuf,
     normalisiereAdresse, adresseSiehtEchtAus, kennungAbdruck,
     findeKonto, holeOderLegeKontoAn, loescheKonto,
     legeKontoAn, verknuepfeKennung, leseKennungen, loescheKennung,
@@ -602,6 +603,27 @@ export function baueDienst({
         raeumeAbzeichenAuf(speicher, nun)
             .then((weg) => { if (weg) protokolliere({ art: 'abzeichen', ergebnis: 'ok', grund: 'aufgeraeumt', anzahl: weg }); })
             .catch((fehler) => protokolliereFehler('abzeichen.aufraeumen', fehler));
+    }
+
+    /*
+      Antworten der Umfrage und Ergebnisse von Blindtest und Messwerkzeug
+      wegraeumen, sobald sie aelter sind als RUECKMELDUNG_TAGE (365) —
+      dieselbe Zahl, ueber die eine Auswertung hoechstens zurueckblickt
+      (AUSWERTUNG_TAGE_HOECHSTENS), und die Frist, die
+      docs/recht/datenschutz.md Abschnitt 15 nennt. Wer eine der beiden
+      Zahlen aendert, aendert den Text mit. Gleicher Takt wie oben.
+    */
+    const RUECKMELDUNG_TAGE = Number(process.env.RUECKMELDUNG_TAGE ?? 365);
+    let rueckmeldungGeraeumt = 0;
+    function stosseRueckmeldungAufraeumenAn() {
+        const nun = Date.now();
+        if (nun - rueckmeldungGeraeumt < ABZEICHEN_ABSTAND_MS) return;
+        rueckmeldungGeraeumt = nun;
+        for (const tabelle of [TABELLE_UMFRAGE, TABELLE_HOERTEST, TABELLE_STIMMUNG]) {
+            raeumeAlteTageAuf(speicher, tabelle, RUECKMELDUNG_TAGE, nun)
+                .then((weg) => { if (weg) protokolliere({ art: 'rueckmeldung.aufgeraeumt', ergebnis: 'ok', grund: tabelle, anzahl: weg }); })
+                .catch((fehler) => protokolliereFehler('rueckmeldung.aufraeumen', fehler));
+        }
     }
 
     /*
@@ -1890,6 +1912,7 @@ export function baueDienst({
             */
             stosseAufraeumenAn(speicher, Date.now(), { versender, seite: SEITE });
             stosseAbzeichenAufraeumenAn();
+            stosseRueckmeldungAufraeumenAn();
 
         } catch (fehler) {
             behandleFehler(fehler, antwort, { anfrage, start });

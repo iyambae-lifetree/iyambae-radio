@@ -9,6 +9,20 @@ Die drei Entwürfe daneben — `impressum.md`, `datenschutz.md`,
 Platzhalter in eckigen Klammern. Solange auch nur einer davon offen ist, darf
 nichts davon online.
 
+> **Stand 18.11.2026 — was seit August erledigt ist und was noch an Micha hängt.**
+>
+> Erledigt: Micha hat am 27.10. (PR #22) und am 03.11. (432hz-radio#19) bestätigt, dass die Infosys Consulting LLC Betreiberin ist, ohne Personennamen (Punkte 1 und 3, Restrisiko siehe Punkt 3). Filing-ID steht (Punkt 4). EU-Vertretung steht mit Bezeichnung und E-Mail (Punkt 5, bis auf das Datum der schriftlichen Benennung). `apps.iyambae.fm` verweist auf allen Seiten auf Impressum und Datenschutz (Punkt 2). Der Einstellungsdialog sagt nicht mehr „gekürzte Adresse" (Punkt 25.1). Grabsteine sind beschrieben (Punkt 21). Umfrage, Blindtest und Messwerkzeug stehen jetzt auch in der Datenschutzerklärung (Abschnitt 15) und haben eine Frist von 365 Tagen, die der Dienst durchsetzt; die Umfrage hat mit V17 einen eigenen Eintrag im Verzeichnis. Aufbewahrung bei ACS und Anthropic ist mit Quelle eingetragen.
+>
+> Offen, und nur von Micha zu beantworten (gesammelt in einem Vorgang in 432hz-radio):
+>
+> 1. **Datenschutzbeauftragter ja oder nein** (Punkt 9). Das ist die letzte eckige Klammer in `datenschutz.md`, und sie steht live.
+> 2. **Kontaktwege im Impressum.** `hello@infosys-consult.com` und die 0800-Nummer sind die Wege der Treppenlift-Vermittlung (Punkt 1). Seit dem 14.10. gibt es `info@iyambae.fm` bei Zoho (432hz-radio#50). Bleibt es bei den LLC-Wegen, oder kommt die eigene Adresse dazu? Im zweiten Fall gehört Zoho als Auftragsverarbeiter in V8 und in die Tabelle der Auftragsverarbeiter.
+> 3. **Sheridan: Geschäftsräume oder Registered Agent?** (Punkt 7.)
+> 4. **Niederlassung in der EU?** (Punkt 8.) Neu dazu: Der Dienst wird von Sāmi-Ra aus Deutschland gepflegt (432hz-radio#53). Ob das für die LLC eine Niederlassung begründet, ist eine Anwaltsfrage.
+> 5. **Zugriffsberechtigte** mit Namen und Zahl (Punkt 10; V2, V9, Kopf des Verzeichnisses).
+> 6. **Datum der schriftlichen Benennung des EU-Vertreters** und Zuleitung des Verzeichnisses (Punkte 5 und 11).
+> 7. **Auftragsverarbeitungsverträge:** Laufen die Verträge mit Microsoft (Azure) und Anthropic auf die LLC? Wer ist Anbieter des Postfachs `hello@infosys-consult.com`? (Punkt 17; Verzeichnis, Tabelle der Auftragsverarbeiter.)
+
 > **Stand 21.08.2026, zweite Fassung.** Die erste ging von einer deutschen
 > Privatperson als Betreiber aus. Betreiberin ist eine Gesellschaft in Wyoming
 > mit einem EU-Vertreter auf Malta. Das war kein Suchen-und-Ersetzen: Es ändert

@@ -1,6 +1,6 @@
 # Datenschutz
 
-> **Entwurf, Stand 21.08.2026 — zweite Fassung.** Zwei Dinge haben sich gegenüber der ersten geändert, und beide reichen tief: Verantwortliche ist eine Gesellschaft in den USA mit einem EU-Vertreter auf Malta, nicht eine deutsche Privatperson. Und es wird jetzt gemessen, welcher Sender gestartet wird — die erste Fassung sagte an drei Stellen das Gegenteil. Abschnitt 3 ist am 21.08.2026 ein zweites Mal nachgezogen worden: Das Adressfeld ist aus der Messzeile verschwunden, und die Sprachangabe kommt nicht mehr aus dem Cookie, sondern aus dem Pfad. Am 23.08.2026 ist Abschnitt 11 aus dem Konjunktiv geholt worden: Die Anmeldung steht jetzt in der Seite, und damit gilt der Abschnitt. Mitgezogen sind Abschnitt 8 (zwei neue Einträge im örtlichen Speicher, dazu das Sitzungscookie) und der Satz über Drittlandübermittlungen weiter unten. Am 24.10.2026 sind die Abschnitte 12 (Kater Mikesch) und 13 (Mikeschs Schnurrpost) hinzugekommen; die bisherigen Abschnitte 12 bis 14 heißen seither 14 bis 16. Am 03.11.2026 ist Abschnitt 14 (Mess-Abzeichen auf apps.iyambae.fm) dazugekommen; die bisherigen Abschnitte 14 bis 16 heißen seither 15 bis 17. Offene Punkte: [HINWEISE.md](HINWEISE.md).
+> **Entwurf, Stand 21.08.2026 — zweite Fassung.** Zwei Dinge haben sich gegenüber der ersten geändert, und beide reichen tief: Verantwortliche ist eine Gesellschaft in den USA mit einem EU-Vertreter auf Malta, nicht eine deutsche Privatperson. Und es wird jetzt gemessen, welcher Sender gestartet wird — die erste Fassung sagte an drei Stellen das Gegenteil. Abschnitt 3 ist am 21.08.2026 ein zweites Mal nachgezogen worden: Das Adressfeld ist aus der Messzeile verschwunden, und die Sprachangabe kommt nicht mehr aus dem Cookie, sondern aus dem Pfad. Am 23.08.2026 ist Abschnitt 11 aus dem Konjunktiv geholt worden: Die Anmeldung steht jetzt in der Seite, und damit gilt der Abschnitt. Mitgezogen sind Abschnitt 8 (zwei neue Einträge im örtlichen Speicher, dazu das Sitzungscookie) und der Satz über Drittlandübermittlungen weiter unten. Am 24.10.2026 sind die Abschnitte 12 (Kater Mikesch) und 13 (Mikeschs Schnurrpost) hinzugekommen; die bisherigen Abschnitte 12 bis 14 heißen seither 14 bis 16. Am 03.11.2026 ist Abschnitt 14 (Mess-Abzeichen auf apps.iyambae.fm) dazugekommen; die bisherigen Abschnitte 14 bis 16 heißen seither 15 bis 17. Am 18.11.2026 ist Abschnitt 15 (Umfrage, Blindtest und Messwerkzeug auf apps.iyambae.fm, bis dahin nur im Verzeichnis als V14 und V15) dazugekommen, mit einer Frist von 365 Tagen, die der Dienst seither auch durchsetzt; die bisherigen Abschnitte 15 bis 17 heißen seither 16 bis 18. Die Grabsteine in Abschnitt 11 sind beschrieben. Offene Punkte: [HINWEISE.md](HINWEISE.md).
 
 ---
 
@@ -58,7 +58,7 @@ der EU anbietet, hat sie einen Vertreter in der Union benannt:
 **Was das für dich bedeutet, und es ist kein Nebensatz:** Du kannst dich in
 allen Fragen, die mit der Verarbeitung deiner Daten zu tun haben, **an diesen
 Vertreter wenden — zusätzlich zu uns oder statt uns** (Art. 27 Abs. 4 DSGVO).
-Auch dein Auskunfts-, Berichtigungs- oder Löschverlangen (Abschnitt 16) kannst
+Auch dein Auskunfts-, Berichtigungs- oder Löschverlangen (Abschnitt 17) kannst
 du dorthin richten. Du musst dafür nicht in die USA schreiben, und du musst dich
 nicht vorher an uns wenden. Der Vertreter ist die einfachere Adresse, und dafür
 gibt es ihn.
@@ -76,7 +76,7 @@ Verantwortliche ohne Niederlassung in der Union, wenn sie betroffenen Personen
 in der Union Dienstleistungen anbieten. Diese Seite spricht sieben Sprachen,
 darunter fünf Amtssprachen der EU, und richtet sich damit ausdrücklich an
 Menschen in der Union. Also gilt für sie dasselbe Recht wie für einen deutschen
-Anbieter — einschließlich deiner sämtlichen Rechte aus Abschnitt 16.
+Anbieter — einschließlich deiner sämtlichen Rechte aus Abschnitt 17.
 
 **Deine Daten liegen weiter in Deutschland.** Server, Protokolle und (später)
 Kontodaten liegen in der Azure-Region Germany West Central. Der Sitz der
@@ -816,7 +816,7 @@ gehört benannt — mitsamt der Zahl der Personen, die sie haben.
 - **Sitzungen und Einmalcodes** tragen ein Ablaufdatum und werden weggeräumt. Eine Sitzung läuft nach 90 Tagen ohne Besuch ab, spätestens aber nach einem Jahr. Weggeräumt werden sie, sobald sie abgelaufen sind — beim nächsten Zugriff, und zusätzlich durch einen Durchgang alle 24 Stunden, damit auch die Sitzung eines Menschen verschwindet, der nicht wiederkommt.
 - **Das Konto selbst** bleibt, bis du es löschst — oder bis sich zwei Jahre lang niemand damit angemeldet hat (nächster Punkt). Es gibt eine Löschfunktion in der App; sie entfernt in einem Vorgang alles: Merkliste, Verlauf, Sitzungen, Kennungen und den Eintrag in der Zuordnungstabelle. Alle Daten eines Kontos liegen zu diesem Zweck in einer einzigen Partition — damit kein Rest liegenbleibt, den später niemand mehr findet.
 - **Inaktive Konten** werden gelöscht, wenn sich **zwei Jahre** lang niemand damit angemeldet hat. **Vier Wochen vorher** schreiben wir dir an die Adresse des Kontos: „Dein Konto wird am … gelöscht, wenn du dich bis dahin nicht anmeldest“, mit einem Link zur Anmeldung. Meldest du dich an, beginnt die Frist von vorn. Es zählt die Anmeldung, nicht jeder Besuch: Wer mit einer bestehenden Sitzung hört, muss sich ohnehin spätestens nach einem Jahr neu anmelden. Hat ein Konto keine Mailadresse (etwa bei Apple mit verborgener Adresse), können wir nicht warnen; es wird nach Ablauf der zwei Jahre ohne Mail gelöscht. Gelöscht wird auf dieselbe Weise wie mit der Löschfunktion — alles, in einem Vorgang. Für Konten, die es schon vor dieser Regel gab, läuft die Frist frühestens ab dem 03.11.2026. Rechtsgrundlage ist der Grundsatz der Speicherbegrenzung (Art. 5 Abs. 1 lit. e DSGVO): Ein Konto, das niemand mehr benutzt, hat keinen Zweck mehr.
-- **[Was nach dem Löschen wie lange als „Grabstein" bestehen bleibt: noch zu klären — HINWEISE.md.]**
+- **Gelöschte Einträge der Merkliste** („Grabsteine"): Wenn du einen Sender aus der Merkliste nimmst, bleibt für **90 Tage** ein Vermerk stehen, dass er entfernt wurde — die Kennung des Senders und die Zeitpunkte von Merken und Entfernen, sonst nichts. Ohne diesen Vermerk käme der Sender beim nächsten Abgleich von einem anderen Gerät zurück, auf dem er noch steht. Nach 90 Tagen räumt der Dienst den Vermerk beim nächsten Abgleich aus dem Konto. Löschst du das Konto, verschwinden alle Vermerke sofort mit.
 
 ---
 
@@ -944,7 +944,41 @@ erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG).
 
 ---
 
-## 15. Was hier nicht passiert
+## 15. Umfrage, Blindtest und Messwerkzeug (apps.iyambae.fm)
+
+Auf `apps.iyambae.fm` stehen drei Dinge, die etwas an uns schicken, und alle
+drei nur, wenn du sie zu Ende bringst. Sie haben eins gemeinsam: **Nichts davon
+kennt dich.** Keine Anmeldung, kein Cookie, keine IP-Adresse, auch keine
+gekürzte, und keine Kennung, die zwei Abgaben derselben Person verbinden
+könnte. Jede Abgabe ist eine eigene Zeile mit einer Zufallskennung und dem
+**Tag** (ohne Uhrzeit).
+
+- **Die Umfrage** auf der Startseite. Gespeichert werden deine Antworten auf die vier Auswahlfragen — welche davon du beantwortest, entscheidest du —, die Sprachfassung der Seite und, wenn du etwas hineinschreibst, der Text aus dem freien Feld (höchstens 600 Zeichen). **Schreib dort bitte nichts hinein, was dich erkennbar macht.** Mailadressen und lange Zeichenfolgen mit Ziffern (etwa ein versehentlich eingefügtes Passwort) schwärzt der Dienst von selbst, bevor er speichert; einen Namen erkennt er nicht.
+- **Der Blindtest** „Merkst du's?" auf `/hoertest/`. Gespeichert werden nach jeder beendeten Runde: welche Runde, wie viele von fünf richtig waren, wie oft du den ersten Knopf gewählt hast, und die Sprachfassung.
+- **Das Messwerkzeug** auf `/stimmung/`. Die Tondatei bleibt auf deinem Gerät; gerechnet wird im Browser. Nach einer gelungenen Messung gespeichert werden: der gemessene Kammerton (gerundet auf eine Nachkommastelle), die Sicherheit der Messung, ob dir eine Zahl angezeigt wurde, die Länge des ausgewerteten Ausschnitts in fünf groben Stufen, die Zahl der Kanäle, die Dateiendung (etwa `flac`) und die Sprachfassung. **Nicht gespeichert werden die Datei, ihr Name und alles andere aus ihr.** Das Mess-Abzeichen ist davon getrennt (Abschnitt 14).
+
+**Wozu.** Um zu wissen, was gebraucht wird (Umfrage), wie oft 432 Hz im
+Blindtest wirklich herausgehört wird — auch wenn es gegen uns ausfällt — und
+wie sich die gemessenen Stimmungen verteilen. Veröffentlicht werden höchstens
+Summen.
+
+**Für die Begrenzung der Anfragen** zählen wir je Netz kurz im
+Arbeitsspeicher mit; geschrieben wird das nirgends.
+
+**Wo und wie lange.** In Azure Table Storage in Deutschland (Microsoft ist
+Auftragsverarbeiterin). **Nach 365 Tagen** wird jede Zeile gelöscht; der Dienst
+räumt einmal am Tag auf.
+
+**Rechtsgrundlage.** Ob eine einzelne Zeile überhaupt ein personenbezogenes
+Datum ist, ist zweifelhaft — sie lässt sich niemandem zuordnen. Soweit doch,
+ist es Art. 6 Abs. 1 lit. f DSGVO: unser Interesse, die Werkzeuge an dem
+auszurichten, was tatsächlich passiert. Weil nichts davon dich kennt, können
+wir dir zu einer bestimmten Abgabe keine Auskunft geben und sie nicht gezielt
+löschen (Art. 11 Abs. 2 DSGVO, siehe Abschnitt 17).
+
+---
+
+## 16. Was hier nicht passiert
 
 Damit es einmal in einer Liste steht:
 
@@ -963,7 +997,7 @@ Damit es einmal in einer Liste steht:
 
 ---
 
-## 16. Deine Rechte
+## 17. Deine Rechte
 
 Du hast die folgenden Rechte. Alle kosten nichts, und für alle reicht eine
 formlose Nachricht — **an uns unter hello@infosys-consult.com oder an unseren
@@ -1009,7 +1043,7 @@ nächsten ist.
 
 ---
 
-## 17. Änderungen an diesem Hinweis
+## 18. Änderungen an diesem Hinweis
 
 Ändert sich, was die Seite tut, ändert sich dieser Text. Die jeweils geltende
 Fassung steht immer hier. Wesentliche Änderungen — etwa der Start der Konten —
@@ -1033,4 +1067,10 @@ den ersten Sätzen ganz oben und nicht nur hier.
 entsteht nur, wenn jemand es auf `apps.iyambae.fm/stimmung/` ausdrücklich
 erzeugt.
 
-**Stand: [Datum des Livegangs].**
+**Am 18.11.2026 ist Abschnitt 15 dazugekommen.** Umfrage, Blindtest und
+Messwerkzeug liefen schon seit dem 01.09.2026, standen aber bis dahin nur im
+Verzeichnis der Verarbeitungstätigkeiten und nicht hier. Mit dem Nachtrag
+gilt für ihre Zeilen eine Frist von 365 Tagen; vorher blieben sie unbegrenzt
+liegen.
+
+**Stand: 18.11.2026.**
