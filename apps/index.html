@@ -1536,20 +1536,14 @@ html[data-os="mac"] .plattform--neben[data-fuer="mac"] {
 }
 html[data-os="mac"] .plattform--neben[data-fuer="mac"] .plattform__zeichen { color: var(--leise); }
 .plattform--neben .plattform__tat { color: var(--leise); }
-/* Linux: das .deb vorn, das .rpm daneben — ausser die Kennung des
-   Browsers nennt eine rpm-Distribution, dann umgekehrt. */
+/* Linux: das Flatpak vorn, .deb und .rpm daneben. Nennt die Kennung des
+   Browsers eine rpm-Distribution, steht das .rpm vor dem .deb, aber hinter
+   dem Flatpak (seit 25.11.2026; vorher stand es ganz vorn). */
 html[data-os="linux"] .plattform--neben[data-fuer="linux"] {
   border-color: var(--kante-hell); background: transparent; order: 1;
 }
 html[data-os="linux"] .plattform--neben[data-fuer="linux"] .plattform__zeichen { color: var(--leise); }
-html[data-linux="rpm"] .plattform--neben[data-paket="rpm"] {
-  border-color: var(--akzent); background: var(--kante); order: -1;
-}
-html[data-linux="rpm"] .plattform--neben[data-paket="rpm"] .plattform__zeichen { color: var(--akzent-hell); }
-html[data-linux="rpm"] .plattform--neben[data-paket="rpm"] .plattform__tat { color: inherit; }
-html[data-linux="rpm"] .plattform[data-paket="deb"] {
-  border-color: var(--kante-hell); background: transparent; order: 1;
-}
+html[data-linux="rpm"] .plattform--neben[data-paket="rpm"] { order: 0; }
 
 /* Telefon: zuerst sagen, dass es hier nicht geht, und einen Weg zum
    Rechner anbieten. Die Kacheln bleiben, aber klein — vorher kamen
@@ -1809,10 +1803,22 @@ html[data-os="mobil"] .plattform__zusatz { display: none; }
                Bedienkarte selbst mit und laeuft damit auch auf einem nackten
                Debian; das .rpm ist derselbe Inhalt fuer Fedora und openSUSE.
                Welches vorn steht, entscheidet das Skript oben — beide sind
-               immer erreichbar. -->
-          <a class="plattform" data-fuer="linux" data-paket="deb" href="/herunterladen/iyambae-tuner_0.6.1-1_amd64.deb">
+               immer erreichbar.
+
+               Seit 25.11.2026 (Sāmi-Ras Ja) steht davor die eigene
+               Flatpak-Quelle: Ein Klick öffnet „Software“, das richtet ein und
+               hält aktuell, auf jeder Linux-Fassung mit Flatpak. Flathub nimmt
+               keine Anträge an, die eine KI geschrieben hat; deshalb liegt die
+               Quelle bei uns (apps: .github/workflows/flatpak-quelle.yml).
+               .deb und .rpm bleiben daneben, für Ubuntu ohne Flatpak. -->
+          <a class="plattform" data-fuer="linux" data-paket="flatpak" href="/herunterladen/flatpak/fm.iyambae.Tuner.flatpakref">
             <img class="plattform__zeichen" src="assets/plattform-linux.svg" alt="" width="24" height="24">
             <span class="plattform__reife" data-reife="linux"></span>
+            <span class="plattform__tat" data-text="auf.linux.flatpak.tat">Tuner für Linux installieren</span>
+            <span class="plattform__zusatz" data-text="auf.linux.flatpak.zusatz">Ein Klick · öffnet „Software“ · Zorin, Mint, Fedora · frühe Fassung</span>
+          </a>
+          <a class="plattform plattform--neben" data-fuer="linux" data-paket="deb" href="/herunterladen/iyambae-tuner_0.6.1-1_amd64.deb">
+            <img class="plattform__zeichen" src="assets/plattform-linux.svg" alt="" width="24" height="24">
             <span class="plattform__tat" data-text="auf.linux.tat">Tuner für Linux laden</span>
             <span class="plattform__zusatz" data-text="auf.linux.zusatz">DEB · 31,7 MB · Ubuntu, Zorin, Mint, Debian · frühe Fassung</span>
           </a>
@@ -2073,13 +2079,19 @@ html[data-os="mobil"] .plattform__zusatz { display: none; }
         Filterkette. <strong>Frühe Fassung.</strong>
       </p>
       <p class="karte__was" data-html="karte.linux.was2">
-        Laden und doppelklicken, das Paket bringt alles mit. Das .deb ist für
+        Am bequemsten ist „mit einem Klick“: Das öffnet die Programmverwaltung, die alles einrichtet und später auch aktualisiert. Das geht überall, wo Flatpak dabei ist, etwa auf Zorin, Mint und Fedora. Sonst laden und doppelklicken, das Paket bringt alles mit. Das .deb ist für
         Ubuntu, Zorin, Mint und Debian, das .rpm für Fedora und openSUSE.
         Nötig ist PipeWire, Standard seit etwa 2022. Unter GNOME will das
         Symbol die AppIndicator-Erweiterung.
       </p>
       <div class="karte__fuellen"></div>
       <div class="karte__tat">
+        <a class="laden" href="/herunterladen/flatpak/fm.iyambae.Tuner.flatpakref">
+          <span data-text="karte.linux.flatpak.tuner">Tuner mit einem Klick</span><span class="laden__groesse">Flatpak</span>
+        </a>
+        <a class="laden" href="/herunterladen/flatpak/fm.iyambae.Converter.flatpakref">
+          <span data-text="karte.linux.flatpak.conv">Converter mit einem Klick</span><span class="laden__groesse">Flatpak</span>
+        </a>
         <a class="laden" href="/herunterladen/iyambae-tuner_0.6.1-1_amd64.deb">
           <span data-text="karte.linux.laden.deb">.deb laden</span><span class="laden__groesse">31,7 MB</span>
         </a>
