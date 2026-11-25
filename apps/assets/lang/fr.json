@@ -42,6 +42,8 @@
   "auf.win.zusatz": "EXE · 69,8 Mo · Windows 11 · version précoce, pas encore signée",
   "auf.linux.tat": "Télécharger le Tuner pour Linux",
   "auf.linux.zusatz": "DEB · 31,7 Mo · Ubuntu, Zorin, Mint, Debian · version précoce",
+  "auf.linux.flatpak.tat": "Installer le Tuner pour Linux",
+  "auf.linux.flatpak.zusatz": "Un clic · ouvre « Logiciels » · Zorin, Mint, Fedora · version précoce",
   "auf.mobil.zusatz": "Sur un téléphone, aucune application ne livre le son de Spotify ou de Netflix.",
   "auf.mobil.teilen": "Envoyer le lien à l’ordinateur",
   "auf.mobil.kopiert": "Lien copié — à coller sur l’ordinateur.",
@@ -104,7 +106,7 @@
   "holen.pruefsumme": "vérifier le SHA-256",
   "karte.linux.wofuer": "Ubuntu · Zorin · Mint · Debian · Fedora · openSUSE",
   "karte.linux.was1": "Icône dans la barre : accordages par leur nom, marche et arrêt, périphérique de sortie, lancement à l’ouverture de session. En dessous, un plugin travaille dans la chaîne de filtres de PipeWire. <strong>Version précoce.</strong>",
-  "karte.linux.was2": "Téléchargez et double-cliquez, le paquet apporte tout ce qu’il lui faut. Le .deb est pour Ubuntu, Zorin, Mint et Debian, le .rpm pour Fedora et openSUSE. PipeWire est nécessaire, la norme depuis 2022 environ. Sous GNOME, l’icône demande l’extension AppIndicator.",
+  "karte.linux.was2": "Le plus simple est « en un clic » : cela ouvre la logithèque, qui installe tout et fait aussi les mises à jour. Cela marche partout où Flatpak est présent, par exemple sur Zorin, Mint et Fedora. Sinon, téléchargez et double-cliquez, le paquet apporte tout ce qu’il lui faut. Le .deb est pour Ubuntu, Zorin, Mint et Debian, le .rpm pour Fedora et openSUSE. PipeWire est nécessaire, la norme depuis 2022 environ. Sous GNOME, l’icône demande l’extension AppIndicator.",
   "karte.win.wofuer": "11 · x64",
   "karte.win.was1": "Sa propre fenêtre, icône dans la barre, installateur. <strong>S’installe sans droits d’administrateur</strong> — pas de fenêtre UAC, pas de mot de passe. <strong>Version précoce.</strong>",
   "karte.win.was2": "Pas encore signée : au premier lancement, SmartScreen avertit. Clique sur « Informations complémentaires », puis « Exécuter quand même ».",
@@ -747,6 +749,8 @@
   "auf.linux.conv.zusatz": "DEB · 45,3 Mo · gratuit · réaccorde durablement les fichiers audio · version précoce",
   "karte.linux.laden.deb": "Télécharger le .deb",
   "karte.linux.conv.deb": "Converter en .deb",
+  "karte.linux.flatpak.tuner": "Tuner en un clic",
+  "karte.linux.flatpak.conv": "Converter en un clic",
   "karte.linux.conv.rpm": "Converter en .rpm",
   "karte.linux.laden.rpm": "Télécharger le .rpm"
 }

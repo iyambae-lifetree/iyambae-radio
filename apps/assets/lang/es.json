@@ -42,6 +42,8 @@
   "auf.win.zusatz": "EXE · 69,8 MB · Windows 11 · versión temprana, aún sin firmar",
   "auf.linux.tat": "Descargar el Tuner para Linux",
   "auf.linux.zusatz": "DEB · 31,7 MB · Ubuntu, Zorin, Mint, Debian · versión temprana",
+  "auf.linux.flatpak.tat": "Instalar el Tuner para Linux",
+  "auf.linux.flatpak.zusatz": "Un clic · abre «Software» · Zorin, Mint, Fedora · versión temprana",
   "auf.mobil.zusatz": "En el teléfono, ninguna app entrega el sonido de Spotify o de Netflix.",
   "auf.mobil.teilen": "Enviar el enlace al ordenador",
   "auf.mobil.kopiert": "Enlace copiado: pégalo en el ordenador.",
@@ -104,7 +106,7 @@
   "holen.pruefsumme": "comprobar el SHA-256",
   "karte.linux.wofuer": "Ubuntu · Zorin · Mint · Debian · Fedora · openSUSE",
   "karte.linux.was1": "Icono en la bandeja: afinaciones por su nombre, encendido y apagado, dispositivo de salida, inicio al iniciar sesión. Debajo trabaja un plugin en la cadena de filtros de PipeWire. <strong>Versión temprana.</strong>",
-  "karte.linux.was2": "Descarga y haz doble clic, el paquete trae todo lo que necesita. El .deb es para Ubuntu, Zorin, Mint y Debian, el .rpm para Fedora y openSUSE. Hace falta PipeWire, el estándar desde 2022 aproximadamente. En GNOME, el icono necesita la extensión AppIndicator.",
+  "karte.linux.was2": "Lo más cómodo es «con un clic»: abre el gestor de programas, que lo instala todo y luego también lo actualiza. Funciona donde venga Flatpak, por ejemplo en Zorin, Mint y Fedora. Si no, descarga y haz doble clic, el paquete trae todo lo que necesita. El .deb es para Ubuntu, Zorin, Mint y Debian, el .rpm para Fedora y openSUSE. Hace falta PipeWire, el estándar desde 2022 aproximadamente. En GNOME, el icono necesita la extensión AppIndicator.",
   "karte.win.wofuer": "11 · x64",
   "karte.win.was1": "Ventana propia, icono en la bandeja, instalador. <strong>Se instala sin derechos de administrador</strong> — sin ventana UAC, sin contraseña. <strong>Versión temprana.</strong>",
   "karte.win.was2": "Aún sin firmar: al primer inicio avisa SmartScreen. Haz clic en «Más información» y luego en «Ejecutar de todas formas».",
@@ -747,6 +749,8 @@
   "auf.linux.conv.zusatz": "DEB · 45,3 MB · gratis · reafina archivos de música de forma permanente · versión temprana",
   "karte.linux.laden.deb": "Descargar .deb",
   "karte.linux.conv.deb": "Converter en .deb",
+  "karte.linux.flatpak.tuner": "Tuner con un clic",
+  "karte.linux.flatpak.conv": "Converter con un clic",
   "karte.linux.conv.rpm": "Converter en .rpm",
   "karte.linux.laden.rpm": "Descargar .rpm"
 }

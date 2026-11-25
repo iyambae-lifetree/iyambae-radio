@@ -42,6 +42,8 @@
   "auf.win.zusatz": "EXE · 69.8 ميغابايت · Windows 11 · إصدار مبكر، غير موقَّع بعد",
   "auf.linux.tat": "تنزيل Tuner لنظام Linux",
   "auf.linux.zusatz": "DEB · 31.7 ميغابايت · Ubuntu وZorin وMint وDebian · إصدار مبكر",
+  "auf.linux.flatpak.tat": "تثبيت Tuner لنظام Linux",
+  "auf.linux.flatpak.zusatz": "نقرة واحدة · يفتح «البرمجيات» · Zorin وMint وFedora · إصدار مبكر",
   "auf.mobil.zusatz": "على الهاتف لا يُسلّم أيّ تطبيق صوتَ ⁦Spotify⁩ أو ⁦Netflix⁩ إلى غيره.",
   "auf.mobil.teilen": "أرسل الرابط إلى حاسوبك",
   "auf.mobil.kopiert": "نُسخ الرابط — الصقه على الحاسوب.",
@@ -104,7 +106,7 @@
   "holen.pruefsumme": "تحقّق من ⁦SHA-256⁩",
   "karte.linux.wofuer": "Ubuntu · Zorin · Mint · Debian · Fedora · openSUSE",
   "karte.linux.was1": "أيقونة في شريط النظام: الضبطات بأسمائها، تشغيل وإيقاف، جهاز الإخراج، التشغيل عند تسجيل الدخول. وتحتها يعمل ملحق في سلسلة مرشِّحات PipeWire. <strong>إصدار مبكر.</strong>",
-  "karte.linux.was2": "نزِّله وانقر نقرًا مزدوجًا، فالحزمة تحمل كل ما تحتاجه. ملف ⁦.deb⁩ لـ Ubuntu وZorin وMint وDebian، وملف ⁦.rpm⁩ لـ Fedora وopenSUSE. يلزم PipeWire، وهو المعيار منذ نحو 2022. وفي GNOME تحتاج الأيقونة إلى إضافة AppIndicator.",
+  "karte.linux.was2": "الأسهل هو «بنقرة واحدة»: يفتح مدير البرامج الذي يثبّت كل شيء ويحدّثه لاحقًا أيضًا. يعمل ذلك حيثما وُجد Flatpak، مثل Zorin وMint وFedora. وإلا فنزِّله وانقر نقرًا مزدوجًا، فالحزمة تحمل كل ما تحتاجه. ملف ⁦.deb⁩ لـ Ubuntu وZorin وMint وDebian، وملف ⁦.rpm⁩ لـ Fedora وopenSUSE. يلزم PipeWire، وهو المعيار منذ نحو 2022. وفي GNOME تحتاج الأيقونة إلى إضافة AppIndicator.",
   "karte.win.wofuer": "11 · x64",
   "karte.win.was1": "نافذة خاصة، وأيقونة في شريط النظام، ومثبِّت. <strong>يُثبَّت دون صلاحيات المسؤول</strong> — بلا نافذة UAC وبلا كلمة مرور. <strong>إصدار مبكر.</strong>",
   "karte.win.was2": "غير موقَّع بعد: عند التشغيل الأول يحذِّر SmartScreen. انقر «مزيد من المعلومات» ثم «التشغيل على أي حال».",
@@ -747,6 +749,8 @@
   "auf.linux.conv.zusatz": "DEB · 45.3 ميغابايت · مجاني · يعيد ضبط ملفات الموسيقى بشكل دائم · إصدار مبكر",
   "karte.linux.laden.deb": "تنزيل ⁦.deb⁩",
   "karte.linux.conv.deb": "⁦Converter⁩ بصيغة ⁦.deb⁩",
+  "karte.linux.flatpak.tuner": "⁦Tuner⁩ بنقرة واحدة",
+  "karte.linux.flatpak.conv": "⁦Converter⁩ بنقرة واحدة",
   "karte.linux.conv.rpm": "⁦Converter⁩ بصيغة ⁦.rpm⁩",
   "karte.linux.laden.rpm": "تنزيل ⁦.rpm⁩"
 }
